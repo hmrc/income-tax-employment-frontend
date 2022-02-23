@@ -16,11 +16,11 @@
 
 package models.employment
 
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.expenses.ExpensesBuilder.anExpenses
 import models.employment.AllEmploymentData.employmentIdExists
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import utils.UnitTest
 
 class AllEmploymentDataSpec extends UnitTest {

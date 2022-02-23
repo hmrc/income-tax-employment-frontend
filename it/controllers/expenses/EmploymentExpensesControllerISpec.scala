@@ -16,10 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -28,8 +24,12 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{checkYourExpensesUrl, claimEmploymentExpensesUrl, fullUrl, overviewUrl, startEmploymentExpensesUrl, taxReliefLink}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -148,13 +148,14 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
+              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -192,6 +193,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -224,13 +226,14 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                          anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(claimingEmploymentExpenses = false))))
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(claimingEmploymentExpenses = false))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -274,7 +277,8 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         }
 
         lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
@@ -308,7 +312,8 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -381,7 +386,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                      ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
+            ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
           urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -417,7 +422,8 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         }
 
         lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER

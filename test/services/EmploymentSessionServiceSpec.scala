@@ -16,18 +16,11 @@
 
 package services
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import common.EmploymentSection
 import config._
-import controllers.employment.routes.CheckYourBenefitsController
-import controllers.studentLoans.routes.StudentLoansCYAController
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.employment._
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay, JourneyNotFinished, NothingToUpdate}
+import models.employment.createUpdate._
 import models.expenses.Expenses
 import models.mongo._
 import models.{APIErrorBodyModel, APIErrorModel, AuthorisationRequest, User}
@@ -36,6 +29,12 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import support.mocks._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.{InYearUtil, UnitTest}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
@@ -243,7 +242,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     "return an error from the create call" in {
 
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel.parsingError)))
+      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
 
@@ -285,11 +284,11 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return cya data and prior" in {
-      mockFind(taxYear-1, "employmentId", Right(Some(anEmploymentUserData)))
-      mockFind(nino, taxYear-1, anIncomeTaxUserData)
-      val response = underTest.getCYAAndPriorForEndOfYear(taxYear-1, "employmentId")
+      mockFind(taxYear - 1, "employmentId", Right(Some(anEmploymentUserData)))
+      mockFind(nino, taxYear - 1, anIncomeTaxUserData)
+      val response = underTest.getCYAAndPriorForEndOfYear(taxYear - 1, "employmentId")
 
-      await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData,Some(anAllEmploymentData)))
+      await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData, Some(anAllEmploymentData)))
     }
   }
 
@@ -302,11 +301,11 @@ class EmploymentSessionServiceSpec extends UnitTest
       status(response.map(_.left.get)) shouldBe SEE_OTHER
     }
     "return optional data" in {
-      mockFind(taxYear-1, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear-1)
-      val response = underTest.getOptionalCYAAndPriorForEndOfYear(taxYear-1, "employmentId")
+      mockFind(taxYear - 1, "employmentId", Right(None))
+      mockFindNoContent(nino, taxYear - 1)
+      val response = underTest.getOptionalCYAAndPriorForEndOfYear(taxYear - 1, "employmentId")
 
-      await(response) shouldBe Right(OptionalCyaAndPrior(None,None))
+      await(response) shouldBe Right(OptionalCyaAndPrior(None, None))
     }
   }
 
@@ -316,7 +315,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockFindNoContent(nino, taxYear)
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
-      await(response) shouldBe Right(OptionalCyaAndPrior(None,None))
+      await(response) shouldBe Right(OptionalCyaAndPrior(None, None))
     }
 
     "return cya data and prior" in {
@@ -324,7 +323,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockFind(nino, taxYear, anIncomeTaxUserData)
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
-      await(response) shouldBe Right(OptionalCyaAndPrior(Some(anEmploymentUserData),Some(anAllEmploymentData)))
+      await(response) shouldBe Right(OptionalCyaAndPrior(Some(anEmploymentUserData), Some(anAllEmploymentData)))
     }
 
     "return a left with a redirect" in {
@@ -368,7 +367,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockFind(nino, taxYear, anIncomeTaxUserData)
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
 
-      await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData,Some(anAllEmploymentData)))
+      await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData, Some(anAllEmploymentData)))
     }
 
     "return an error if the call failed" in {
@@ -691,7 +690,7 @@ class EmploymentSessionServiceSpec extends UnitTest
               )
             ), None
           )
-        ),EmploymentSection.STUDENT_LOANS
+        ), EmploymentSection.STUDENT_LOANS
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(

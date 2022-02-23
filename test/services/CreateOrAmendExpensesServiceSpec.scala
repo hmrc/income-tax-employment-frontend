@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockCreateOrAmendExpensesConnector}
+import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
 import models.expenses.{Expenses, ExpensesViewModel}
@@ -27,6 +27,7 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
+import support.mocks.MockCreateOrAmendExpensesConnector
 import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 

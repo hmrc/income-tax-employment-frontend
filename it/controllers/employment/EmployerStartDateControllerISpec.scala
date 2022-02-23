@@ -16,8 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.employment.EmploymentDateForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -25,8 +23,10 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, employmentStartDateUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
 
@@ -201,6 +201,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -232,6 +233,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -295,7 +297,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -331,7 +334,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -367,7 +371,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -403,7 +408,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -439,7 +445,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -475,7 +482,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -511,7 +519,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -547,7 +556,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -583,7 +593,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -619,7 +630,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -655,7 +667,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -691,7 +704,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -727,7 +741,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -766,7 +781,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -812,7 +828,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = cya.copy(employmentDetails = cya.employmentDetails.copy(
-                  cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))))
+          cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

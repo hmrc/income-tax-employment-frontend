@@ -17,12 +17,11 @@
 package controllers.employment
 
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService}
-import forms.YesNoForm
 import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.http.Status._
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Request, Result}
+import support.mocks.{MockAuditService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.AddEmploymentView
 
@@ -30,8 +29,8 @@ import scala.concurrent.Future
 
 class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService {
 
-  lazy val view = app.injector.instanceOf[AddEmploymentView]
-  lazy val controller = new AddEmploymentController()(
+  private lazy val view = app.injector.instanceOf[AddEmploymentView]
+  private lazy val controller = new AddEmploymentController()(
     mockMessagesControllerComponents,
     authorisedAction,
     inYearAction,
@@ -41,11 +40,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
     mockErrorHandler,
     ec
   )
-  val taxYear = 2021
-  val employmentId = "223/AB12399"
-  val form = YesNoForm.yesNoForm(
-    missingInputError = "AddEmployment.error"
-  )
+  private val taxYear = 2021
 
   ".show" should {
 

@@ -16,16 +16,16 @@
 
 package controllers.employment
 
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import common.{EmploymentSection, SessionValues}
-import config._
 import controllers.employment.routes._
 import models.employment._
 import models.employment.createUpdate._
 import play.api.http.Status._
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.mocks._
 import utils.UnitTestWithApp
 import views.html.employment.CheckEmploymentDetailsView
 
@@ -38,6 +38,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   with MockNrsService {
 
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
+
   private def controller(mimic: Boolean = false) = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     view,
@@ -49,6 +50,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
     ec,
     mockErrorHandler
   )
+
   private val taxYear = mockAppConfig.defaultTaxYear
   private val employmentId = "223AB12399"
 
@@ -121,8 +123,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Left(NothingToUpdate))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS, Left(NothingToUpdate))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -136,8 +138,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Left(JourneyNotFinished))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS, Left(JourneyNotFinished))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -151,8 +153,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Left(InternalServerError))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
@@ -166,8 +168,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorBenefits = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
@@ -180,8 +182,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorBenefits = false))))
           mockCreateOrUpdateSessionData(Redirect(CheckYourBenefitsController.show(taxYear, "id").url))
           (mockErrorHandler.internalServerError()(_: Request[_])).expects(*).returns(InternalServerError)

@@ -17,11 +17,11 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import config.MockAppConfig
 import models.requests.RefreshIncomeSourceRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.ConnectorIntegrationTest
 

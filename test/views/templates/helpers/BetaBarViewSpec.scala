@@ -16,9 +16,10 @@
 
 package views.templates.helpers
 
-import config.{AppConfig, MockAppConfig}
+import config.AppConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import support.mocks.MockAppConfig
 import utils.ViewTest
 import views.html.templates.helpers.BetaBar
 

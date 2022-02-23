@@ -16,13 +16,13 @@
 
 package connectors
 
-import builders.models.expenses.ExpensesBuilder.anExpenses
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import config.MockAppConfig
 import models.requests.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.ConnectorIntegrationTest
 

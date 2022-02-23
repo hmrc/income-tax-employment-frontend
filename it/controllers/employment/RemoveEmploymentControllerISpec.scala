@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
@@ -24,6 +23,7 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import utils.PageUrls.{employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -143,6 +143,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -169,6 +170,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)

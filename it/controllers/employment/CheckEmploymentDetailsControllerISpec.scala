@@ -16,14 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.employment.PayBuilder.aPay
-import builders.models.employment.StudentLoansBuilder.aStudentLoans
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import common.SessionValues
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
@@ -34,7 +26,15 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, employerInformationUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.PayBuilder.aPay
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -339,19 +339,19 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          "1234567890",
-                          "AA123456A",
-                          2021,
-                          employmentId,
-                          isPriorSubmission = true,
-                          hasPriorBenefits = true,
-                          hasPriorStudentLoans = true,
-                          EmploymentCYAModel(
-                            anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
-                            None
-                          )
-                        ))
+              sessionId,
+              "1234567890",
+              "AA123456A",
+              2021,
+              employmentId,
+              isPriorSubmission = true,
+              hasPriorBenefits = true,
+              hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
+                None
+              )
+            ))
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, 2021)
             urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
@@ -674,18 +674,18 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(EmploymentUserData(
-                  sessionId,
-                  "1234567890",
-                  "AA123456A",
-                  2021,
-                  employmentId,
-                  isPriorSubmission = false,
-                  hasPriorBenefits = true, hasPriorStudentLoans = false,
-                  EmploymentCYAModel(
-                    anEmploymentSource.toEmploymentDetails(false).copy(employerRef = None),
-                    None
-                  )
-                ))
+          sessionId,
+          "1234567890",
+          "AA123456A",
+          2021,
+          employmentId,
+          isPriorSubmission = false,
+          hasPriorBenefits = true, hasPriorStudentLoans = false,
+          EmploymentCYAModel(
+            anEmploymentSource.toEmploymentDetails(false).copy(employerRef = None),
+            None
+          )
+        ))
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
         urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))

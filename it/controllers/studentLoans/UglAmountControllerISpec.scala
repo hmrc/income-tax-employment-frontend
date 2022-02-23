@@ -16,7 +16,6 @@
 
 package controllers.studentLoans
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}

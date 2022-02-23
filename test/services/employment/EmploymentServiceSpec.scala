@@ -16,10 +16,10 @@
 
 package services.employment
 
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
-import config.MockEmploymentSessionService
 import models.employment.EmploymentDate
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {

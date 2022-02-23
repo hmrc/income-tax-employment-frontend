@@ -16,12 +16,12 @@
 
 package connectors
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import config.MockAppConfig
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.ConnectorIntegrationTest
 

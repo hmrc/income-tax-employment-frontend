@@ -16,12 +16,6 @@
 
 package controllers.benefits.accommodation
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import forms.AmountForm
 import models.benefits.AccommodationRelocationModel
 import org.jsoup.Jsoup
@@ -29,9 +23,14 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
-  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 
 class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -148,6 +147,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -178,6 +178,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -209,6 +210,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -344,6 +346,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -377,6 +380,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -410,6 +414,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -440,7 +445,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
               .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
               .copy(travelEntertainmentModel = None)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)),follow = false, welsh = user.isWelsh,
+            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
           }
 

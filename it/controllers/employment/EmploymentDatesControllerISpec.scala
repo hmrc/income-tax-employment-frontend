@@ -16,10 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.employment.EmploymentDatesForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 import org.jsoup.Jsoup
@@ -27,6 +23,9 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, employmentDatesUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -129,7 +128,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val leaveEmptyDayMonthError = "The date you left your employment must include a day and month"
     val leaveEmptyAllError = "Enter the date you left your employment"
     val invalidLeaveDateError = "The date you left your employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val leaveTooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
     val leaveTooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val leaveFutureDateError = "The date you left your employment must be in the past"
   }
@@ -158,7 +157,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val leaveEmptyDayMonthError = "The date you left your employment must include a day and month"
     val leaveEmptyAllError = "Enter the date you left your employment"
     val invalidLeaveDateError = "The date you left your employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val leaveTooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
     val leaveTooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val leaveFutureDateError = "The date you left your employment must be in the past"
   }
@@ -187,7 +186,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val leaveEmptyDayMonthError = "The date your client left their employment must include a day and month"
     val leaveEmptyAllError = "Enter the date your client left their employment"
     val invalidLeaveDateError = "The date your client left their employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val leaveTooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
     val leaveTooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val leaveFutureDateError = "The date your client left their employment must be in the past"
   }
@@ -216,7 +215,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val leaveEmptyDayMonthError = "The date your client left their employment must include a day and month"
     val leaveEmptyAllError = "Enter the date your client left their employment"
     val invalidLeaveDateError = "The date your client left their employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val leaveTooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
     val leaveTooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val leaveFutureDateError = "The date your client left their employment must be in the past"
   }
@@ -248,10 +247,10 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   private val employmentDetailsWithCessationDate = anEmploymentUserData.copy(
-      employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(
+    employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(
       cessationDateQuestion = Some(true),
       cessationDate = Some(s"$taxYearEOY-12-12"),
-        payrollId = Some("payrollId"))))
+      payrollId = Some("payrollId"))))
 
 
   ".show" should {
@@ -269,6 +268,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -307,7 +307,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
       }
 
       lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+      implicit def documentSupplier: () => Document = () => document
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
@@ -357,7 +358,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -378,7 +380,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             errorSummaryCheck(user.specificExpectedResults.get.startEmptyDayError, Selectors.startDaySelector)
             errorAboveElementCheck(user.specificExpectedResults.get.startEmptyDayError, Some("startAmount"))
-        }
+          }
 
           "the start month is empty" which {
             lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "01",
@@ -388,40 +390,41 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               EmploymentDatesForm.endAmountMonth -> "03",
               EmploymentDatesForm.endAmountYear -> taxYearEOY.toString)
 
-              lazy val result: WSResponse = {
-                dropEmploymentDB()
-                insertCyaData(employmentDetailsWithCessationDate)
-                authoriseAgentOrIndividual(user.isAgent)
-                urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-              }
-
-              "has the correct status" in {
-                result.status shouldBe BAD_REQUEST
-              }
-
-              lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
-
-              import Selectors._
-              import user.commonExpectedResults._
-
-              titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-              h1Check(user.specificExpectedResults.get.expectedH1)
-              captionCheck(expectedCaption(taxYearEOY))
-              textOnPageCheck(forExample, startForExampleSelector)
-              inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
-              inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
-              inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, taxYearEOY.toString)
-              inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "06")
-              inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "03")
-              inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, taxYearEOY.toString)
-              buttonCheck(expectedButtonText, continueButtonSelector)
-              formPostLinkCheck(employmentDatesUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-              welshToggleCheck(user.isWelsh)
-
-              errorSummaryCheck(user.specificExpectedResults.get.startEmptyMonthError, Selectors.startMonthSelector)
-              errorAboveElementCheck(user.specificExpectedResults.get.startEmptyMonthError, Some("startAmount"))
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentDetailsWithCessationDate)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            lazy val document = Jsoup.parse(result.body)
+
+            implicit def documentSupplier: () => Document = () => document
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            captionCheck(expectedCaption(taxYearEOY))
+            textOnPageCheck(forExample, startForExampleSelector)
+            inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
+            inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
+            inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, taxYearEOY.toString)
+            inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "06")
+            inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "03")
+            inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, taxYearEOY.toString)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(employmentDatesUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.startEmptyMonthError, Selectors.startMonthSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.startEmptyMonthError, Some("startAmount"))
+          }
 
           "the start year is empty" which {
             lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "01",
@@ -443,7 +446,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -486,7 +490,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -529,7 +534,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -572,7 +578,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -615,7 +622,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -658,7 +666,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -701,7 +710,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -744,7 +754,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -787,7 +798,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -830,7 +842,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -873,7 +886,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -920,7 +934,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -944,7 +959,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             errorAboveElementCheck(user.specificExpectedResults.get.startFutureDateError, Some("startAmount"))
           }
 
-         "the start date is after the leave date" which {
+          "the start date is after the leave date" which {
 
             lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "04",
               EmploymentDatesForm.startAmountMonth -> "04",
@@ -961,7 +976,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1011,7 +1027,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1054,7 +1071,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1097,7 +1115,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1140,7 +1159,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1183,7 +1203,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1226,7 +1247,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1269,7 +1291,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1312,7 +1335,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1355,7 +1379,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1398,7 +1423,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1441,7 +1467,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1484,7 +1511,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1527,7 +1555,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1571,7 +1600,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

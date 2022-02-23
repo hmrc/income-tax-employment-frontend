@@ -16,12 +16,12 @@
 
 package services.benefits
 
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import config.MockEmploymentSessionService
 import models.User
 import models.benefits.UtilitiesAndServicesModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {

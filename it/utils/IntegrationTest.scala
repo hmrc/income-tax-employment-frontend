@@ -18,7 +18,6 @@ package utils
 
 import actions.AuthorisedAction
 import akka.actor.ActorSystem
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
@@ -37,6 +36,7 @@ import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers.OK
 import play.api.{Application, Environment, Mode}
 import services.AuthService
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved

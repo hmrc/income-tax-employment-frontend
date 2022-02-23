@@ -16,11 +16,11 @@
 
 package services.benefits
 
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import config.MockEmploymentSessionService
 import models.benefits.CarVanFuelModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class FuelServiceSpec extends UnitTest with MockEmploymentSessionService {

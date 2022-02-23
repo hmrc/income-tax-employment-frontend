@@ -21,6 +21,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.UnitTest
 
 class AppConfigSpec extends UnitTest {
+
   private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   private val appUrl = "http://localhost:9308"
   private val appConfig = new AppConfig(mockServicesConfig)

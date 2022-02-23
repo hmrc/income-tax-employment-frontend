@@ -16,12 +16,12 @@
 
 package models
 
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentDataBuilder.anEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.employment.PayBuilder.aPay
 import models.IncomeTaxUserData.excludePensionIncome
 import models.employment.AllEmploymentData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.PayBuilder.aPay
 import utils.UnitTest
 
 class IncomeTaxUserDataSpec extends UnitTest {

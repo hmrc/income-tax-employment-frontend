@@ -16,12 +16,7 @@
 
 package controllers.employment
 
-import builders.models.benefits.BenefitsBuilder.aBenefits
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import common.{EmploymentSection, SessionValues}
-import config.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService}
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -31,6 +26,11 @@ import models.employment.createUpdate._
 import play.api.http.Status._
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
+import support.builders.models.benefits.BenefitsBuilder.aBenefits
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.mocks.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
@@ -253,8 +253,8 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS,Left(JourneyNotFinished))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Left(JourneyNotFinished))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }

@@ -17,8 +17,9 @@
 package utils
 
 import com.codahale.metrics.SharedMetricRegistries
-import config.{AppConfig, MockAppConfig}
+import config.AppConfig
 import models.mongo.TextAndKey
+import support.mocks.MockAppConfig
 import utils.TypeCaster.Converter.stringLoader
 
 import java.security.InvalidAlgorithmParameterException

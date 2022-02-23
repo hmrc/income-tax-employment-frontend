@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import akka.actor.ActorSystem
 import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
-import config.{AppConfig, ErrorHandler, MockAppConfig}
+import config.{AppConfig, ErrorHandler}
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
@@ -33,6 +33,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
 import services.AuthService
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval

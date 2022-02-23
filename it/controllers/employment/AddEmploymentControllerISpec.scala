@@ -16,8 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import common.{SessionValues, UUID}
 import forms.YesNoForm
 import models.IncomeTaxUserData
@@ -27,6 +25,7 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import utils.PageUrls.{addEmploymentUrl, employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

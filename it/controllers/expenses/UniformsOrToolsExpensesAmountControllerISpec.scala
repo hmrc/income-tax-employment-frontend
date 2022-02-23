@@ -16,11 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.AmountForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -29,9 +24,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import utils.PageUrls.{checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesUrl, uniformsClothesToolsExpensesAmountUrl, uniformsWorkClothesToolsExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesUrl,
-  uniformsClothesToolsExpensesAmountUrl, uniformsWorkClothesToolsExpensesUrl}
 
 class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -41,10 +40,10 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   val maxLimit: String = "100000000000"
   val amountField = "#amount"
   val amountFieldName = "amount"
-  
+
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
-  
+
   object Selectors {
     val formSelector = "#main-content > div > div > form"
     val wantToClaimSelector: String = "#previous-amount"
@@ -160,13 +159,14 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                          anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = None))))
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = None))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -193,13 +193,14 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))))
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -232,6 +233,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -294,7 +296,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           authoriseAgentOrIndividual(user.isAgent)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                      anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false)))))
+            anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false)))))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -332,6 +334,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -366,6 +369,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -400,6 +404,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -434,8 +439,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                      ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
-                        flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))))
+            ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
+              flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))))
           urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -460,8 +465,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                      ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
-                        flatRateJobExpensesQuestion = None, isUsingCustomerData = true))))
+            ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
+              flatRateJobExpensesQuestion = None, isUsingCustomerData = true))))
           urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }

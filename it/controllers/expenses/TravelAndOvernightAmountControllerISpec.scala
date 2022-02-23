@@ -16,14 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
-import builders.models.expenses.ExpensesBuilder.anExpenses
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.AmountForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -32,8 +24,16 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, travelAmountExpensesUrl, uniformsWorkClothesToolsExpensesUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -46,7 +46,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   private def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
     ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
-  
+
   object Selectors {
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
@@ -160,6 +160,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -183,11 +184,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                          ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))))
+              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))))
             urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -214,7 +216,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))))
+          anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))))
         urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -243,7 +245,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  anExpensesCYAModel))
+          anExpensesCYAModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(fullUrl(travelAmountExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -272,6 +274,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -304,6 +307,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -336,6 +340,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -401,9 +406,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  anExpensesCYAModel.copy(expensesViewModel(Some(true)))))
+          anExpensesCYAModel.copy(expensesViewModel(Some(true)))))
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))))
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -425,7 +430,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  ExpensesCYAModel(expensesViewModel(None))))
+          ExpensesCYAModel(expensesViewModel(None))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

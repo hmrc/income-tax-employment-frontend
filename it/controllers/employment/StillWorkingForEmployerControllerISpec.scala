@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import forms.YesNoForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -24,8 +23,9 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import utils.PageUrls.{employmentStartDateUrl, fullUrl, howMuchPayUrl, overviewUrl, stillWorkingForUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -36,7 +36,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
   val cessationDate: Option[String] = Some("2021-01-01")
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
                cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =
@@ -126,6 +126,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -149,12 +150,13 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("2021-01-01"),
-                          cessationDateQuestion = Some(false), hmrc = true)))
+              cessationDateQuestion = Some(false), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -178,12 +180,13 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
-                          cessationDateQuestion = Some(true), hmrc = true)))
+              cessationDateQuestion = Some(true), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -212,6 +215,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -235,12 +239,13 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = cessationDate,
-                          cessationDateQuestion = None, hmrc = true)))
+              cessationDateQuestion = None, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -300,7 +305,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
-                          cessationDateQuestion = None, hmrc = true)))
+              cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -325,7 +330,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
-                          cessationDateQuestion = None, hmrc = true)))
+              cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -351,7 +356,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None, cessationDate = cessationDate,
-                          cessationDateQuestion = None, hmrc = true)))
+              cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -387,7 +392,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

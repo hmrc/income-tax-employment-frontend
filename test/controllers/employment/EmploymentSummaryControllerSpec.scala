@@ -17,11 +17,11 @@
 package controllers.employment
 
 import common.SessionValues
-import config.MockEmploymentSessionService
 import models.employment._
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentSummaryView
 

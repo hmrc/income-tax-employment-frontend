@@ -16,11 +16,11 @@
 
 package connectors
 
-import config.MockAppConfig
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.libs.json.{JsString, Writes}
 import play.mvc.Http.Status._
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.ConnectorIntegrationTest
 

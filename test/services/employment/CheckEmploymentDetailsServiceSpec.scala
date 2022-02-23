@@ -17,9 +17,9 @@
 package services.employment
 
 import audit._
-import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTest
 

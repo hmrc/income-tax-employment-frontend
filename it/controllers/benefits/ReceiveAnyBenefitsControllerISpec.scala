@@ -16,8 +16,6 @@
 
 package controllers.benefits
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import common.SessionValues
 import forms.YesNoForm
 import models.benefits.BenefitsViewModel
@@ -26,6 +24,8 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import utils.PageUrls.{carVanFuelBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

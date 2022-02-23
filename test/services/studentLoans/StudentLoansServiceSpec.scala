@@ -16,9 +16,9 @@
 
 package services.studentLoans
 
-import builders.models.employment.StudentLoansBuilder.aStudentLoans
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithStudentLoans}
-import config.MockEmploymentSessionService
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithStudentLoans}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService {

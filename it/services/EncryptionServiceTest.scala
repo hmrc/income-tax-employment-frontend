@@ -16,8 +16,8 @@
 
 package services
 
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.mongo.EncryptedEmploymentUserData
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.IntegrationTest
 
 class EncryptionServiceTest extends IntegrationTest {
