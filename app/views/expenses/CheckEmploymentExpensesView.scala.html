@@ -17,12 +17,14 @@
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
+@import controllers.expenses.routes._
 @import utils.ViewUtils.summaryListRow
 @import models.expenses.ExpensesViewModel
 @import utils.ViewUtils.bigDecimalCurrency
 
 @this(
         layout: Layout,
+        formWithCSRF: FormWithCSRF,
         button: Button,
         heading: Heading,
         govukSummaryList: GovukSummaryList,
@@ -32,76 +34,90 @@
 
 @(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@mapToYesNo(value: Boolean) = @{
-    if(value){messages("common.yes")} else {messages("common.no")}
-}
+    @hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(request.user.isAgent) "agent" else "individual"}"))}
 
-@layout(pageTitle = messages(s"checkYourExpenses.heading.${if(request.user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
+@layout(
+    pageTitle = messages(s"checkYourExpenses.heading.${if(request.user.isAgent) "agent" else "individual"}"),
+    taxYear = Some(taxYear),
+    isAgent = request.user.isAgent
+) {
     @heading(
         messages(s"checkYourExpenses.heading.${if(request.user.isAgent) "agent" else "individual"}"),
-        Some(messages(s"expenses.caption", (taxYear - 1).toString, taxYear.toString)),
-        "govuk-!-margin-bottom-3"
+        Some(messages("expenses.caption", (taxYear - 1).toString, taxYear.toString)),
+        if (isInYear) "govuk-!-margin-bottom-3" else "govuk-!-margin-bottom-5"
     )
 
-    <p class="govuk-body">
-        @messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")
-    </p>
+    @if(!isInYear && !expenses.isUsingCustomerData){
+        <p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    } else {
+        <p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")</p>
 
-    @{
-        govukInsetText(InsetText(
-            content = Text(messages(s"checkYourExpenses.inYearInfo.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))
-        ))
+        @{govukInsetText(InsetText(content = Text(messages(s"checkYourExpenses.inYearInfo.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))))}
     }
 
     @{
-        def toSummaryListRow(key: String, value: String): SummaryListRow = {
-            summaryListRow(
-                HtmlContent(key),
-                HtmlContent(value),
-                keyClasses = "govuk-!-width-two-thirds",
-                valueClasses = "govuk-!-width-one-third right-align",
-                actions = Seq()
-            )
-        }
+        def toSummaryListRow(
+            messageKey: String,
+            value: String,
+            optRoute: Option[Call]
+        ): SummaryListRow = summaryListRow(
+            HtmlContent(messages(messageKey)),
+            HtmlContent(value),
+            keyClasses = "govuk-!-width-two-thirds",
+            valueClasses = if (isInYear) "govuk-!-width-one-third right-align" else "govuk-!-width-one-third",
+            actions = optRoute.map(route => Seq((route, messages("common.change"), hiddenText(messageKey)))).getOrElse(Seq())
+        )
+
+        def mapToYesNo(value: Boolean) = if(value){messages("common.yes")} else {messages("common.no")}
 
         govukSummaryList(
             SummaryList(
                 Seq(
-                    Some(toSummaryListRow(messages("checkYourExpenses.employmentExpenses"), if(expenses.claimingEmploymentExpenses){messages("common.yes")} else {messages("common.no")})),
-                    expenses.jobExpensesQuestion.map{
-                        question => toSummaryListRow(messages("checkYourExpenses.jobExpensesQuestion"), mapToYesNo(question))
-                    },
-                    expenses.jobExpenses.map{
-                        amount => toSummaryListRow(messages("checkYourExpenses.jobExpensesAmount"), bigDecimalCurrency(amount.toString))
-                    },
-                    expenses.flatRateJobExpensesQuestion.map{
-                        question => toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesQuestion"), mapToYesNo(question))
-                    },
-                    expenses.flatRateJobExpenses.map{
-                        amount => toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesAmount"), bigDecimalCurrency(amount.toString))
-                    },
-                    expenses.professionalSubscriptionsQuestion.map{
-                        question => toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsQuestion"), mapToYesNo(question))
-                    },
-                    expenses.professionalSubscriptions.map{
-                        amount => toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsAmount"), bigDecimalCurrency(amount.toString))
-                    },
-                    expenses.otherAndCapitalAllowancesQuestion.map{
-                        question => toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesQuestion"), mapToYesNo(question))
-                    },
-                    expenses.otherAndCapitalAllowances.map{
-                        amount => toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesAmount"), bigDecimalCurrency(amount.toString))
-                    }
-                ).collect { case Some(summaryListRow) => summaryListRow }
-            )
-        )
+                    Some(toSummaryListRow("checkYourExpenses.employmentExpenses", mapToYesNo(expenses.claimingEmploymentExpenses), if (isInYear) None else Some(EmploymentExpensesController.submit(taxYear)))),
+                    expenses.jobExpensesQuestion.map(question => {
+                        val optRoute = if (isInYear) None else Some(BusinessTravelOvernightExpensesController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.jobExpensesQuestion", mapToYesNo(question), optRoute)
+                    }),
+                    expenses.jobExpenses.map(amount => {
+                        val optRoute = if (isInYear) None else Some(TravelAndOvernightAmountController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.jobExpensesAmount", bigDecimalCurrency(amount.toString), optRoute)
+                    }),
+                    expenses.flatRateJobExpensesQuestion.map(question => {
+                        val optRoute = if (isInYear) None else Some(UniformsOrToolsExpensesController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.flatRateJobExpensesQuestion", mapToYesNo(question), optRoute)
+                    }),
+                    expenses.flatRateJobExpenses.map(amount => {
+                        val optRoute = if (isInYear) None else Some(UniformsOrToolsExpensesAmountController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.flatRateJobExpensesAmount", bigDecimalCurrency(amount.toString), optRoute)
+                    }),
+                    expenses.professionalSubscriptionsQuestion.map(question => {
+                        val optRoute = if (isInYear) None else Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.professionalSubscriptionsQuestion", mapToYesNo(question), optRoute)
+                    }),
+                    expenses.professionalSubscriptions.map(amount => {
+                        val optRoute = if (isInYear) None else Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.professionalSubscriptionsAmount", bigDecimalCurrency(amount.toString), optRoute)
+                    }),
+                    expenses.otherAndCapitalAllowancesQuestion.map(question => {
+                        val optRoute = if (isInYear) None else Some(OtherEquipmentController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", mapToYesNo(question), optRoute)
+                    }),
+                    expenses.otherAndCapitalAllowances.map(amount => {
+                        val optRoute = if (isInYear) None else Some(OtherEquipmentAmountController.show(taxYear))
+                        toSummaryListRow("checkYourExpenses.otherAndCapitalAllowancesAmount", bigDecimalCurrency(amount.toString), optRoute)
+                    })
+                ).flatten))
+
     }
 
     @if(isInYear) {
         @button("common.returnToPayeEmployment", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-                    href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
+            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
+    } else {
+        @formWithCSRF(action = controllers.expenses.routes.CheckEmploymentExpensesController.submit(taxYear)) {
+            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        }
     }
-
 }
 
 @{

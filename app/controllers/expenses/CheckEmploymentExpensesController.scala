@@ -32,14 +32,13 @@ import services.expenses.CheckEmploymentExpensesService
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
-import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
+import views.html.expenses.CheckEmploymentExpensesView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
-                                                  checkEmploymentExpensesViewEOY: CheckEmploymentExpensesViewEOY,
                                                   createOrAmendExpensesService: CreateOrAmendExpensesService,
                                                   employmentSessionService: EmploymentSessionService,
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
@@ -135,11 +134,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                                         isUsingCustomerData: Boolean,
                                         cya: Option[ExpensesViewModel] = None)(implicit request: AuthorisationRequest[_]): Result = {
     checkEmploymentExpensesService.sendViewEmploymentExpensesAudit(request.user, taxYear, expenses)
-    if (isInYear) {
-      Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
-    } else {
-      Ok(checkEmploymentExpensesViewEOY(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
-    }
+    Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
   }
 }
 

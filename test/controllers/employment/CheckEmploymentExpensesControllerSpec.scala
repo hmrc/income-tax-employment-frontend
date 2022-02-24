@@ -27,7 +27,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTestWithApp
-import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
+import views.html.expenses.CheckEmploymentExpensesView
 
 import scala.concurrent.Future
 
@@ -38,12 +38,10 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
   with MockAuditService {
 
   private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
-  private lazy val viewEOY: CheckEmploymentExpensesViewEOY = app.injector.instanceOf[CheckEmploymentExpensesViewEOY]
 
   private lazy val controller = new CheckEmploymentExpensesController()(
     authorisedAction,
     view,
-    viewEOY,
     createOrAmendExpensesService,
     mockEmploymentSessionService,
     mockCheckEmploymentExpensesService,
