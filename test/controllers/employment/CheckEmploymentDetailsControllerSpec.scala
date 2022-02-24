@@ -16,12 +16,16 @@
 
 package controllers.employment
 
-import common.SessionValues
-import config.{MockAuditService, MockCheckEmploymentDetailsService, MockEmploymentSessionService, MockNrsService}
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import common.{EmploymentSection, SessionValues}
+import config._
+import controllers.employment.routes._
 import models.employment._
+import models.employment.createUpdate._
 import play.api.http.Status._
-import play.api.mvc.Result
-import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
+import play.api.mvc.{Request, Result}
 import utils.UnitTestWithApp
 import views.html.employment.CheckEmploymentDetailsView
 
@@ -34,20 +38,39 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   with MockNrsService {
 
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
-  private lazy val controller = new CheckEmploymentDetailsController()(
+  private def controller(mimic: Boolean = false) = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     view,
     authorisedAction,
     inYearAction,
-    mockAppConfig,
+    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic),
     mockEmploymentSessionService,
     mockCheckEmploymentDetailsService,
     ec,
     mockErrorHandler
   )
   private val taxYear = mockAppConfig.defaultTaxYear
-  private val employmentId = "223/AB12399"
+  private val employmentId = "223AB12399"
 
+
+  private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+    None,
+    Some(
+      CreateUpdateEmployment(
+        anEmploymentUserData.employment.employmentDetails.employerRef,
+        anEmploymentUserData.employment.employmentDetails.employerName,
+        anEmploymentUserData.employment.employmentDetails.startDate.get
+      )
+    ),
+    Some(
+      CreateUpdateEmploymentData(
+        pay = CreateUpdatePay(
+          anEmploymentUserData.employment.employmentDetails.taxablePayToDate.get,
+          anEmploymentUserData.employment.employmentDetails.totalTaxToDate.get
+        )
+      )
+    )
+  )
 
   ".show" should {
 
@@ -69,7 +92,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
               isUsingCustomerData = false
             ), taxYear, isInYear = true, isSingleEmployment = true
           )))
-          controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
+          controller().show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
         }
@@ -83,11 +106,91 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+          controller().show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+      }
+    }
+  }
+
+  ".submit" should {
+    "return to employment information" when {
+      "nothing to update" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Left(NothingToUpdate))
+
+          controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe EmployerInformationController.show(taxYear, employmentId).url
+      }
+    }
+    "return to CYA show method" when {
+      "the journey is not finished" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Left(JourneyNotFinished))
+
+          controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CheckEmploymentDetailsController.show(taxYear, employmentId).url
+      }
+    }
+    "return an error page" when {
+      "submission fails" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Left(InternalServerError))
+
+          controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "continue to benefits section" when {
+      "a new employment is created" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorBenefits = false))))
+
+          controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, "id").url
+      }
+      "a new employment is created and mimic api calls is on" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)),Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_DETAILS,Right(createUpdateEmploymentRequest))
+          mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorBenefits = false))))
+          mockCreateOrUpdateSessionData(Redirect(CheckYourBenefitsController.show(taxYear, "id").url))
+          (mockErrorHandler.internalServerError()(_: Request[_])).expects(*).returns(InternalServerError)
+
+          controller(true).submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, "id").url
       }
     }
   }

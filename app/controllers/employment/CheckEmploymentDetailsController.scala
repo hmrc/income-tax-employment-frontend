@@ -21,10 +21,11 @@ import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
+import javax.inject.Inject
 import models.AuthorisationRequest
 import models.employment._
-import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.mongo.EmploymentCYAModel
+import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -35,7 +36,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -93,46 +93,73 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
-        cya match {
-          case Some(cya) =>
-            employmentSessionService.createModelOrReturnResult(request.user, cya, prior, taxYear, EmploymentSection.EMPLOYMENT_DETAILS) match {
-              case Left(result) => Future.successful(result)
-              case Right(model) => employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
-                case Left(result) => Future.successful(result)
-                case Right(returnedEmploymentId) =>
-                  checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-                  if (appConfig.nrsEnabled) {
-                    checkEmploymentDetailsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
-                  }
-                  employmentSessionService.clear(request.user, taxYear, employmentId).map {
-                    case Left(_) => errorHandler.internalServerError()
-                    case Right(_) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId)
-                  }
-              }
-            }
-          case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+
+    employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
+      case Left(result) => Future.successful(result)
+      case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
+
+        employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_DETAILS) match {
+          case Left(NothingToUpdate) =>
+            logger.info("[CheckEmploymentDetailsController][submit] Nothing to update for employment details. Returning to employer information.")
+            Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
+          case Left(JourneyNotFinished) =>
+            //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
+            Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+
+          case Right(model) =>
+            employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNRS)).flatMap {
+            case Left(result) => Future.successful(result)
+            case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId, cya)
+          }
         }
-      }
+
+      case _ =>
+        logger.info("[CheckEmploymentDetailsController][submit] User has no cya data in order to submit. Redirecting to cya page show method.")
+        Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
     }
   }
 
-  def getResultFromResponse(returnedEmploymentId: Option[String],
-                            taxYear: Int,
-                            model: CreateUpdateEmploymentRequest,
-                            hasPriorBenefits: Boolean,
-                            employmentId: String)(implicit request: AuthorisationRequest[_]): Result = {
+  private def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
+                  prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
+
+    implicit val implicitRequest: AuthorisationRequest[_] = request
+
+    checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
+    if (appConfig.nrsEnabled) {
+      checkEmploymentDetailsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
+    }
+  }
+
+  private def getResultFromResponse(returnedEmploymentId: Option[String],
+                                    taxYear: Int,
+                                    model: CreateUpdateEmploymentRequest,
+                                    hasPriorBenefits: Boolean,
+                                    employmentId: String,
+                                    cya: EmploymentUserData)(implicit request: AuthorisationRequest[_]): Future[Result] = {
+    val log = "[CheckEmploymentDetailsController][getResultFromResponse]"
     returnedEmploymentId match {
       case Some(employmentId) =>
         if (hasPriorBenefits || model.hmrcEmploymentIdToIgnore.isDefined) {
-          Redirect(EmployerInformationController.show(taxYear, employmentId))
+          logger.info(s"$log An employment id was created but was based on an existing employment. Returning to employer information page.")
+          Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
         } else {
-          Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+          val result = Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
             .removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
             .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
+
+          logger.info(s"$log User has created a new employment. Continuing to benefits section.")
+          if(appConfig.mimicEmploymentAPICalls){
+            logger.info(s"$log [mimicEmploymentAPICalls] Saving expected CYA data.")
+            employmentSessionService.createOrUpdateSessionData(
+              request.user, taxYear, employmentId, cya.employment, true, false, false
+            )(errorHandler.internalServerError())(result)
+          } else {
+            Future.successful(result)
+          }
         }
-      case None => Redirect(EmployerInformationController.show(taxYear, employmentId))
+      case None =>
+        logger.info(s"$log User made an update to an existing employment. Returning to employer information page.")
+        Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
     }
   }
 

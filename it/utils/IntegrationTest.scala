@@ -70,7 +70,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
-  def config: Map[String, String] = Map(
+  def config(mimicEmploymentAPICalls: Boolean = false): Map[String, String] = Map(
     "auditing.enabled" -> "false",
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
     "microservice.services.income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
@@ -83,7 +83,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-nrs-proxy.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
     "taxYearErrorFeatureSwitch" -> "false",
-    "useEncryption" -> "true"
+    "useEncryption" -> "true",
+    "mimicEmploymentAPICalls" -> s"$mimicEmploymentAPICalls"
   )
 
   def configWithInvalidEncryptionKey: Map[String, String] = Map(
@@ -110,14 +111,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "metrics.enabled" -> "false"
   )
 
-  def configContentFeatureSwitchOff: Map[String, String] = config +
+  def configContentFeatureSwitchOff: Map[String, String] = config() +
     ("feature-switch.studentLoans" -> "false")
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
-    .configure(config)
+    .configure(config())
     .build
 
   lazy val appWithFakeExternalCall: Application = new GuiceApplicationBuilder()
@@ -132,6 +133,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   lazy val appWithFeatureSwitchesOff: Application = GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(configContentFeatureSwitchOff)
+    .build()
+
+  lazy val appWithMimicApiCallsOn: Application = GuiceApplicationBuilder()
+    .in(Environment.simple(mode = Mode.Dev))
+    .configure(config(true))
     .build()
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]

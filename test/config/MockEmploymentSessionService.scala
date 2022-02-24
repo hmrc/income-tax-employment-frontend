@@ -16,9 +16,11 @@
 
 package config
 
+import common.EmploymentSection
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models._
-import models.employment.AllEmploymentData
+import models.employment.createUpdate.{CreateUpdateEmploymentRequest, CreateUpdateEmploymentRequestError}
+import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import org.scalamock.handlers._
 import org.scalamock.scalatest.MockFactory
@@ -42,11 +44,21 @@ trait MockEmploymentSessionService extends MockFactory {
       .anyNumberOfTimes()
   }
 
+  @deprecated("should move to other retrieval methods like mockGetOptionalCYAAndPriorForEndOfYear")
   def mockGetAndHandle(taxYear: Int, result: Result): CallHandler6[Int, String, Boolean, (Option[EmploymentUserData],
     Option[AllEmploymentData]) => Future[Result], AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
     (mockEmploymentSessionService.getAndHandle(_: Int, _: String, _: Boolean)
     (_: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])(_: AuthorisationRequest[_], _: HeaderCarrier))
       .expects(taxYear, *, *, *, *, *)
+      .returns(Future.successful(result))
+      .anyNumberOfTimes()
+  }
+
+  def mockGetOptionalCYAAndPriorForEndOfYear(taxYear: Int, result: Either[Result,OptionalCyaAndPrior]): CallHandler4[Int, String,
+    AuthorisationRequest[_], HeaderCarrier, Future[Either[Result, OptionalCyaAndPrior]]] = {
+    (mockEmploymentSessionService.getOptionalCYAAndPriorForEndOfYear(_: Int, _: String)
+    (_: AuthorisationRequest[_], _: HeaderCarrier))
+      .expects(taxYear, *, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
   }
@@ -89,6 +101,39 @@ trait MockEmploymentSessionService extends MockFactory {
       mockEmploymentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, employment))
       .expects(*, taxYear, employmentId, *, employmentCYAModel)
       .returns(Future(result))
+      .once()
+  }
+
+  def mockCreateOrUpdateSessionData[Result](result: Result): CallHandler9[User, Int, String, EmploymentCYAModel, Boolean, Boolean, Boolean, Result, Result, Future[Result]] = {
+    (mockEmploymentSessionService.createOrUpdateSessionData[Result](_: User,
+      _: Int,
+      _: String,
+      _: EmploymentCYAModel,
+      _: Boolean,
+      _: Boolean,
+      _: Boolean)
+      (_: Result)(_: Result))
+      .expects(*, *, *, *, *, *, *, *, *)
+      .returns(Future.successful(result))
+      .once()
+  }
+
+  def mockCreateModelOrReturnError(section: EmploymentSection.Value, result: Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]): CallHandler4[User,
+    EmploymentUserData, Option[AllEmploymentData], EmploymentSection.Value, Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]] = {
+    (mockEmploymentSessionService.createModelOrReturnError(_: User, _: EmploymentUserData, _: Option[AllEmploymentData], _: EmploymentSection.Value))
+      .expects(*, *, *, section)
+      .returns(result)
+      .once()
+  }
+
+  def mockSubmitAndClear(taxYear: Int, employmentId: String, model: CreateUpdateEmploymentRequest, result: Either[Result, (Option[String], EmploymentUserData)]): CallHandler8[Int,
+    String, CreateUpdateEmploymentRequest, EmploymentUserData, Option[AllEmploymentData], Option[(String, Int, CreateUpdateEmploymentRequest,
+    Option[AllEmploymentData], AuthorisationRequest[_]) => Unit], AuthorisationRequest[_], HeaderCarrier, Future[Either[Result, (Option[String], EmploymentUserData)]]] = {
+    (mockEmploymentSessionService.submitAndClear(_: Int, _: String, _: CreateUpdateEmploymentRequest, _: EmploymentUserData,
+      _: Option[AllEmploymentData],
+      _: Option[(String, Int, CreateUpdateEmploymentRequest, Option[AllEmploymentData], AuthorisationRequest[_])=> Unit])(_: AuthorisationRequest[_], _: HeaderCarrier))
+      .expects(taxYear, employmentId, model, *, *, *, * ,*)
+      .returns(Future.successful(result))
       .once()
   }
 

@@ -16,24 +16,24 @@
 
 package services.studentLoans
 
-import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
-import models.AuthorisationRequest
+import javax.inject.Inject
 import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.{AuthorisationRequest, User}
 import play.api.Logging
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.SessionHelper
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessionService,
                                        appConfig: AppConfig,
                                        errorHandler: ErrorHandler,
-                                       implicit val ec: ExecutionContext) extends Logging {
+                                       implicit val ec: ExecutionContext) extends Logging with SessionHelper {
 
   private[studentLoans] def extractEmploymentInformation(
                                                           allEmploymentData: AllEmploymentData,
@@ -95,29 +95,14 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
     }
   }
 
-  def submitStudentLoans(taxYear: Int, employmentId: String, result: Option[String] => Result)
-                        (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+  //test only for when mimicEmploymentAPICalls is true
+  def createOrUpdateSessionData(employmentId: String,
+                                cya: EmploymentUserData,
+                                taxYear: Int,
+                                user: User)(onSuccess: Result)(implicit request: AuthorisationRequest[_]): Future[Result] = {
 
-    employmentSessionService.getAndHandle(taxYear, employmentId) { case (employment, allEmploymentData) =>
-      employment.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))(employmentData => {
-
-        employmentSessionService.createModelOrReturnResult(request.user, employmentData, allEmploymentData, taxYear, EmploymentSection.STUDENT_LOANS) match {
-
-          case Left(result) => Future.successful(result)
-          case Right(model) =>
-
-            employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
-              case Left(result) => Future.successful(result)
-              case Right(returnedEmploymentId) =>
-
-                employmentSessionService.clear(request.user, taxYear, employmentId).map {
-                  case Left(_) => errorHandler.internalServerError()
-                  case Right(_) => result(returnedEmploymentId)
-                }
-            }
-        }
-      })
-    }
+    employmentSessionService.createOrUpdateSessionData(
+      user, taxYear, employmentId, cya.employment, true, true, true
+    )(errorHandler.internalServerError())(onSuccess)
   }
-
 }

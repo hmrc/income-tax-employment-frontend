@@ -16,7 +16,6 @@
 
 package controllers.studentLoans
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import common.SessionValues
 import models.IncomeTaxUserData
 import models.employment._
@@ -85,6 +84,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     val buttonText: String
   }
 
+  val inYear = DateTime.now().year().get() + 1
+
   object ExpectedResultsEnglishEOY extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val taxYear: Int = 2021
@@ -110,7 +111,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
   object ExpectedResultsEnglishInYear extends CommonExpectedResults {
     override lazy val isEndOfYear: Boolean = false
-    override lazy val taxYear: Int = DateTime.now().year().get() + 1
+    override lazy val taxYear: Int = inYear
     override lazy val hasPrior: Boolean = false
 
     override lazy val title: String = "Check your student loan repayment details"
@@ -157,7 +158,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
   object ExpectedResultsEnglishInYearAgent extends CommonExpectedResults {
     override lazy val isEndOfYear: Boolean = false
-    override lazy val taxYear: Int = DateTime.now().year().get() + 1
+    override lazy val taxYear: Int = inYear
     override lazy val hasPrior: Boolean = false
 
     override lazy val title: String = "Check your client’s student loan repayment details"
@@ -397,10 +398,9 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
         result.header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
-
     }
 
-    userScenarios.foreach { scenarioData =>
+    userScenarios.filter(_.commonExpectedResults.taxYear != inYear).foreach { scenarioData =>
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"

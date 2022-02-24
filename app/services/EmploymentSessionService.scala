@@ -16,12 +16,14 @@
 
 package services
 
+import java.util.NoSuchElementException
+
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
+import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
-import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
-import controllers.studentLoans.routes.StudentLoansCYAController
+import javax.inject.{Inject, Singleton}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
@@ -31,14 +33,13 @@ import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Clock
+import utils.{Clock, InYearUtil}
 
-import java.util.NoSuchElementException
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -52,6 +53,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          errorHandler: ErrorHandler,
                                          createUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector,
                                          clock: Clock,
+                                         inYearUtil: InYearUtil,
                                          implicit val ec: ExecutionContext) extends Logging {
 
   def findPreviousEmploymentUserData(user: User, taxYear: Int, overrideRedirect: Option[Result] = None)
@@ -211,24 +213,16 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def createModelOrReturnResult(user: User,
+  def createModelOrReturnError(user: User,
                                 cya: EmploymentUserData,
                                 prior: Option[AllEmploymentData],
-                                taxYear: Int,
-                                section: EmploymentSection.Value): Either[Result, CreateUpdateEmploymentRequest] = {
-    val notFinishedRedirect = {
-      Left(section match {
-        case common.EmploymentSection.EMPLOYMENT_DETAILS => Redirect(CheckEmploymentDetailsController.show(taxYear, cya.employmentId))
-        case common.EmploymentSection.EMPLOYMENT_BENEFITS => Redirect(CheckYourBenefitsController.show(taxYear, cya.employmentId))
-        case common.EmploymentSection.STUDENT_LOANS => Redirect(StudentLoansCYAController.show(taxYear, cya.employmentId))
-      })
-    }
+                                section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
     cyaAndPriorToCreateUpdateEmploymentRequest(user, cya, prior, section) match {
-      case Left(NothingToUpdate) => Left(Redirect(EmployerInformationController.show(taxYear, cya.employmentId)))
-      case Left(JourneyNotFinished) =>
-        //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
-        notFinishedRedirect
+      case Left(NothingToUpdate) =>
+        logger.info("[createModelOrReturnResult] Nothing to update as there have been no updates to data.")
+        Left(NothingToUpdate)
+      case Left(JourneyNotFinished) => Left(JourneyNotFinished)
       case Right(model) => Right(model)
     }
   }
@@ -239,7 +233,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                                          section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
     val hmrcEmploymentIdToIgnore: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
-    val customerEmploymentId: Option[String] = prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
+    val customerEmploymentId: Option[String] = {
+
+      if(appConfig.mimicEmploymentAPICalls && section != EmploymentSection.EMPLOYMENT_DETAILS){
+        Some(cya.employmentId)
+      } else {
+        prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
+      }
+    }
 
     Try {
       val employment = formCreateUpdateEmployment(cya, prior, section)
@@ -269,7 +270,9 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         logger.info(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
           s"Data to be submitted matched the prior data exactly. Nothing to update. SessionId: ${user.sessionId}")
         Left(NothingToUpdate)
-      case Right(model) => Right(model)
+      case Right(model) =>
+        logger.info(s"model - ${Json.prettyPrint(Json.toJson(model))}")
+        Right(model)
     }
   }
 
@@ -278,27 +281,35 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          section: EmploymentSection.Value): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment] = {
     val priorEmployment = prior.flatMap(_.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource))
 
+    lazy val cyaCreateUpdateEmployment = {
+      CreateUpdateEmployment(
+        cya.employment.employmentDetails.employerRef,
+        cya.employment.employmentDetails.employerName,
+        cya.employment.employmentDetails.startDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+        cya.employment.employmentDetails.cessationDate,
+        cya.employment.employmentDetails.payrollId
+      )
+    }
+
     lazy val newCreateUpdateEmployment = {
       if (section == EmploymentSection.EMPLOYMENT_DETAILS) {
-        CreateUpdateEmployment(
-          cya.employment.employmentDetails.employerRef,
-          cya.employment.employmentDetails.employerName,
-          cya.employment.employmentDetails.startDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
-          cya.employment.employmentDetails.cessationDate,
-          cya.employment.employmentDetails.payrollId
-        )
+        cyaCreateUpdateEmployment
       } else {
-        priorEmployment.fold {
-          throw new NoSuchElementException("A prior employment is needed to make amendments to employment sections after the employment details section")
-        } {
-          priorEmployment =>
-            CreateUpdateEmployment(
-              priorEmployment.employerRef,
-              priorEmployment.employerName,
-              priorEmployment.startDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
-              priorEmployment.cessationDate,
-              priorEmployment.payrollId
-            )
+        if(appConfig.mimicEmploymentAPICalls){
+          cyaCreateUpdateEmployment
+        } else {
+          priorEmployment.fold {
+            throw new NoSuchElementException("A prior employment is needed to make amendments to employment sections after the employment details section")
+          } {
+            priorEmployment =>
+              CreateUpdateEmployment(
+                priorEmployment.employerRef,
+                priorEmployment.employerName,
+                priorEmployment.startDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+                priorEmployment.cessationDate,
+                priorEmployment.payrollId
+              )
+          }
         }
       }
     }
@@ -325,28 +336,34 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     def priorPayData = CreateUpdatePay(taxablePayToDate = priorTaxablePayToDate, totalTaxToDate = priorTotalTaxToDate)
 
+    lazy val cyaPay = CreateUpdatePay(
+      taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+      totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get //.get on purpose to provoke no such element exception and route them to finish journey.
+    )
+
+    lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.toBenefits)
+    lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.toDeductions)
+
     lazy val createUpdateEmploymentData = {
       section match {
         case common.EmploymentSection.EMPLOYMENT_DETAILS =>
-
-          CreateUpdateEmploymentData(
-            CreateUpdatePay(
-              taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
-              totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get //.get on purpose to provoke no such element exception and route them to finish journey.
-            ),
-            benefitsInKind = priorBenefits,
-            deductions = priorStudentLoans
-          )
+          CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans)
 
         case common.EmploymentSection.EMPLOYMENT_BENEFITS =>
 
-          val benefits = cya.employment.employmentBenefits.map(_.toBenefits)
-
-          CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (benefits.exists(_.hasBenefitsPopulated)) benefits else None, deductions = priorStudentLoans)
+          if(appConfig.mimicEmploymentAPICalls){
+            CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
+          } else {
+            CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans)
+          }
 
         case common.EmploymentSection.STUDENT_LOANS =>
 
-          CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.toDeductions))
+          if(appConfig.mimicEmploymentAPICalls){
+            CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
+          } else {
+            CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.toDeductions))
+          }
       }
     }
 
@@ -377,6 +394,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
+  private def createOrUpdateEmployment(user: User,
+                                       taxYear: Int,
+                                       employmentRequest: CreateUpdateEmploymentRequest)
+                                      (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
+    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino, taxYear, employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
+  }
+
+  @deprecated("Use getOptionalCYAAndPrior or other methods (e.g. getCYAAndPriorForEndOfYear) instead")
   def getAndHandle(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)
                   (block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
                   (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
@@ -401,6 +426,89 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
 
     result.flatten
+  }
+
+  def getOptionalCYAAndPrior(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result,OptionalCyaAndPrior]] = {
+
+    val result = for {
+      optionalCya <- getSessionData(taxYear, employmentId)
+      priorDataResponse <- getPriorData(request.user, taxYear)
+    } yield {
+      if (optionalCya.isRight) {
+        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${request.user.sessionId}")
+      }
+
+      val employmentDataResponse = priorDataResponse.map(_.employment)
+
+      (optionalCya, employmentDataResponse) match {
+        case (Right(None), Right(None)) if redirectWhenNoPrior => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
+          s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
+          Left(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case (Right(optionalCya), Right(employmentData)) => Right(OptionalCyaAndPrior(optionalCya, employmentData))
+        case (_, Left(error)) => Left(errorHandler.handleError(error.status))
+        case (Left(_), _) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      }
+    }
+
+    result
+  }
+
+  def getCYAAndPriorForEndOfYear(taxYear: Int, employmentId: String)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, CyaAndPrior]] = {
+
+    val overviewRedirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+
+    if(!inYearUtil.inYear(taxYear)){
+      getCYAAndPrior(taxYear,employmentId)
+    } else {
+      Future.successful(Left(overviewRedirect))
+    }
+  }
+
+  def getOptionalCYAAndPriorForEndOfYear(taxYear: Int, employmentId: String)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
+
+    val overviewRedirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+
+    if(!inYearUtil.inYear(taxYear)){
+      getOptionalCYAAndPrior(taxYear,employmentId)
+    } else {
+      Future.successful(Left(overviewRedirect))
+    }
+  }
+
+  def getCYAAndPrior(taxYear: Int, employmentId: String)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, CyaAndPrior]] = {
+
+    getOptionalCYAAndPrior(taxYear, employmentId).map {
+      case Left(result) => Left(result)
+      case Right(OptionalCyaAndPrior(employment, allEmploymentData)) =>
+
+        employment.fold[Either[Result, CyaAndPrior]](Left(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))(
+          employmentData => {
+            Right(CyaAndPrior(employmentData, allEmploymentData))
+          }
+        )
+    }
+  }
+
+  def submitAndClear(taxYear: Int, employmentId: String, model: CreateUpdateEmploymentRequest, cya: EmploymentUserData,
+                     prior: Option[AllEmploymentData],
+                     auditFunction: Option[(String, Int, CreateUpdateEmploymentRequest, Option[AllEmploymentData], AuthorisationRequest[_])=> Unit] = None)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, (Option[String], EmploymentUserData)]] ={
+
+    createOrUpdateEmploymentResult(taxYear, model).flatMap {
+      case Left(result) => Future.successful(Left(result))
+      case Right(returnedEmploymentId) =>
+
+        auditFunction.foreach(function => function(employmentId,taxYear,model,prior,request))
+
+        clear(request.user, taxYear, employmentId).map {
+          case Left(_) => Left(errorHandler.internalServerError())
+          case Right(_) => Right((returnedEmploymentId,cya))
+        }
+    }
   }
 
   def getAndHandleExpenses(taxYear: Int)(block: (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result])
