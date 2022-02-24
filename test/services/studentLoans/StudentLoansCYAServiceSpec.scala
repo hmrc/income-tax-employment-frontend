@@ -16,15 +16,16 @@
 
 package services.studentLoans
 
+import config.MockAuditService
 import models.employment.{AllEmploymentData, EmploymentSource}
 import services.EmploymentSessionService
 import utils.UnitTest
 
-class StudentLoansCYAServiceSpec extends UnitTest {
+class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService {
 
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
 
-  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockExecutionContext)
+  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockExecutionContext)
 
   lazy val employerId = "1234567890"
 
