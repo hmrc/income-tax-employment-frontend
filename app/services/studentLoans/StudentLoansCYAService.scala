@@ -16,23 +16,30 @@
 
 package services.studentLoans
 
+import audit.{AmendStudentLoansDeductionsUpdateAudit, AuditModel, AuditService, CreateNewStudentLoansDeductionsAudit}
+import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
 import javax.inject.Inject
+import models.{AuthorisationRequest, User}
 import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{AuthorisationRequest, User}
+import models.mongo.EmploymentCYAModel
+import models.requests.CreateUpdateStudentLoansRequest
 import play.api.Logging
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionHelper
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessionService,
                                        appConfig: AppConfig,
                                        errorHandler: ErrorHandler,
+                                       auditService: AuditService,
                                        implicit val ec: ExecutionContext) extends Logging with SessionHelper {
 
   private[studentLoans] def extractEmploymentInformation(
@@ -105,4 +112,21 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
       user, taxYear, employmentId, cya.employment, true, true, true
     )(errorHandler.internalServerError())(onSuccess)
   }
+
+  def performSubmitAudits(user: User, createUpdateStudentLoansRequest: CreateUpdateStudentLoansRequest, employmentId: String,
+                          taxYear: Int, prior: Option[AllEmploymentData])
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+
+    val audit: Either[AuditModel[AmendStudentLoansDeductionsUpdateAudit], AuditModel[CreateNewStudentLoansDeductionsAudit]] = prior.flatMap {
+      prior =>
+        val priorData = prior.eoyEmploymentSourceWith(employmentId)
+        priorData.map(prior => createUpdateStudentLoansRequest.toAmendAuditModel(user, taxYear, prior.employmentSource).toAuditModel)
+    }.map(Left(_)).getOrElse(Right(createUpdateStudentLoansRequest.toCreateAuditModel(user, taxYear).toAuditModel))
+
+    audit match {
+      case Left(amend) => auditService.sendAudit(amend)
+      case Right(create) => auditService.sendAudit(create)
+    }
+  }
+
 }
