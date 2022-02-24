@@ -215,7 +215,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
       mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = true)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
@@ -231,7 +231,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
       mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = true)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData), Some(
@@ -254,7 +254,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
       mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = false)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
@@ -266,7 +266,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
       mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(Some("id")))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = true)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
@@ -1423,21 +1423,21 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".clear" should {
     "redirect when the record in the database has been removed" in {
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = true)
 
       await(underTest.clear(user, taxYear, "employmentId")) shouldBe Right()
     }
 
     "redirect to error when the record in the database has not been removed" in {
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
       mockClear(taxYear, "employmentId", response = false)
 
       await(underTest.clear(user, taxYear, "employmentId")) shouldBe Left()
     }
 
     "error when incomeSourceConnector returns error" in {
-      mockRefreshIncomeSourceResponseError(taxYear, nino, incomeSource = "employment")
+      mockRefreshIncomeSourceResponseError(taxYear, nino)
       mockClear(taxYear, "employmentId", response = true)
 
       await(underTest.clear(user, taxYear, "employmentId")) shouldBe Left()
@@ -1491,7 +1491,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     ".clearExpenses" should {
       "redirect when the record in the database has been removed" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockClear(taxYear, user, response = true)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("303"))
@@ -1501,7 +1501,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       "redirect to error when the record in the database has not been removed" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockClear(taxYear, user, response = false)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("303"))
@@ -1510,7 +1510,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       "error when incomeSourceConnector returns error" in {
-        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseError(taxYear, nino)
         mockClear(taxYear, user, response = true)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("500"))

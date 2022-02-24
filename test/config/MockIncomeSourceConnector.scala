@@ -19,7 +19,7 @@ package config
 import connectors.IncomeSourceConnector
 import connectors.parsers.RefreshIncomeSourceHttpParser.RefreshIncomeSourceResponse
 import models.{APIErrorBodyModel, APIErrorModel}
-import org.scalamock.handlers.CallHandler4
+import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,16 +30,16 @@ trait MockIncomeSourceConnector extends MockFactory {
 
   val mockIncomeSourceConnector: IncomeSourceConnector = mock[IncomeSourceConnector]
 
-  def mockRefreshIncomeSourceResponseSuccess(taxYear: Int, nino: String, incomeSource: String): CallHandler4[Int, String, String, HeaderCarrier, Future[RefreshIncomeSourceResponse]] = {
-    (mockIncomeSourceConnector.put(_: Int, _: String, _: String)(_: HeaderCarrier))
-      .expects(taxYear, nino, incomeSource, *)
+  def mockRefreshIncomeSourceResponseSuccess(taxYear: Int, nino: String): CallHandler3[Int, String, HeaderCarrier, Future[RefreshIncomeSourceResponse]] = {
+    (mockIncomeSourceConnector.put(_: Int, _: String)(_: HeaderCarrier))
+      .expects(taxYear, nino, *)
       .returns(Future.successful(Right(())))
       .anyNumberOfTimes()
   }
 
-  def mockRefreshIncomeSourceResponseError(taxYear: Int, nino: String, incomeSource: String): CallHandler4[Int, String, String, HeaderCarrier, Future[RefreshIncomeSourceResponse]] = {
-    (mockIncomeSourceConnector.put(_: Int, _: String, _: String)(_: HeaderCarrier))
-      .expects(taxYear, nino, incomeSource, *)
+  def mockRefreshIncomeSourceResponseError(taxYear: Int, nino: String): CallHandler3[Int, String, HeaderCarrier, Future[RefreshIncomeSourceResponse]] = {
+    (mockIncomeSourceConnector.put(_: Int, _: String)(_: HeaderCarrier))
+      .expects(taxYear, nino, *)
       .returns(Future.successful(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))))
       .anyNumberOfTimes()
   }

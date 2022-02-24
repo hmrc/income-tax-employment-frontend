@@ -541,8 +541,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def clear(user: User, taxYear: Int, employmentId: String)
-           (implicit hc: HeaderCarrier): Future[Either[Unit, Unit]] = {
-    incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).flatMap {
+           (implicit hc: HeaderCarrier, request: AuthorisationRequest[_]): Future[Either[Unit, Unit]] = {
+    incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
       case Left(_) => Future.successful(Left())
       case _ => employmentUserDataRepository.clear(taxYear, employmentId, user).map {
         case true => Right()
@@ -552,7 +552,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def clearExpenses(taxYear: Int)(onSuccess: Result)(implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
-    incomeSourceConnector.put(taxYear, request.user.nino, "employment")(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
+    incomeSourceConnector.put(taxYear, request.user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
       case Left(_) => Future.successful(errorHandler.internalServerError())
       case _ => expensesUserDataRepository.clear(taxYear, request.user).map {
         case true => onSuccess

@@ -91,7 +91,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
     s"return a SEE_OTHER($SEE_OTHER) status" when {
       s"form is submitted" in new TestWithAuth {
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-        mockDeleteOrIgnore(employmentsModel, validTaxYearEOY, employmentId)(Redirect(EmploymentSummaryController.show(validTaxYearEOY)))
+        mockDeleteOrIgnore(employmentsModel, validTaxYearEOY, employmentId)
 
         val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
           .withFormUrlEncodedBody("value" -> "true")

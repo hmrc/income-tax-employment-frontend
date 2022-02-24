@@ -18,36 +18,26 @@ package services
 
 import audit.DeleteEmploymentAudit
 import config._
-import controllers.employment.routes.EmploymentSummaryController
+import models.{APIErrorBodyModel, APIErrorModel}
 import models.employment._
 import models.expenses.Expenses
-import play.api.http.Status.INTERNAL_SERVER_ERROR
-import play.api.i18n.MessagesApi
-import play.api.mvc.Results.{Ok, Redirect}
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import services.employment.RemoveEmploymentService
 import utils.UnitTest
-import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 class RemoveEmploymentServiceSpec extends UnitTest
   with MockDeleteOrIgnoreEmploymentConnector
   with MockIncomeSourceConnector
   with MockAuditService
   with MockEmploymentUserDataRepository
-  with MockNrsService {
-
-  private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
-  private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
-  private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
-  private val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
-
-  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
+  with MockNrsService
+  with MockDeleteOrIgnoreExpensesService {
 
   private val service: RemoveEmploymentService = new RemoveEmploymentService(
     mockDeleteOrIgnoreEmploymentConnector,
     mockIncomeSourceConnector,
+    mockDeleteOrIgnoreExpensesService,
     mockAuditService,
-    errorHandler,
     mockNrsService,
     mockExecutionContext
   )
@@ -107,10 +97,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
             expenses = None
           ).toNrsPayloadModel)
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD")
+          mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId)(Ok)) shouldBe Ok
+          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId)) shouldBe Right()
         }
       }
 
@@ -127,10 +118,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
             benefits = None,
             expenses = None
           ).toNrsPayloadModel)
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
+          mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")(Ok)) shouldBe Ok
+          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")) shouldBe Right()
         }
       }
     }
@@ -139,22 +131,23 @@ class RemoveEmploymentServiceSpec extends UnitTest
       "there is no hmrc or customer data" in {
         val allEmploymentData = data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = Seq())
 
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, incomeSource = "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId = "002", toRemove = "CUSTOMER")
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")(Ok)) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")) shouldBe Right()
       }
 
       "there is no employment data for that employment id" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
 
-        await(service.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId)(Ok)) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
+        await(service.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId)) shouldBe Right()
       }
 
       "the connector throws a Left" in {
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
         val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
+        val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
         verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -162,10 +155,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
           benefits = None,
           expenses = None
         ).toNrsPayloadModel)
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
+        mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        status(service.deleteOrIgnoreEmployment(data, taxYear, "002")(Ok)) shouldBe INTERNAL_SERVER_ERROR
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))
       }
 
       "incomeSourceConnector returns error" in {
@@ -180,10 +174,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
           benefits = None,
           expenses = None
         ).toNrsPayloadModel)
-        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseError(taxYear, nino)
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
+        mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        status(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")(Ok)) shouldBe INTERNAL_SERVER_ERROR
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
     }
   }
