@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
@@ -29,26 +30,21 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
-  private val employmentId: String = "001"
+  private val employmentId: String = "employmentId"
   private val employerName: String = "maggie"
 
-  private val model: AllEmploymentData = AllEmploymentData(
+  private val modelWithMultipleSources: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None)
     ),
     hmrcExpenses = None,
     customerEmploymentData = Seq(
-      EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, None, None, None, None),
+      EmploymentSource(employmentId = "employmentId", employerName = "maggie", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "004", employerName = "microsoft", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "005", employerName = "name", None, None, None, None, None, None, None, None)
     ),
     customerExpenses = None
-  )
-
-  private val modelToDelete: AllEmploymentData = model.copy(
-    hmrcEmploymentData = Seq(),
-    customerEmploymentData = Seq(EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, None, None, None, None))
   )
 
   object Selectors {
@@ -138,7 +134,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
+            userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
             urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -164,7 +160,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
+            userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
             urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -185,35 +181,34 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
           formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
         }
+      }
+    }
+    "redirect to the overview page" when {
+      "it is not end of year" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYear)
+          urlGet(fullUrl(removeEmploymentUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        }
 
-        "redirect to the overview page" when {
-          "it is not end of year" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYear)
-              urlGet(fullUrl(removeEmploymentUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
-            }
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+        }
+      }
 
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-            }
-          }
+      "the user does not have employment data with that employmentId" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
+          urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+        }
 
-          "the user does not have employment data with that employmentId" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
-              urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
-            }
-          }
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
         }
       }
     }
@@ -221,70 +216,83 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
   ".submit" should {
 
-    userScenarios.foreach { user =>
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "redirect the user to the overview page" when {
-          "it is not end of year" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-            }
-          }
-
-          "the user does not have employment data with that employmentId" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), body = "", user.isWelsh, follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
-            }
-          }
-
-          "there is no employment data found" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", user.isWelsh, follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
-            }
-          }
+    "redirect the user to the overview page" when {
+      "it is not end of year" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
-        "redirect to the employment summary page" when {
-          "an employment is removed" which {
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-              userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY, employmentId, "CUSTOMER")
-              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", user.isWelsh, follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+        }
+      }
 
-            "redirects to the employment summary page" in {
-              result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-            }
-          }
+      "the user does not have employment data with that employmentId" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), body = "", follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
+        }
+      }
+
+      "there is no employment data found" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
+        }
+      }
+    }
+
+    "redirect to the employment summary page" when {
+
+      "an employment is removed" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
+          userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, employmentId, "CUSTOMER")
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "redirects to the employment summary page" in {
+          result.status shouldBe SEE_OTHER
+          result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
+        }
+      }
+
+      "the last employment is removed" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
+          userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, employmentId, "HMRC-HELD")
+          userDataStubDeleteExpenses(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, "HMRC-HELD")
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "redirects to the employment summary page" in {
+          result.status shouldBe SEE_OTHER
+          result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         }
       }
     }

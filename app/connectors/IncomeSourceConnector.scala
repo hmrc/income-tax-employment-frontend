@@ -27,8 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeSourceConnector @Inject()(val http: HttpClient,
                                       val config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def put(taxYear: Int, nino: String, incomeSource: String)(implicit hc: HeaderCarrier): Future[RefreshIncomeSourceResponse] = {
+  def put(taxYear: Int, nino: String)(implicit hc: HeaderCarrier): Future[RefreshIncomeSourceResponse] = {
     val targetUrl = config.incomeTaxSubmissionBEBaseUrl + s"/income-tax/nino/$nino/sources/session?taxYear=$taxYear"
-    http.PUT[RefreshIncomeSourceRequest, RefreshIncomeSourceResponse](targetUrl, RefreshIncomeSourceRequest(incomeSource))
+    val employment = "employment"
+    http.PUT[RefreshIncomeSourceRequest, RefreshIncomeSourceResponse](targetUrl, RefreshIncomeSourceRequest(employment))
   }
 }

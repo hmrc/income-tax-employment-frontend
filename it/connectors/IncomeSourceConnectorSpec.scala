@@ -36,7 +36,7 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
   private val nino = "some-nino"
   private val taxYear = 2022
   private val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))
-  private val incomeSource = "some-income-source"
+  private val incomeSource = "employment"
   private val requestBodyJson = Json.toJson(RefreshIncomeSourceRequest(incomeSource)).toString()
   private val url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear"
 
@@ -49,13 +49,13 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
       "submission returns a 204" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NO_CONTENT, headers)
 
-        Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right()
       }
 
       "submission returns a 404" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NOT_FOUND, headers)
 
-        Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right()
       }
     }
 
@@ -65,7 +65,7 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
           stubPutWithResponseBody(url, requestBodyJson, APIErrorBodyModel.parsingError.toString, status, headers)
 
           val expectedStatus = if (!Seq(BAD_REQUEST, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).contains(status)) INTERNAL_SERVER_ERROR else status
-          Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Left(APIErrorModel(expectedStatus, APIErrorBodyModel.parsingError))
+          Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Left(APIErrorModel(expectedStatus, APIErrorBodyModel.parsingError))
         }
       }
     }

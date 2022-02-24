@@ -19,31 +19,27 @@ package services.employment
 
 import audit.{AuditService, DeleteEmploymentAudit}
 import common.EmploymentToRemove._
-import config.ErrorHandler
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreEmploymentConnector, IncomeSourceConnector}
-import controllers.employment.routes.EmploymentSummaryController
-import models.AuthorisationRequest
+import models.{APIErrorModel, AuthorisationRequest}
 import models.employment.{AllEmploymentData, DecodedDeleteEmploymentPayload, EmploymentSource}
 import play.api.Logging
-import play.api.mvc.Results.Redirect
-import play.api.mvc.{Request, Result}
-import services.NrsService
+import play.api.mvc.Request
+import services.{DeleteOrIgnoreExpensesService, NrsService}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-// TODO: Refactor this service to be a proper service and does not return Result
 class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,
                                         incomeSourceConnector: IncomeSourceConnector,
+                                        deleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService,
                                         auditService: AuditService,
-                                        errorHandler: ErrorHandler,
                                         nrsService: NrsService,
                                         implicit val ec: ExecutionContext) extends Logging {
 
-  def deleteOrIgnoreEmployment(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)(result: Result)
-                              (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+  def deleteOrIgnoreEmployment(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
+                              (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
     val hmrcDataSource = employmentData.hmrcEmploymentData.find(_.employmentId.equals(employmentId))
     val customerDataSource = employmentData.customerEmploymentData.find(_.employmentId.equals(employmentId))
 
@@ -51,21 +47,22 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
       case (_, Some(hmrcEmploymentSource)) =>
         sendAuditEvent(employmentData, taxYear, hmrcEmploymentSource, isUsingCustomerData = false)
         performSubmitNrsPayload(employmentData, hmrcEmploymentSource, isUsingCustomerData = false)
-        handleConnectorCall(request, taxYear, employmentId, hmrcHeld)(result)
+        handleConnectorCall(taxYear, employmentId, hmrcHeld, employmentData, employmentData.isLastEOYEmployment)
       case (Some(customerEmploymentSource), _) =>
         sendAuditEvent(employmentData, taxYear, customerEmploymentSource, isUsingCustomerData = true)
         performSubmitNrsPayload(employmentData, customerEmploymentSource, isUsingCustomerData = true)
-        handleConnectorCall(request, taxYear, employmentId, customer)(result)
+        handleConnectorCall(taxYear, employmentId, customer, employmentData, employmentData.isLastEOYEmployment)
       case (None, None) =>
-        logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
+        logger.info(s"[RemoveEmploymentService][deleteOrIgnoreEmployment]" +
           s" No employment data found for user and employmentId. SessionId: ${request.user.sessionId}")
-        Future(Redirect(EmploymentSummaryController.show(taxYear)))
+        Future(Right())
     }
 
-    eventualResult.flatMap { result =>
-      incomeSourceConnector.put(taxYear, request.user.nino, "employment")(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).map {
-        case Left(error) => errorHandler.handleError(error.status)
-        case _ => result
+    eventualResult.flatMap {
+      case Left(error) => Future(Left(error))
+      case Right(_) => incomeSourceConnector.put(taxYear, request.user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).map {
+        case Left(error) => Left(error)
+        case _ => Right()
       }
     }
   }
@@ -77,7 +74,8 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
     val deductions = employmentSource.employmentData.flatMap(_.deductions)
-    val auditModel = DeleteEmploymentAudit(taxYear, request.user.affinityGroup.toLowerCase, request.user.nino, request.user.mtditid, employmentDetailsViewModel, benefits, expenses, deductions)
+    val auditModel = DeleteEmploymentAudit(taxYear, request.user.affinityGroup.toLowerCase,
+      request.user.nino, request.user.mtditid, employmentDetailsViewModel, benefits, expenses, deductions)
 
     auditService.sendAudit[DeleteEmploymentAudit](auditModel.toAuditModel)
   }
@@ -95,12 +93,18 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     nrsService.submit(authorisationRequest.user.nino, nrsPayload.toNrsPayloadModel, authorisationRequest.user.mtditid)
   }
 
-  private def handleConnectorCall(authorisationRequest: AuthorisationRequest[_], taxYear: Int, employmentId: String, toRemove: String)(result: Result)
-                                 (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
+  private def handleConnectorCall(taxYear: Int, employmentId: String,
+                                  toRemove: String, allEmploymentData: AllEmploymentData, isLastEmployment: Boolean)
+                                 (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
 
-    deleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(authorisationRequest.user.nino, taxYear, employmentId, toRemove)(hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
-      case Left(error) => errorHandler.handleError(error.status)
-      case Right(_) => result
+    deleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(request.user.nino, taxYear,
+      employmentId, toRemove)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
+      case Left(error) => Future(Left(error))
+      case Right(_) => if(isLastEmployment) {
+          deleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(request.user, allEmploymentData, taxYear)
+      } else {
+        Future(Right())
+      }
     }
   }
 }

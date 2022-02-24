@@ -16,11 +16,10 @@
 
 package config
 
-import models.AuthorisationRequest
+import models.{APIErrorModel, AuthorisationRequest}
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler6
+import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.Result
 import services.employment.RemoveEmploymentService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -30,11 +29,11 @@ trait MockRemoveEmploymentService extends MockFactory {
 
   val mockRemoveEmploymentService: RemoveEmploymentService = mock[RemoveEmploymentService]
 
-  def mockDeleteOrIgnore(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
-                        (result: Result): CallHandler6[AllEmploymentData, Int, String, Result, AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
-    (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String)(_: Result)(_: AuthorisationRequest[_], _: HeaderCarrier))
-      .expects(employmentData, taxYear, employmentId, result, *, *)
-      .returns(Future.successful(result))
-      .anyNumberOfTimes()
+  def mockDeleteOrIgnore(employmentData: AllEmploymentData, taxYear: Int, employmentId: String):
+    CallHandler5[AllEmploymentData, Int, String, AuthorisationRequest[_], HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
+      (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String)(_: AuthorisationRequest[_], _: HeaderCarrier))
+        .expects(employmentData, taxYear, employmentId, *, *)
+        .returns(Future.successful(Right()))
+        .anyNumberOfTimes()
   }
 }

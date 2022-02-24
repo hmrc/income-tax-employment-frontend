@@ -16,15 +16,12 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
-import controllers.employment.routes.EmploymentSummaryController
+import config.{MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
+import models.{APIErrorBodyModel, APIErrorModel}
 import models.employment._
 import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
-import play.api.http.Status.INTERNAL_SERVER_ERROR
-import play.api.i18n.MessagesApi
-import play.api.mvc.Results.{Ok, Redirect}
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import utils.UnitTest
-import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockDeleteOrIgnoreExpensesConnector
@@ -32,15 +29,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockNrsService
   with MockDeleteOrIgnoreExpensesService {
 
-  val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
-  val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
-  val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
-  val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
-
-  val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
-
-  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, errorHandler, mockNrsService, mockExecutionContext)
+  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, mockNrsService, mockExecutionContext)
 
   val taxYear = 2022
 
@@ -127,12 +116,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "ALL")
 
-          val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
+          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Ok
+          await(response) shouldBe Right()
         }
       }
 
@@ -150,12 +139,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
-          val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)(Ok)
+          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Ok
+          await(response) shouldBe Right()
         }
       }
 
@@ -173,12 +162,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "HMRC-HELD")
 
-          val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)(Ok)
+          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)
 
-          await(response) shouldBe Ok
+          await(response) shouldBe Right()
         }
       }
 
@@ -196,22 +185,22 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
-          val response = service.deleteOrIgnoreExpenses(data(None, Some(customerExpenses)), taxYear)(Ok)
+          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Ok
+          await(response) shouldBe Right()
         }
       }
     }
 
     "returns an unsuccessful result" when {
       "there is no hmrc or customer data" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
-        val response = service.deleteOrIgnoreExpenses(data(None, None), taxYear)(Ok)
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, None), taxYear)
 
-        await(response) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
+        await(response) shouldBe Right()
       }
 
       "the connector throws a Left" in {
@@ -227,12 +216,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         ))
         ).toNrsPayloadModel))
 
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockDeleteOrIgnoreExpensesError(nino, taxYear, "ALL")
 
-        val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
+        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
 
-        status(response) shouldBe INTERNAL_SERVER_ERROR
+        await(response) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("CODE", "REASON")))
       }
 
       "incomeSourceConnector returns error" in {
@@ -248,12 +237,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         ))
         ).toNrsPayloadModel))
 
-        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockRefreshIncomeSourceResponseError(taxYear, nino)
         mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
-        val response = service.deleteOrIgnoreExpenses(data(None, Some(customerExpenses)), taxYear)(Ok)
+        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
 
-        status(response) shouldBe INTERNAL_SERVER_ERROR
+        await(response) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
     }
   }
@@ -273,7 +262,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       ))
       ).toNrsPayloadModel))
 
-      await(service.performSubmitNrsPayload(priorData)) shouldBe Right()
+      await(service.performSubmitNrsPayload(authorisationRequest.user, priorData)) shouldBe Right()
     }
   }
 }
