@@ -53,6 +53,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
       val inYear: Boolean = inYearAction.inYear(taxYear)
       
       service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, isSingleEmployment) =>
+        service.sendViewStudentLoansDeductionsAudit(request.user, taxYear, cya.toDeductions)
         Ok(view(taxYear, employmentId, cya, isCustomer, inYear, isSingleEmployment))
       }
     } else {
