@@ -31,13 +31,13 @@ class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
           userType = "individual",
           nino = "AA123456A",
           mtditid = "1234567890",
-          deductions = Deductions(
+          deductions = Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(12345.67),
               pglDeductionAmount = Some(12345.67)
             ))
           )
-        )
+        ))
 
         val validJson: JsValue = Json.parse(
           """{
@@ -47,8 +47,8 @@ class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
             |"mtditid": "1234567890",
             |"deductions": {
             |   "studentLoans": {
-            |       "uglDeductionAmount": 12345.67,
-            |       "pglDeductionAmount": 12345.67
+            |       "undergraduateLoanDeductionAmount": 12345.67,
+            |       "postgraduateLoanDeductionAmount": 12345.67
             |     }
             |   }
             |}""".stripMargin

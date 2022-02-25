@@ -31,18 +31,18 @@ class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest {
           userType = "individual",
           nino = "AA123456A",
           mtditid = "1234567890",
-          priorStudentLoanDeductionsData = Deductions(
+          priorStudentLoanDeductionsData = Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(12345.67),
               pglDeductionAmount = Some(12345.67)
-            ))),
-          studentLoanDeductionsData = Deductions(
+            )))),
+          studentLoanDeductionsData = Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(2233.44),
               pglDeductionAmount = Some(2233.44)
             ))
           )
-        )
+        ))
 
         val validJson: JsValue = Json.parse(
           """{
@@ -52,14 +52,14 @@ class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest {
             |"mtditid": "1234567890",
             |"priorStudentLoanDeductionsData": {
             |   "studentLoans": {
-            |       "uglDeductionAmount": 12345.67,
-            |       "pglDeductionAmount": 12345.67
+            |       "undergraduateLoanDeductionAmount": 12345.67,
+            |       "postgraduateLoanDeductionAmount": 12345.67
             |       }
             |   },
             |"studentLoanDeductionsData": {
             |   "studentLoans": {
-            |      "uglDeductionAmount": 2233.44,
-            |      "pglDeductionAmount": 2233.44
+            |      "undergraduateLoanDeductionAmount": 2233.44,
+            |      "postgraduateLoanDeductionAmount": 2233.44
             |      }
             |  }
             |}""".stripMargin

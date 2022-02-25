@@ -17,14 +17,15 @@
 package audit
 
 import models.employment.Deductions
-import play.api.libs.json.{Json, OWrites}
+import play.api.libs.json.{JsNull, JsNumber, JsValue, Json, OWrites}
+import utils.JsonUtils.jsonObjNoNulls
 
 
 case class CreateNewStudentLoansDeductionsAudit(taxYear: Int,
                                                 userType: String,
                                                 nino: String,
                                                 mtditid: String,
-                                                deductions: Deductions) {
+                                                deductions: Option[Deductions]) {
 
   private def name = "CreateNewStudentLoansDeductions"
 
@@ -32,5 +33,29 @@ case class CreateNewStudentLoansDeductionsAudit(taxYear: Int,
 }
 
 object CreateNewStudentLoansDeductionsAudit {
-  implicit def writes: OWrites[CreateNewStudentLoansDeductionsAudit] = Json.writes[CreateNewStudentLoansDeductionsAudit]
+  implicit def writes: OWrites[CreateNewStudentLoansDeductionsAudit] = (audit: CreateNewStudentLoansDeductionsAudit) => {
+    Json.obj(
+      "taxYear" -> audit.taxYear,
+      "userType" -> audit.userType,
+      "nino" -> audit.nino,
+      "mtditid" -> audit.mtditid
+    ).++(
+      {
+        val studentLoans = audit.deductions.flatMap(_.studentLoans)
+        val uglDeductionAmount = studentLoans.flatMap(_.uglDeductionAmount)
+        val pglDeductionAmount = studentLoans.flatMap(_.pglDeductionAmount)
+
+        jsonObjNoNulls(
+          "deductions" ->
+            jsonObjNoNulls(
+              "studentLoans" ->
+                jsonObjNoNulls(
+                  "undergraduateLoanDeductionAmount" -> uglDeductionAmount.fold[JsValue](JsNull)(JsNumber),
+                  "postgraduateLoanDeductionAmount" -> pglDeductionAmount.fold[JsValue](JsNull)(JsNumber)
+                )
+            )
+        )
+      }
+    )
+  }
 }

@@ -28,12 +28,12 @@ case class CreateUpdateStudentLoansRequest(deductions: Deductions) {
       userType = user.affinityGroup.toLowerCase,
       nino = user.nino,
       mtditid = user.mtditid,
-      deductions = Deductions(
+      deductions = Some(Deductions(
         studentLoans = Some(StudentLoans(
           uglDeductionAmount = deductions.studentLoans.flatMap(_.uglDeductionAmount),
           pglDeductionAmount = deductions.studentLoans.flatMap(_.pglDeductionAmount)
         )
-        )))
+        ))))
   }
 
   def toAmendAuditModel(user: User, taxYear: Int, priorData: EmploymentSource): AmendStudentLoansDeductionsUpdateAudit = {
@@ -44,16 +44,16 @@ case class CreateUpdateStudentLoansRequest(deductions: Deductions) {
       userType = user.affinityGroup.toLowerCase,
       nino = user.nino,
       mtditid = user.mtditid,
-      priorStudentLoanDeductionsData = Deductions(
+      priorStudentLoanDeductionsData = Some(Deductions(
         studentLoans = Some(StudentLoans(
           uglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
           pglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
-        ))),
-      studentLoanDeductionsData = Deductions(
+        )))),
+      studentLoanDeductionsData = Some(Deductions(
         studentLoans = Some(StudentLoans(
           uglDeductionAmount = deductions.studentLoans.flatMap(_.uglDeductionAmount),
           pglDeductionAmount = deductions.studentLoans.flatMap(_.pglDeductionAmount)
         ))
-      ))
+      )))
   }
 }
