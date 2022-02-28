@@ -16,8 +16,8 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -258,6 +258,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -297,6 +298,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val specificResults = user.specificExpectedResults.get
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specificResults.expectedTitle)
@@ -339,6 +341,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specificResults.expectedTitle)
@@ -361,6 +364,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -382,7 +386,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(
-                          anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
+              anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(fullUrl(checkYourExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
@@ -391,6 +395,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val specificResults = user.specificExpectedResults.get
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -430,6 +435,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -471,6 +477,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val specificResults = user.specificExpectedResults.get
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -512,6 +519,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val specificResults = user.specificExpectedResults.get
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -608,7 +616,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       }
 
       lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+      implicit def documentSupplier: () => Document = () => document
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
@@ -625,7 +634,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       }
 
       lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+      implicit def documentSupplier: () => Document = () => document
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
@@ -641,13 +651,14 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))))
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+      implicit def documentSupplier: () => Document = () => document
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
@@ -663,8 +674,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  ExpensesCYAModel(anExpensesViewModel.copy(
-                    professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))))
+          ExpensesCYAModel(anExpensesViewModel.copy(
+            professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -685,8 +696,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
-                    professionalSubscriptions = Some(newAmount)))))
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
+            professionalSubscriptions = Some(newAmount)))))
 
         val model = CreateUpdateExpensesRequest(
           Some(true), anExpenses.copy(professionalSubscriptions = Some(newAmount))
@@ -716,7 +727,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -739,7 +750,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
