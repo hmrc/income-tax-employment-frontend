@@ -32,7 +32,7 @@ import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmployme
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
-import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
+import views.html.employment.CheckYourBenefitsView
 
 import scala.concurrent.Future
 
@@ -42,14 +42,12 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
   with MockAuditService {
 
   private lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
-  private lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true) = new CheckYourBenefitsController()(
     new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled),
     mockMessagesControllerComponents,
     authorisedAction,
     view,
-    viewEOY,
     mockEmploymentSessionService,
     mockCheckYourBenefitsService,
     mockAuditService,
@@ -98,7 +96,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     "return a result when all data is in Session" which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, employerName, aBenefitsViewModel, isSingleEmployment = true, employmentId)))
+          mockFind(taxYear, Ok(view(taxYear, employmentId, employerName, aBenefitsViewModel, isSingleEmployment = true, isUsingCustomerData = false, isInYear = true)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -111,8 +109,8 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     "return a result when all data is in Session for EOY" which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(viewEOY(taxYear, employerName, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
-            employmentId = employmentId, isUsingCustomerData = true)))
+          mockFind(taxYear, Ok(view(taxYear, employmentId, employerName, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
+            isSingleEmployment = false, isUsingCustomerData = true, isInYear = false)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

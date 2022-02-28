@@ -25,7 +25,6 @@ import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.studentLoans.routes.StudentLoansCYAController
-import javax.inject.Inject
 import models.AuthorisationRequest
 import models.benefits.Benefits
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
@@ -38,15 +37,15 @@ import services.EmploymentSessionService
 import services.employment.CheckYourBenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
-import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
+import views.html.employment.CheckYourBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                                             val mcc: MessagesControllerComponents,
                                             authorisedAction: AuthorisedAction,
                                             checkYourBenefitsView: CheckYourBenefitsView,
-                                            checkYourBenefitsViewEOY: CheckYourBenefitsViewEOY,
                                             employmentSessionService: EmploymentSessionService,
                                             checkYourBenefitsService: CheckYourBenefitsService,
                                             auditService: AuditService,
@@ -67,7 +66,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
               case Some(benefits) =>
                 val auditModel = ViewEmploymentBenefitsAudit(taxYear, request.user.affinityGroup.toLowerCase, request.user.nino, request.user.mtditid, benefits)
                 auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
-                Ok(checkYourBenefitsView(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, employmentId))
+                Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, isUsingCustomerData = false, isInYear = true))
             }
           case None => redirect
         }
@@ -78,12 +77,14 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
           case Some(cya) =>
             cya.employment.employmentBenefits match {
               case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
-              case Some(benefits) => Future(Ok(checkYourBenefitsViewEOY(
+              case Some(benefits) => Future(Ok(checkYourBenefitsView(
                 taxYear,
+                employmentId,
                 cya.employment.employmentDetails.employerName,
                 benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
-                employmentId,
-                benefits.isUsingCustomerData
+                isSingleEmployment = false,
+                isUsingCustomerData = benefits.isUsingCustomerData,
+                isInYear = false
               )))
             }
           case None => prior.get.eoyEmploymentSourceWith(employmentId) match {
@@ -94,7 +95,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                 benefits match {
                   case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
                   case Some(benefits) =>
-                    Ok(checkYourBenefitsViewEOY(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
+                    Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), isSingleEmployment = false, isUsingCustomerData, isInYear = false))
                 }
               })
             case None =>
@@ -155,15 +156,15 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
       case None =>
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
           case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
-            val result = Redirect(if(appConfig.studentLoansEnabled) {
+            val result = Redirect(if (appConfig.studentLoansEnabled) {
               StudentLoansCYAController.show(taxYear, employmentId)
             } else {
               CheckEmploymentExpensesController.show(taxYear)
             })
 
-            if(appConfig.mimicEmploymentAPICalls){
+            if (appConfig.mimicEmploymentAPICalls) {
               employmentSessionService.createOrUpdateSessionData(
-                request.user, taxYear, employmentId, cya.employment, true, true, false
+                request.user, taxYear, employmentId, cya.employment, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = false
               )(errorHandler.internalServerError())(result)
             } else {
               Future.successful(result)
