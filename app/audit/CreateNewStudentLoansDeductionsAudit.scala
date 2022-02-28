@@ -25,7 +25,7 @@ case class CreateNewStudentLoansDeductionsAudit(taxYear: Int,
                                                 userType: String,
                                                 nino: String,
                                                 mtditid: String,
-                                                deductions: Option[Deductions]) {
+                                                deductions: Deductions) {
 
   private def name = "CreateNewStudentLoansDeductions"
 
@@ -41,7 +41,7 @@ object CreateNewStudentLoansDeductionsAudit {
       "mtditid" -> audit.mtditid
     ).++(
       {
-        val studentLoans = audit.deductions.flatMap(_.studentLoans)
+        val studentLoans = audit.deductions.studentLoans
         val uglDeductionAmount = studentLoans.flatMap(_.uglDeductionAmount)
         val pglDeductionAmount = studentLoans.flatMap(_.pglDeductionAmount)
 

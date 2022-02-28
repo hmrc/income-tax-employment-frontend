@@ -24,8 +24,8 @@ case class AmendStudentLoansDeductionsUpdateAudit(taxYear: Int,
                                                   userType: String,
                                                   nino: String,
                                                   mtditid: String,
-                                                  priorStudentLoanDeductionsData: Option[Deductions],
-                                                  studentLoanDeductionsData: Option[Deductions]) {
+                                                  priorStudentLoanDeductionsData: Deductions,
+                                                  studentLoanDeductionsData: Deductions) {
 
   private def name = "AmendStudentLoansDeductionsUpdate"
 
@@ -43,7 +43,7 @@ object AmendStudentLoansDeductionsUpdateAudit {
       "mtditid" -> audit.mtditid
     ).++(
       {
-        val studentLoansPrior = audit.priorStudentLoanDeductionsData.flatMap(_.studentLoans)
+        val studentLoansPrior = audit.priorStudentLoanDeductionsData.studentLoans
         val uglDeductionAmount = studentLoansPrior.flatMap(_.uglDeductionAmount)
         val pglDeductionAmount = studentLoansPrior.flatMap(_.pglDeductionAmount)
 
@@ -60,7 +60,7 @@ object AmendStudentLoansDeductionsUpdateAudit {
       }
     ).++(
       {
-        val studentLoans = audit.studentLoanDeductionsData.flatMap(_.studentLoans)
+        val studentLoans = audit.studentLoanDeductionsData.studentLoans
         val uglDeductionAmount = studentLoans.flatMap(_.uglDeductionAmount)
         val pglDeductionAmount = studentLoans.flatMap(_.pglDeductionAmount)
 

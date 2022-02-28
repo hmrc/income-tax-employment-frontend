@@ -31,18 +31,18 @@ class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest {
           userType = "individual",
           nino = "AA123456A",
           mtditid = "1234567890",
-          priorStudentLoanDeductionsData = Some(Deductions(
+          priorStudentLoanDeductionsData = Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(12345.67),
               pglDeductionAmount = Some(12345.67)
-            )))),
-          studentLoanDeductionsData = Some(Deductions(
+            ))),
+          studentLoanDeductionsData = Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(2233.44),
               pglDeductionAmount = Some(2233.44)
             ))
           )
-        ))
+        )
 
         val validJson: JsValue = Json.parse(
           """{

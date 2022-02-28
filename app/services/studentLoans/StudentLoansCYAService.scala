@@ -19,13 +19,14 @@ package services.studentLoans
 import audit.{AmendStudentLoansDeductionsUpdateAudit, AuditModel, AuditService, CreateNewStudentLoansDeductionsAudit}
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
+import models.employment.createUpdate.CreateUpdateEmploymentRequest
+
 import javax.inject.Inject
 import models.{AuthorisationRequest, User}
 import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{AuthorisationRequest, User}
 import models.mongo.EmploymentCYAModel
-import models.requests.CreateUpdateStudentLoansRequest
 import play.api.Logging
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
@@ -113,15 +114,15 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
     )(errorHandler.internalServerError())(onSuccess)
   }
 
-  def performSubmitAudits(user: User, createUpdateStudentLoansRequest: CreateUpdateStudentLoansRequest, employmentId: String,
+  def performSubmitAudits(user: User, createUpdateStudentLoansRequest: CreateUpdateEmploymentRequest, employmentId: String,
                           taxYear: Int, prior: Option[AllEmploymentData])
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
 
     val audit: Either[AuditModel[AmendStudentLoansDeductionsUpdateAudit], AuditModel[CreateNewStudentLoansDeductionsAudit]] = prior.flatMap {
       prior =>
         val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => createUpdateStudentLoansRequest.toAmendAuditModel(user, taxYear, prior.employmentSource).toAuditModel)
-    }.map(Left(_)).getOrElse(Right(createUpdateStudentLoansRequest.toCreateAuditModel(user, taxYear).toAuditModel))
+        priorData.map(prior => createUpdateStudentLoansRequest.toAmendStudentLoansAuditModel(user, taxYear, prior.employmentSource).toAuditModel)
+    }.map(Left(_)).getOrElse(Right(createUpdateStudentLoansRequest.toCreateStudentLoansAuditModel(user, taxYear).toAuditModel))
 
     audit match {
       case Left(amend) => auditService.sendAudit(amend)
