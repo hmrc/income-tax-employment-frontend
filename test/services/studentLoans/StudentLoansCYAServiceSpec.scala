@@ -16,7 +16,7 @@
 
 package services.studentLoans
 
-import audit.{AmendStudentLoansDeductionsUpdateAudit, CreateNewStudentLoansDeductionsAudit}
+import audit.{AmendStudentLoansDeductionsUpdateAudit, CreateNewStudentLoansDeductionsAudit, ViewStudentLoansDeductionsAudit}
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment._
 import services.EmploymentSessionService
@@ -48,6 +48,13 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
   lazy val studentLoans: StudentLoans = StudentLoans(
     uglDeductionAmount = Some(100),
     pglDeductionAmount = Some(100)
+  )
+
+  val validModel: StudentLoansCYAModel = StudentLoansCYAModel(
+    uglDeduction = true,
+    uglDeductionAmount = Some(500.00),
+    pglDeduction = true,
+    pglDeductionAmount = Some(500.00)
   )
 
   ".extractEmploymentInformation" should {
@@ -226,4 +233,13 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
     }
   }
 
+  ".sendViewStudentLoansDeductionsAudit" should {
+    "send the audit event" in {
+      mockAuditSendEvent(ViewStudentLoansDeductionsAudit(
+        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
+      ).toAuditModel)
+
+      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, 2021, validModel.toDeductions)) shouldBe AuditResult.Success
+    }
+  }
 }

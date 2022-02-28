@@ -16,14 +16,14 @@
 
 package services.studentLoans
 
-import audit.{AmendStudentLoansDeductionsUpdateAudit, AuditModel, AuditService, CreateNewStudentLoansDeductionsAudit}
+import audit.{AmendStudentLoansDeductionsUpdateAudit, AuditModel, AuditService, CreateNewStudentLoansDeductionsAudit, ViewStudentLoansDeductionsAudit}
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 
 import javax.inject.Inject
 import models.{AuthorisationRequest, User}
-import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
+import models.employment.{AllEmploymentData, Deductions, EmploymentSource, StudentLoansCYAModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{AuthorisationRequest, User}
 import models.mongo.EmploymentCYAModel
@@ -130,4 +130,9 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
     }
   }
 
+  def sendViewStudentLoansDeductionsAudit(user: User, taxYear: Int, deductions: Option[Deductions])
+                                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+    val auditModel = ViewStudentLoansDeductionsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, deductions)
+    auditService.sendAudit[ViewStudentLoansDeductionsAudit](auditModel.toAuditModel)
+  }
 }
