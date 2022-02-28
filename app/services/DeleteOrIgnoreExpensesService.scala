@@ -16,12 +16,13 @@
 
 package services
 
+import audit.{AuditService, DeleteEmploymentExpensesAudit}
 import common.EmploymentToRemove._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreExpensesConnector, IncomeSourceConnector}
-import models.{APIErrorModel, AuthorisationRequest, User}
 import models.employment.AllEmploymentData
-import models.expenses.DecodedDeleteEmploymentExpensesPayload
+import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
+import models.{APIErrorModel, AuthorisationRequest, User}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: DeleteOrIgnoreExpensesConnector,
                                               incomeSourceConnector: IncomeSourceConnector,
+                                              auditService: AuditService,
                                               nrsService: NrsService,
                                               implicit val executionContext: ExecutionContext) extends Logging {
 
@@ -42,12 +44,15 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
     val customerExpenses = employmentData.customerExpenses
     val eventualResult = (hmrcExpenses, customerExpenses) match {
       case (Some(_), Some(_)) =>
+        sendAuditEvent(user, taxYear, employmentData)
         performSubmitNrsPayload(user, employmentData)
         handleConnectorCall(user, taxYear, all)
       case (Some(_), None) =>
+        sendAuditEvent(user, taxYear, employmentData)
         performSubmitNrsPayload(user, employmentData)
         handleConnectorCall(user, taxYear, hmrcHeld)
       case (None, Some(_)) =>
+        sendAuditEvent(user, taxYear, employmentData)
         performSubmitNrsPayload(user, employmentData)
         handleConnectorCall(user, taxYear, customer)
       case (None, None) =>
@@ -62,12 +67,28 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
         incomeSourceConnector.put(taxYear, authorisationRequest.user.nino)(hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
           case Left(error) => Left(error)
           case _ => Right()
-      }
+        }
     }
   }
 
+  private def sendAuditEvent(user: User, taxYear: Int, employmentData: AllEmploymentData)
+                            (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Unit = {
+
+    val latestExpenses: Expenses = employmentData.latestEOYExpenses.flatMap(expensesData =>
+      expensesData.latestExpenses.expenses).getOrElse(Expenses())
+
+    val auditModel = DeleteEmploymentExpensesAudit(
+      taxYear,
+      user.affinityGroup.toLowerCase,
+      user.nino,
+      user.mtditid,
+      latestExpenses
+    )
+    auditService.sendAudit[DeleteEmploymentExpensesAudit](auditModel.toAuditModel)
+  }
+
   def performSubmitNrsPayload(user: User, employmentData: AllEmploymentData)(implicit request: Request[_],
-                                                                 hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+                                                                             hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val latestExpenses = employmentData.latestEOYExpenses.map(expensesData =>
       DecodedDeleteEmploymentExpensesPayload(expensesData.latestExpenses.expenses).toNrsPayloadModel)

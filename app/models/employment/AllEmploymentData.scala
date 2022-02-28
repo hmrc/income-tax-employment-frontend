@@ -45,7 +45,7 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
     val hmrcExp = hmrcExpenses.filter(_.dateIgnored.isEmpty)
 
     // TODO: This logging should be moved to wherever the object is read from, e.g. connector or repository
-    if (hmrcExp.isDefined && customerExpenses.isDefined && hmrcExp.get.dateIgnored.isEmpty) {
+    if (hmrcExp.isDefined && customerExpenses.isDefined) {
       logger.warn("[AllEmploymentData][latestEOYExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
     }
 
