@@ -21,9 +21,11 @@ import common.{EmploymentSection, SessionValues}
 import config.AppConfig
 import controllers.employment.routes.EmployerInformationController
 import controllers.expenses.routes.CheckEmploymentExpensesController
+import models.AuthorisationRequest
+
 import javax.inject.Inject
-import models.employment.OptionalCyaAndPrior
-import models.employment.createUpdate.{JourneyNotFinished, NothingToUpdate}
+import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
+import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
 import models.mongo.EmploymentUserData
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -95,7 +97,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
           employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.STUDENT_LOANS) match {
-            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior).flatMap {
+            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNrs)).flatMap {
               case Left(result) => Future.successful(result)
               case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, cya)
             }
@@ -107,5 +109,12 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
+  }
+
+  private def auditAndNrs(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
+                          prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
+
+    implicit val implicitRequest: AuthorisationRequest[_] = request
+    service.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
   }
 }

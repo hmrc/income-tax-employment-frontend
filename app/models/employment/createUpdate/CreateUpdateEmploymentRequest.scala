@@ -232,6 +232,44 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       )
     )
   }
+
+
+  def toCreateStudentLoansAuditModel(user: User, taxYear: Int): CreateNewStudentLoansDeductionsAudit = {
+    CreateNewStudentLoansDeductionsAudit(
+      taxYear = taxYear,
+      userType = user.affinityGroup.toLowerCase,
+      nino = user.nino,
+      mtditid = user.mtditid,
+      deductions = Deductions(
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+          pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+        )
+      ))
+    )
+  }
+
+  def toAmendStudentLoansAuditModel(user: User, taxYear: Int, priorData: EmploymentSource): AmendStudentLoansDeductionsUpdateAudit = {
+    AmendStudentLoansDeductionsUpdateAudit(
+      taxYear = taxYear,
+      userType = user.affinityGroup.toLowerCase,
+      nino = user.nino,
+      mtditid = user.mtditid,
+      priorStudentLoanDeductionsData = Deductions(
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+          pglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+        ))
+      ),
+      studentLoanDeductionsData = Deductions(
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+          pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+        ))
+      )
+    )
+  }
+
 }
 
 object CreateUpdateEmploymentRequest {
