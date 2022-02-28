@@ -35,7 +35,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val payeRef: String = "123/AA12345"
   private val employmentId = "employmentId"
 

@@ -23,8 +23,6 @@ import utils.UnitTest
 
 class CreateUpdateExpensesRequestSpec extends UnitTest {
 
-  val taxYear = 2020
-
   val defaultExpenses: Expenses = Expenses(
     businessTravelCosts = Some(150),
     jobExpenses = Some(100),

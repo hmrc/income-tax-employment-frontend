@@ -35,7 +35,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val amount: BigDecimal = 400
   private val newAmount: BigDecimal = 100
   private val amountFieldName = "amount"

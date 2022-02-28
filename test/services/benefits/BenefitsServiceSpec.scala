@@ -25,7 +25,6 @@ import utils.UnitTest
 
 class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
-  private val taxYear = 2021
   private val employmentId = "some-employment-id"
 
   private val underTest = new BenefitsService(mockEmploymentSessionService, mockExecutionContext)
@@ -37,9 +36,9 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
         val employmentUserData = anEmploymentUserDataWithBenefits(benefitsViewModel)
         val expectedEmploymentUserData = anEmploymentUserData
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
+        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
           Right(expectedEmploymentUserData)
       }
 
@@ -48,9 +47,9 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
         val expectedBenefits = BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)
         val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
+        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -62,9 +61,9 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
         val expectedBenefits = BenefitsViewModel.clear(isUsingCustomerData = true)
         val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
+        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
           Right(expectedEmploymentUserData)
       }
 
@@ -73,9 +72,9 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
         val expectedBenefits = BenefitsViewModel.clear(isUsingCustomerData = true)
         val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
+        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
           Right(expectedEmploymentUserData)
       }
     }

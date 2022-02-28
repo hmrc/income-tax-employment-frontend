@@ -41,7 +41,6 @@ class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploym
     ec
   )
 
-  private val taxYear: Int = mockAppConfig.defaultTaxYear
   private val employmentId: String = "223/AB12399"
 
   ".show" should {

@@ -35,7 +35,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =

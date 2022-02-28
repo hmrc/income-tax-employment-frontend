@@ -36,7 +36,6 @@ import scala.concurrent.Future
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY = taxYear - 1
   private val employmentId = "employmentId"
   private val employmentId2 = "002"
   private val employerName2 = "Ken Bosford"

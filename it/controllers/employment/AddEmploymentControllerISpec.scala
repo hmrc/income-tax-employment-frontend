@@ -31,8 +31,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY = taxYear - 1
-
   object Selectors {
     val valueHref = "#value"
     val expectedErrorHref = "#value"

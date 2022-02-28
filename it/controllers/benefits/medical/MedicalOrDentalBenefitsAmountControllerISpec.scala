@@ -32,7 +32,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
   private val insuranceAmount: BigDecimal = 100
   private val newAmount: BigDecimal = 250

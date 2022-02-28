@@ -35,7 +35,6 @@ class CreateOrAmendExpensesConnectorSpec extends ConnectorIntegrationTest {
   private val mtditid = "some-mtditid"
   private val sessionId = "some-sessionId"
   private val nino = "some-nino"
-  private val taxYear = 2022
   private val url = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
   private val createExpensesRequestModel = CreateUpdateExpensesRequest(Some(false), anExpenses)
 

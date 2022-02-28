@@ -29,8 +29,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
-
   private val employerName: String = "HMRC"
   private val updatedEmployerName: String = "Microsoft"
   private val employmentId: String = "001"

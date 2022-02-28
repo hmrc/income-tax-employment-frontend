@@ -24,6 +24,7 @@ import config.AppConfig
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData
+import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -47,13 +48,12 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
-  with WiremockStubHelpers with BeforeAndAfterAll {
+  with WiremockStubHelpers with BeforeAndAfterAll with TaxYearHelper {
 
   val nino: String = anEmploymentUserData.nino
   val mtditid: String = anEmploymentUserData.mtdItId
   val sessionId: String = anEmploymentUserData.sessionId
   val affinityGroup: String = "affinityGroup"
-  val taxYear: Int = 2022
   val defaultUser: EmploymentUserData = anEmploymentUserData
   val xSessionId: (String, String) = "X-Session-ID" -> defaultUser.sessionId
 
@@ -61,8 +61,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> defaultUser.mtdItId)
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-
-  implicit val integrationTestClock: IntegrationTestClock.type = IntegrationTestClock
 
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 

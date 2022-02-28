@@ -34,7 +34,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
   val poundPrefixText = "£"
   val newAmount: BigDecimal = 250
   val maxLimit: String = "100000000000"

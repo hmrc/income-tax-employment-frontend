@@ -114,7 +114,6 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     inYearAction
   )
 
-  private val taxYear: Int = mockAppConfig.defaultTaxYear
 
   ".show" should {
     "render single employment summary view when there is only one employment" which {

@@ -21,7 +21,6 @@ import utils.UnitTest
 
 class UtilitiesAndServicesModelSpec extends UnitTest {
 
-  private val taxYear = 2022
   private val model = UtilitiesAndServicesModel(
     sectionQuestion = Some(true),
     telephoneQuestion = Some(true),

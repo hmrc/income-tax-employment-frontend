@@ -22,33 +22,32 @@ import utils.UnitTest
 
 class AccommodationRelocationModelSpec extends UnitTest {
 
-  private val taxYear = 2021
   private val employmentId = "some-employment-id"
 
   "qualifyingRelocationSectionFinished" should {
     "return None when qualifyingRelocationExpensesQuestion is true and qualifyingRelocationExpenses is defined" in {
       val underTest = AccommodationRelocationModel(qualifyingRelocationExpensesQuestion = Some(true), qualifyingRelocationExpenses = Some(1))
 
-      underTest.qualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.qualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to QualifyingRelocationBenefitsAmountController when qualifyingRelocationExpensesQuestion and qualifyingRelocationExpenses not defined" in {
       val underTest = AccommodationRelocationModel(qualifyingRelocationExpensesQuestion = Some(true), qualifyingRelocationExpenses = None)
 
-      underTest.qualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe
-        Some(QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
+      underTest.qualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe
+        Some(QualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId))
     }
 
     "return None when qualifyingRelocationExpensesQuestion is false" in {
       val underTest = AccommodationRelocationModel(qualifyingRelocationExpensesQuestion = Some(false))
 
-      underTest.qualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.qualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to QualifyingRelocationBenefitsController when qualifyingRelocationExpensesQuestion is None" in {
       val underTest = AccommodationRelocationModel(qualifyingRelocationExpensesQuestion = None)
 
-      underTest.qualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe Some(QualifyingRelocationBenefitsController.show(taxYear, employmentId))
+      underTest.qualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe Some(QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -56,25 +55,25 @@ class AccommodationRelocationModelSpec extends UnitTest {
     "return None when accommodationQuestion is true and accommodation is defined" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = Some(true), accommodation = Some(1))
 
-      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.accommodationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to LivingAccommodationBenefitAmountController when accommodationQuestion and accommodation not defined" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = Some(true), accommodation = None)
 
-      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
+      underTest.accommodationSectionFinished(taxYearEOY, employmentId) shouldBe Some(LivingAccommodationBenefitAmountController.show(taxYearEOY, employmentId))
     }
 
     "return None when accommodationQuestion is false" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = Some(false))
 
-      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.accommodationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to AccommodationRelocationBenefitsController when accommodationQuestion is None" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = None)
 
-      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe Some(LivingAccommodationBenefitsController.show(taxYear, employmentId))
+      underTest.accommodationSectionFinished(taxYearEOY, employmentId) shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -82,27 +81,27 @@ class AccommodationRelocationModelSpec extends UnitTest {
     "return None when nonQualifyingRelocationExpensesQuestion is true and nonQualifyingRelocationExpenses is defined" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = Some(true), nonQualifyingRelocationExpenses = Some(1))
 
-      underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.nonQualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to AccommodationRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion and nonQualifyingRelocationExpenses not defined" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = Some(true), nonQualifyingRelocationExpenses = None)
 
-      underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe
-        Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+      underTest.nonQualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe
+        Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId))
     }
 
     "return None when nonQualifyingRelocationExpensesQuestion is false" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = Some(false))
 
-      underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.nonQualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to NonQualifyingRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion is None" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = None)
 
-      underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe
-        Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
+      underTest.nonQualifyingRelocationSectionFinished(taxYearEOY, employmentId) shouldBe
+        Some(NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -113,7 +112,7 @@ class AccommodationRelocationModelSpec extends UnitTest {
         qualifyingRelocationExpensesQuestion = Some(false),
         nonQualifyingRelocationExpensesQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.accommodationSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.accommodationSectionFinished(taxYearEOY, employmentId)
     }
 
     "return result of qualifyingRelocationSectionFinished when accommodationRelocationQuestion is true and " +
@@ -123,7 +122,7 @@ class AccommodationRelocationModelSpec extends UnitTest {
         qualifyingRelocationExpensesQuestion = None,
         nonQualifyingRelocationExpensesQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.qualifyingRelocationSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.qualifyingRelocationSectionFinished(taxYearEOY, employmentId)
     }
 
     "return result of nonQualifyingRelocationSectionFinished when accommodationRelocationQuestion is true and " +
@@ -133,7 +132,7 @@ class AccommodationRelocationModelSpec extends UnitTest {
         qualifyingRelocationExpensesQuestion = Some(false),
         nonQualifyingRelocationExpensesQuestion = None)
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.nonQualifyingRelocationSectionFinished(taxYearEOY, employmentId)
     }
 
     "return None when accommodationRelocationQuestion is true and accommodationSectionFinished, " +
@@ -143,19 +142,19 @@ class AccommodationRelocationModelSpec extends UnitTest {
         qualifyingRelocationExpensesQuestion = Some(false),
         nonQualifyingRelocationExpensesQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe None
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return None when accommodationRelocationQuestion is false" in {
       val underTest = AccommodationRelocationModel(sectionQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe None
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to AccommodationRelocationBenefitsController when accommodationRelocationQuestion is None" in {
       val underTest = AccommodationRelocationModel(sectionQuestion = None)
 
-      underTest.isFinished(taxYear, employmentId) shouldBe Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 }

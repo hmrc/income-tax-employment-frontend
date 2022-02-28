@@ -35,7 +35,6 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =

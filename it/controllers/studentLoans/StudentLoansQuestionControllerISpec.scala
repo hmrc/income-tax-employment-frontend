@@ -37,6 +37,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
 
   val employmentId: String = "1234567890-0987654321"
+  val startDate = s"$taxYear-04-01"
 
   def url(taxYearUnique: Int): String = fullUrl(studentLoansQuestionPage(taxYearUnique, employmentId))
 
@@ -156,26 +157,26 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-                ))
-              )
-            ))
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some(startDate),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                            ))
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -208,24 +209,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              ),
-            )
-          ))
-
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        ),
+                      )
+                    ))
 
           urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -284,28 +284,27 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              ),
-              studentLoans = Some(StudentLoansCYAModel(
-                uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-              ))
-            )
-          ))
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        ),
+                        studentLoans = Some(StudentLoansCYAModel(
+                          uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                        ))
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
-
 
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -324,25 +323,24 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ))
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
-
 
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -361,26 +359,24 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ))
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
-
-
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -398,23 +394,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ))
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -435,23 +431,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ))
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some(startDate),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -477,26 +473,24 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )
-            ))
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some(startDate),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            )
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-
-
             urlPost(url(taxYear), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -518,23 +512,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )
-            ))
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some(startDate),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            )
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 

@@ -31,7 +31,6 @@ import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
 
   private val employmentId = "employmentId"
-  private val taxYearEOY = 2021
 
   object Selectors {
     val continueButtonSelector: String = "#continue"

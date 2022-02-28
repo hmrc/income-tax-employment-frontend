@@ -44,7 +44,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
     val contentSelector = "#main-content > div > div > p.govuk-body"

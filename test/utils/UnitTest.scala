@@ -46,7 +46,7 @@ import views.html.templates.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite {
+trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TaxYearHelper {
 
   class TestWithAuth(isAgent: Boolean = false, nino: Option[String] = Some("AA123456A")) {
     if (isAgent) mockAuthAsAgent() else mockAuth(nino)

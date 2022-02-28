@@ -34,7 +34,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId = "employmentId"
-  private val taxYearEOY: Int = taxYear - 1
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 

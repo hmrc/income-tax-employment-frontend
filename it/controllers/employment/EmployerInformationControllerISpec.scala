@@ -37,7 +37,6 @@ import scala.concurrent.Future
 
 class EmployerInformationControllerISpec extends IntegrationTest with ViewHelpers {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
 
   object Selectors {

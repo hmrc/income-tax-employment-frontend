@@ -23,7 +23,7 @@ import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{Result, Results}
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockFuelService}
-import utils.UnitTestWithApp
+import utils.{TaxYearHelper, UnitTestWithApp}
 import views.html.benefits.fuel.MileageBenefitAmountView
 
 import scala.concurrent.Future
@@ -31,7 +31,8 @@ import scala.concurrent.Future
 class MileageBenefitAmountControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockFuelService
-  with MockAuditService {
+  with MockAuditService
+  with TaxYearHelper{
 
   lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
   lazy val controller = new MileageBenefitAmountController()(
@@ -44,7 +45,6 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
     mockFuelService,
     mockErrorHandler
   )
-  val taxYear = 2021
   val employmentId = "12345"
   val form: Form[BigDecimal] = AmountForm.amountForm("benefits.mileageBenefitAmount.error.empty.individual")
 
@@ -55,10 +55,10 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
       s"has an OK($OK) status" in new TestWithAuth {
         val anyResult: Results.Status = Ok
         val result: Future[Result] = {
-          mockGetAndHandle(taxYear, anyResult)
+          mockGetAndHandle(taxYearEOY, anyResult)
 
-          controller.show(taxYear, employmentId)(fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.show(taxYearEOY, employmentId)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -75,10 +75,10 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
         val result: Future[Result] = {
 
           val anyResult = Redirect("redirect")
-          mockGetSessionDataAndReturnResult(taxYear, employmentId, anyResult)
+          mockGetSessionDataAndReturnResult(taxYearEOY, employmentId, anyResult)
 
-          controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "23423").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "23423").withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 

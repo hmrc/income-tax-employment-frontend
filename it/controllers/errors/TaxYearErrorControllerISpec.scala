@@ -43,7 +43,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object CommonExpectedEN extends CommonExpectedResults {
     val h1Expected = "Page not found"
-    val p1Expected = "You can only enter information for the 2021 to 2022 tax year."
+    val p1Expected = s"You can only enter information for the ${taxYear - 1} to $taxYear tax year."
     val p2Expected = "Check that you’ve entered the correct web address."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (opens in new tab) to speak to someone about your income tax."
@@ -52,7 +52,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Page not found"
-    val p1Expected = "You can only enter information for the 2021 to 2022 tax year."
+    val p1Expected = s"You can only enter information for the ${taxYear - 1} to $taxYear tax year."
     val p2Expected = "Check that you’ve entered the correct web address."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (opens in new tab) to speak to someone about your income tax."

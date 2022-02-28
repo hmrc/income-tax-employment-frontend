@@ -31,8 +31,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockRemoveEmploymentService {
 
-  private val taxYear = 2022
-  private val validTaxYearEOY: Int = taxYear - 1
   private val employmentId = "001"
   private val employerName = "maggie"
 
@@ -53,10 +51,10 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   ".show" should {
     "return a result" which {
       s"has an OK($OK) status when there is employment data" in new TestWithAuth {
-        mockFind(validTaxYearEOY, Ok(view(validTaxYearEOY, employmentId, employerName, lastEmployment = false)))
+        mockFind(taxYearEOY, Ok(view(taxYearEOY, employmentId, employerName, lastEmployment = false)))
 
-        val result: Future[Result] = controller.show(validTaxYearEOY, employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> validTaxYearEOY.toString
+        val result: Future[Result] = controller.show(taxYearEOY, employmentId)(fakeRequest.withSession(
+          SessionValues.TAX_YEAR -> taxYearEOY.toString
         ))
 
         status(result) shouldBe OK
@@ -64,10 +62,10 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status when no employment data is found for that employmentId " in new TestWithAuth {
-        mockFind(validTaxYearEOY, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(validTaxYearEOY)))
+        mockFind(taxYearEOY, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)))
 
-        val result: Future[Result] = controller.show(validTaxYearEOY, employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> validTaxYearEOY.toString
+        val result: Future[Result] = controller.show(taxYearEOY, employmentId)(fakeRequest.withSession(
+          SessionValues.TAX_YEAR -> taxYearEOY.toString
         ))
 
         status(result) shouldBe SEE_OTHER
@@ -90,25 +88,25 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   ".submit" should {
     s"return a SEE_OTHER($SEE_OTHER) status" when {
       s"form is submitted" in new TestWithAuth {
-        mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-        mockDeleteOrIgnore(employmentsModel, validTaxYearEOY, employmentId)
+        mockGetPriorRight(taxYearEOY, Some(employmentsModel))
+        mockDeleteOrIgnore(employmentsModel, taxYearEOY, employmentId)
 
-        val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
+        val result: Future[Result] = controller.submit(taxYearEOY, employmentId)(fakeRequest
           .withFormUrlEncodedBody("value" -> "true")
           .withSession(
-            SessionValues.TAX_YEAR -> validTaxYearEOY.toString
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmploymentSummaryController.show(validTaxYearEOY).url
+        redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
         bodyOf(result).contains(employerName) shouldBe false
       }
 
       "there's no employment data found for that employmentId" in new TestWithAuth {
-        mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
+        mockGetPriorRight(taxYearEOY, Some(employmentsModel))
 
-        val result: Future[Result] = controller.submit(validTaxYearEOY, "unknown-employment-id")(fakeRequest
-          .withSession(SessionValues.TAX_YEAR -> validTaxYearEOY.toString))
+        val result: Future[Result] = controller.submit(taxYearEOY, "unknown-employment-id")(fakeRequest
+          .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
       }
@@ -127,12 +125,12 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
 
     "return an error if the call fails" in new TestWithAuth {
       val result: Future[Result] = {
-        mockGetPriorLeft(validTaxYearEOY)
+        mockGetPriorLeft(taxYearEOY)
 
         (mockErrorHandler.handleError(_: Int)(_: Request[_])).expects(*, *).returns(InternalServerError)
 
-        controller.submit(validTaxYearEOY, employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> validTaxYearEOY.toString
+        controller.submit(taxYearEOY, employmentId)(fakeRequest.withSession(
+          SessionValues.TAX_YEAR -> taxYearEOY.toString
         ))
       }
 

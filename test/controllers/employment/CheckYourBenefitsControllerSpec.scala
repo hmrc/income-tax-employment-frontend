@@ -58,7 +58,6 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     ec
   )
 
-  private val taxYear: Int = mockAppConfig.defaultTaxYear
   private val employmentId = "223AB12399"
   val employerName: String = "Mishima Zaibatsu"
 

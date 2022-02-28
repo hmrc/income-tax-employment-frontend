@@ -34,7 +34,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
   private val prefilledAmount: BigDecimal = 200
   private val amountInputName = "amount"

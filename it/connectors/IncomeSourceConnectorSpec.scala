@@ -34,7 +34,6 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
   private val mtditid = "some-mtditid"
   private val sessionId = "some-sessionId"
   private val nino = "some-nino"
-  private val taxYear = 2022
   private val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))
   private val incomeSource = "employment"
   private val requestBodyJson = Json.toJson(RefreshIncomeSourceRequest(incomeSource)).toString()

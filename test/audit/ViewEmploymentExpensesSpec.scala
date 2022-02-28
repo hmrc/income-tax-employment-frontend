@@ -22,14 +22,12 @@ import utils.UnitTestWithApp
 
 class ViewEmploymentExpensesSpec extends UnitTestWithApp {
 
-  private val taxYear = 2020
-
   "writes" when {
     "passed a ViewEmploymentExpensesModel" should {
       "produce a valid json" in {
         val auditJson: JsValue = Json.parse(
-          """{
-            | "taxYear": 2020,
+          s"""{
+            | "taxYear": $taxYear,
             | "userType": "individual",
             | "nino": "AA12343AA",
             | "mtditid": "mtditid",

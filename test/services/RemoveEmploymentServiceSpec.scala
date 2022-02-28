@@ -42,7 +42,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
     mockExecutionContext
   )
 
-  private val taxYear = 2022
   private val employmentId: String = "001"
   private val differentEmploymentId: String = "003"
 

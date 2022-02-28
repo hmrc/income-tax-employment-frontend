@@ -33,7 +33,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = 2021
   private val employmentId: String = "employmentId"
   private val amountInModel: BigDecimal = 100
   private val amountInputName = "amount"

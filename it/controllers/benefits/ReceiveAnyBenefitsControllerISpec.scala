@@ -31,8 +31,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
-
   object Selectors {
     val expectedErrorHref = "#value"
     val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
