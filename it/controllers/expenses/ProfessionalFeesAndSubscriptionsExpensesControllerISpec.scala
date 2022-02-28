@@ -16,11 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -29,8 +24,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, professionalFeesExpensesUrl, professionalFeesLink}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -139,11 +139,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
             urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -176,6 +177,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -204,11 +206,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))))
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))))
             urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -267,7 +270,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))))
+          anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))))
         urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -289,7 +292,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -299,6 +302,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
           import Selectors._
           import user.commonExpectedResults._
@@ -330,7 +334,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                  anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))))
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))))
         urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

@@ -16,19 +16,19 @@
 
 package controllers.benefits.fuel
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{carFuelBenefitsAmountUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -117,6 +117,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -145,6 +146,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -213,6 +215,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)

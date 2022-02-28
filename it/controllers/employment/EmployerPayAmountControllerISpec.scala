@@ -16,14 +16,7 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import models.mongo.EmploymentUserData
-import models.{AuthorisationRequest, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,6 +24,11 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchPayUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -41,7 +39,6 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId = "employmentId"
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: AuthorisationRequest[_] = anAuthorisationRequest
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"

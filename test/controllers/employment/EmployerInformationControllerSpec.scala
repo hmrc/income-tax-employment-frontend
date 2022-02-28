@@ -16,12 +16,12 @@
 
 package controllers.employment
 
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import common.SessionValues
-import config.MockEmploymentSessionService
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTestWithApp
 import views.html.employment.EmployerInformationView
 

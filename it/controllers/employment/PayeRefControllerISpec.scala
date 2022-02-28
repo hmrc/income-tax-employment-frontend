@@ -16,13 +16,6 @@
 
 package controllers.employment
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
-import models.AuthorisationRequest
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
@@ -32,6 +25,11 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -42,7 +40,6 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   private val employmentId = "employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: AuthorisationRequest[_] = anAuthorisationRequest
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -153,6 +150,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -181,6 +179,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -212,7 +211,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -228,7 +228,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -245,7 +246,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
@@ -260,7 +262,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
@@ -318,6 +321,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -342,6 +346,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {

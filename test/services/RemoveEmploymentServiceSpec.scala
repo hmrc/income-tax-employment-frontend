@@ -17,12 +17,12 @@
 package services
 
 import audit.DeleteEmploymentAudit
-import config._
-import models.{APIErrorBodyModel, APIErrorModel}
 import models.employment._
 import models.expenses.Expenses
+import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import services.employment.RemoveEmploymentService
+import support.mocks._
 import utils.UnitTest
 
 class RemoveEmploymentServiceSpec extends UnitTest
@@ -192,7 +192,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
         employmentData = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true),
         benefits = None,
         expenses = customerExpenses.expenses
-        ).toNrsPayloadModel
+      ).toNrsPayloadModel
       )
 
       await(service.performSubmitNrsPayload(dataWithExpenses, empSource, isUsingCustomerData = true)) shouldBe Right()

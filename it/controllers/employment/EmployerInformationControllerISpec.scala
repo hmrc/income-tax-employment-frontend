@@ -16,12 +16,6 @@
 
 package controllers.employment
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.DeductionsBuilder.aDeductions
-import builders.models.employment.EmploymentDataBuilder.anEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -30,6 +24,12 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.DeductionsBuilder.aDeductions
+import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourStudentLoansUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
@@ -148,6 +148,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -185,6 +186,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -224,6 +226,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -261,6 +264,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -298,6 +302,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -333,6 +338,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -362,7 +368,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
         "render the page without the Student Loans Row when the feature switch is turned off in year" which {
 
-          val headers = if (user.isWelsh){
+          val headers = if (user.isWelsh) {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear), HeaderNames.ACCEPT_LANGUAGE -> "cy")
           } else {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear))
@@ -405,7 +411,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
         "render the page without the Student Loans Row when the feature switch is turned off end of year" which {
 
-          val headers = if (user.isWelsh){
+          val headers = if (user.isWelsh) {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy")
           } else {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))

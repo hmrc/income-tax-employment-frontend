@@ -16,9 +16,7 @@
 
 package controllers.employment
 
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import common.SessionValues
-import config.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -26,6 +24,8 @@ import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.mocks.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.expenses.CheckEmploymentExpensesView
 

@@ -16,11 +16,6 @@
 
 package controllers.benefits.income
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import forms.AmountForm
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
 import org.jsoup.Jsoup
@@ -28,8 +23,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, incurredCostsBenefitsAmountUrl, overviewUrl, reimbursedCostsBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -155,6 +155,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -183,6 +184,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -211,6 +213,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -326,7 +329,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -360,7 +364,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -394,7 +399,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)

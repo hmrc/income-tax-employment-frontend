@@ -16,9 +16,6 @@
 
 package controllers.benefits.fuel
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import models.IncomeTaxUserData
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import org.jsoup.Jsoup
@@ -28,6 +25,9 @@ import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

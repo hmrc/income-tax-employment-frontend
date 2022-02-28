@@ -16,7 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
@@ -24,6 +23,7 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import utils.PageUrls.{employmentSummaryUrl, fullUrl, overviewUrl, removeExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

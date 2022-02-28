@@ -36,10 +36,11 @@ class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
 
   def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now): Boolean = {
     def zonedDateTime(time: LocalDateTime): LocalDateTime = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
-    val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, taxYearStartMonth, taxYearStartDay, taxYearStartHour ,taxYearStartMinute)
+
+    val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, taxYearStartMonth, taxYearStartDay, taxYearStartHour, taxYearStartMinute)
     val isNowBefore: Boolean = zonedDateTime(now).isBefore(zonedDateTime(endOfYearCutOffDate))
 
-    if(isNowBefore) {
+    if (isNowBefore) {
       logger.info(s"[InYearAction][inYear] Employment pages for this request will be in year.")
     } else {
       logger.info(s"[InYearAction][inYear] Employment pages for this request will not be in year.")
@@ -49,11 +50,10 @@ class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
   }
 
   def notInYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now)(block: Future[Result]): Future[Result] = {
-    if(!inYear(taxYear, now)){
+    if (!inYear(taxYear, now)) {
       block
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
-
 }

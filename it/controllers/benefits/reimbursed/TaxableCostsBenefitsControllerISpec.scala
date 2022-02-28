@@ -16,12 +16,6 @@
 
 package controllers.benefits.reimbursed
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -30,8 +24,14 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, overviewUrl, taxableCostsBenefitsAmountUrl, taxableCostsBenefitsUrl, vouchersOrCreditCardsBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -39,7 +39,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   private val employmentId: String = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
@@ -128,6 +128,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -153,13 +154,14 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true,
-                          anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel))))))
+              anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel))))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(taxableCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -191,6 +193,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -301,6 +304,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._

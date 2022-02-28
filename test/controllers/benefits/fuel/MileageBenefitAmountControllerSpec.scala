@@ -17,12 +17,12 @@
 package controllers.benefits.fuel
 
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService, MockFuelService}
 import forms.AmountForm
 import play.api.data.Form
 import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{Result, Results}
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockFuelService}
 import utils.UnitTestWithApp
 import views.html.benefits.fuel.MileageBenefitAmountView
 

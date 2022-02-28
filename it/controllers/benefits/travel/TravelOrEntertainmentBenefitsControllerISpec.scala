@@ -16,12 +16,6 @@
 
 package controllers.benefits.travel
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -30,8 +24,14 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourBenefitsUrl, companyBenefitsUrl, fullUrl, overviewUrl, travelOrEntertainmentBenefitsUrl, travelSubsistenceBenefitsUrl, utilitiesOrGeneralServicesBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -39,7 +39,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
   private val employmentId: String = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
@@ -121,13 +121,14 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(carVanFuelModel = Some(aCarVanFuelModel),
-                          accommodationRelocationModel = Some(anAccommodationRelocationModel),
-                          isUsingCustomerData = true, isBenefitsReceived = true)))))
+              accommodationRelocationModel = Some(anAccommodationRelocationModel),
+              isUsingCustomerData = true, isBenefitsReceived = true)))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -157,6 +158,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -292,7 +294,8 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -359,8 +362,8 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(carVanFuelModel = Some(aCarVanFuelModel),
-                      accommodationRelocationModel = Some(anAccommodationRelocationModel),
-                      isUsingCustomerData = true, isBenefitsReceived = true)))))
+            accommodationRelocationModel = Some(anAccommodationRelocationModel),
+            isUsingCustomerData = true, isBenefitsReceived = true)))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))

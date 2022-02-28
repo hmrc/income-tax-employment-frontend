@@ -16,19 +16,19 @@
 
 package controllers.benefits.accommodation
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import models.benefits.BenefitsViewModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, nonQualifyingRelocationBenefitsAmountUrl, nonQualifyingRelocationBenefitsUrl, overviewUrl, travelOrEntertainmentBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -136,6 +136,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -164,6 +165,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -194,6 +196,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -311,6 +314,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -342,6 +346,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -373,6 +378,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {

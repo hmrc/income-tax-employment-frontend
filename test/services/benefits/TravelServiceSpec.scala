@@ -16,11 +16,11 @@
 
 package services.benefits
 
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import config.MockEmploymentSessionService
 import models.benefits.TravelEntertainmentModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class TravelServiceSpec extends UnitTest with MockEmploymentSessionService {

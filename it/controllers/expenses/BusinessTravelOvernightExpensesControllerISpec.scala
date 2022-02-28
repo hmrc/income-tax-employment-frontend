@@ -16,11 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.ExpensesCYAModel
@@ -29,8 +24,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, travelAmountExpensesUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -204,6 +204,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -254,6 +255,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -305,6 +307,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -386,7 +389,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))))
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -396,6 +399,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
           import Selectors._
           import user.commonExpectedResults._

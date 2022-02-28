@@ -16,13 +16,6 @@
 
 package controllers.employment
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.employment.StudentLoansBuilder.aStudentLoans
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import common.SessionValues
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel}
@@ -39,6 +32,13 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -716,6 +716,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -884,6 +885,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1043,6 +1045,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1175,6 +1178,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1259,7 +1263,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true " +
           "to check help text isn't shown" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1283,6 +1287,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1387,7 +1392,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1404,6 +1409,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1439,6 +1445,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
@@ -1533,7 +1540,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
     "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
       def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-        EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+        EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
       def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
         EmploymentCYAModel(
@@ -1656,7 +1663,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a redirect to the check studentLoans page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(studentLoansCyaPage(taxYearEOY,employmentId)) shouldBe true
+        result.header("location").contains(studentLoansCyaPage(taxYearEOY, employmentId)) shouldBe true
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe Some(employmentId)
       }
     }
@@ -1730,7 +1737,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a redirect to the check employment information page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employerInformationUrl(taxYearEOY,employmentId)) shouldBe true
+        result.header("location").contains(employerInformationUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
     "create a model when adding employment benefits for the first time but hmrc employment existed before" which {
@@ -1773,7 +1780,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a redirect to the check employment information page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employerInformationUrl(taxYearEOY,"id")) shouldBe true
+        result.header("location").contains(employerInformationUrl(taxYearEOY, "id")) shouldBe true
       }
     }
 
@@ -1825,10 +1832,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(
-                  BenefitsViewModel(
-                    isUsingCustomerData = true, isBenefitsReceived = true
-                  )
-                )), hasPriorBenefits = true))
+          BenefitsViewModel(
+            isUsingCustomerData = true, isBenefitsReceived = true
+          )
+        )), hasPriorBenefits = true))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),

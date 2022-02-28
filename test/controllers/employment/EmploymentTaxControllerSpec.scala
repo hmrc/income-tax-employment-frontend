@@ -17,7 +17,6 @@
 package controllers.employment
 
 import common.SessionValues
-import config.{MockEmploymentService, MockEmploymentSessionService}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
 import models.AuthorisationRequest
@@ -25,6 +24,7 @@ import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.mocks.{MockEmploymentService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentTaxView
 

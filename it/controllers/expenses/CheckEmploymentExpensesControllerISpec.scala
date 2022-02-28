@@ -16,15 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.expenses.ExpensesBuilder.anExpenses
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import common.SessionValues
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.IncomeTaxUserData
@@ -39,6 +30,15 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -715,7 +715,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         findExpensesCyaData(taxYear - 1, anAuthorisationRequest) shouldBe None
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
-
     }
 
     "create the model to update the data and return redirect when there is no customer expenses and nothing has changed in relation to hmrc expenses" which {

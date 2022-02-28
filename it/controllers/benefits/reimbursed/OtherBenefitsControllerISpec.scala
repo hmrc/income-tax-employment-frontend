@@ -16,12 +16,6 @@
 
 package controllers.benefits.reimbursed
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.YesNoForm
 import models.benefits.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -30,8 +24,14 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, fullUrl, otherBenefitsAmountUrl, otherBenefitsUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -39,7 +39,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
   private val employmentId: String = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val continueButtonSelector: String = "#continue"
@@ -127,6 +127,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -153,6 +154,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -180,6 +182,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -294,7 +297,8 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)

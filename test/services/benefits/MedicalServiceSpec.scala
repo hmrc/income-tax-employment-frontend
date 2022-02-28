@@ -16,11 +16,11 @@
 
 package services.benefits
 
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import config.MockEmploymentSessionService
 import models.benefits.MedicalChildcareEducationModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {

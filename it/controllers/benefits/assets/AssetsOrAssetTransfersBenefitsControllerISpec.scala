@@ -16,12 +16,6 @@
 
 package controllers.benefits.assets
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.AssetsModelBuilder.anAssetsModel
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import forms.YesNoForm
 import models.benefits.AssetsModel
 import org.jsoup.Jsoup
@@ -29,8 +23,14 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{assetsBenefitsUrl, assetsForUseBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -142,6 +142,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -173,6 +174,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -204,6 +206,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -310,7 +313,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)

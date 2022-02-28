@@ -16,9 +16,6 @@
 
 package controllers.employment
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
@@ -29,7 +26,10 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{addEmploymentUrl, checkYourExpensesUrl, claimEmploymentExpensesUrl, employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl, removeExpensesUrl}
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future

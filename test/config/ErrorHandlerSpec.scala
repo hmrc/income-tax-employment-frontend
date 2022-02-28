@@ -27,7 +27,6 @@ import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, Serv
 
 import scala.concurrent.Future
 
-
 class ErrorHandlerSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
@@ -63,21 +62,21 @@ class ErrorHandlerSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
     }
   }
 
-    "the NotFoundTemplate" should {
+  "the NotFoundTemplate" should {
 
-      "return the notFoundTemplate when an incorrect web address when been entered" which {
+    "return the notFoundTemplate when an incorrect web address when been entered" which {
 
-        lazy val view = errorHandler.notFoundTemplate
-        lazy implicit val document: Document = Jsoup.parse(view.body)
+      lazy val view = errorHandler.notFoundTemplate
+      lazy implicit val document: Document = Jsoup.parse(view.body)
 
-        "displays the correct page title" in {
+      "displays the correct page title" in {
 
-          document.title shouldBe expectedTitle
-        }
+        document.title shouldBe expectedTitle
       }
-
-
     }
+
+
+  }
 
 
 }

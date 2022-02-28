@@ -16,11 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.YesNoForm
 import models.mongo.ExpensesCYAModel
 import org.jsoup.Jsoup
@@ -28,8 +23,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{checkYourExpensesUrl, fullUrl, overviewUrl, uniformsAndToolsLink, uniformsWorkClothesToolsExpensesUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -148,6 +148,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -179,6 +180,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -214,6 +216,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -247,7 +250,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
@@ -263,7 +267,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
@@ -293,7 +298,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -370,7 +376,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER

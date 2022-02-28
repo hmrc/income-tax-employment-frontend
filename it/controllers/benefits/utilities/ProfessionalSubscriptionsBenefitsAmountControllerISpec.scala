@@ -16,20 +16,20 @@
 
 package controllers.benefits.utilities
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, otherServicesBenefitsUrl, overviewUrl, professionalFeesOrSubscriptionsBenefitsAmountUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -39,7 +39,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
   private val employmentId = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -141,6 +141,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -170,6 +171,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -235,6 +237,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -266,6 +269,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -297,6 +301,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {

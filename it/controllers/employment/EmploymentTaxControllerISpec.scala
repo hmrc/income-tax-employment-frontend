@@ -16,13 +16,6 @@
 
 package controllers.employment
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
@@ -30,6 +23,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -129,7 +129,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = isPriorSubmission,
-              hasPriorStudentLoans = isPriorSubmission,
+      hasPriorStudentLoans = isPriorSubmission,
       employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false))
     )
 
@@ -153,6 +153,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -179,6 +180,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -209,7 +211,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputAmountField, "")
             }
@@ -224,7 +227,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputAmountField, "")
             }
@@ -241,7 +245,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
@@ -256,7 +261,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
@@ -318,7 +324,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -351,7 +358,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -384,7 +392,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

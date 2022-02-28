@@ -16,11 +16,11 @@
 
 package services.benefits
 
-import builders.models.benefits.AssetsModelBuilder.anAssetsModel
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import config.MockEmploymentSessionService
 import models.benefits.AssetsModel
+import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {

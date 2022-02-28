@@ -16,19 +16,19 @@
 
 package controllers.benefits.medical
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
-import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import models.benefits.BenefitsViewModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{beneficialLoansBenefitsUrl, checkYourBenefitsUrl, educationalServicesBenefitsAmountUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -135,6 +135,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
           import Selectors._
           import user.commonExpectedResults._
@@ -164,6 +165,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -195,6 +197,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -278,6 +281,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -309,6 +313,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -340,6 +345,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {

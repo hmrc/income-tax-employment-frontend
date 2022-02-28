@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import forms.employment.EmploymentDateForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -24,8 +23,9 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, fullUrl, overviewUrl, stillWorkingForUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
 
@@ -43,7 +43,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   val yearInputName = "amount-year"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName,
     employerRef = Some("12345678"),
@@ -198,6 +198,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -231,6 +232,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -321,7 +323,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -357,7 +360,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -393,7 +397,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -429,7 +434,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -465,7 +471,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -501,7 +508,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -537,7 +545,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -573,7 +582,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -609,7 +619,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -645,7 +656,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -681,7 +693,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -717,7 +730,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -753,7 +767,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -792,7 +807,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -829,7 +845,8 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

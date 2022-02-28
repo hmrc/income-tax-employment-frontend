@@ -16,17 +16,8 @@
 
 package controllers.benefits.fuel
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.benefits.BenefitsBuilder.aBenefits
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import forms.AmountForm
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
-import models.{AuthorisationRequest, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -34,6 +25,14 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsBuilder.aBenefits
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

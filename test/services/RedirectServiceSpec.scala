@@ -16,8 +16,6 @@
 
 package services
 
-import builders.models.benefits.AssetsModelBuilder.anAssetsModel
-import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.assets.routes._
 import controllers.benefits.fuel.routes._
@@ -35,6 +33,8 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import services.RedirectService._
+import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
+import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import utils.UnitTest
 
 import scala.concurrent.Future

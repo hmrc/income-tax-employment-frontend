@@ -16,11 +16,11 @@
 
 package services.expenses
 
-import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserDataWithBenefits
-import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import config.MockEmploymentSessionService
 import models.expenses.ExpensesViewModel
+import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserDataWithBenefits
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
 class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {

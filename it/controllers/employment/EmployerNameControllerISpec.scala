@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import forms.employment.EmployerNameForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -24,6 +23,7 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -39,7 +39,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   private val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   private def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
@@ -145,6 +145,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -176,6 +177,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -237,7 +239,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -267,7 +270,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -297,7 +301,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

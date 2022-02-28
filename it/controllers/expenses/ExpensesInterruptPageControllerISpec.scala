@@ -16,9 +16,6 @@
 
 package controllers.expenses
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
@@ -26,8 +23,10 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls.{fullUrl, overviewUrl, startEmploymentExpensesUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -35,13 +34,13 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-  
+
   object Selectors {
     def paragraphSelector(index: Int): String = s"#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > p:nth-child($index)"
 
     val continueButtonSelector: String = "button.govuk-button"
   }
-  
+
   trait CommonExpectedResults {
     val expectedCaption: Int => String
     val buttonText: String
@@ -114,6 +113,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -142,6 +142,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -166,11 +167,12 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-                          ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
+              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
             urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._

@@ -16,23 +16,22 @@
 
 package controllers.benefits.fuel
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import utils.PageUrls.{carBenefitsUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  private val taxYearEOY = taxYear  - 1
+  private val taxYearEOY = taxYear - 1
   private val employmentId = "employmentId"
 
   object Selectors {
@@ -111,6 +110,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -138,6 +138,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck("Error: " + user.specificExpectedResults.get.expectedTitle)

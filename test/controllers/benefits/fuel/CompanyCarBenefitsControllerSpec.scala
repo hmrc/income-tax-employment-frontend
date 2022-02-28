@@ -16,14 +16,14 @@
 
 package controllers.benefits.fuel
 
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import config.{MockEmploymentSessionService, MockFuelService}
 import controllers.employment.routes.CheckYourBenefitsController
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.mocks.{MockEmploymentSessionService, MockFuelService}
 import utils.UnitTestWithApp
 import views.html.benefits.fuel.CompanyCarBenefitsView
 

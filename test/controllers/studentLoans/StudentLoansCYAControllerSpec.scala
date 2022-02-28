@@ -16,10 +16,8 @@
 
 package controllers.studentLoans
 
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import common.{EmploymentSection, SessionValues}
-import config.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockStudentLoansCYAService}
+import config.MockStudentLoansCYAService
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -29,6 +27,9 @@ import models.employment.{Deductions, OptionalCyaAndPrior, StudentLoans}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.studentLoans.StudentLoansCYAView
 
@@ -194,8 +195,8 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)),Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS,Left(JourneyNotFinished))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Left(JourneyNotFinished))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -207,7 +208,7 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
 
         val result: Future[Result] = {
 
-          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(None,Some(anAllEmploymentData))))
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(None, Some(anAllEmploymentData))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }

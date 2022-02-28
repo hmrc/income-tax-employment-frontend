@@ -16,12 +16,12 @@
 
 package connectors
 
-import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import config.MockAppConfig
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.ConnectorIntegrationTest
 
