@@ -170,7 +170,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
-          elementNotOnPageCheck(wantToClaimSelector)
+          elementsNotOnPageCheck(wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)

@@ -149,7 +149,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          elementNotOnPageCheck(contentSelector)
+          elementsNotOnPageCheck(contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")

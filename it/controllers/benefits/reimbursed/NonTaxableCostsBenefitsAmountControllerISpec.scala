@@ -195,7 +195,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(enterTotalText, enterTotalSelector)
-            elementNotOnPageCheck(ifItWasNotTextSelector)
+            elementsNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")

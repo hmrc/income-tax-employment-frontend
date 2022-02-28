@@ -158,7 +158,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          elementNotOnPageCheck(optionalParagraphSelector)
+          elementsNotOnPageCheck(optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")

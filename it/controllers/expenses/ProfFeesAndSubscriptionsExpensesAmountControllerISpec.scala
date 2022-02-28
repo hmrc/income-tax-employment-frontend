@@ -168,7 +168,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          elementNotOnPageCheck(replayTextSelector)
+          elementsNotOnPageCheck(replayTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
           textOnPageCheck(poundPrefixText, poundPrefixSelector)

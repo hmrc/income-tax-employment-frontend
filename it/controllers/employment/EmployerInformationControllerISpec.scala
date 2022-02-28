@@ -399,7 +399,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "does not have a student loans section" which {
-            elementNotOnPageCheck(studentLoansLinkSelector)
+            elementsNotOnPageCheck(studentLoansLinkSelector)
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
@@ -441,7 +441,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "does not have a student loans section" which {
-            elementNotOnPageCheck(studentLoansLinkSelector)
+            elementsNotOnPageCheck(studentLoansLinkSelector)
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
