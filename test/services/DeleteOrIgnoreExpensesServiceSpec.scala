@@ -16,20 +16,22 @@
 
 package services
 
+import audit.DeleteEmploymentExpensesAudit
 import models.employment._
 import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
-import support.mocks.{MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
+import support.mocks.{MockAuditService, MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
 import utils.UnitTest
 
 class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockDeleteOrIgnoreExpensesConnector
   with MockIncomeSourceConnector
   with MockNrsService
-  with MockDeleteOrIgnoreExpensesService {
+  with MockDeleteOrIgnoreExpensesService
+  with MockAuditService {
 
-  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, mockNrsService, mockExecutionContext)
+  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, mockAuditService, mockNrsService, mockExecutionContext)
 
   private val hmrcExpensesWithoutDateIgnored =
     EmploymentExpenses(
@@ -101,7 +103,9 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     "return a successful result" when {
       "there is both hmrc expenses and customer expenses" which {
         "toRemove is equal to 'ALL'" in {
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
+          mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
             businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
             jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
@@ -125,6 +129,9 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
         "toRemove is equal to 'CUSTOMER'" in {
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+
+          mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
             businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
             jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
@@ -148,6 +155,9 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is hmrc data and no customer data" which {
         "toRemove is equal to 'HMRC-HELD'" in {
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, hmrcExpensesWithoutDateIgnored.expenses.getOrElse(Expenses()))
+
+          mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
             businessTravelCosts = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.businessTravelCosts),
             jobExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.jobExpenses),
@@ -171,6 +181,9 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is customer data and no hmrc data" which {
         "toRemove is equal to 'CUSTOMER'" in {
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+
+          mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
             businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
             jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
@@ -202,6 +215,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       }
 
       "the connector throws a Left" in {
+        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+
+        mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
+
         verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
           businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
           jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
@@ -223,6 +240,9 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       }
 
       "incomeSourceConnector returns error" in {
+        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+
+        mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
         verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
           businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
           jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
