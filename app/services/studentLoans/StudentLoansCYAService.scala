@@ -118,11 +118,17 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                           taxYear: Int, prior: Option[AllEmploymentData])
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
 
-    val audit: Either[AuditModel[AmendStudentLoansDeductionsUpdateAudit], AuditModel[CreateNewStudentLoansDeductionsAudit]] = prior.flatMap {
-      prior =>
-        val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => createUpdateStudentLoansRequest.toAmendStudentLoansAuditModel(user, taxYear, prior.employmentSource).toAuditModel)
-    }.map(Left(_)).getOrElse(Right(createUpdateStudentLoansRequest.toCreateStudentLoansAuditModel(user, taxYear).toAuditModel))
+    val employmentSource = prior.flatMap(_.eoyEmploymentSourceWith(employmentId).map(_.employmentSource))
+
+    val audit: Either[AuditModel[AmendStudentLoansDeductionsUpdateAudit], AuditModel[CreateNewStudentLoansDeductionsAudit]] = employmentSource match {
+      case Some(source) =>
+        if (source.hasPriorStudentLoans) {
+          Left(createUpdateStudentLoansRequest.toAmendStudentLoansAuditModel(user, taxYear, source).toAuditModel)
+        } else {
+          Right(createUpdateStudentLoansRequest.toCreateStudentLoansAuditModel(user, taxYear).toAuditModel)
+        }
+      case None => Right(createUpdateStudentLoansRequest.toCreateStudentLoansAuditModel(user, taxYear).toAuditModel)
+    }
 
     audit match {
       case Left(amend) => auditService.sendAudit(amend)
