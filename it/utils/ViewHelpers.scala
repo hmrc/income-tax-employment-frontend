@@ -110,8 +110,8 @@ trait ViewHelpers {
     }
   }
 
-  def elementNotOnPageCheck(selector: String)(implicit document: () => Document): Unit = {
-    s"not have the page element for selector '$selector'" in {
+  def elementsNotOnPageCheck(selector: String)(implicit document: () => Document): Unit = {
+    s"not have the page elements for selector '$selector'" in {
       document().select(selector).isEmpty shouldBe true
     }
   }

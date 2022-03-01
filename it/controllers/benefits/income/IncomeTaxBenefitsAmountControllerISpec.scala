@@ -163,7 +163,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           captionCheck(expectedCaption)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          elementNotOnPageCheck(ifItWasNotTextSelector)
+          elementsNotOnPageCheck(ifItWasNotTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

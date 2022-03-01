@@ -156,7 +156,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          elementNotOnPageCheck(previousAmountTextSelector)
+          elementsNotOnPageCheck(previousAmountTextSelector)
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)

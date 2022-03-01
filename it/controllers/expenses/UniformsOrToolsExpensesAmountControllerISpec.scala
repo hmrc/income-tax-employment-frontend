@@ -175,7 +175,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
-          elementNotOnPageCheck(wantToClaimSelector)
+          elementsNotOnPageCheck(wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)

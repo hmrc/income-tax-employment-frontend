@@ -155,7 +155,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          elementNotOnPageCheck(optionalParagraphTextSelector)
+          elementsNotOnPageCheck(optionalParagraphTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)

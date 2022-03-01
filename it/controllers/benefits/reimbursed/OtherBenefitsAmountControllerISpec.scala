@@ -150,7 +150,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          elementNotOnPageCheck(previousAmountTextSelector)
+          elementsNotOnPageCheck(previousAmountTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")

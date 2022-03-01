@@ -21,6 +21,18 @@
 @import models.benefits.BenefitsViewModel
 @import utils.ViewUtils.bigDecimalCurrency
 
+@import controllers.benefits.routes._
+@import controllers.benefits.accommodation.routes._
+@import controllers.benefits.assets.routes._
+@import controllers.benefits.fuel.routes._
+@import controllers.benefits.income.routes._
+@import controllers.benefits.medical.routes._
+@import controllers.benefits.reimbursed.routes._
+@import controllers.benefits.travel.routes._
+@import controllers.benefits.utilities.routes._
+
+@import controllers.employment.routes._
+
 @this(
     layout: Layout,
     formWithCSRF: FormWithCSRF,
@@ -31,325 +43,382 @@
     govUkButton: GovukButton
 )
 
-@(taxYear: Int, employerName: String, benefits: BenefitsViewModel, isSingleEmployment: Boolean, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId: String, employerName: String, benefits: BenefitsViewModel, isSingleEmployment: Boolean, isUsingCustomerData: Boolean, isInYear: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@employmentSource = {
+@hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(request.user.isAgent) "agent" else "individual"}"))}
 
-            @if(isSingleEmployment) {
-                @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-                    href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
-                    } else {
-                        @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
-                            href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
-            }
-}
-
-
-@showRow(key: String, value: String) = @{
+@toSummaryListRow(
+    messageKey: String,
+    value: String,
+    optRoute: Option[Call]
+) = @{
     summaryListRow(
-        HtmlContent(messages(key)),
+        HtmlContent(messages(messageKey)),
         HtmlContent(value),
-        actions = Seq(),
-        keyClasses="govuk-!-width-two-thirds",
-        valueClasses = "govuk-!-width-one-third right-align")
+        keyClasses = "govuk-!-width-two-thirds",
+        valueClasses = if (isInYear) "govuk-!-width-one-third right-align" else "govuk-!-width-one-third",
+        actions = optRoute.map(route => Seq((route, messages("common.change"), hiddenText(messageKey)))).getOrElse(Seq())
+    )
 }
 
-@mapToYesNo(value: Boolean) = @{
-    if(value){messages("common.yes")} else {messages("common.no")}
-}
+@mapToYesNo(value: Boolean) = @{ if(value){messages("common.yes")} else {messages("common.no")} }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
     @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
-    <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    @if(isInYear){
+        <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    } else {
+        @if(!isUsingCustomerData){
+            <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+        }
+    }
 
-    @{
-        govukInsetText(InsetText(
-            content = Text(messages(s"checkYourBenefits.p2.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))
-        ))
+    @if(isInYear){
+        @{ govukInsetText(InsetText(content = Text(messages(s"checkYourBenefits.p2.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString)))) }
     }
 
     <h2 class="govuk-label--m govuk-!-margin-top-9">@employerName</h2>
-    @govukSummaryList(SummaryList(Seq(showRow("checkYourBenefits.benefitsReceived", mapToYesNo(benefits.isBenefitsReceived)))))
+    @govukSummaryList(SummaryList(Seq(toSummaryListRow("checkYourBenefits.benefitsReceived", mapToYesNo(benefits.isBenefitsReceived), if (isInYear) None else Some(ReceiveAnyBenefitsController.show(taxYear, employmentId))))))
 
-    @if(benefits.vehicleDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.vehicleHeader")</h2>
+    @if(if(isInYear) benefits.vehicleDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.carVanFuelModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.carSubheading", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.carQuestion).map{
-                    question => showRow("checkYourBenefits.companyCar", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.car).map{
-                    amount => showRow("checkYourBenefits.companyCarAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map{
-                    question => showRow("checkYourBenefits.fuelForCompanyCar", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.carFuel).map{
-                    amount => showRow("checkYourBenefits.fuelForCompanyCarAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.carVanFuelModel.flatMap(_.vanQuestion).map{
-                    question => showRow("checkYourBenefits.companyVan", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.van).map{
-                    amount => showRow("checkYourBenefits.companyVanAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.carVanFuelModel.flatMap(_.vanFuelQuestion).map{
-                    question => showRow("checkYourBenefits.fuelForCompanyVan", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.vanFuel).map{
-                    amount => showRow("checkYourBenefits.fuelForCompanyVanAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.carVanFuelModel.flatMap(_.mileageQuestion).map{
-                    question => showRow("checkYourBenefits.mileageBenefit", mapToYesNo(question))
-                },
-                benefits.carVanFuelModel.flatMap(_.mileage).map{
-                    amount => showRow("checkYourBenefits.mileageBenefitAmount", bigDecimalCurrency(amount.toString))
-                }
+                    Some(toSummaryListRow("checkYourBenefits.carSubheading", mapToYesNo(benefits.carVanFuelModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(CarVanFuelBenefitsController.show(taxYear, employmentId)))),
+                    benefits.carVanFuelModel.flatMap(_.carQuestion).map( question => {
+                        val optRoot = if (isInYear) None else Some(CompanyCarBenefitsController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.companyCar", mapToYesNo(question), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.car).map(amount => {
+                        val optRoot = if (isInYear) None else Some(CompanyCarBenefitsAmountController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.companyCarAmount", bigDecimalCurrency(amount.toString), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map( question => {
+                        val optRoot = if (isInYear) None else Some(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.fuelForCompanyCar", mapToYesNo(question), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.carFuel).map(amount => {
+                        val optRoot = if (isInYear) None else Some(CarFuelBenefitsAmountController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.fuelForCompanyCarAmount", bigDecimalCurrency(amount.toString), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.vanQuestion).map( question => {
+                        val optRoot = if (isInYear) None else Some(CompanyVanBenefitsController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.companyVan", mapToYesNo(question), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.van).map(amount => {
+                        val optRoot = if (isInYear) None else Some(CompanyVanBenefitsAmountController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.companyVanAmount", bigDecimalCurrency(amount.toString), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.vanFuelQuestion).map( question => {
+                        val optRoot = if (isInYear) None else Some(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.fuelForCompanyVan", mapToYesNo(question), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.vanFuel).map(amount => {
+                        val optRoot = if (isInYear) None else Some(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.fuelForCompanyVanAmount", bigDecimalCurrency(amount.toString), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.mileageQuestion).map( question => {
+                        val optRoot = if (isInYear) None else Some(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.mileageBenefit", mapToYesNo(question), optRoot)
+                    }),
+                    benefits.carVanFuelModel.flatMap(_.mileage).map(amount => {
+                        val optRoot = if (isInYear) None else Some(MileageBenefitAmountController.show(taxYear, employmentId))
+                        toSummaryListRow("checkYourBenefits.mileageBenefitAmount", bigDecimalCurrency(amount.toString), optRoot)
+                    })
+                ).flatten
+
+            govukSummaryList(SummaryList(rows))
+        }
+    }
+
+    @if(if(isInYear) benefits.accommodationDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.accommodationHeader")</h2>
+        @{
+
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.accommodationSubheading", mapToYesNo(benefits.accommodationRelocationModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)))),
+                benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(LivingAccommodationBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.accommodation", mapToYesNo(question), optRoot)
+                }),
+                benefits.accommodationRelocationModel.flatMap(_.accommodation).map(amount => {
+                    val optRoot = if (isInYear) None else Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.accommodationAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(QualifyingRelocationBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.qualifyingRelocationCosts", mapToYesNo(question), optRoot)
+                }),
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map(amount => {
+                    val optRoot = if (isInYear) None else Some(QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.qualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nonQualifyingRelocationCosts", mapToYesNo(question), optRoot)
+                }),
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map(amount => {
+                    val optRoot = if (isInYear) None else Some(NonQualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nonQualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.accommodationDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.accommodationHeader")</h2>
+    @if(if(isInYear) benefits.travelDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.travelHeader")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.accommodationRelocationModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.accommodationSubheading", mapToYesNo(question))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
-                    question => showRow("checkYourBenefits.accommodation", mapToYesNo(question))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
-                    amount => showRow("checkYourBenefits.accommodationAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
-                    question => showRow("checkYourBenefits.qualifyingRelocationCosts", mapToYesNo(question))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map{
-                    amount => showRow("checkYourBenefits.qualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
-                    question => showRow("checkYourBenefits.nonQualifyingRelocationCosts", mapToYesNo(question))
-                },
-                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
-                    amount => showRow("checkYourBenefits.nonQualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.travelSubheading", mapToYesNo(benefits.travelEntertainmentModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)))),
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.travelAndSubsistence", mapToYesNo(question), optRoot)
+                }),
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map(amount => {
+                    val optRoot = if (isInYear) None else Some(TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.travelAndSubsistenceAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.personalCosts", mapToYesNo(question), optRoot)
+                }),
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map(amount => {
+                    val optRoot = if (isInYear) None else Some(IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.personalCostsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(EntertainingBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.entertainment", mapToYesNo(question), optRoot)
+                }),
+                benefits.travelEntertainmentModel.flatMap(_.entertaining).map(amount => {
+                    val optRoot = if (isInYear) None else Some(EntertainmentBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.entertainmentAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.travelDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.travelHeader")</h2>
+    @if(if(isInYear) benefits.utilitiesDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.utilitiesHeader")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.travelEntertainmentModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.travelSubheading", mapToYesNo(question))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
-                    question => showRow("checkYourBenefits.travelAndSubsistence", mapToYesNo(question))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
-                    amount => showRow("checkYourBenefits.travelAndSubsistenceAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
-                    question => showRow("checkYourBenefits.personalCosts", mapToYesNo(question))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
-                    amount => showRow("checkYourBenefits.personalCostsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
-                    question => showRow("checkYourBenefits.entertainment", mapToYesNo(question))
-                },
-                benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
-                    amount => showRow("checkYourBenefits.entertainmentAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.utilitiesSubheading", mapToYesNo(benefits.utilitiesAndServicesModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))),
+                benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
+                    toSummaryListRow("checkYourBenefits.telephone", mapToYesNo(question), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.telephone).map(amount => {
+                    val optRoot = if (isInYear) None else Some(TelephoneBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.telephoneAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String))
+                    toSummaryListRow("checkYourBenefits.servicesProvided", mapToYesNo(question), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map(amount => {
+                    val optRoot = if (isInYear) None else Some(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.servicesProvidedAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.profSubscriptions", mapToYesNo(question), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map(amount => {
+                    val optRoot = if (isInYear) None else Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.profSubscriptionsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(OtherServicesBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.otherServices", mapToYesNo(question), optRoot)
+                }),
+                benefits.utilitiesAndServicesModel.flatMap(_.service).map(amount => {
+                    val optRoot = if (isInYear) None else Some(OtherServicesBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.otherServicesAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.utilitiesDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.utilitiesHeader")</h2>
+    @if(if(isInYear) benefits.medicalDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.medicalHeader")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.utilitiesAndServicesModel.flatMap(_.sectionQuestion).map{
-                 question => showRow("checkYourBenefits.utilitiesSubheading", mapToYesNo(question))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
-                    question => showRow("checkYourBenefits.telephone", mapToYesNo(question))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
-                    amount => showRow("checkYourBenefits.telephoneAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
-                    question => showRow("checkYourBenefits.servicesProvided", mapToYesNo(question))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map{
-                    amount => showRow("checkYourBenefits.servicesProvidedAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map{
-                    question => showRow("checkYourBenefits.profSubscriptions", mapToYesNo(question))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
-                    amount => showRow("checkYourBenefits.profSubscriptionsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
-                    question => showRow("checkYourBenefits.otherServices", mapToYesNo(question))
-                },
-                benefits.utilitiesAndServicesModel.flatMap(_.service).map{
-                    amount => showRow("checkYourBenefits.otherServicesAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.medicalSubheading", mapToYesNo(benefits.medicalChildcareEducationModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)))),
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(MedicalDentalBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.medicalIns", mapToYesNo(question), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map(amount => {
+                    val optRoot = if (isInYear) None else Some(MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.medicalInsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(ChildcareBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nursery", mapToYesNo(question), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map(amount => {
+                    val optRoot = if (isInYear) None else Some(ChildcareBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nurseryAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(EducationalServicesBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.educational", mapToYesNo(question), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServices).map(amount => {
+                    val optRoot = if (isInYear) None else Some(EducationalServicesBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.educationalAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(BeneficialLoansBenefitsController.show(taxYear: Int, employmentId: String))
+                    toSummaryListRow("checkYourBenefits.beneficialLoans", mapToYesNo(question), optRoot)
+                }),
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map(amount => {
+                    val optRoot = if (isInYear) None else Some(BeneficialLoansAmountController.show(taxYear: Int, employmentId: String))
+                    toSummaryListRow("checkYourBenefits.beneficialLoansAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.medicalDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.medicalHeader")</h2>
+    @if(if(isInYear) benefits.incomeTaxDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.incomeTaxHeader")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.medicalChildcareEducationModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.medicalSubheading", mapToYesNo(question))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
-                    question => showRow("checkYourBenefits.medicalIns", mapToYesNo(question))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map{
-                    amount => showRow("checkYourBenefits.medicalInsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map{
-                    question => showRow("checkYourBenefits.nursery", mapToYesNo(question))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
-                    amount => showRow("checkYourBenefits.nurseryAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
-                    question => showRow("checkYourBenefits.educational", mapToYesNo(question))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.educationalServices).map{
-                    amount => showRow("checkYourBenefits.educationalAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map{
-                    question => showRow("checkYourBenefits.beneficialLoans", mapToYesNo(question))
-                },
-                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map{
-                    amount => showRow("checkYourBenefits.beneficialLoansAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.incomeTaxSubheading", mapToYesNo(benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)))),
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(IncomeTaxBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.incomeTaxPaid", mapToYesNo(question), optRoot)
+                }),
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map(amount => {
+                    val optRoot = if (isInYear) None else Some(IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.incomeTaxPaidAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(IncurredCostsBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.incurredCostsPaid", mapToYesNo(question), optRoot)
+                }),
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).map(amount => {
+                    val optRoot = if (isInYear) None else Some(IncurredCostsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.incurredCostsPaidAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.incomeTaxDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.incomeTaxHeader")</h2>
+    @if(if(isInYear) benefits.reimbursedDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.reimbursedHeader")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.incomeTaxSubheading", mapToYesNo(question))
-                },
-                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion).map{
-                    question => showRow("checkYourBenefits.incomeTaxPaid", mapToYesNo(question))
-                },
-                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map{
-                    amount => showRow("checkYourBenefits.incomeTaxPaidAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map{
-                    question => showRow("checkYourBenefits.incurredCostsPaid", mapToYesNo(question))
-                },
-                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).map{
-                    amount => showRow("checkYourBenefits.incurredCostsPaidAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.reimbursedSubheading", mapToYesNo(benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)))),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(NonTaxableCostsBenefitsController.show(taxYear,employmentId))
+                    toSummaryListRow("checkYourBenefits.nonTaxable", mapToYesNo(question), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).map(amount => {
+                    val optRoot = if (isInYear) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nonTaxableAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpensesQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(TaxableCostsBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.taxableCosts", mapToYesNo(question), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).map(amount => {
+                    val optRoot = if (isInYear) None else Some(TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.taxableCostsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(VouchersBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.vouchers", mapToYesNo(question), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map(amount => {
+                    val optRoot = if (isInYear) None else Some(VouchersBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.vouchersAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(NonCashBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nonCash", mapToYesNo(question), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).map(amount => {
+                    val optRoot = if (isInYear) None else Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.nonCashAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(OtherBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.otherBenefits", mapToYesNo(question), optRoot)
+                }),
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map(amount => {
+                    val optRoot = if (isInYear) None else Some(OtherBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.otherBenefitsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.reimbursedDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.reimbursedHeader")</h2>
+    @if(if(isInYear) benefits.assetsDetailsPopulated else benefits.isBenefitsReceived){
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.assetsSubheading")</h2>
         @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.reimbursedSubheading", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map{
-                    question => showRow("checkYourBenefits.nonTaxable", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).map{
-                    amount => showRow("checkYourBenefits.nonTaxableAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpensesQuestion).map{
-                    question => showRow("checkYourBenefits.taxableCosts", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).map{
-                    amount => showRow("checkYourBenefits.taxableCostsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map{
-                    question => showRow("checkYourBenefits.vouchers", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map{
-                    amount => showRow("checkYourBenefits.vouchersAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map{
-                    question => showRow("checkYourBenefits.nonCash", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).map{
-                    amount => showRow("checkYourBenefits.nonCashAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion).map{
-                    question => showRow("checkYourBenefits.otherBenefits", mapToYesNo(question))
-                },
-                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map{
-                    amount => showRow("checkYourBenefits.otherBenefitsAmount", bigDecimalCurrency(amount.toString))
-                }
+        val rows: Seq[SummaryListRow] =
+            Seq(
+                Some(toSummaryListRow("checkYourBenefits.assetsSubheading", mapToYesNo(benefits.assetsModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)))),
+                benefits.assetsModel.flatMap(_.assetsQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(AssetsBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.assets", mapToYesNo(question), optRoot)
+                }),
+                benefits.assetsModel.flatMap(_.assets).map(amount => {
+                    val optRoot = if (isInYear) None else Some(AssetsBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.assetsAmount", bigDecimalCurrency(amount.toString), optRoot)
+                }),
+                benefits.assetsModel.flatMap(_.assetTransferQuestion).map( question => {
+                    val optRoot = if (isInYear) None else Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.assetTransfers", mapToYesNo(question), optRoot)
+                }),
+                benefits.assetsModel.flatMap(_.assetTransfer).map(amount => {
+                    val optRoot = if (isInYear) None else Some(AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
+                    toSummaryListRow("checkYourBenefits.assetTransfersAmount", bigDecimalCurrency(amount.toString), optRoot)
+                })
             ).flatten
 
             govukSummaryList(SummaryList(rows))
         }
     }
 
-    @if(benefits.assetsDetailsPopulated){
-        <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.assetsSubheading")</h2>
-        @{
-            val rows: Seq[SummaryListRow] = Seq(
-                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
-                    question => showRow("checkYourBenefits.assetsSubheading", mapToYesNo(question))
-                },
-                benefits.assetsModel.flatMap(_.assetsQuestion).map{
-                    question => showRow("checkYourBenefits.assets", mapToYesNo(question))
-                },
-                benefits.assetsModel.flatMap(_.assets).map{
-                    amount => showRow("checkYourBenefits.assetsAmount", bigDecimalCurrency(amount.toString))
-                },
-                benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
-                    question => showRow("checkYourBenefits.assetTransfers", mapToYesNo(question))
-                },
-                benefits.assetsModel.flatMap(_.assetTransfer).map{
-                    amount => showRow("checkYourBenefits.assetTransfersAmount", bigDecimalCurrency(amount.toString))
-                }
-            ).flatten
-
-            govukSummaryList(SummaryList(rows))
+    @if(isInYear){
+        @if(isSingleEmployment) {
+            @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+                href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
+        } else {
+            @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
+                href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
+        }
+    } else {
+        @formWithCSRF(action = controllers.employment.routes.CheckYourBenefitsController.submit(taxYear, employmentId)) {
+            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
         }
     }
-
-        @employmentSource
 }
 
 @{

@@ -146,7 +146,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           titleCheck(expectedTitle)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
-          elementNotOnPageCheck(previousAmountTextSelector)
+          elementsNotOnPageCheck(previousAmountTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)

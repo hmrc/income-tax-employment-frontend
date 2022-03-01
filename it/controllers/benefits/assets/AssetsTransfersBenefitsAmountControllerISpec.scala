@@ -167,7 +167,7 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          elementNotOnPageCheck(previousAmountSelector)
+          elementsNotOnPageCheck(previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)

@@ -195,7 +195,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector)
-            elementNotOnPageCheck(paragraphTextSelector2)
+            elementsNotOnPageCheck(paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")

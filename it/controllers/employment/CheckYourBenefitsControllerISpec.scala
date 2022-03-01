@@ -60,14 +60,13 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val p2 = "#main-content > div > div > div.govuk-inset-text"
     val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
     val returnToEmployerSelector = "#returnToEmployerBtn"
+    val changeLinkCssSelector = ".govuk-summary-list__actions"
 
     val firstFieldNameSelector = "#main-content > div > div > dl:nth-child(3) > div > dt"
 
     def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
     def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
-
-    def fieldChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
 
     def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > h2:nth-child($i)"
   }
@@ -862,6 +861,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("Yes", fieldAmountSelector(21, 4), "for assetTransferQuestion")
           textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(21, 5))
           textOnPageCheck("£280,000", fieldAmountSelector(21, 5))
+          elementsNotOnPageCheck(changeLinkCssSelector)
           buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -1031,6 +1031,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("Yes", fieldAmountSelector(21, 4), "for assetTransferQuestion")
           textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(21, 5))
           textOnPageCheck("£280,000", fieldAmountSelector(21, 5))
+          elementsNotOnPageCheck(changeLinkCssSelector)
           buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -1259,8 +1260,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
         }
 
-        "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true " +
-          "to check help text isn't shown" which {
+        "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true to check help text isn't shown" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
             EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
@@ -1474,6 +1474,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("Yes", fieldAmountSelector(7, 8), "for mileageQuestion")
           textOnPageCheck(common.mileageBenefitAmount, fieldNameSelector(7, 9))
           textOnPageCheck("£5", fieldAmountSelector(7, 9))
+          elementsNotOnPageCheck(changeLinkCssSelector)
 
           buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
 

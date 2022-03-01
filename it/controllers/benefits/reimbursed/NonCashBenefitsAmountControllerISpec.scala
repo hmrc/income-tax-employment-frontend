@@ -186,7 +186,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            elementNotOnPageCheck(ifItWasNotTextSelector)
+            elementsNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
