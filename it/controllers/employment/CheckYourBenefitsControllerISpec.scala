@@ -45,7 +45,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private val employmentId = "employmentId"
-  private val taxYearEOY = taxYear - 1
 
   private lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
     submittedOn = "2020-02-12",

@@ -33,7 +33,6 @@ import java.time.LocalDate
 
 class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
   private val employerName: String = "HMRC"
   private val employmentId: String = "employmentId"
   private val startDayInputName = "startAmount-day"

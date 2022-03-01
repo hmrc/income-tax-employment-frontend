@@ -46,7 +46,6 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
     val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
   }
 
-  private val taxYear = 2021
   private val employmentId = "223/AB12399"
 
   private lazy val view = app.injector.instanceOf[EmploymentTaxView]
@@ -66,12 +65,12 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
     "return a result when " which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetAndHandle(taxYear, Ok(view(
-            taxYear, "001", "Dave", AmountForm.amountForm(""), None)
+          mockGetAndHandle(taxYearEOY, Ok(view(
+            taxYearEOY, "001", "Dave", AmountForm.amountForm(""), None)
           ))
 
-          controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -86,18 +85,18 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
       s"Has a $SEE_OTHER status when cya in session" in new TestWithAuth {
         val result: Future[Result] = {
 
-          val redirect = CheckEmploymentDetailsController.show(taxYear, employmentId).url
+          val redirect = CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url
 
           (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
-            _: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
+            _: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_])).expects(taxYearEOY, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
-          controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.submit(taxYearEOY, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
+        redirectUrl(result) shouldBe controllers.employment.routes.CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url
       }
     }
   }

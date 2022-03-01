@@ -37,7 +37,6 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
   private val employmentId = "employmentId"
-  private val taxYearEOY = taxYear - 1
   private val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
   object Selectors {

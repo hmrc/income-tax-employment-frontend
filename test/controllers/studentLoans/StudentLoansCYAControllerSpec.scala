@@ -30,7 +30,7 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService}
-import utils.UnitTestWithApp
+import utils.{TaxYearHelper, UnitTestWithApp}
 import views.html.studentLoans.StudentLoansCYAView
 
 import scala.concurrent.Future
@@ -53,7 +53,6 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
     ec
   )
 
-  private val taxYear: Int = mockAppConfig.defaultTaxYear
   private val employmentId = "223AB12399"
   val employerName: String = "Mishima Zaibatsu"
 

@@ -35,7 +35,6 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   private val amountInModel: BigDecimal = 400
   private val amountInputName = "amount"
   private val amountFieldHref = "#amount"
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
 
   object Selectors {

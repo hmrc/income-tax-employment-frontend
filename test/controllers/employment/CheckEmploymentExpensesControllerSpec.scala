@@ -52,8 +52,6 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
     ec
   )
 
-  private val taxYear = 2022
-
   "calling show() as an individual" should {
     "return status code 303 with correct Location header" when {
       "there is no expenses data in the database" in new TestWithAuth {

@@ -23,7 +23,6 @@ import utils.UnitTest
 class AssetsModelSpec extends UnitTest {
 
   private val employmentId = "id"
-  private val taxYear = 2022
   private val model = AssetsModel(
     sectionQuestion = Some(true),
     assetsQuestion = Some(true),

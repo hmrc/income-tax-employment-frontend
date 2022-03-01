@@ -25,7 +25,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.UnitTest
 
 class TaxYearActionSpec extends UnitTest {
-  val validTaxYear: Int = 2022
+  val validTaxYear: Int = taxYear
   val invalidTaxYear: Int = 3000
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]

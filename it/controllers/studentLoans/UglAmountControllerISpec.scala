@@ -39,6 +39,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   def url(taxYearUnique: Int): String = fullUrl(studentLoansUglAmountUrl(taxYearUnique, employmentId))
 
   val uglDeductionAmount: BigDecimal = 117
+  val startDate = s"$taxYear-04-01"
+  val paymentDate = s"$taxYear-01-01"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
@@ -61,7 +63,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     val expectedParagraphCheckText: String
     val expectedParagraphExampleText: String
     val hintText: String
-    val taxYearEOY: Int
     val inputFieldName: String
     val errorSummaryText: String
     val noEntryError: String
@@ -70,10 +71,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualEN extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedH1: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your payslips or P60."
@@ -86,10 +86,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedH1: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your payslips or P60."
@@ -102,10 +101,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentEN extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedH1: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your client’s payslips or P60."
@@ -118,10 +116,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentCY extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedH1: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your client’s payslips or P60."
@@ -146,8 +143,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to the overview page" when {
 
       "the student loans feature switch is off" in {
-        val request = FakeRequest("GET", studentLoansUglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId))
-          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY))
+        val request = FakeRequest("GET", studentLoansUglAmountUrl(taxYearEOY, employmentId))
+          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
 
         lazy val result: Future[Result] = {
           dropEmploymentDB()
@@ -156,7 +153,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         }
 
         await(result).header.headers("Location") shouldBe
-          appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+          appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
       }
     }
 
@@ -174,13 +171,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -189,9 +186,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             studentLoans = Some(StudentLoansCYAModel(
                               uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -217,13 +214,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -232,10 +229,10 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             studentLoans = Some(StudentLoansCYAModel(
                               uglDeduction = true, uglDeductionAmount = Some(100.00), pglDeduction = false, pglDeductionAmount = None))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers =
-              Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers =
+              Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -260,13 +257,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -275,9 +272,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             studentLoans = Some(StudentLoansCYAModel(
                               uglDeduction = true, uglDeductionAmount = Some(84.73), pglDeduction = true, pglDeductionAmount = Some(1000.00)))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -302,23 +299,23 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
                             )
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -333,8 +330,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -359,9 +356,9 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           Seq(EmploymentSource(
             employmentId,
             "Falador Knights",
-            None, None, Some("2022-01-01"), None, None, None, Some(EmploymentData(
-              "2022-04-01", None, None, None, None, None, None,
-              Some(Pay(Some(100.00), Some(12), Some("WEEKLY"), Some("2022-01-01"), Some(3), Some(3))),
+            None, None, Some(paymentDate), None, None, None, Some(EmploymentData(
+              startDate, None, None, None, None, None, None,
+              Some(Pay(Some(100.00), Some(12), Some("WEEKLY"), Some(startDate), Some(3), Some(3))),
               Some(Deductions(Some(StudentLoans(Some(6300.00), Some(91.0)))))
             )), None
           )),
@@ -378,13 +375,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               sessionId,
                               mtditid,
                               nino,
-                              scenarioData.commonExpectedResults.taxYearEOY,
+                              taxYearEOY,
                               employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
                               EmploymentCYAModel(
                                 EmploymentDetails(
                                   employerName = "Falador Knights",
                                   employerRef = Some("223/AB12399"),
-                                  startDate = Some("2022-04-01"),
+                                  startDate = Some(startDate),
                                   cessationDateQuestion = Some(false),
                                   taxablePayToDate = Some(3000.00),
                                   totalTaxToDate = Some(300.00),
@@ -396,13 +393,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               )
                             ))
 
-              userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+              userDataStub(incomeTaxUserData, nino, taxYearEOY)
               urlPost(
-                url(scenarioData.commonExpectedResults.taxYearEOY),
+                url(taxYearEOY),
                 body = Map("amount" -> uglDeductionAmount.toString),
                 scenarioData.isWelsh,
                 follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
               )
             }
             result.status shouldBe SEE_OTHER
@@ -419,13 +416,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                 sessionId,
                 mtditid,
                 nino,
-                scenarioData.commonExpectedResults.taxYearEOY,
+                taxYearEOY,
                 employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
                 EmploymentCYAModel(
                   EmploymentDetails(
                     employerName = "Falador Knights",
                     employerRef = Some("223/AB12399"),
-                    startDate = Some("2022-04-01"),
+                    startDate = Some(startDate),
                     cessationDateQuestion = Some(false),
                     taxablePayToDate = Some(90000.00),
                     totalTaxToDate = Some(111),
@@ -437,13 +434,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                 )
               ))
 
-              userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+              userDataStub(incomeTaxUserData, nino, taxYearEOY)
               urlPost(
-                url(scenarioData.commonExpectedResults.taxYearEOY),
+                url(taxYearEOY),
                 body = Map("amount" -> uglDeductionAmount.toString),
                 scenarioData.isWelsh,
                 follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
               )
             }
             result.status shouldBe SEE_OTHER
@@ -460,13 +457,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(90000.00),
                               totalTaxToDate = Some(111),
@@ -478,13 +475,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           )
                         ))
 
-            userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(incomeTaxUserData, nino, taxYearEOY)
             urlPost(
-              url(scenarioData.commonExpectedResults.taxYearEOY),
+              url(taxYearEOY),
               body = Map("amount" -> ""),
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
 
@@ -513,13 +510,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(startDate),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(9000.00),
                               totalTaxToDate = Some(3),
@@ -531,13 +528,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           )
                         ))
 
-            userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(incomeTaxUserData, nino, taxYearEOY)
             urlPost(
-              url(scenarioData.commonExpectedResults.taxYearEOY),
+              url(taxYearEOY),
               body = Map("amount" -> "abc"),
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
 
@@ -559,12 +556,12 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         }
         "The user is taken to the overview page when the student loans feature switch is off" in {
           val headers = if (scenarioData.isWelsh) {
-            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
+            Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
           } else {
-            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), "Csrf-Token" -> "nocheck")
+            Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), "Csrf-Token" -> "nocheck")
           }
 
-          val request = FakeRequest("POST", studentLoansUglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId)).withHeaders(headers: _*)
+          val request = FakeRequest("POST", studentLoansUglAmountUrl(taxYearEOY, employmentId)).withHeaders(headers: _*)
 
           val result: Future[Result] = {
             dropEmploymentDB()
@@ -573,7 +570,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           }
 
           status(result) shouldBe SEE_OTHER
-          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
 
         }
       }

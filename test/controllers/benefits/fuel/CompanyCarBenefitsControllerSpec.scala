@@ -33,14 +33,13 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockFuelService {
 
-  private val taxYear = 2021
   private val employmentId = "223/AB12399"
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
   private lazy val employmentUserData = new EmploymentUserData(
     sessionId,
     mtditid,
     nino,
-    taxYear,
+    taxYearEOY,
     employmentId,
     true,
     hasPriorBenefits = true, hasPriorStudentLoans = true,
@@ -51,7 +50,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     sessionId,
     mtditid,
     nino,
-    taxYear,
+    taxYearEOY,
     employmentId,
     isPriorSubmission = false,
     hasPriorBenefits = false,
@@ -73,8 +72,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     "get user session data and return the result from the given execution block" in new TestWithAuth {
       val anyResult: Results.Status = Ok
       val result: Future[Result] = {
-        mockGetSessionData(taxYear, employmentId, anyResult)
-        controller.show(taxYear, employmentId)(fakeRequest)
+        mockGetSessionData(taxYearEOY, employmentId, anyResult)
+        controller.show(taxYearEOY, employmentId)(fakeRequest)
       }
 
       status(result) shouldBe anyResult.header.status
@@ -84,13 +83,13 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
   ".handleShow" should {
     "return Redirect result income tax submission overview" when {
       "when employment user data not present" in {
-        await(controller.handleShow(taxYear, employmentId, None)) shouldBe Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+        await(controller.handleShow(taxYearEOY, employmentId, None)) shouldBe Redirect(CheckYourBenefitsController.show(taxYearEOY, employmentId))
       }
     }
 
     "redirect" when {
       "user has no benefits data" in {
-        val result = controller.handleShow(taxYear, employmentId, Some(employmentUserDataWithoutBenefits))
+        val result = controller.handleShow(taxYearEOY, employmentId, Some(employmentUserDataWithoutBenefits))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=223%2FAB12399"
@@ -100,7 +99,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     "render page" when {
 
       "with non empty form when there are benefits" in {
-        val result = controller.handleShow(taxYear, employmentId, Some(employmentUserData))
+        val result = controller.handleShow(taxYearEOY, employmentId, Some(employmentUserData))
 
         status(result) shouldBe OK
         contentAsString(result) should include("checked")
@@ -112,41 +111,41 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     "return a result" which {
       "has a SEE_OTHER status with valid form body true" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, InternalServerError("500"))
-          controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
+          mockGetSessionData(taxYearEOY, employmentId, InternalServerError("500"))
+          controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
         }
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "has a SEE_OTHER status with valid form body false" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, InternalServerError("500"))
-          controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
+          mockGetSessionData(taxYearEOY, employmentId, InternalServerError("500"))
+          controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Redirect("/any-url"))
-          controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
+          mockGetSessionData(taxYearEOY, employmentId, Redirect("/any-url"))
+          controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
       }
 
       "has a SEE_OTHER status with valid form body but no session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Redirect("/any-url"))
+          mockGetSessionData(taxYearEOY, employmentId, Redirect("/any-url"))
 
-          controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
+          controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
       }
 
       "has a BAD_REQUEST status with invalid form body" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, BadRequest)
-          controller.submit(taxYear, employmentId)(fakeRequest)
+          mockGetSessionData(taxYearEOY, employmentId, BadRequest)
+          controller.submit(taxYearEOY, employmentId)(fakeRequest)
         }
         status(result) shouldBe BAD_REQUEST
       }

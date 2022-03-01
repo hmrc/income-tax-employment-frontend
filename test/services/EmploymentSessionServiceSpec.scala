@@ -90,8 +90,6 @@ class EmploymentSessionServiceSpec extends UnitTest
     mockExecutionContext
   )
 
-  private val taxYear = 2022
-
   private val anyResult = Ok
 
   private def result(allEmploymentData: AllEmploymentData): Result = {

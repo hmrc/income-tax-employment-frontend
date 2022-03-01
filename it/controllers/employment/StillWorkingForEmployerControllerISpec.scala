@@ -29,11 +29,10 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
   val employerName: String = "HMRC"
   val employmentStartDate: String = "2020-01-01"
   val employmentId: String = "001"
-  val cessationDate: Option[String] = Some("2021-01-01")
+  val cessationDate: Option[String] = Some(s"$taxYearEOY-01-01")
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
@@ -149,8 +148,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         "render the 'still working for employer' with the correct content and the yes radio populated when its already in session" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("2021-01-01"),
-              cessationDateQuestion = Some(false), hmrc = true)))
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("$taxYearEOY -01-01"),
+                          cessationDateQuestion = Some(false), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }

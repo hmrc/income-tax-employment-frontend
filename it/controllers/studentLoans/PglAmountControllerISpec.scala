@@ -59,7 +59,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     val expectedButtonText: String
     val expectedParagraphText: String
     val hintText: String
-    val taxYearEOY: Int
     val inputFieldName: String
     val errorSummaryText: String
     val noEntryError: String
@@ -68,10 +67,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualEN extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedParagraphText: String = "Check with the Student Loans Company, your payslips or P60."
@@ -83,10 +81,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedParagraphText: String = "Check with the Student Loans Company, your payslips or P60."
@@ -98,10 +95,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentEN extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedParagraphText: String = "Check with the Student Loans Company, your client’s payslips or P60."
@@ -113,10 +109,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentCY extends CommonExpectedResults {
-    override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
+    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
-    override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedParagraphText: String = "Check with the Student Loans Company, your client’s payslips or P60."
@@ -137,8 +132,8 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   ".show" should {
     "redirect to the overview page" when {
       "the student loans feature switch is off" in {
-        val request = FakeRequest("GET", pglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId))
-          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY))
+        val request = FakeRequest("GET", pglAmountUrl(taxYearEOY, employmentId))
+          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
 
         lazy val result: Future[Result] = {
           dropEmploymentDB()
@@ -146,7 +141,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           route(appWithFeatureSwitchesOff, request, "{}").get
         }
 
-        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
       }
     }
 
@@ -163,7 +158,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -178,9 +173,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             studentLoans = Some(StudentLoansCYAModel(
                               uglDeduction = false, uglDeductionAmount = None, pglDeduction = true, pglDeductionAmount = None))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -204,7 +199,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -219,9 +214,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             studentLoans = Some(StudentLoansCYAModel(
                               uglDeduction = false, uglDeductionAmount = None, pglDeduction = true, pglDeductionAmount = Some(100.00)))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -244,7 +239,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -260,9 +255,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
                             ))
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -285,7 +280,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -298,10 +293,10 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               currentDataIsHmrcHeld = false
                             )
                           )))
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -313,8 +308,8 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
 
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+            urlGet(url(taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -355,7 +350,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               sessionId,
                               mtditid,
                               nino,
-                              scenarioData.commonExpectedResults.taxYearEOY,
+                              taxYearEOY,
                               employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
                               EmploymentCYAModel(
                                 EmploymentDetails(
@@ -373,13 +368,13 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               )
                             ))
 
-              userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+              userDataStub(incomeTaxUserData, nino, taxYearEOY)
               urlPost(
-                url(scenarioData.commonExpectedResults.taxYearEOY),
+                url(taxYearEOY),
                 body = Map("amount" -> pglDeductionAmount.toString),
                 scenarioData.isWelsh,
                 follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
               )
             }
             result.status shouldBe SEE_OTHER
@@ -395,7 +390,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -413,13 +408,13 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           )
                         ))
 
-            userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(incomeTaxUserData, nino, taxYearEOY)
             urlPost(
-              url(scenarioData.commonExpectedResults.taxYearEOY),
+              url(taxYearEOY),
               body = Map("amount" -> ""),
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
 
@@ -447,7 +442,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           sessionId,
                           mtditid,
                           nino,
-                          scenarioData.commonExpectedResults.taxYearEOY,
+                          taxYearEOY,
                           employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
                           EmploymentCYAModel(
                             EmploymentDetails(
@@ -465,13 +460,13 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                           )
                         ))
 
-            userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+            userDataStub(incomeTaxUserData, nino, taxYearEOY)
             urlPost(
-              url(scenarioData.commonExpectedResults.taxYearEOY),
+              url(taxYearEOY),
               body = Map("amount" -> "abc"),
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
 
@@ -493,12 +488,12 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
         "The user is taken to the overview page when the student loans feature switch is off" in {
           val headers = if (scenarioData.isWelsh) {
-            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
+            Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
           } else {
-            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), "Csrf-Token" -> "nocheck")
+            Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), "Csrf-Token" -> "nocheck")
           }
 
-          val request = FakeRequest("POST", pglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId)).withHeaders(headers: _*)
+          val request = FakeRequest("POST", pglAmountUrl(taxYearEOY, employmentId)).withHeaders(headers: _*)
 
           val result: Future[Result] = {
             dropEmploymentDB()
@@ -507,7 +502,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           }
 
           status(result) shouldBe SEE_OTHER
-          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
         }
       }
     }

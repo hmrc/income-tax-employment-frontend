@@ -35,7 +35,6 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
   private val employmentId = "employmentId"
   private val mileageAmount: Option[BigDecimal] = Some(BigDecimal(4.9))
-  private val taxYearEOY: Int = taxYear - 1
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 

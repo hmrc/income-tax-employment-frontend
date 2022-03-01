@@ -15,14 +15,14 @@
  */
 
 package utils
-import org.joda.time.{DateTime, DateTimeZone}
 
-object IntegrationTestClock extends Clock {
-  private val year = 2021
-  private val month = 1
-  private val day = 1
-  private val hour = 0
-  private val minute = 0
+import org.joda.time.DateTime
 
-  override def now(zone: DateTimeZone = DateTimeZone.UTC): DateTime = new DateTime(year, month, day, hour, minute, zone)
+trait TaxYearHelper {
+
+  private val month = DateTime.now().monthOfYear().get()
+  private val dayOfMonth = DateTime.now().dayOfMonth().get()
+
+  val taxYear: Int = if (month >= 4 && dayOfMonth >= 5) DateTime.now().year().get() + 1 else DateTime.now().year().get()
+  val taxYearEOY: Int = taxYear - 1
 }

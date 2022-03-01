@@ -23,7 +23,6 @@ import utils.UnitTest
 class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
   private val employmentId = "id"
-  private val taxYear = 2022
   private val model = ReimbursedCostsVouchersAndNonCashModel(
     sectionQuestion = Some(true),
     expensesQuestion = Some(true),

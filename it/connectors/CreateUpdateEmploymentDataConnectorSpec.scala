@@ -34,7 +34,6 @@ class CreateUpdateEmploymentDataConnectorSpec extends ConnectorIntegrationTest {
   private val mtditid = "some-mtditid"
   private val sessionId = "some-sessionId"
   private val nino = "some-nino"
-  private val taxYear: Int = 2022
   private val employmentId = "001"
   private val url = s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
 

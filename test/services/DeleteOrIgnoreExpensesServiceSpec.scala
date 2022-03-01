@@ -31,8 +31,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
   val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, mockNrsService, mockExecutionContext)
 
-  val taxYear = 2022
-
   private val hmrcExpensesWithoutDateIgnored =
     EmploymentExpenses(
       None,

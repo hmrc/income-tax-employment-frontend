@@ -41,7 +41,6 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
   private val employmentId = anEmploymentSource.employmentId
-  private val taxYearEOY: Int = taxYear - 1
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 

@@ -23,32 +23,31 @@ import utils.UnitTest
 
 class TravelEntertainmentModelSpec extends UnitTest {
 
-  private val taxYear = 2021
   private val employmentId = "some-employment-id"
 
   "travelSectionFinished" should {
     "return None when travelAndSubsistenceQuestion is true and travelAndSubsistence is defined" in {
       val underTest = TravelEntertainmentModel(travelAndSubsistenceQuestion = Some(true), travelAndSubsistence = Some(1))
 
-      underTest.travelSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.travelSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to TravelOrSubsistenceBenefitsAmountController when travelAndSubsistenceQuestion is true" in {
       val underTest = TravelEntertainmentModel(travelAndSubsistenceQuestion = Some(true))
 
-      underTest.travelSectionFinished(taxYear, employmentId) shouldBe Some(TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
+      underTest.travelSectionFinished(taxYearEOY, employmentId) shouldBe Some(TravelOrSubsistenceBenefitsAmountController.show(taxYearEOY, employmentId))
     }
 
     "return None when travelAndSubsistenceQuestion is false" in {
       val underTest = TravelEntertainmentModel(travelAndSubsistenceQuestion = Some(false))
 
-      underTest.travelSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.travelSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to TravelAndSubsistenceBenefitsController when travelAndSubsistenceQuestion is None" in {
       val underTest = TravelEntertainmentModel(travelAndSubsistenceQuestion = None)
 
-      underTest.travelSectionFinished(taxYear, employmentId) shouldBe Some(TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
+      underTest.travelSectionFinished(taxYearEOY, employmentId) shouldBe Some(TravelAndSubsistenceBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -56,25 +55,25 @@ class TravelEntertainmentModelSpec extends UnitTest {
     "return None when personalIncidentalExpensesQuestion is true and personalIncidentalExpenses is defined" in {
       val underTest = TravelEntertainmentModel(personalIncidentalExpensesQuestion = Some(true), personalIncidentalExpenses = Some(1))
 
-      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.personalIncidentalSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to IncidentalCostsBenefitsAmountController when personalIncidentalExpensesQuestion is true" in {
       val underTest = TravelEntertainmentModel(personalIncidentalExpensesQuestion = Some(true))
 
-      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe Some(IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
+      underTest.personalIncidentalSectionFinished(taxYearEOY, employmentId) shouldBe Some(IncidentalCostsBenefitsAmountController.show(taxYearEOY, employmentId))
     }
 
     "return None when personalIncidentalExpensesQuestion is false" in {
       val underTest = TravelEntertainmentModel(personalIncidentalExpensesQuestion = Some(false))
 
-      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.personalIncidentalSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to CheckYourBenefitsController when personalIncidentalExpensesQuestion is None" in {
       val underTest = TravelEntertainmentModel(personalIncidentalExpensesQuestion = None)
 
-      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.personalIncidentalSectionFinished(taxYearEOY, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -82,25 +81,25 @@ class TravelEntertainmentModelSpec extends UnitTest {
     "return None when entertainingQuestion is true and entertaining is defined" in {
       val underTest = TravelEntertainmentModel(entertainingQuestion = Some(true), entertaining = Some(1))
 
-      underTest.entertainingSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.entertainingSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to CheckYourBenefitsController when entertainingQuestion is true" in {
       val underTest = TravelEntertainmentModel(entertainingQuestion = Some(true))
 
-      underTest.entertainingSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.entertainingSectionFinished(taxYearEOY, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId))
     }
 
     "return None when entertainingQuestion is false" in {
       val underTest = TravelEntertainmentModel(entertainingQuestion = Some(false))
 
-      underTest.entertainingSectionFinished(taxYear, employmentId) shouldBe None
+      underTest.entertainingSectionFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to EntertainingBenefitsController when entertainingQuestion is None" in {
       val underTest = TravelEntertainmentModel(entertainingQuestion = None)
 
-      underTest.entertainingSectionFinished(taxYear, employmentId) shouldBe Some(EntertainingBenefitsController.show(taxYear, employmentId))
+      underTest.entertainingSectionFinished(taxYearEOY, employmentId) shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 
@@ -108,13 +107,13 @@ class TravelEntertainmentModelSpec extends UnitTest {
     "return result of travelSectionFinished when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion is not None" in {
       val underTest = TravelEntertainmentModel(sectionQuestion = Some(true), travelAndSubsistenceQuestion = None)
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.travelSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.travelSectionFinished(taxYearEOY, employmentId)
     }
 
     "return result of personalIncidentalSectionFinished when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion is false" in {
       val underTest = TravelEntertainmentModel(sectionQuestion = Some(true), travelAndSubsistenceQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.personalIncidentalSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.personalIncidentalSectionFinished(taxYearEOY, employmentId)
     }
 
     "return result of entertainingSectionFinished when travelEntertainmentQuestion is true and " +
@@ -123,7 +122,7 @@ class TravelEntertainmentModelSpec extends UnitTest {
         travelAndSubsistenceQuestion = Some(false),
         personalIncidentalExpensesQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe underTest.entertainingSectionFinished(taxYear, employmentId)
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.entertainingSectionFinished(taxYearEOY, employmentId)
     }
 
     "return None when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion, " +
@@ -133,19 +132,19 @@ class TravelEntertainmentModelSpec extends UnitTest {
         personalIncidentalExpensesQuestion = Some(false),
         entertainingQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe None
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return None when travelEntertainmentQuestion is false" in {
       val underTest = TravelEntertainmentModel(sectionQuestion = Some(false))
 
-      underTest.isFinished(taxYear, employmentId) shouldBe None
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe None
     }
 
     "return call to TravelOrEntertainmentBenefitsController when travelEntertainmentQuestion is None" in {
       val underTest = TravelEntertainmentModel(sectionQuestion = None)
 
-      underTest.isFinished(taxYear, employmentId) shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYear, employmentId))
+      underTest.isFinished(taxYearEOY, employmentId) shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId))
     }
   }
 }

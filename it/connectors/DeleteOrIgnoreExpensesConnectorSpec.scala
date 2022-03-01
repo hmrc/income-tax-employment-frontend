@@ -32,7 +32,6 @@ class DeleteOrIgnoreExpensesConnectorSpec extends ConnectorIntegrationTest {
   private val mtditid = "some-mtditid"
   private val sessionId = "some-sessionId"
   private val nino = "some-nino"
-  private val taxYear = 2022
   private val validToRemove = "HMRC-HELD"
   private val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources/$validToRemove\\?taxYear=$taxYear"
 

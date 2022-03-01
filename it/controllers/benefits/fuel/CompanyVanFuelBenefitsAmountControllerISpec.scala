@@ -35,7 +35,6 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
 
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
-  private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
 
   object Selectors {

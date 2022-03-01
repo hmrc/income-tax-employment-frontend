@@ -42,7 +42,6 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
   val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
   val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
   val service: CreateOrAmendExpensesService = new CreateOrAmendExpensesService(mockCreateOrAmendExpensesConnector, errorHandler, mockExecutionContext)
-  val taxYear = 2022
   val newAmount = BigDecimal("950.11")
 
   val expensesViewModel: ExpensesViewModel = ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(100.11),

@@ -34,7 +34,6 @@ class IncomeTaxUserDataConnectorSpec extends ConnectorIntegrationTest {
   private val mtditid = "some-mtditid"
   private val sessionId = "some-sessionId"
   private val nino = "some-nino"
-  private val taxYear = 2022
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 

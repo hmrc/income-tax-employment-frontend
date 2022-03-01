@@ -22,12 +22,12 @@ import play.api.http.Status._
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Request, Result}
 import support.mocks.{MockAuditService, MockEmploymentSessionService}
-import utils.UnitTestWithApp
+import utils.{TaxYearHelper, UnitTestWithApp}
 import views.html.employment.AddEmploymentView
 
 import scala.concurrent.Future
 
-class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService {
+class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService with TaxYearHelper {
 
   private lazy val view = app.injector.instanceOf[AddEmploymentView]
   private lazy val controller = new AddEmploymentController()(
@@ -40,7 +40,6 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
     mockErrorHandler,
     ec
   )
-  private val taxYear = 2021
 
   ".show" should {
 
@@ -48,10 +47,10 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has an OK($OK) status when there is no employment" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorRight(taxYear, None)
+          mockGetPriorRight(taxYearEOY, None)
 
-          controller.show(taxYear)(fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.show(taxYearEOY)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -60,12 +59,12 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has a SEE_OTHER($SEE_OTHER) status when there is an employment already" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorRight(taxYear,
+          mockGetPriorRight(taxYearEOY,
             Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
 
 
-          controller.show(taxYear)(fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.show(taxYearEOY)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -74,11 +73,11 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has a INTERNAL_SERVER_ERROR($INTERNAL_SERVER_ERROR) status when service throws left" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorLeft(taxYear)
+          mockGetPriorLeft(taxYearEOY)
           (mockErrorHandler.handleError(_: Int)(_: Request[_])).expects(*, *).returns(InternalServerError)
 
-          controller.show(taxYear)(fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.show(taxYearEOY)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -93,10 +92,10 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has an SEE_OTHER($SEE_OTHER) status when there is no employment" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorRight(taxYear, None)
+          mockGetPriorRight(taxYearEOY, None)
 
-          controller.submit(taxYear)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.submit(taxYearEOY)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -105,12 +104,12 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has a REDIRECT($SEE_OTHER) status when there is an employment already" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorRight(taxYear,
+          mockGetPriorRight(taxYearEOY,
             Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
 
 
-          controller.submit(taxYear)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.submit(taxYearEOY)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 
@@ -119,11 +118,11 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
       s"has a INTERNAL_SERVER_ERROR($INTERNAL_SERVER_ERROR) status when service throws left" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetPriorLeft(taxYear)
+          mockGetPriorLeft(taxYearEOY)
           (mockErrorHandler.handleError(_: Int)(_: Request[_])).expects(*, *).returns(InternalServerError)
 
-          controller.submit(taxYear)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
+          controller.submit(taxYearEOY)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
 

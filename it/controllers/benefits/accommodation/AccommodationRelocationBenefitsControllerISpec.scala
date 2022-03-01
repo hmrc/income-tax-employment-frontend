@@ -31,7 +31,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY = taxYear - 1
   private val employmentId: String = "employmentId"
 
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty

@@ -32,10 +32,8 @@ import java.time.LocalDate
 //scalastyle:off
 class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-
   val employerName: String = "HMRC"
-  val employmentLeaveDate: String = "2021-01-01"
+  val employmentLeaveDate: String = s"$taxYearEOY-01-01"
   val updatedEmployerName: String = "Microsoft"
   val employmentId: String = "001"
   val dayInputName = "amount-day"
@@ -48,7 +46,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName,
     employerRef = Some("12345678"),
     payrollId = Some("12345"),
-    startDate = Some("2021-01-01"),
+    startDate = Some(s"$taxYearEOY-01-01"),
     cessationDateQuestion = Some(false),
     currentDataIsHmrcHeld = hmrc))
 
@@ -103,7 +101,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
     val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
-    val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
+    val beforeStartDateError = s"The date you left your employment cannot be before 1 January $taxYearEOY"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -121,7 +119,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
     val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
-    val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
+    val beforeStartDateError = s"The date you left your employment cannot be before 1 January $taxYearEOY"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -139,7 +137,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
     val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
-    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
+    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January $taxYearEOY"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -157,7 +155,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
     val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
-    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
+    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January $taxYearEOY"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -248,7 +246,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "1")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
-          inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2021")
+          inputFieldValueCheck(yearInputName, Selectors.yearSelector, taxYearEOY.toString)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(employmentEndDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -916,7 +914,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
     "create a new cya model with the employer leave date" which {
 
-      lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "2021", EmploymentDateForm.month -> "01",
+      lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> taxYearEOY.toString, EmploymentDateForm.month -> "01",
         EmploymentDateForm.day -> "01")
 
       lazy val result: WSResponse = {

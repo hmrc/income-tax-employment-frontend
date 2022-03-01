@@ -41,8 +41,6 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest w
   with MockEmploymentSessionService
   with MockErrorHandler {
 
-  private val taxYear = 2022
-  private val taxYearEOY = taxYear - 1
   private val employmentId = "employment-id"
   private val agentUser = aUser.copy(arn = Some("0987654321"), affinityGroup = "Agent")
 

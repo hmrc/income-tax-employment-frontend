@@ -25,8 +25,6 @@ import utils.UnitTest
 
 class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
-  private val taxYear = 2021
-
   private val underTest = new ExpensesService(mockEmploymentSessionService, mockExecutionContext)
 
   "updateClaimingEmploymentExpenses" should {
@@ -36,9 +34,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(claimingEmploymentExpenses = true)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "clear expenses model when claimingEmploymentExpenses is set to false" in {
@@ -46,9 +44,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = ExpensesViewModel.clear(anExpensesCYAModel.expenses.isUsingCustomerData)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -59,9 +57,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = Some(true))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set jobExpensesQuestion to false and jobExpenses value is cleared when false" in {
@@ -70,9 +68,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = Some(false), jobExpenses = None)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -83,9 +81,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(jobExpenses = Some(123))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpenses(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpenses(authorisationRequest.user, taxYearEOY, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -96,9 +94,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(true))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set flatRateJobExpensesQuestion to false and flatRateJobExpenses value is cleared when false" in {
@@ -107,9 +105,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false), flatRateJobExpenses = None)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -120,9 +118,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(flatRateJobExpenses = Some(123))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpenses(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpenses(authorisationRequest.user, taxYearEOY, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -133,9 +131,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(true))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set professionalSubscriptionsQuestion to false and professionalSubscriptions value is cleared when false" in {
@@ -144,9 +142,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false), professionalSubscriptions = None)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -157,9 +155,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(professionalSubscriptions = Some(123))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptions(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptions(authorisationRequest.user, taxYearEOY, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -170,9 +168,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = Some(true))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set otherAndCapitalAllowancesQuestion to false and otherAndCapitalAllowances value is cleared when false" in {
@@ -181,9 +179,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = Some(false), otherAndCapitalAllowances = None)
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYearEOY, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -194,9 +192,9 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedExpensesViewModel = anExpensesViewModel.copy(otherAndCapitalAllowances = Some(123))
       val expectedExpensesUserData = anExpensesUserDataWithBenefits(expectedExpensesViewModel, isPriorSubmission = false).copy(hasPriorExpenses = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowances(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowances(authorisationRequest.user, taxYearEOY, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 }
