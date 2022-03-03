@@ -25,15 +25,19 @@
 
 @(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleText = @{
-    messages(s"studentLoans.pglAmount.title.${if (request.user.isAgent) "agent" else "individual"}", employerName)
+@agentOrIndividual = @{
+    if(request.user.isAgent) "agent" else "individual"
+}
+
+@headingForUse = @{
+    messages(s"studentLoans.postgraduateLoanAmount.heading." + agentOrIndividual, employerName)
 }
 
 @contentHtml = {
     <p class="govuk-body">@messages(s"studentLoans.common.checkWith.${if (request.user.isAgent) "agent" else "individual"}")</p>
 }
 
-@layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+@layout(pageTitle = messages(s"studentLoans.postgraduateLoanAmount.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
@@ -42,7 +46,7 @@
             form,
             id = "amount",
             name = "amount",
-            heading = titleText,
+            heading = headingForUse,
             headingClasses = "govuk-!-margin-bottom-2",
             subheading = Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)),
             content = Some(contentHtml),

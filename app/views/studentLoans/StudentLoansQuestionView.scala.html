@@ -40,11 +40,11 @@
     if(request.user.isAgent) "agent" else "individual"
 }
 
-@layout(messages("studentLoansQuestion.title." + agentOrIndividual, employmentName), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+@layout(messages(s"studentLoansQuestion.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors, Some("studentLoans"))
 
-    @heading(messages("studentLoansQuestion.title." + agentOrIndividual, employmentName), Some(messages("studentLoans.subheading", Seq((taxYear - 1).toString, taxYear.toString): _*)))
+    @heading(messages("studentLoansQuestion.heading." + agentOrIndividual, employmentName), Some(messages("studentLoans.subheading", Seq((taxYear - 1).toString, taxYear.toString): _*)))
 
     <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoansQuestion.inset." + agentOrIndividual, taxYear.toString)</p>
 
