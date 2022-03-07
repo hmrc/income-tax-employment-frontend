@@ -93,7 +93,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
             employmentData = employmentDetailsViewModel,
             benefits = None,
-            expenses = None
+            expenses = None,
+            deductions = None
           ).toNrsPayloadModel)
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
@@ -115,7 +116,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
             employmentData = employmentDetailsViewModel,
             benefits = None,
-            expenses = None
+            expenses = None,
+            deductions = None
           ).toNrsPayloadModel)
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
@@ -152,7 +154,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
         verifySubmitEvent(DecodedDeleteEmploymentPayload(
           employmentData = employmentDetailsViewModel,
           benefits = None,
-          expenses = None
+          expenses = None,
+          deductions = None
         ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
@@ -171,7 +174,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
         verifySubmitEvent(DecodedDeleteEmploymentPayload(
           employmentData = employmentDetailsViewModel,
           benefits = None,
-          expenses = None
+          expenses = None,
+          deductions = None
         ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseError(taxYear, nino)
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
@@ -190,7 +194,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
       verifySubmitEvent(DecodedDeleteEmploymentPayload(
         employmentData = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true),
         benefits = None,
-        expenses = customerExpenses.expenses
+        expenses = customerExpenses.expenses,
+        deductions = None
       ).toNrsPayloadModel
       )
 

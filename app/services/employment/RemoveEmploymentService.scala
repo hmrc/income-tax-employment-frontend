@@ -88,7 +88,8 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
-    val nrsPayload = DecodedDeleteEmploymentPayload(employmentDetailsViewModel, benefits, expenses)
+    val deductions = employmentSource.employmentData.flatMap(_.deductions)
+    val nrsPayload = DecodedDeleteEmploymentPayload(employmentDetailsViewModel, benefits, expenses, deductions)
 
     nrsService.submit(authorisationRequest.user.nino, nrsPayload.toNrsPayloadModel, authorisationRequest.user.mtditid)
   }
