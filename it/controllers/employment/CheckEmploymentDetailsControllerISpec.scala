@@ -29,7 +29,9 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.employment.PayBuilder.aPay
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -221,7 +223,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   object MinModel {
     val miniData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
-        EmploymentSource(
+        HmrcEmploymentSource(
           employmentId = employmentId,
           employerName = "maggie",
           employerRef = None,
@@ -230,22 +232,27 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           cessationDate = None,
           dateIgnored = None,
           submittedOn = None,
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = None,
-            companyDirector = None,
-            closeCompany = None,
-            directorshipCeasedDate = None,
-            occPen = None,
-            disguisedRemuneration = None,
-            pay = Some(aPay),
-            Some(Deductions(
-              studentLoans = Some(StudentLoans(
-                uglDeductionAmount = Some(100.00),
-                pglDeductionAmount = Some(100.00)
-              ))
-            ))
-          )),
+          hmrcEmploymentFinancialData = Some(
+            EmploymentFinancialData(
+              employmentData = Some(EmploymentData(
+                submittedOn = "2020-02-12",
+                employmentSequenceNumber = None,
+                companyDirector = None,
+                closeCompany = None,
+                directorshipCeasedDate = None,
+                occPen = None,
+                disguisedRemuneration = None,
+                pay = Some(aPay),
+                Some(Deductions(
+                  studentLoans = Some(StudentLoans(
+                    uglDeductionAmount = Some(100.00),
+                    pglDeductionAmount = Some(100.00)
+                  ))
+                ))
+              )),
+              None
+            )
+          ),
           None
         )
       ),
@@ -293,7 +300,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   object SomeModelWithInvalidDateFormat {
     val invalidData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
-        EmploymentSource(
+        HmrcEmploymentSource(
           employmentId = employmentId,
           employerName = "maggie",
           employerRef = None,
@@ -302,22 +309,27 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           cessationDate = None,
           dateIgnored = None,
           submittedOn = None,
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = None,
-            companyDirector = Some(true),
-            closeCompany = Some(true),
-            directorshipCeasedDate = Some("14/07/1990"),
-            occPen = None,
-            disguisedRemuneration = None,
-            pay = Some(Pay(Some(100), Some(200), None, None, None, None)),
-            Some(Deductions(
-              studentLoans = Some(StudentLoans(
-                uglDeductionAmount = Some(100.00),
-                pglDeductionAmount = Some(100.00)
-              ))
-            ))
-          )),
+          hmrcEmploymentFinancialData = Some(
+            EmploymentFinancialData(
+              employmentData = Some(EmploymentData(
+                submittedOn = "2020-02-12",
+                employmentSequenceNumber = None,
+                companyDirector = Some(true),
+                closeCompany = Some(true),
+                directorshipCeasedDate = Some("14/07/1990"),
+                occPen = None,
+                disguisedRemuneration = None,
+                pay = Some(Pay(Some(100), Some(200), None, None, None, None)),
+                Some(Deductions(
+                  studentLoans = Some(StudentLoans(
+                    uglDeductionAmount = Some(100.00),
+                    pglDeductionAmount = Some(100.00)
+                  ))
+                ))
+              )),
+              None
+            )
+          ),
           None
         )
       ),
@@ -429,9 +441,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            val multipleSources = Seq(
-              anEmploymentSource,
-              anEmploymentSource.copy(
+            val multipleSources: Seq[HmrcEmploymentSource] = Seq(
+              aHmrcEmploymentSource,
+              aHmrcEmploymentSource.copy(
                 employmentId = "002",
                 employerName = "dave",
                 payrollId = Some("12345693"),
@@ -757,7 +769,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId, hasPriorBenefits = false))
-        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        val hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYearEOY)
 
         val model = CreateUpdateEmploymentRequest(
@@ -799,7 +811,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId, hasPriorBenefits = false))
-        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        val hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYearEOY)
 
         val model = CreateUpdateEmploymentRequest(

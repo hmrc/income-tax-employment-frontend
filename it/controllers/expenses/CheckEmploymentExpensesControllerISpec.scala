@@ -35,6 +35,7 @@ import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
@@ -237,8 +238,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   private val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(Seq(
-    anEmploymentSource,
-    anEmploymentSource.copy(employmentId = "002")
+    aHmrcEmploymentSource,
+    aHmrcEmploymentSource.copy(employmentId = "002")
   ))
   private val partExpenses: Expenses = Expenses(Some(1), Some(2))
 

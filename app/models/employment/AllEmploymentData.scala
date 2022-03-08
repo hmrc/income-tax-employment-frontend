@@ -19,17 +19,17 @@ package models.employment
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 
-case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
+case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
                              hmrcExpenses: Option[EmploymentExpenses],
                              customerEmploymentData: Seq[EmploymentSource],
                              customerExpenses: Option[EmploymentExpenses]) extends Logging {
 
   def latestInYearEmployments: Seq[EmploymentSource] = {
-    hmrcEmploymentData.sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
+    hmrcEmploymentData.map(_.toEmploymentSource).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
   }
 
   def latestEOYEmployments: Seq[EmploymentSource] = {
-    val hmrcData = hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
+    val hmrcData = hmrcEmploymentData.filter(_.dateIgnored.isEmpty).map(_.toEmploymentSource)
     val customerData = customerEmploymentData
 
     (hmrcData ++ customerData).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
@@ -55,12 +55,12 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
 
   def inYearEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = hmrcEmploymentData
     .find(source => source.employmentId.equals(employmentId))
-    .map(EmploymentSourceOrigin(_, isCustomerData = false))
+    .map(hmrcSource => EmploymentSourceOrigin(hmrcSource.toEmploymentSource, isCustomerData = false))
 
   def eoyEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = {
     val hmrcRecord = hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
     val customerRecord = customerEmploymentData.find(source => source.employmentId.equals(employmentId))
-    lazy val default = hmrcRecord.map(EmploymentSourceOrigin(_, isCustomerData = false))
+    lazy val default = hmrcRecord.map(hmrcSource => EmploymentSourceOrigin(hmrcSource.toEmploymentSource, isCustomerData = false))
     customerRecord.fold(default)(customerRecord => Some(EmploymentSourceOrigin(customerRecord, isCustomerData = true)))
   }
 }

@@ -19,11 +19,12 @@ package support.builders.models.employment
 import EmploymentExpensesBuilder.anEmploymentExpenses
 import EmploymentSourceBuilder.anEmploymentSource
 import models.employment.AllEmploymentData
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 
 object AllEmploymentDataBuilder {
 
   val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(anEmploymentSource),
+    hmrcEmploymentData = Seq(aHmrcEmploymentSource),
     hmrcExpenses = Some(anEmploymentExpenses),
     customerEmploymentData = Seq(),
     customerExpenses = None

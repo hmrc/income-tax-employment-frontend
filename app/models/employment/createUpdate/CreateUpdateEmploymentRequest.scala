@@ -25,7 +25,8 @@ import play.api.libs.json.{Json, OFormat}
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
                                          employment: Option[CreateUpdateEmployment] = None,
                                          employmentData: Option[CreateUpdateEmploymentData] = None,
-                                         hmrcEmploymentIdToIgnore: Option[String] = None) {
+                                         hmrcEmploymentIdToIgnore: Option[String] = None,
+                                         isHmrcEmploymentId: Option[Boolean] = None) {
 
   def toCreateAuditModel(user: User, taxYear: Int, existingEmployments: Seq[PriorEmploymentAuditInfo]): CreateNewEmploymentDetailsAudit = {
     CreateNewEmploymentDetailsAudit(

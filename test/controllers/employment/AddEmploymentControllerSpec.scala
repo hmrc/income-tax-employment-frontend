@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import models.employment.{AllEmploymentData, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentSource, HmrcEmploymentSource}
 import play.api.http.Status._
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Request, Result}
@@ -60,7 +60,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
       s"has a SEE_OTHER($SEE_OTHER) status when there is an employment already" in new TestWithAuth {
         val result: Future[Result] = {
           mockGetPriorRight(taxYearEOY,
-            Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
+            Some(AllEmploymentData(Seq(HmrcEmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
 
 
           controller.show(taxYearEOY)(fakeRequest.withSession(
@@ -105,7 +105,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
       s"has a REDIRECT($SEE_OTHER) status when there is an employment already" in new TestWithAuth {
         val result: Future[Result] = {
           mockGetPriorRight(taxYearEOY,
-            Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
+            Some(AllEmploymentData(Seq(HmrcEmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
 
 
           controller.submit(taxYearEOY)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(

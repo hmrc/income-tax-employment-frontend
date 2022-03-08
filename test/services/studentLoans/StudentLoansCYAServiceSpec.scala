@@ -33,7 +33,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
 
   lazy val employerId = "1234567890"
 
-  lazy val hmrcSource: EmploymentSource = EmploymentSource(
+  lazy val hmrcSource: HmrcEmploymentSource = HmrcEmploymentSource(
     employerId, "HMRC", None, None, None, None, None, None, None, None
   )
 
@@ -70,7 +70,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       "the data contains hmrc data and is flagged as hmrc held" in {
         val result = service.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = false)
 
-        result shouldBe Some(hmrcSource)
+        result shouldBe Some(hmrcSource.toEmploymentSource)
       }
 
     }
@@ -177,7 +177,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         Some("001")
       )
 
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "001",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -186,22 +186,27 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
+        hmrcEmploymentFinancialData = Some(
+          EmploymentFinancialData(
+            employmentData = Some(EmploymentData(
+              submittedOn = "2020-02-12",
+              employmentSequenceNumber = Some("123456789999"),
+              companyDirector = Some(true),
+              closeCompany = Some(false),
+              directorshipCeasedDate = Some("2020-02-12"),
+              occPen = Some(false),
+              disguisedRemuneration = Some(false),
+              pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+              Some(Deductions(
+                studentLoans = Some(StudentLoans(
+                  uglDeductionAmount = Some(100.00),
+                  pglDeductionAmount = Some(100.00)
+                ))
+              ))
+            )),
+            None
+          )
+        ),
         None
       )
 
@@ -217,7 +222,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         userType = authorisationRequest.user.affinityGroup.toLowerCase,
         nino = authorisationRequest.user.nino,
         mtditid = authorisationRequest.user.mtditid,
-        priorStudentLoanDeductionsData = employmentSource1.employmentData.flatMap(_.deductions).get,
+        priorStudentLoanDeductionsData = employmentSource1.hmrcEmploymentFinancialData.get.employmentData.flatMap(_.deductions).get,
         studentLoanDeductionsData = Deductions(
           studentLoans = Some(StudentLoans(
             uglDeductionAmount = Some(200.00),

@@ -17,7 +17,7 @@
 package controllers.employment
 
 import models.IncomeTaxUserData
-import models.employment.{AllEmploymentData, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentSource, HmrcEmploymentSource}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -28,7 +28,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.route
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -40,11 +42,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId2 = "002"
   private val employerName2 = "Ken Bosford"
   private val empWithNoBenefitsOrExpenses: IncomeTaxUserData = anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcExpenses = None,
-    hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))))
+    hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))))
   private val multipleEmpsWithExpenses: IncomeTaxUserData = anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(
-    hmrcEmploymentData = Seq(anEmploymentSource, anEmploymentSource.copy(employmentId = employmentId2, employerName = employerName2)))))
+    hmrcEmploymentData = Seq(aHmrcEmploymentSource, aHmrcEmploymentSource.copy(employmentId = employmentId2, employerName = employerName2)))))
   private val multipleEmpsWithoutExpenses: IncomeTaxUserData = anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(
-    hmrcExpenses = None, hmrcEmploymentData = Seq(anEmploymentSource, anEmploymentSource.copy(employmentId = employmentId2, employerName = employerName2)))))
+    hmrcExpenses = None, hmrcEmploymentData = Seq(aHmrcEmploymentSource, aHmrcEmploymentSource.copy(employmentId = employmentId2, employerName = employerName2)))))
 
   object Selectors {
     val valueHref = "#value"
@@ -555,7 +557,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     "redirect the user to the Add Employment page when no data is in session EOY" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
-        val employmentSources = Seq(EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
+        val employmentSources = Seq(HmrcEmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
         userDataStub(IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYearEOY)
         urlGet(s"$appUrl/$taxYearEOY/employment-summary", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

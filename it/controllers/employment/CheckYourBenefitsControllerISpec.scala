@@ -35,7 +35,9 @@ import play.api.test.Helpers.route
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
@@ -871,8 +873,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             val multipleSources = Seq(
-              anEmploymentSource,
-              anEmploymentSource.copy(
+              aHmrcEmploymentSource,
+              aHmrcEmploymentSource.copy(
                 employmentId = "002",
                 employerName = "dave",
                 payrollId = Some("12345693"),
@@ -1172,7 +1174,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
+            val employmentSources = Seq(
+              aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = filteredBenefits))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear - 1)
             urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
@@ -1438,7 +1441,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
+            val employmentSources = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = filteredBenefits))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear)
             urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -1529,7 +1532,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = Some(anEmploymentBenefits)))
+        val employmentSources = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = Some(anEmploymentBenefits)))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, "0022")), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -1552,7 +1555,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
-        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear - 1)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -1565,7 +1568,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -1578,7 +1581,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        val hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYear)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -1636,7 +1639,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
@@ -1672,7 +1675,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
@@ -1711,7 +1714,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
@@ -1726,7 +1729,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               deductions = Some(Deductions(Some(aStudentLoans))),
               benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
             )
-          )
+          ),
+          isHmrcEmploymentId = Some(true)
         )
 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
@@ -1744,21 +1748,13 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        val hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
+          Some(employmentId),
           None,
-          Some(
-            CreateUpdateEmployment(
-              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employerRef),
-              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).map(_.employmentSource.employerName).get,
-              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.startDate).get,
-              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.cessationDate),
-              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.payrollId)
-            )
-          ),
           Some(
             CreateUpdateEmploymentData(
               pay = CreateUpdatePay(
@@ -1769,7 +1765,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
             )
           ),
-          Some(employmentId)
+          isHmrcEmploymentId = Some(true)
         )
 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", CREATED,
@@ -1793,7 +1789,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           pay = Some(anEmploymentSource.employmentData.flatMap(_.pay).get.copy(taxablePayToDate = Some(34786788.77), totalTaxToDate = Some(35553311.89))
           )))))
 
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel, hasPriorBenefits = true))
 
         val model = CreateUpdateEmploymentRequest(
@@ -1830,7 +1826,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           pay = Some(anEmploymentSource.employmentData.flatMap(_.pay).get.copy(taxablePayToDate = Some(34786788.77), totalTaxToDate = Some(35553311.89))
           )))))
 
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(
           BenefitsViewModel(
             isUsingCustomerData = true, isBenefitsReceived = true

@@ -232,7 +232,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                                          prior: Option[AllEmploymentData],
                                                          section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
-    val hmrcEmploymentIdToIgnore: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
+    val hmrcEmploymentId: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
     val customerEmploymentId: Option[String] = {
 
       if(appConfig.mimicEmploymentAPICalls && section != EmploymentSection.EMPLOYMENT_DETAILS){
@@ -246,15 +246,25 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       val employment = formCreateUpdateEmployment(cya, prior, section)
       val employmentData = formCreateUpdateEmploymentData(cya, prior, section)
 
-      (employment.dataHasNotChanged, employmentData.dataHasNotChanged, customerEmploymentId.isDefined) match {
-        case (true, true, _) => CreateUpdateEmploymentRequest()
-        case (_, _, false) => CreateUpdateEmploymentRequest(
+      (employment.dataHasNotChanged, employmentData.dataHasNotChanged, customerEmploymentId.isDefined, hmrcEmploymentId.isDefined) match {
+        case (true, true, _, _) => CreateUpdateEmploymentRequest()
+        case (true, false, _, true) =>
+          CreateUpdateEmploymentRequest(
+            employmentId = hmrcEmploymentId,
+            employment = None,
+            employmentData = Some(employmentData.data),
+            hmrcEmploymentIdToIgnore = None,
+            isHmrcEmploymentId = Some(true)
+          )
+
+        case (_, _, false, _) => CreateUpdateEmploymentRequest(
           employmentId = None,
           employment = Some(employment.data),
           employmentData = Some(employmentData.data),
-          hmrcEmploymentIdToIgnore = hmrcEmploymentIdToIgnore
+          hmrcEmploymentIdToIgnore = hmrcEmploymentId
         )
-        case (employmentHasNotChanged, employmentDataHasNotChanged, _) => CreateUpdateEmploymentRequest(
+
+        case (employmentHasNotChanged, employmentDataHasNotChanged, _, _) => CreateUpdateEmploymentRequest(
           employmentId = customerEmploymentId,
           employment = if (employmentHasNotChanged) None else Some(employment.data),
           employmentData = if (employmentDataHasNotChanged) None else Some(employmentData.data)
@@ -266,13 +276,11 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         logger.warn(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
           s"Could not create request model. Journey is not finished. $additionalContext Exception: $error. SessionId: ${user.sessionId}.")
         Left(JourneyNotFinished)
-      case Right(CreateUpdateEmploymentRequest(_, None, None, _)) =>
+      case Right(CreateUpdateEmploymentRequest(_, None, None, _, _)) =>
         logger.info(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
           s"Data to be submitted matched the prior data exactly. Nothing to update. SessionId: ${user.sessionId}")
         Left(NothingToUpdate)
-      case Right(model) =>
-        logger.info(s"model - ${Json.prettyPrint(Json.toJson(model))}")
-        Right(model)
+      case Right(model) => Right(model)
     }
   }
 
@@ -392,13 +400,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       case Left(error) => Left(errorHandler.handleError(error.status))
       case Right(employmentId) => Right(employmentId)
     }
-  }
-
-  private def createOrUpdateEmployment(user: User,
-                                       taxYear: Int,
-                                       employmentRequest: CreateUpdateEmploymentRequest)
-                                      (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
-    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino, taxYear, employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
   @deprecated("Use getOptionalCYAAndPrior or other methods (e.g. getCYAAndPriorForEndOfYear) instead")

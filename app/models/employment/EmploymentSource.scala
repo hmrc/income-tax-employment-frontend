@@ -16,11 +16,90 @@
 
 package models.employment
 
+import common.EmploymentToRemove.{all, hmrcHeld, customer}
 import models.benefits.BenefitsViewModel
 import models.employment.createUpdate.CreateUpdateEmployment
 import models.mongo.EmploymentDetails
+import org.joda.time.DateTime
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
+
+case class HmrcEmploymentSource(employmentId: String,
+                                employerName: String,
+                                employerRef: Option[String],
+                                payrollId: Option[String],
+                                startDate: Option[String],
+                                cessationDate: Option[String],
+                                dateIgnored: Option[String],
+                                submittedOn: Option[String],
+                                hmrcEmploymentFinancialData: Option[EmploymentFinancialData],
+                                customerEmploymentFinancialData: Option[EmploymentFinancialData]) extends Logging {
+
+  def toRemove: String ={
+    (hmrcEmploymentFinancialData, customerEmploymentFinancialData) match {
+      case (_, Some(_)) => all
+      case _ => hmrcHeld
+    }
+  }
+
+  private def parseDate(submittedOn: String): Option[DateTime] = {
+    try {
+      Some(DateTime.parse(submittedOn))
+    } catch {
+      case e: Exception =>
+        logger.error(s"[HmrcEmploymentSource][parseDate] Couldn't parse submitted on to DateTime - ${e.getMessage}")
+        None
+    }
+  }
+
+  def getLatestEmploymentFinancialData: Option[EmploymentFinancialData] = {
+
+    (hmrcEmploymentFinancialData, customerEmploymentFinancialData) match {
+      case (None, None) => None
+      case (Some(hmrc), None) => Some(hmrc)
+      case (None, Some(customer)) => Some(customer)
+      case (Some(hmrc), Some(customer)) =>
+
+        val hmrcSubmittedOn: Option[DateTime] = hmrc.employmentData.map(_.submittedOn).flatMap(parseDate)
+        val customerSubmittedOn: Option[DateTime] = customer.employmentData.map(_.submittedOn).flatMap(parseDate)
+
+        Some((hmrcSubmittedOn,customerSubmittedOn) match {
+          case (Some(hmrcSubmittedOn), Some(customerSubmittedOn)) => if(hmrcSubmittedOn.isAfter(customerSubmittedOn)) hmrc else customer
+          case (Some(_), None) => hmrc
+          case (None, Some(_)) => customer
+          case (None, None) => customer
+        })
+    }
+  }
+
+  def toEmploymentSource: EmploymentSource = {
+
+    val latestData = getLatestEmploymentFinancialData
+
+    EmploymentSource(
+      employmentId = employmentId,
+      employerName = employerName,
+      employerRef = employerRef,
+      payrollId = payrollId,
+      startDate = startDate,
+      cessationDate = cessationDate,
+      dateIgnored = dateIgnored,
+      submittedOn = submittedOn,
+      employmentData = latestData.flatMap(_.employmentData),
+      employmentBenefits = latestData.flatMap(_.employmentBenefits)
+    )
+  }
+}
+
+object HmrcEmploymentSource {
+  implicit val format: OFormat[HmrcEmploymentSource] = Json.format[HmrcEmploymentSource]
+}
+
+case class EmploymentFinancialData(employmentData: Option[EmploymentData], employmentBenefits: Option[EmploymentBenefits])
+
+object EmploymentFinancialData {
+  implicit val format: OFormat[EmploymentFinancialData] = Json.format[EmploymentFinancialData]
+}
 
 case class EmploymentSource(employmentId: String,
                             employerName: String,
