@@ -77,6 +77,12 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest {
             |      "flatRateJobExpenses": 100,
             |      "professionalSubscriptions": 100,
             |      "otherAndCapitalAllowances": 100
+            |    },
+            |    "deductions": {
+            |      "studentLoans": {
+            |        "undergraduateLoanDeductionAmount": 100,
+            |        "postgraduateLoanDeductionAmount": 100
+            |       }
             |    }
             |}""".stripMargin
         )
@@ -134,6 +140,12 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest {
             otherAndCapitalAllowances = Some(100),
             vehicleExpenses = Some(100),
             mileageAllowanceRelief = Some(100)
+          )),
+          deductions = Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100),
+              pglDeductionAmount = Some(100)
+            ))
           ))).toNrsPayloadModel
 
         Json.toJson(validModel) shouldBe validJson
