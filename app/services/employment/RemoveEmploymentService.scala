@@ -38,6 +38,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
                                         nrsService: NrsService,
                                         implicit val ec: ExecutionContext) extends Logging {
 
+
   def deleteOrIgnoreEmployment(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
                               (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
     val hmrcDataSource = employmentData.hmrcEmploymentData.find(_.employmentId.equals(employmentId))
@@ -45,9 +46,9 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
 
     val eventualResult = (customerDataSource, hmrcDataSource) match {
       case (_, Some(hmrcEmploymentSource)) =>
-        sendAuditEvent(employmentData, taxYear, hmrcEmploymentSource, isUsingCustomerData = false)
-        performSubmitNrsPayload(employmentData, hmrcEmploymentSource, isUsingCustomerData = false)
-        handleConnectorCall(taxYear, employmentId, hmrcHeld, employmentData, employmentData.isLastEOYEmployment)
+        sendAuditEvent(employmentData, taxYear, hmrcEmploymentSource.toEmploymentSource, isUsingCustomerData = false)
+        performSubmitNrsPayload(employmentData, hmrcEmploymentSource.toEmploymentSource, isUsingCustomerData = false)
+        handleConnectorCall(taxYear, employmentId, hmrcEmploymentSource.toRemove, employmentData, employmentData.isLastEOYEmployment)
       case (Some(customerEmploymentSource), _) =>
         sendAuditEvent(employmentData, taxYear, customerEmploymentSource, isUsingCustomerData = true)
         performSubmitNrsPayload(employmentData, customerEmploymentSource, isUsingCustomerData = true)

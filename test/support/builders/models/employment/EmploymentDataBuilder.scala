@@ -18,7 +18,8 @@ package support.builders.models.employment
 
 import DeductionsBuilder.aDeductions
 import PayBuilder.aPay
-import models.employment.EmploymentData
+import models.employment.{Deductions, EmploymentData, StudentLoans}
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 
 object EmploymentDataBuilder {
 
@@ -32,5 +33,25 @@ object EmploymentDataBuilder {
     disguisedRemuneration = Some(false),
     pay = Some(aPay),
     deductions = Some(aDeductions)
+  )
+
+  val aLatestCustomerSubmittedEmploymentData: EmploymentData = EmploymentData(
+    submittedOn = "2021-02-12",
+    employmentSequenceNumber = Some("123456789999"),
+    companyDirector = Some(true),
+    closeCompany = Some(false),
+    directorshipCeasedDate = Some("2020-02-12"),
+    occPen = Some(false),
+    disguisedRemuneration = Some(false),
+    pay = Some(aPay.copy(
+      taxablePayToDate = aPay.taxablePayToDate.map(_ + 1000),
+      totalTaxToDate = aPay.totalTaxToDate.map(_ + 1000)
+    )),
+    deductions = Some(Deductions(
+      Some(StudentLoans(
+        uglDeductionAmount = aStudentLoans.uglDeductionAmount.map(_ + 1000),
+        pglDeductionAmount = aStudentLoans.pglDeductionAmount.map(_ + 1000)
+      ))
+    ))
   )
 }

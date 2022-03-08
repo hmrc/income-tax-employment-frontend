@@ -99,7 +99,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         ),
         Some("001")
       )
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "002",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -108,23 +108,25 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
-        )),
-        None
+          )),
+          None
+        )), None
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -172,7 +174,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         Some("001")
       )
 
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "001",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -181,21 +183,24 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
+          )),
+          None
         )),
         None
       )
@@ -214,8 +219,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           employmentId = employmentSource1.employmentId,
           startDate = employmentSource1.startDate,
           cessationDate = employmentSource1.cessationDate,
-          taxablePayToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-          totalTaxToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+          taxablePayToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+          totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
           payrollId = employmentSource1.payrollId
         ), AuditEmploymentData(
           "name", Some("employerRef"), "001", Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")
@@ -294,7 +299,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         ),
         Some("001")
       )
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "002",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -303,21 +308,24 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
+          )),
+          None
         )),
         None
       )
@@ -366,7 +374,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         Some("001")
       )
 
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "001",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -375,21 +383,24 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
+          )),
+          None
         )),
         None
       )
@@ -407,8 +418,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         employmentId = employmentSource1.employmentId,
         startDate = employmentSource1.startDate,
         cessationDate = employmentSource1.cessationDate,
-        taxablePayToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-        totalTaxToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+        taxablePayToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+        totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
         payrollId = employmentSource1.payrollId
       ), DecodedEmploymentData(
         "name", Some("employerRef"), "001", Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")

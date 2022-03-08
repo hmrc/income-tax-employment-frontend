@@ -297,10 +297,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               dropEmploymentDB()
               authoriseAgentOrIndividual(scenarioData.isAgent)
               userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
-                Seq(EmploymentSource(
-                  employmentId, "Whiterun Guards", None, None, None, None, None, None, Some(EmploymentData(
-                    submittedOnDate, None, None, None, None, None, None, None, None
-                  )), None
+                Seq(HmrcEmploymentSource(
+                  employmentId, "Whiterun Guards", None, None, None, None, None, None, None, None
                 )), None,
                 Seq(), None
               ))), nino, taxYearInUse)
@@ -338,10 +336,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                           )
                         ))
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
-              Seq(EmploymentSource(
-                employmentId, "Whiterun Guards", None, None, None, None, None, None, Some(EmploymentData(
-                  submittedOnDate, None, None, None, None, None, None, None, None
-                )), None
+              Seq(HmrcEmploymentSource(
+                employmentId, "Whiterun Guards", None, None, None, None, None, None, None, None
               )), None,
               Seq(), None
             ))), nino, taxYearInUse)
@@ -414,6 +410,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         )),
         None
       )))
+
+      val hmrcData = HmrcEmploymentSource(
+        employmentId,
+        "Whiterun Guard",
+        None, None, Some(startDate), None, None, None, Some(EmploymentFinancialData(Some(EmploymentData(
+          startDate, None, None, None, None, None, None,
+          Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(submittedOnDate), Some(3), Some(3))),
+          Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
+        )), None)), None
+      )
 
       s"redirect to the employment information overview page for $inYearText for an $affinityText when there is $prior" when {
 
@@ -525,19 +531,13 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
         "the student loans submission is successful" in {
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
+            Some(employmentId),
             None,
-            Some(
-              CreateUpdateEmployment(
-                employerName = "Whiterun Guard",
-                startDate = startDate,
-                employerRef = None
-              )
-            ),
             Some(CreateUpdateEmploymentData(
               CreateUpdatePay(3000.00, 300.00),
               Some(Deductions(Some(StudentLoans(Some(2600.00), Some(4001.00)))))
             )),
-            Some(employmentId)
+            isHmrcEmploymentId = Some(true)
           )
 
           val result: WSResponse = {
@@ -568,7 +568,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             val data = incomeTaxUserData.copy(
               employment = incomeTaxUserData.employment.map(
                 _.copy(
-                  hmrcEmploymentData = incomeTaxUserData.employment.map(_.customerEmploymentData).get,
+                  hmrcEmploymentData = Seq(hmrcData),
                   customerEmploymentData = Seq()
                 )
               )

@@ -20,6 +20,7 @@ import models.employment.AllEmploymentData.employmentIdExists
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import utils.UnitTest
 
@@ -27,9 +28,9 @@ class AllEmploymentDataSpec extends UnitTest {
 
   private val employmentId = "some-employment-id"
 
-  private val hmrcEmployment1 = anEmploymentSource.copy(employmentId = "employment-1", employerName = "employer-name-1", submittedOn = Some("2020-01-04T05:01:01Z"))
-  private val hmrcEmployment2 = anEmploymentSource.copy(employmentId = "employment-2", employerName = "employer-name-2", submittedOn = Some("2020-05-04T05:01:01Z"))
-  private val hmrcEmployment3 = anEmploymentSource.copy(employmentId = "employment-3", employerName = "employer-name-3", submittedOn = Some("2020-10-04T05:01:01Z"))
+  private val hmrcEmployment1 = aHmrcEmploymentSource.copy(employmentId = "employment-1", employerName = "employer-name-1", submittedOn = Some("2020-01-04T05:01:01Z"))
+  private val hmrcEmployment2 = aHmrcEmploymentSource.copy(employmentId = "employment-2", employerName = "employer-name-2", submittedOn = Some("2020-05-04T05:01:01Z"))
+  private val hmrcEmployment3 = aHmrcEmploymentSource.copy(employmentId = "employment-3", employerName = "employer-name-3", submittedOn = Some("2020-10-04T05:01:01Z"))
 
   private val customerEmployment1 = anEmploymentSource.copy(employmentId = "employment-4", employerName = "employer-name-4", submittedOn = Some("2021-01-04T05:01:01Z"))
   private val customerEmployment2 = anEmploymentSource.copy(employmentId = "employment-5", employerName = "employer-name-5", submittedOn = Some("2021-05-04T05:01:01Z"))
@@ -44,7 +45,7 @@ class AllEmploymentDataSpec extends UnitTest {
         .copy(hmrcEmploymentData = Seq(hmrcEmployment1, hmrcEmployment2, hmrcEmployment3))
         .copy(customerEmploymentData = Seq(customerEmployment1, customerEmployment2, customerEmployment3))
 
-      allEmploymentData.latestInYearEmployments shouldBe Seq(hmrcEmployment3, hmrcEmployment2, hmrcEmployment1)
+      allEmploymentData.latestInYearEmployments shouldBe Seq(hmrcEmployment3.toEmploymentSource, hmrcEmployment2.toEmploymentSource, hmrcEmployment1.toEmploymentSource)
     }
   }
 
@@ -56,7 +57,7 @@ class AllEmploymentDataSpec extends UnitTest {
 
       allEmploymentData.latestEOYEmployments shouldBe Seq(
         customerEmployment3, customerEmployment2, customerEmployment1,
-        hmrcEmployment3, hmrcEmployment2, hmrcEmployment1
+        hmrcEmployment3.toEmploymentSource, hmrcEmployment2.toEmploymentSource, hmrcEmployment1.toEmploymentSource
       )
     }
   }
@@ -172,7 +173,7 @@ class AllEmploymentDataSpec extends UnitTest {
         .copy(hmrcEmploymentData = Seq(expectedEmployment, hmrcEmployment2, hmrcEmployment3))
         .copy(customerEmploymentData = Seq(customerEmployment1, customerEmployment2, customerEmployment3))
 
-      allEmploymentData.inYearEmploymentSourceWith("some-employment-id") shouldBe Some(EmploymentSourceOrigin(expectedEmployment, isCustomerData = false))
+      allEmploymentData.inYearEmploymentSourceWith("some-employment-id") shouldBe Some(EmploymentSourceOrigin(expectedEmployment.toEmploymentSource, isCustomerData = false))
     }
 
     "return None when employment does not exist" in {
@@ -200,7 +201,7 @@ class AllEmploymentDataSpec extends UnitTest {
         .copy(hmrcEmploymentData = Seq(expectedEmployment, hmrcEmployment2, hmrcEmployment3))
         .copy(customerEmploymentData = Seq(customerEmployment1, customerEmployment2, customerEmployment3))
 
-      allEmploymentData.eoyEmploymentSourceWith("some-employment-id") shouldBe Some(EmploymentSourceOrigin(expectedEmployment, isCustomerData = false))
+      allEmploymentData.eoyEmploymentSourceWith("some-employment-id") shouldBe Some(EmploymentSourceOrigin(expectedEmployment.toEmploymentSource, isCustomerData = false))
     }
 
     "return None when employment not found in both hmrc and customer employment data" in {
@@ -222,7 +223,7 @@ class AllEmploymentDataSpec extends UnitTest {
   }
   "employmentIdExists" should {
     "return true if the employmentId exists in HMRC Data only" in {
-      val hmrcEmploymentSource = anEmploymentSource.copy(employmentId = employmentId)
+      val hmrcEmploymentSource = aHmrcEmploymentSource.copy(employmentId = employmentId)
       val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource))
 
       employmentIdExists(employmentData, Some(employmentId)) shouldBe true
@@ -236,7 +237,7 @@ class AllEmploymentDataSpec extends UnitTest {
     }
 
     "return false if the employmentId does not exists in Customer and HMRC Data" in {
-      val hmrcEmploymentSource = anEmploymentSource.copy(employmentId = "different-employment-Id")
+      val hmrcEmploymentSource = aHmrcEmploymentSource.copy(employmentId = "different-employment-Id")
       val customerEmploymentSource = anEmploymentSource.copy(employmentId = "different-employment-Id")
       val employmentData = anAllEmploymentData.copy(
         hmrcEmploymentData = Seq(hmrcEmploymentSource),

@@ -101,7 +101,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   private def allEmploymentData: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
-      EmploymentSource(
+      HmrcEmploymentSource(
         employmentId = "001",
         employerName = "maggie",
         employerRef = None,
@@ -110,21 +110,24 @@ class EmploymentSessionServiceSpec extends UnitTest
         cessationDate = None,
         dateIgnored = None,
         submittedOn = None,
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = None,
-          companyDirector = None,
-          closeCompany = None,
-          directorshipCeasedDate = None,
-          occPen = None,
-          disguisedRemuneration = None,
-          pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = None,
+            companyDirector = None,
+            closeCompany = None,
+            directorshipCeasedDate = None,
+            occPen = None,
+            disguisedRemuneration = None,
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
+          )),
+          None
         )),
         None
       )
@@ -491,7 +494,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
-              EmploymentSource(
+              HmrcEmploymentSource(
                 employmentDataFull.employmentId,
                 employmentDataFull.employment.employmentDetails.employerName,
                 employmentDataFull.employment.employmentDetails.employerRef,
@@ -516,7 +519,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       lazy val response = underTest.createModelOrReturnError(
         authorisationRequest.user,
         employmentDataFull,
-        Some(AllEmploymentData(Seq(EmploymentSource(
+        Some(AllEmploymentData(Seq(HmrcEmploymentSource(
           employmentDataFull.employmentId,
           employmentDataFull.employment.employmentDetails.employerName,
           employmentDataFull.employment.employmentDetails.employerRef,
@@ -525,20 +528,23 @@ class EmploymentSessionServiceSpec extends UnitTest
           employmentDataFull.employment.employmentDetails.cessationDate,
           employmentDataFull.employment.employmentDetails.dateIgnored,
           employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
-          Some(EmploymentData(
-            employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
-            Some(Pay(
-              employmentDataFull.employment.employmentDetails.taxablePayToDate,
-              employmentDataFull.employment.employmentDetails.totalTaxToDate,
-              None, None, None, None
-            )), None
-          )),
-          None)), None, Seq(), None)
+          hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+            Some(EmploymentData(
+              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+              Some(Pay(
+                employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                None, None, None, None
+              )), None
+            )),
+            None
+          )),None
+          )), None, Seq(), None)
         ), EmploymentSection.STUDENT_LOANS
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(20000.0), Some(30000.0))))), None)), Some("employmentId")
+        Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(20000.0), Some(30000.0))))), None)), None, Some(true)
       )
     }
 
@@ -546,7 +552,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       lazy val response = underTestWithMimicking.createModelOrReturnError(
         authorisationRequest.user,
         employmentDataFull,
-        Some(AllEmploymentData(Seq(EmploymentSource(
+        Some(AllEmploymentData(Seq(HmrcEmploymentSource(
           employmentDataFull.employmentId,
           employmentDataFull.employment.employmentDetails.employerName,
           employmentDataFull.employment.employmentDetails.employerRef,
@@ -555,22 +561,25 @@ class EmploymentSessionServiceSpec extends UnitTest
           employmentDataFull.employment.employmentDetails.cessationDate,
           employmentDataFull.employment.employmentDetails.dateIgnored,
           employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
-          Some(EmploymentData(
-            employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
-            Some(Pay(
-              employmentDataFull.employment.employmentDetails.taxablePayToDate,
-              employmentDataFull.employment.employmentDetails.totalTaxToDate,
-              None, None, None, None
-            )), None
-          )),
-          None)), None, Seq(), None)
+          hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+            Some(EmploymentData(
+              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+              Some(Pay(
+                employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                None, None, None, None
+              )), None
+            )),
+            None
+          )), None
+          )), None, Seq(), None)
         ), EmploymentSection.STUDENT_LOANS
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(20000.0), Some(30000.0))))), Some(
           Benefits(assets = Some(100.00), assetTransfer = Some(100.00))
-        ))), None
+        ))), None, isHmrcEmploymentId = Some(true)
       )
     }
 
@@ -581,7 +590,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
-              EmploymentSource(
+              HmrcEmploymentSource(
                 employmentDataFull.employmentId,
                 employmentDataFull.employment.employmentDetails.employerName,
                 employmentDataFull.employment.employmentDetails.employerRef,
@@ -590,20 +599,23 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.cessationDate,
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
-                Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
-                  Some(Pay(
-                    employmentDataFull.employment.employmentDetails.taxablePayToDate,
-                    employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    None, None, None, None
-                  )), None
-                )),
-                Some(
-                  EmploymentBenefits(
-                    "",
-                    employmentDataFull.employment.employmentBenefits.map(_.toBenefits)
+                hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+                  Some(EmploymentData(
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    Some(Pay(
+                      employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                      employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                      None, None, None, None
+                    )), None
+                  )),
+                  Some(
+                    EmploymentBenefits(
+                      "",
+                      employmentDataFull.employment.employmentBenefits.map(_.toBenefits)
+                    )
                   )
-                )
+                )),
+                None
               )
             ), None, Seq(), None
           )
@@ -611,8 +623,8 @@ class EmploymentSessionServiceSpec extends UnitTest
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(20000.0), Some(30000.0))))),
-          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), Some("employmentId")
+        Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(20000.0), Some(30000.0))))),
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), None, isHmrcEmploymentId = Some(true)
       )
     }
 
@@ -801,7 +813,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
-              EmploymentSource(
+              HmrcEmploymentSource(
                 employmentDataFull.employmentId,
                 employmentDataFull.employment.employmentDetails.employerName,
                 employmentDataFull.employment.employmentDetails.employerRef,
@@ -829,7 +841,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
-              EmploymentSource(
+              HmrcEmploymentSource(
                 employmentDataFull.employmentId,
                 employmentDataFull.employment.employmentDetails.employerName,
                 employmentDataFull.employment.employmentDetails.employerRef,
@@ -838,15 +850,17 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.cessationDate,
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
-                Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
-                  Some(Pay(
-                    employmentDataFull.employment.employmentDetails.taxablePayToDate,
-                    employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    None, None, None, None
-                  )), None
-                )),
-                None
+                hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+                  Some(EmploymentData(
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    Some(Pay(
+                      employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                      employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                      None, None, None, None
+                    )), None
+                  )),
+                  None
+                )), None
               )
             ), None, Seq(), None
           )
@@ -854,8 +868,8 @@ class EmploymentSessionServiceSpec extends UnitTest
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
-          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), Some("employmentId")
+        Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), None, isHmrcEmploymentId = Some(true)
       )
     }
 
@@ -1036,7 +1050,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
-              EmploymentSource(
+              HmrcEmploymentSource(
                 employmentDataFull.employmentId,
                 employmentDataFull.employment.employmentDetails.employerName,
                 employmentDataFull.employment.employmentDetails.employerRef,
@@ -1045,16 +1059,18 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.cessationDate,
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
-                Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
-                  Some(Pay(
-                    employmentDataFull.employment.employmentDetails.taxablePayToDate,
-                    employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    None, None, None, None
-                  )), None
-                )),
-                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+                  Some(EmploymentData(
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    Some(Pay(
+                      employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                      employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                      None, None, None, None
+                    )), None
+                  )),
+                  employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                    Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                )), None
               )
             ), None, Seq(), None
           )
@@ -1079,8 +1095,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       val response = underTest.createModelOrReturnError(
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
-          .map(_.copy(employmentId = "employmentId", employmentData = None, employmentBenefits = Some(EmploymentBenefits(
-            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
+          .map(_.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = None, employmentBenefits = Some(EmploymentBenefits(
+            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
           )))))), EmploymentSection.EMPLOYMENT_DETAILS
       )
 
@@ -1094,8 +1110,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       val response = underTest.createModelOrReturnError(
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
-          .map(_.copy(employmentId = "employmentId", employmentBenefits = Some(EmploymentBenefits(
-            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
+          .map(x => x.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = x.hmrcEmploymentFinancialData.get.employmentData,employmentBenefits = Some(EmploymentBenefits(
+            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
           )))))), EmploymentSection.EMPLOYMENT_DETAILS
       )
 
@@ -1108,7 +1124,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     "create the model to send and return the correct result when its a customer update" in {
 
       val response = underTest.createModelOrReturnError(
-        authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "employmentId")))),
+        authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.toEmploymentSource).map(_.copy(employmentId = "employmentId")))),
 
         EmploymentSection.EMPLOYMENT_DETAILS
       )

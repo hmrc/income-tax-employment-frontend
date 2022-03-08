@@ -52,7 +52,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
     if (isCustomerHeld) {
       allEmploymentData.customerEmploymentData.find(_.employmentId == employmentId)
     } else {
-      allEmploymentData.hmrcEmploymentData.find(_.employmentId == employmentId)
+      allEmploymentData.hmrcEmploymentData.find(_.employmentId == employmentId).map(_.toEmploymentSource)
     }
   }
 

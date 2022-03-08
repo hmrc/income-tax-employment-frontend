@@ -20,7 +20,9 @@ import models.IncomeTaxUserData.excludePensionIncome
 import models.employment.AllEmploymentData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.employment.PayBuilder.aPay
 import utils.UnitTest
 
@@ -34,24 +36,23 @@ class IncomeTaxUserDataSpec extends UnitTest {
   private val employmentDataWithNoOccPenAndNoPay = anEmploymentData.copy(occPen = None, pay = None)
 
   "stripPensionIncome" should {
+    //TODO CHANGE NAME
     "only strip pay when occupational pension is true" in {
       val allEmploymentData: AllEmploymentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenTrueAndPay)),
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenTrueAndNoPay)),
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenFalseAndWithPay)),
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenFalseAndNoPay)),
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithNoOccPenAndWithPay)),
-        anEmploymentSource.copy(employmentData = Some(employmentDataWithNoOccPenAndNoPay))
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenTrueAndPay)))),
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenTrueAndNoPay)))),
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenFalseAndWithPay)))),
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenFalseAndNoPay)))),
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithNoOccPenAndWithPay)))),
+        aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithNoOccPenAndNoPay))))
       ))
 
       excludePensionIncome(IncomeTaxUserData(Some(allEmploymentData))) shouldBe
         IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenTrueAndNoPay)),
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenTrueAndNoPay)),
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenFalseAndWithPay)),
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithOccPenFalseAndNoPay)),
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithNoOccPenAndWithPay)),
-          anEmploymentSource.copy(employmentData = Some(employmentDataWithNoOccPenAndNoPay))
+          aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenFalseAndWithPay)))),
+          aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithOccPenFalseAndNoPay)))),
+          aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithNoOccPenAndWithPay)))),
+          aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentDataWithNoOccPenAndNoPay))))
         ))))
     }
   }

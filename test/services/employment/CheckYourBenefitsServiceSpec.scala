@@ -129,7 +129,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         Some("001")
       )
 
-      val employmentSource1 = EmploymentSource(
+      val employmentSource1 = HmrcEmploymentSource(
         employmentId = "001",
         employerName = "Mishima Zaibatsu",
         employerRef = Some("223/AB12399"),
@@ -138,23 +138,26 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         cessationDate = Some("2020-03-11"),
         dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
             ))
-          ))
+          )),
+          employmentBenefits = Some(EmploymentBenefits("2020-02-15", Some(allBenefits)))
         )),
-        employmentBenefits = Some(EmploymentBenefits("2020-02-15", Some(allBenefits)))
+        None
       )
 
       val priorData: AllEmploymentData = AllEmploymentData(

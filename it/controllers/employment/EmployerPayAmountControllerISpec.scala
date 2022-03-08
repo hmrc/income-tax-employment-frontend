@@ -26,7 +26,9 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchPayUrl, overviewUrl}
@@ -136,9 +138,9 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   )
 
   private val multipleEmployments = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
-    anEmploymentSource.copy(employmentBenefits = None),
-    anEmploymentSource.copy(employmentId = "002", employmentBenefits = None)
-  ))
+    aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))),
+    aHmrcEmploymentSource.copy(employmentId = "002", hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))
+  )))
 
   ".show" when {
     userScenarios.foreach { user =>

@@ -28,7 +28,9 @@ import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.DeductionsBuilder.aDeductions
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourStudentLoansUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import utils.{IntegrationTest, ViewHelpers}
@@ -139,9 +141,9 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         "render the page where the status for benefits is Cannot Update when there is no Benefits data in year and Undergraduate loans" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            val employment = anEmploymentSource.copy(employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
+            val employment = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
               deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = Some(2000), pglDeductionAmount = None))))
-            )))
+            )))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employment)))), nino, taxYear)
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -179,7 +181,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         "render the page where the status for student loans is Not Started when there is no Student Loans data in year" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            val employment = anEmploymentSource.copy(employmentData = Some(anEmploymentData.copy(deductions = Some(aDeductions.copy(studentLoans = None)))))
+            val employment = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(
+              aHmrcEmploymentFinancialData.copy(employmentData = Some(anEmploymentData.copy(deductions = Some(aDeductions.copy(studentLoans = None)))))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employment)))), nino, taxYear)
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -216,10 +219,11 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         "render the page with not ignored employments and Postgraduate loans" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            val employmentOne = anEmploymentSource.copy(employmentBenefits = None)
-            val employmentTwo = anEmploymentSource.copy(employmentId = "004", employerName = "someName", employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
+            val employmentOne = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))
+            val employmentTwo = aHmrcEmploymentSource.copy(employmentId = "004", employerName = "someName", hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(
+              employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
               deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = None, pglDeductionAmount = Some(2000)))))
-            )))
+            )))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employmentOne, employmentTwo)))), nino, taxYear)
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -296,7 +300,9 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))))), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData.copy(Some(
+              anAllEmploymentData.copy(hmrcEmploymentData = Seq(
+                aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))))), nino, taxYear - 1)
             urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 

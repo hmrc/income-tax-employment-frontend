@@ -31,7 +31,9 @@ import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
@@ -195,7 +197,9 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
         "should render How much was your company car fuel benefit? page with prefilling when there is cya data" which {
           val employmentBenefits = anEmploymentBenefits.copy(benefits = Some(aBenefits.copy(carFuel = Some(200))))
-          val newModel = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = Some(employmentBenefits))))
+          val newModel = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(
+            hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = Some(employmentBenefits)))
+          )))
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()

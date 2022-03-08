@@ -45,7 +45,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
   private val employmentId: String = "001"
   private val differentEmploymentId: String = "003"
 
-  private val empSource: EmploymentSource = EmploymentSource(
+  private val empSource: HmrcEmploymentSource = HmrcEmploymentSource(
     employmentId = "001",
     employerName = "maggie",
     employerRef = None,
@@ -54,14 +54,14 @@ class RemoveEmploymentServiceSpec extends UnitTest
     cessationDate = None,
     dateIgnored = None,
     submittedOn = None,
-    employmentData = None,
-    employmentBenefits = None
+    None,
+    None
   )
 
   private val data: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(empSource),
     hmrcExpenses = None,
-    customerEmploymentData = Seq(empSource.copy(employmentId = "002")),
+    customerEmploymentData = Seq(empSource.toEmploymentSource.copy(employmentId = "002")),
     customerExpenses = None
   )
 
@@ -76,7 +76,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
   private val dataWithExpenses: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(empSource),
     hmrcExpenses = None,
-    customerEmploymentData = Seq(empSource.copy(employmentId = "001")),
+    customerEmploymentData = Seq(empSource.toEmploymentSource.copy(employmentId = "001")),
     customerExpenses = Some(customerExpenses)
   )
 
@@ -86,7 +86,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
         "toRemove is equal to 'HMRC-HELD'" in {
           val allEmploymentData = data.copy(customerEmploymentData = Seq())
           val hmrcDataSource = data.hmrcEmploymentData.find(_.employmentId.equals(employmentId)).get
-          val employmentDetailsViewModel: EmploymentDetailsViewModel = hmrcDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
+          val employmentDetailsViewModel: EmploymentDetailsViewModel = hmrcDataSource.toEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
           val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
@@ -199,7 +199,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
       ).toNrsPayloadModel
       )
 
-      await(service.performSubmitNrsPayload(dataWithExpenses, empSource, isUsingCustomerData = true)) shouldBe Right()
+      await(service.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true)) shouldBe Right()
 
     }
   }

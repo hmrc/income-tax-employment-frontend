@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import models.IncomeTaxUserData
-import models.employment.{AllEmploymentData, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentSource, HmrcEmploymentSource}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,8 +31,8 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
 
   private val model: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
-      EmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None),
-      EmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None)
+      HmrcEmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None),
+      HmrcEmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None)
     ),
     hmrcExpenses = Some(anEmploymentExpenses),
     customerEmploymentData = Seq(

@@ -31,7 +31,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
   object FullModel {
 
-    val employmentSource1: EmploymentSource = EmploymentSource(
+    val employmentSource1: HmrcEmploymentSource = HmrcEmploymentSource(
       employmentId = "223/AB12399",
       employerName = "Mishima Zaibatsu",
       employerRef = Some("223/AB12399"),
@@ -40,26 +40,30 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       cessationDate = Some("2020-03-11"),
       dateIgnored = Some("2020-04-04T01:01:01Z"),
       submittedOn = Some("2020-01-04T05:01:01Z"),
-      employmentData = Some(EmploymentData(
-        submittedOn = "2020-02-12",
-        employmentSequenceNumber = Some("123456789999"),
-        companyDirector = Some(true),
-        closeCompany = Some(false),
-        directorshipCeasedDate = Some("2020-02-12"),
-        occPen = Some(false),
-        disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-        Some(Deductions(
-          studentLoans = Some(StudentLoans(
-            uglDeductionAmount = Some(100.00),
-            pglDeductionAmount = Some(100.00)
-          ))
-        ))
-      )),
-      None
+      hmrcEmploymentFinancialData = Some(
+        EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
+          )),
+          None
+        )
+      ), None
     )
 
-    val employmentSource2: EmploymentSource = EmploymentSource(
+    val employmentSource2: HmrcEmploymentSource = HmrcEmploymentSource(
       employmentId = "223/AB12399",
       employerName = "Violet Systems",
       employerRef = Some("223/AB12399"),
@@ -68,23 +72,26 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       cessationDate = Some("2020-03-11"),
       dateIgnored = Some("2020-04-04T01:01:01Z"),
       submittedOn = Some("2020-01-04T05:01:01Z"),
-      employmentData = Some(EmploymentData(
-        submittedOn = "2020-02-12",
-        employmentSequenceNumber = Some("123456789999"),
-        companyDirector = Some(true),
-        closeCompany = Some(false),
-        directorshipCeasedDate = Some("2020-02-12"),
-        occPen = Some(false),
-        disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-        Some(Deductions(
-          studentLoans = Some(StudentLoans(
-            uglDeductionAmount = Some(100.00),
-            pglDeductionAmount = Some(100.00)
+      hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
           ))
-        ))
-      )),
-      None
+        )),
+        None
+      )), None
+
     )
 
     val oneEmploymentSourceData:
@@ -118,7 +125,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
   ".show" should {
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1), expensesExist = false, isInYear = true)))
+        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1.toEmploymentSource), expensesExist = false, isInYear = true)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -128,7 +135,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), expensesExist = false, isInYear = false)))
+        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1.toEmploymentSource,
+          FullModel.employmentSource2.toEmploymentSource), expensesExist = false, isInYear = false)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK

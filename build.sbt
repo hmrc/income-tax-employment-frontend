@@ -19,7 +19,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "income-tax-employment-frontend"
 
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.3"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -68,7 +68,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9317)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.12.11",
+    scalaVersion := "2.12.13",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     TwirlKeys.templateImports ++= twirlImports,
     // ***************
