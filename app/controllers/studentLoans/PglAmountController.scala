@@ -107,8 +107,8 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
   }
 
   private def amountForm(employerName: String, isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"studentLoans.pglAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"studentLoans.pglAmount.error.invalidFormat",
+    emptyFieldKey = s"studentLoans.postgraduateLoanAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"studentLoans.postgraduateLoanAmount.error.invalidFormat",
     emptyFieldArguments = Seq(employerName)
   )
 

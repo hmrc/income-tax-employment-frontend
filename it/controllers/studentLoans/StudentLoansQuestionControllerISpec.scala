@@ -43,6 +43,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
   trait CommonExpectedResults {
     val title: String
+    val heading: String
     val caption: String
     val paragraphText_1: String
     val paragraphText_2: String
@@ -59,7 +60,8 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedResultsEnglish extends CommonExpectedResults {
-    override val title: String = "Did you repay any student loan while employed by Whiterun Guards?"
+    override val title: String = "Did you repay any student loan?"
+    override val heading: String = "Did you repay any student loan while employed by Whiterun Guards?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary."
     override val paragraphText_2: String = "The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions."
@@ -76,7 +78,8 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
 
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
-    override val title: String = "Did your client repay any student loan while employed by Whiterun Guards?"
+    override val title: String = "Did your client repay any student loan?"
+    override val heading: String = "Did your client repay any student loan while employed by Whiterun Guards?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary."
     override val paragraphText_2: String = "The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions."
@@ -186,7 +189,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(title)
-          h1Check(title)
+          h1Check(heading)
           captionCheck(caption)
           textOnPageCheck(paragraphText_1, Selectors.paragraphSelector)
           textOnPageCheck(paragraphText_2, Selectors.paragraphSelector_2)

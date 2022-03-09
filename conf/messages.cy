@@ -1325,12 +1325,16 @@ studentLoans.inset.agent = You cannot update your client’s student loan detail
 studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
 studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
 
-studentLoans.pglAmount.error.noEntry.agent = Enter the amount of postgraduate loan your client repaid while employed by {0}
-studentLoans.pglAmount.error.noEntry.individual = Enter the amount of postgraduate loan you repaid while employed by {0}
-studentLoans.pglAmount.error.invalidFormat = Enter the amount of postgraduate loan in the correct format
-studentLoans.pglAmount.title.agent = How much postgraduate loan did your client repay while employed by {0}?
-studentLoans.pglAmount.title.individual = How much postgraduate loan did you repay while employed by {0}?
+studentLoans.postgraduateLoanAmount.title.agent = How much postgraduate loan did your client repay?
+studentLoans.postgraduateLoanAmount.title.individual = How much postgraduate loan did you repay?
+studentLoans.postgraduateLoanAmount.heading.agent = How much postgraduate loan did your client repay while employed by {0}?
+studentLoans.postgraduateLoanAmount.heading.individual = How much postgraduate loan did you repay while employed by {0}?
+studentLoans.postgraduateLoanAmount.error.noEntry.agent = Enter the amount of postgraduate loan your client repaid while employed by {0}
+studentLoans.postgraduateLoanAmount.error.noEntry.individual = Enter the amount of postgraduate loan you repaid while employed by {0}
+studentLoans.postgraduateLoanAmount.error.invalidFormat = Enter the amount of postgraduate loan in the correct format
 
+studentLoans.undergraduateLoanAmount.title.individual = How much undergraduate loan did you repay?
+studentLoans.undergraduateLoanAmount.title.agent = How much undergraduate loan did your client repay?
 studentLoans.undergraduateLoanAmount.heading.individual = How much undergraduate loan did you repay while employed by {0}?
 studentLoans.undergraduateLoanAmount.heading.agent = How much undergraduate loan did your client repay while employed by {0}?
 studentLoans.undergraduateLoanAmount.coursesExample = Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
@@ -1340,8 +1344,10 @@ studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of u
 
 #####################    Student Loans Question messages    #####################
 
-studentLoansQuestion.title.individual = Did you repay any student loan while employed by {0}?
-studentLoansQuestion.title.agent = Did your client repay any student loan while employed by {0}?
+studentLoansQuestion.title.individual = Did you repay any student loan?
+studentLoansQuestion.title.agent = Did your client repay any student loan?
+studentLoansQuestion.heading.individual = Did you repay any student loan while employed by {0}?
+studentLoansQuestion.heading.agent = Did your client repay any student loan while employed by {0}?
 studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
 studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
 studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.
