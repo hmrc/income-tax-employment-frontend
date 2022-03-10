@@ -20,6 +20,7 @@ import audit._
 import models.User
 import models.benefits._
 import models.employment._
+import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
@@ -234,6 +235,32 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     )
   }
 
+  def toCreateDecodedStudentLoansPayloadModel: DecodedCreateNewStudentLoansPayload = {
+    DecodedCreateNewStudentLoansPayload(
+      employerName = employment.map(_.employerName),
+      employerRef = employment.flatMap(_.employerRef),
+      Deductions(
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+          pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+        )
+        )))
+  }
+
+  def toAmendDecodedStudentLoansPayloadModel(priorData: EmploymentSource): DecodedAmendStudentLoansPayload = {
+    DecodedAmendStudentLoansPayload(Deductions(
+      studentLoans = Some(StudentLoans(
+        uglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+        pglDeductionAmount = priorData.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+      )
+      )),
+      Deductions(
+      studentLoans = Some(StudentLoans(
+        uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+        pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+      )
+      )))
+  }
 
   def toCreateStudentLoansAuditModel(user: User, taxYear: Int): CreateNewStudentLoansDeductionsAudit = {
     CreateNewStudentLoansDeductionsAudit(

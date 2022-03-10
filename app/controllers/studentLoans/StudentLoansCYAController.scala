@@ -117,5 +117,8 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
 
     implicit val implicitRequest: AuthorisationRequest[_] = request
     service.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
+    if (appConfig.nrsEnabled){
+      service.performSubmitNrsPayload(request.user, model, employmentId, prior)
+    }
   }
 }
