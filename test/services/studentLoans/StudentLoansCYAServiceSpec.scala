@@ -17,19 +17,20 @@
 package services.studentLoans
 
 import audit.{AmendStudentLoansDeductionsUpdateAudit, CreateNewStudentLoansDeductionsAudit, ViewStudentLoansDeductionsAudit}
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment._
+import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import services.EmploymentSessionService
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAuditService, MockEmploymentSessionService}
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTest
 
-class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockEmploymentSessionService {
+class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService {
 
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
 
-  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockExecutionContext)
+  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockNrsService, mockExecutionContext)
 
   lazy val employerId = "1234567890"
 
@@ -245,6 +246,131 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       ).toAuditModel)
 
       await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, 2021, validModel.toDeductions)) shouldBe AuditResult.Success
+    }
+  }
+
+  "performSubmitNrsPayload" should {
+    "send the event from the model when it's a create" in {
+      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+        Some("id"),
+        Some(
+          CreateUpdateEmployment(
+            Some("employerRef"),
+            "name",
+            "2000-10-10"
+          )
+        ),
+        Some(
+          CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              4354,
+              564
+            ),
+            deductions = Some(
+              Deductions(
+                Some(StudentLoans(
+                  Some(100),
+                  Some(100)
+                ))
+              )
+            )
+          )
+        ),
+        Some("001")
+      )
+
+      verifySubmitEvent(DecodedCreateNewStudentLoansPayload(Some("name"), Some("employerRef"),
+        Deductions(Some(StudentLoans(
+          Some(100),
+          Some(100)
+        )))))
+
+      await(service.performSubmitNrsPayload(authorisationRequest.user, model, "001", prior = None)) shouldBe Right()
+
+    }
+
+    "send the event from the model when it's an amend" in {
+
+      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+        Some("id"),
+        Some(
+          CreateUpdateEmployment(
+            Some("employerRef"),
+            "name",
+            "2000-10-10"
+          )
+        ),
+        Some(
+          CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              4354,
+              564
+            ),
+            deductions = Some(
+              Deductions(
+                Some(StudentLoans(
+                  Some(750),
+                  Some(1000)
+                ))
+              )
+            )
+          )
+        ),
+        Some("001")
+      )
+
+      val employmentSource1 = HmrcEmploymentSource(
+        employmentId = "001",
+        employerName = "Mishima Zaibatsu",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
+          )),
+          None
+        )),
+        None
+      )
+
+      val priorData: AllEmploymentData = AllEmploymentData(
+        hmrcEmploymentData = Seq(employmentSource1),
+        hmrcExpenses = None,
+        customerEmploymentData = Seq(),
+        customerExpenses = None
+      )
+
+      verifySubmitEvent(DecodedAmendStudentLoansPayload(
+        priorEmploymentStudentLoansData = Deductions(Some(StudentLoans(
+          Some(100),
+          Some(100)
+        ))
+        ),
+        employmentStudentLoansData = Deductions(Some(StudentLoans(
+          Some(750),
+          Some(1000)
+        ))
+        )
+      ))
+
+      await(service.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(priorData))) shouldBe Right()
     }
   }
 }
