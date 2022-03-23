@@ -257,7 +257,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the 'start date' page with the correct content and the date prefilled when its already in session" which {
+        "render the 'employment dates' page with the correct content and the date prefilled when its already in session" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -294,27 +294,45 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
         }
 
+
+        "render the 'employerment dates' page with an empty form" which {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
+            authoriseAgentOrIndividual(isAgent = false)
+            urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+
+          implicit def documentSupplier: () => Document = () => document
+
+          import Selectors._
+          import user.commonExpectedResults._
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(expectedCaption(taxYearEOY))
+          textOnPageCheck(forExample, startForExampleSelector, "forStart")
+          inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
+          inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
+          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, "")
+          textOnPageCheck(forExample, endForExampleSelector, "forEnd")
+          inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "")
+          inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "")
+          inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, "")
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(employmentDatesUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+
+        }
       }
     }
 
-    "render the 'start date' page with the correct content" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        insertCyaData(anEmploymentUserData)
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
-
-      "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-    }
 
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {

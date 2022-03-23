@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.employment.EmploymentDatesForm
-import models.employment.EmploymentDates
+import models.employment.{EmploymentDate, EmploymentDates}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -51,13 +51,13 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         (data.employment.employmentDetails.startDate, data.employment.employmentDetails.cessationDate) match {
-          case (Some(startDate), Some(endDate)) =>
-            val parsedStartDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
-            val parsedEndDate: LocalDate = LocalDate.parse(endDate, localDateTimeFormat)
+          case (startDate, endDate) =>
+            val parsedStartDate: Option[LocalDate] = startDate.map(LocalDate.parse(_, localDateTimeFormat))
+            val parsedEndDate: Option[LocalDate] = endDate.map(LocalDate.parse(_, localDateTimeFormat))
             val filledForm: Form[EmploymentDates] = datesForm.fill(
               EmploymentDates(
-                parsedStartDate.getDayOfMonth.toString, parsedStartDate.getMonthValue.toString, parsedStartDate.getYear.toString,
-                parsedEndDate.getDayOfMonth.toString, parsedEndDate.getMonthValue.toString, parsedEndDate.getYear.toString))
+                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString,localDate.getMonthValue.toString, localDate.getYear.toString)),
+                parsedEndDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
             Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
             Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -77,8 +77,8 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
           { submittedDate =>
             val cya = data.employment
             val updatedCya = cya.copy(cya.employmentDetails.copy(
-              startDate = Some(submittedDate.startDateToLocalDate.toString),
-              cessationDate = Some(submittedDate.endDateToLocalDate.toString))
+              startDate = submittedDate.startDateToLocalDate.map(_.toString),
+              cessationDate = submittedDate.endDateToLocalDate.map(_.toString))
             )
 
             employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,

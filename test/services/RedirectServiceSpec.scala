@@ -1833,20 +1833,20 @@ class RedirectServiceSpec extends UnitTest {
       redirectUrl(Future(response)) shouldBe PayeRefController.show(taxYearEOY, employmentId).url
     }
 
-    "redirect to start date page" in {
-      val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345")))
-      val response = employmentDetailsRedirect(employment, taxYearEOY, employmentId, isPriorSubmission = false)
-
-      response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe EmployerStartDateController.show(taxYearEOY, employmentId).url
-    }
-
     "redirect to still working for employer page" in {
       val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some("2020-11-01")))
       val response = employmentDetailsRedirect(employment, taxYearEOY, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
       redirectUrl(Future(response)) shouldBe StillWorkingForEmployerController.show(taxYearEOY, employmentId).url
+    }
+
+    "redirect to start date page when cessation date question is true" in {
+      val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), cessationDateQuestion = Some(true)))
+      val response = employmentDetailsRedirect(employment, taxYearEOY, employmentId, isPriorSubmission = false)
+
+      response.header.status shouldBe SEE_OTHER
+      redirectUrl(Future(response)) shouldBe EmployerStartDateController.show(taxYearEOY, employmentId).url
     }
 
     "redirect to pay page" in {
@@ -1876,13 +1876,13 @@ class RedirectServiceSpec extends UnitTest {
       redirectUrl(Future(response)) shouldBe EmployerPayrollIdController.show(taxYearEOY, employmentId).url
     }
 
-    "redirect to employment end date page when no cessation date" in {
+    "redirect to employment dates page when no cessation date" in {
       val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"),
         cessationDateQuestion = Some(false), taxablePayToDate = Some(1), totalTaxToDate = Some(1), payrollId = Some("id"))
       val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYearEOY, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe EmployerLeaveDateController.show(taxYearEOY, employmentId).url
+      redirectUrl(Future(response)) shouldBe EmploymentDatesController.show(taxYearEOY, employmentId).url
     }
 
     "redirect to check employment details page when no cessation date but the cessation question is no" in {
