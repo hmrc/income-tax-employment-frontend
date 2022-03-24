@@ -5,11 +5,6 @@ $hmrc-assets-path: "/update-and-submit-income-tax-return/employment-income/asset
 @import "lib/hmrc-frontend/hmrc/all";
 @import "components/interruption-page" ;
 
-.hmrc-language-select {
-  @include govuk-media-query($from: desktop) {
-    float: right;
-  }
-}
 
 .js-hidden {
   display: none;
