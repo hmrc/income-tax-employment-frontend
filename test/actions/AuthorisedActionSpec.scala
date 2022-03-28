@@ -21,6 +21,7 @@ import models.AuthorisationRequest
 import play.api.http.Status._
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Result}
+import support.mocks.MockAuthorisedAction
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
@@ -32,7 +33,7 @@ import utils.UnitTest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedActionSpec extends UnitTest {
+class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
   val auth: AuthorisedAction = authorisedAction
 

@@ -16,11 +16,10 @@
 
 package utils
 
-import actions.AuthorisedAction
 import akka.actor.ActorSystem
 import com.codahale.metrics.SharedMetricRegistries
-import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
-import config.{AppConfig, ErrorHandler}
+import common.SessionValues
+import config.AppConfig
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
@@ -32,21 +31,16 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
-import services.AuthService
-import support.mocks.MockAppConfig
+import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.templates.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TaxYearHelper {
+trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TaxYearHelper
+  with MockAuthorisedAction {
 
   class TestWithAuth(isAgent: Boolean = false, nino: Option[String] = Some("AA123456A")) {
     if (isAgent) mockAuthAsAgent() else mockAuth(nino)
@@ -78,18 +72,13 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
 
   implicit val mockAppConfig: AppConfig = new MockAppConfig().config()
-  implicit val mockErrorHandler: ErrorHandler = mock[ErrorHandler]
   implicit val mockControllerComponents: ControllerComponents = Helpers.stubControllerComponents()
   implicit val mockExecutionContext: ExecutionContext = ExecutionContext.Implicits.global
-  implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  implicit val mockAuthService: AuthService = new AuthService(mockAuthConnector)
   val agentAuthErrorPageView: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
     new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString), fakeRequest)
-
-  val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 
   val inYearAction = new InYearUtil
 
@@ -106,49 +95,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   def getSession(awaitable: Future[Result]): Session = {
     await(awaitable).session
-  }
-
-  //noinspection ScalaStyle
-  def mockAuth(nino: Option[String], returnedConfidenceLevel: ConfidenceLevel = ConfidenceLevel.L200) = {
-    val enrolments = Enrolments(Set(
-      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
-      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
-    ) ++ nino.fold(Seq.empty[Enrolment])(unwrappedNino =>
-      Seq(Enrolment(EnrolmentKeys.nino, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.nino, unwrappedNino)), "Activated"))
-    ))
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.affinityGroup, *, *)
-      .returning(Future.successful(Some(AffinityGroup.Individual)))
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
-      .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-  }
-
-  //noinspection ScalaStyle
-  def mockAuthAsAgent() = {
-    val enrolments: Enrolments = Enrolments(Set(
-      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
-      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
-    ))
-
-    val agentRetrievals: Some[AffinityGroup] = Some(AffinityGroup.Agent)
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.affinityGroup, *, *)
-      .returning(Future.successful(agentRetrievals))
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.allEnrolments, *, *)
-      .returning(Future.successful(enrolments))
-  }
-
-  //noinspection ScalaStyle
-  def mockAuthReturnException(exception: Exception) = {
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
-      .returning(Future.failed(exception))
   }
 
   val nino = "AA123456A"

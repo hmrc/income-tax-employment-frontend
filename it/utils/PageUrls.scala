@@ -45,6 +45,7 @@ object PageUrls extends IntegrationTest {
   def employmentSummaryUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment-summary"
   def addNewEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment/add-new-employer"
   def employerInformationUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-information?employmentId=$employmentId"
+  def selectEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/select-employer"
 
 //  *****************       Check your answers pages      ******************************
 
@@ -65,6 +66,7 @@ object PageUrls extends IntegrationTest {
   def howMuchPayUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
   def howMuchTaxUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/uk-tax?employmentId=$employmentId"
   def employmentDatesUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employment-dates?employmentId=$employmentId"
+  def summaryAddNewEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment-summary/add-employment"
 
 //  *****************       Employment management pages      ***************************
 

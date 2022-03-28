@@ -113,6 +113,8 @@ case class EmploymentSource(employmentId: String,
                             employmentBenefits: Option[EmploymentBenefits]
                            ) extends Logging {
 
+  def toEmployerView: Employer = Employer(employmentId, employerName, startDate, cessationDate)
+
   def hasPriorBenefits: Boolean =
     employmentBenefits.exists(_.benefits.exists(_.hasBenefitsPopulated))
 

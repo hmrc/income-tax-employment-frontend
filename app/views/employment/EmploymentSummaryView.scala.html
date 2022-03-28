@@ -21,6 +21,7 @@
 @import models.employment.EmploymentSource
 @import controllers.employment.routes.EmployerInformationController
 @import controllers.employment.routes.EmployerNameController
+@import controllers.employment.routes.SelectEmployerController
 @import controllers.employment.routes.EmploymentSummaryController
 @import controllers.employment.routes.RemoveEmploymentController
 @import controllers.expenses.routes.CheckEmploymentExpensesController
@@ -81,7 +82,7 @@
     }
 
     @if(!isInYear) {
-        <p class="govuk-body"><a class="govuk-link" href="@EmployerNameController.show(taxYear, UUID.randomUUID)">@messages("employment.employmentSummary.addAnotherEmployer")</a></p>
+        <p class="govuk-body"><a class="govuk-link" href="@EmploymentSummaryController.addNewEmployment(taxYear)">@messages("employment.employmentSummary.addAnotherEmployer")</a></p>
     }
 
     <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("employment.expenses.label")</h2>

@@ -22,11 +22,12 @@ import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmplo
 import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import services.EmploymentSessionService
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockNrsService}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTest
 
-class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService {
+class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService
+  with MockErrorHandler {
 
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
 

@@ -21,7 +21,7 @@ import controllers.employment.routes.EmploymentSummaryController
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
-import support.mocks.{MockEmploymentSessionService, MockRemoveEmploymentService}
+import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockRemoveEmploymentService}
 import utils.UnitTestWithApp
 import views.html.employment.RemoveEmploymentView
 
@@ -29,7 +29,8 @@ import scala.concurrent.Future
 
 class RemoveEmploymentControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
-  with MockRemoveEmploymentService {
+  with MockRemoveEmploymentService
+  with MockErrorHandler {
 
   private val employmentId = "001"
   private val employerName = "maggie"

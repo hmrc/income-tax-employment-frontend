@@ -25,7 +25,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import support.mocks.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService}
+import support.mocks.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTestWithApp
 import views.html.expenses.CheckEmploymentExpensesView
 
@@ -35,7 +35,8 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
   with DefaultAwaitTimeout
   with MockEmploymentSessionService
   with MockCheckEmploymentExpensesService
-  with MockAuditService {
+  with MockAuditService
+  with MockErrorHandler {
 
   private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
 

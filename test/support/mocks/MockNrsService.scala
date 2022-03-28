@@ -17,6 +17,7 @@
 package support.mocks
 
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import models.CommonAuthorisationRequest
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Writes
@@ -31,7 +32,7 @@ trait MockNrsService extends MockFactory {
   val mockNrsService: NrsService = mock[NrsService]
 
   def verifySubmitEvent[T](event: T): CallHandler[Future[NrsSubmissionResponse]] = {
-    (mockNrsService.submit(_: String, _: T, _: String)(_: Request[_], _: HeaderCarrier, _: Writes[T]))
+    (mockNrsService.submit(_: String, _: T, _: String, _: Option[String])(_: HeaderCarrier, _: Writes[T]))
       .expects(*, event, *, *, *, *)
       .returning(Future.successful(Right()))
   }

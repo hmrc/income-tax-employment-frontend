@@ -25,8 +25,9 @@ import models.{AuthorisationRequest, User}
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-
 import javax.inject.Inject
+import utils.RequestUtils.getTrueUserAgent
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
@@ -60,8 +61,8 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
       .getOrElse(Right(createUpdateExpensesRequest.toCreateDecodedExpensesPayloadModel()))
 
     nrsPayload match {
-      case Left(amend) => nrsService.submit(request.user.nino, amend, request.user.mtditid)
-      case Right(create) => nrsService.submit(request.user.nino, create, request.user.mtditid)
+      case Left(amend) => nrsService.submit(request.user.nino, amend, request.user.mtditid, getTrueUserAgent)
+      case Right(create) => nrsService.submit(request.user.nino, create, request.user.mtditid, getTrueUserAgent)
     }
   }
 }

@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import common.SessionValues
 import forms.employment.EmployerNameForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -139,7 +140,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(employerNameUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employerNameUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+              Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
           lazy val document = Jsoup.parse(result.body)

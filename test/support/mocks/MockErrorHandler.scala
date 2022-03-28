@@ -17,7 +17,9 @@
 package support.mocks
 
 import config.ErrorHandler
+import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{Request, Result}
 
 trait MockErrorHandler extends MockFactory {
@@ -28,5 +30,11 @@ trait MockErrorHandler extends MockFactory {
     (mockErrorHandler.handleError(_: Int)(_: Request[_]))
       .expects(status, *)
       .returns(result)
+  }
+
+  def mockInternalServerError: CallHandler1[Request[_], Result] = {
+    (mockErrorHandler.internalServerError()(_: Request[_]))
+      .expects(*)
+      .returns(InternalServerError)
   }
 }

@@ -47,10 +47,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).fold(
         handleSuccessfulGet(taxYear, employmentId).map(_.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
-      )(employmentSessionService.clear(request.user, taxYear, _).flatMap {
-        case Left(_) => Future.successful(errorHandler.internalServerError())
-        case Right(_) => handleSuccessfulGet(taxYear, employmentId)
-      })
+      )(_ => handleSuccessfulGet(taxYear, employmentId))
     }
   }
 

@@ -78,8 +78,22 @@ trait MockEmploymentSessionService extends MockFactory {
       .anyNumberOfTimes()
   }
 
-  def mockGetSessionData(taxYear: Int, employmentId: String, result: Result)
-                        (implicit executionContext: ExecutionContext): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
+  def mockClear(response: Either[Unit, Unit] = Right(())): CallHandler5[User, Int, String, HeaderCarrier, CommonAuthorisationRequest, Future[Either[Unit, Unit]]] = {
+    (mockEmploymentSessionService.clear(_: User, _: Int, _:String)(_: HeaderCarrier, _:CommonAuthorisationRequest))
+      .expects(*, *, *, *, *)
+      .returns(Future.successful(response))
+  }
+
+  def mockGetSessionData(taxYear: Int, employmentId: String, result: Either[Result, Option[EmploymentUserData]])
+                              (implicit executionContext: ExecutionContext): CallHandler3[Int, String, AuthorisationRequest[_],
+    Future[Either[Result, Option[EmploymentUserData]]]] = {
+    (mockEmploymentSessionService.getSessionData(_: Int, _: String)(_: AuthorisationRequest[_]))
+      .expects(taxYear, employmentId, *)
+      .returns(Future.successful(result))
+  }
+
+  def mockGetSessionDataResult(taxYear: Int, employmentId: String, result: Result)
+                              (implicit executionContext: ExecutionContext): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *, *)
       .returns(Future.successful(result))

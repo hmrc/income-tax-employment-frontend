@@ -28,7 +28,7 @@ import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
 import models.mongo._
-import models.{AuthorisationRequest, IncomeTaxUserData, User}
+import models.{AuthorisationRequest, CommonAuthorisationRequest, IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
@@ -542,7 +542,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def clear(user: User, taxYear: Int, employmentId: String)
-           (implicit hc: HeaderCarrier, request: AuthorisationRequest[_]): Future[Either[Unit, Unit]] = {
+           (implicit hc: HeaderCarrier, request: CommonAuthorisationRequest): Future[Either[Unit, Unit]] = {
     incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
       case Left(_) => Future.successful(Left())
       case _ => employmentUserDataRepository.clear(taxYear, employmentId, user).map {

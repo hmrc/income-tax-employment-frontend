@@ -22,4 +22,6 @@ object SessionValues {
 
   val TAX_YEAR = "TAX_YEAR"
   val TEMP_NEW_EMPLOYMENT_ID = "TEMP_NEW_EMPLOYMENT_ID"
+
+  val ADD_A_NEW_EMPLOYER = "eb687fc3-37fc-4b7d-8038-19aaf62f9681-111-eb687fc3-37fc-4b7d-8038-19aaf62f9681"
 }
