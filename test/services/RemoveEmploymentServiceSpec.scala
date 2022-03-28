@@ -22,6 +22,7 @@ import models.expenses.Expenses
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import services.employment.RemoveEmploymentService
+import support.builders.models.UserBuilder.aUser
 import support.mocks._
 import utils.UnitTest
 
@@ -101,7 +102,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD")
           mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId)) shouldBe Right()
+          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, aUser.copy(sessionId = sessionId))) shouldBe Right()
         }
       }
 
@@ -123,7 +124,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
           mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")) shouldBe Right()
+          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser.copy(sessionId = sessionId))) shouldBe Right()
         }
       }
     }
@@ -135,13 +136,13 @@ class RemoveEmploymentServiceSpec extends UnitTest
         mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId = "002", toRemove = "CUSTOMER")
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002")) shouldBe Right()
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser)) shouldBe Right()
       }
 
       "there is no employment data for that employment id" in {
         mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
 
-        await(service.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId)) shouldBe Right()
+        await(service.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId, aUser)) shouldBe Right()
       }
 
       "the connector throws a Left" in {
@@ -161,7 +162,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
         mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002", aUser)) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))
       }
 
       "incomeSourceConnector returns error" in {
@@ -181,7 +182,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
+        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002",
+          aUser.copy(sessionId = sessionId))) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
     }
   }
@@ -199,7 +201,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
       ).toNrsPayloadModel
       )
 
-      await(service.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true)) shouldBe Right()
+      await(service.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right()
 
     }
   }

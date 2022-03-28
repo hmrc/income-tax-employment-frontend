@@ -16,8 +16,8 @@
 
 package support.mocks
 
-import models.{APIErrorModel, AuthorisationRequest}
 import models.employment.AllEmploymentData
+import models.{APIErrorModel, User}
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import services.employment.RemoveEmploymentService
@@ -30,8 +30,8 @@ trait MockRemoveEmploymentService extends MockFactory {
   val mockRemoveEmploymentService: RemoveEmploymentService = mock[RemoveEmploymentService]
 
   def mockDeleteOrIgnore(employmentData: AllEmploymentData, taxYear: Int, employmentId: String):
-    CallHandler5[AllEmploymentData, Int, String, AuthorisationRequest[_], HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
-      (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String)(_: AuthorisationRequest[_], _: HeaderCarrier))
+  CallHandler5[AllEmploymentData, Int, String, User, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
+      (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String, _: User)(_: HeaderCarrier))
         .expects(employmentData, taxYear, employmentId, *, *)
         .returns(Future.successful(Right()))
         .anyNumberOfTimes()

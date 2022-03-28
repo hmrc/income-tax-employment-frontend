@@ -16,8 +16,8 @@
 
 package support.mocks
 
-import models.{APIErrorModel, AuthorisationRequest, User}
-import org.scalamock.handlers.CallHandler5
+import models.{APIErrorModel, User}
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import services.UnignoreEmploymentService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,9 +29,9 @@ trait MockUnignoreEmploymentService extends MockFactory {
   val mockUnignoreEmploymentService: UnignoreEmploymentService = mock[UnignoreEmploymentService]
 
   def mockUnignore(user: User, taxYear: Int, employmentId: String,
-                   response: Either[APIErrorModel,Unit]): CallHandler5[User, Int, String, AuthorisationRequest[_], HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
-    (mockUnignoreEmploymentService.unignoreEmployment(_: User, _: Int, _: String)(_: AuthorisationRequest[_], _: HeaderCarrier))
-      .expects(user, taxYear, employmentId, *, *)
+                   response: Either[APIErrorModel,Unit]): CallHandler4[User, Int, String, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
+    (mockUnignoreEmploymentService.unignoreEmployment(_: User, _: Int, _: String)(_: HeaderCarrier))
+      .expects(user, taxYear, employmentId, *)
       .returns(Future.successful(response))
   }
 }

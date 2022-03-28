@@ -16,12 +16,12 @@
 
 package services.benefits
 
+import javax.inject.Inject
 import models.User
 import models.benefits.BenefitsViewModel
 import models.mongo.EmploymentUserData
 import services.EmploymentSessionService
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BenefitsService @Inject()(employmentSessionService: EmploymentSessionService,

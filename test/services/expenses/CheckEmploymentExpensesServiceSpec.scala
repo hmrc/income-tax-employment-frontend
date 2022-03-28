@@ -20,6 +20,7 @@ import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, A
 import models.employment._
 import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, Expenses}
 import models.requests.CreateUpdateExpensesRequest
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
@@ -137,7 +138,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
       )))
 
-      await(underTest.performSubmitNrsPayload(model, prior = None)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = None, aUser)) shouldBe Right()
     }
 
     "send the event from the model when it's an amend" in {
@@ -229,7 +230,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
           )))
 
 
-      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses), aUser)) shouldBe Right()
 
     }
   }

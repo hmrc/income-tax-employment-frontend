@@ -16,12 +16,12 @@
 
 package services.studentLoans
 
+import javax.inject.Inject
 import models.User
 import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionService) {

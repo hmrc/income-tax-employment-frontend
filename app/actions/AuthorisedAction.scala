@@ -29,8 +29,9 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, allEnrolment
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-
 import javax.inject.Inject
+import utils.RequestUtils.getTrueUserAgent
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(appConfig: AppConfig)
@@ -91,7 +92,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
               logger.info(s"[AuthorisedAction][individualAuthentication] - No session id in request")
               Future.successful(Redirect(appConfig.signInUrl))
             } { sessionId =>
-              block(AuthorisationRequest(models.User(mtdItId, None, nino, sessionId, affinityGroup.toString), request))
+              block(AuthorisationRequest(models.User(mtdItId, None, nino, sessionId, affinityGroup.toString, getTrueUserAgent), request))
             }
 
           case (_, None) =>
@@ -133,7 +134,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
                   logger.info(s"[AuthorisedAction][agentAuthentication] - No session id in request")
                   Future(Redirect(appConfig.signInUrl))
                 } { sessionId =>
-                  block(AuthorisationRequest(models.User(mtdItId, Some(arn), nino, sessionId, AffinityGroup.Agent.toString), request))
+                  block(AuthorisationRequest(models.User(mtdItId, Some(arn), nino, sessionId, AffinityGroup.Agent.toString, getTrueUserAgent), request))
                 }
 
               case None =>

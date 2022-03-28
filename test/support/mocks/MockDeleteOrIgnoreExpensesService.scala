@@ -16,9 +16,9 @@
 
 package support.mocks
 
-import models.{APIErrorModel, AuthorisationRequest, User}
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler5
+import models.{APIErrorModel, AuthorisationRequest, User}
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import services.DeleteOrIgnoreExpensesService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,10 +29,10 @@ trait MockDeleteOrIgnoreExpensesService extends MockFactory {
 
   val mockDeleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService = mock[DeleteOrIgnoreExpensesService]
 
-  def mockDeleteOrIgnoreExpenses(user: AuthorisationRequest[_], employmentData: AllEmploymentData, taxYear: Int):
-    CallHandler5[User, AllEmploymentData, Int, AuthorisationRequest[_], HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
-      (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: User, _: AllEmploymentData, _: Int)(_: AuthorisationRequest[_], _:HeaderCarrier))
-        .expects(user.user, employmentData, taxYear, user, *)
+  def mockDeleteOrIgnoreExpenses(user: AuthorisationRequest[_], employmentData: AllEmploymentData, taxYear: Int): CallHandler4[User,
+    AllEmploymentData, Int, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
+      (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: User, _: AllEmploymentData, _: Int)(_:HeaderCarrier))
+        .expects(user.user, employmentData, taxYear, *)
         .returns(Future.successful(Right()))
         .anyNumberOfTimes()
   }

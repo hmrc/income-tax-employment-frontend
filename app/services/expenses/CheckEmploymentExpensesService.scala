@@ -18,6 +18,7 @@ package services.expenses
 
 import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import javax.inject.Inject
 import models.employment._
 import models.expenses.Expenses
 import models.requests.CreateUpdateExpensesRequest
@@ -25,8 +26,6 @@ import models.{AuthorisationRequest, User}
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import javax.inject.Inject
-import utils.RequestUtils.getTrueUserAgent
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,8 +51,8 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
     auditService.sendAudit[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
   }
 
-  def performSubmitNrsPayload(createUpdateExpensesRequest: CreateUpdateExpensesRequest, prior: Option[AllEmploymentData])
-                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+  def performSubmitNrsPayload(createUpdateExpensesRequest: CreateUpdateExpensesRequest, prior: Option[AllEmploymentData], user: User)
+                             (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val nrsPayload = prior
       .flatMap(prior => prior.latestEOYExpenses.map(prior => createUpdateExpensesRequest.toAmendDecodedExpensesPayloadModel(prior.latestExpenses)))
@@ -61,8 +60,8 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
       .getOrElse(Right(createUpdateExpensesRequest.toCreateDecodedExpensesPayloadModel()))
 
     nrsPayload match {
-      case Left(amend) => nrsService.submit(request.user.nino, amend, request.user.mtditid, getTrueUserAgent)
-      case Right(create) => nrsService.submit(request.user.nino, create, request.user.mtditid, getTrueUserAgent)
+      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid, user.trueUserAgent)
+      case Right(create) => nrsService.submit(user.nino, create, user.mtditid, user.trueUserAgent)
     }
   }
 }
