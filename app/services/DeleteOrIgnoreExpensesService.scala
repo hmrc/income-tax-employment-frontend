@@ -26,8 +26,10 @@ import models.{APIErrorModel, AuthorisationRequest, User}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
-
 import javax.inject.Inject
+import play.api.http.HeaderNames
+import utils.RequestUtils.getTrueUserAgent
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -87,13 +89,13 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
     auditService.sendAudit[DeleteEmploymentExpensesAudit](auditModel.toAuditModel)
   }
 
-  def performSubmitNrsPayload(user: User, employmentData: AllEmploymentData)(implicit request: Request[_],
+  def performSubmitNrsPayload(user: User, employmentData: AllEmploymentData)(implicit request: AuthorisationRequest[_],
                                                                              hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val latestExpenses = employmentData.latestEOYExpenses.map(expensesData =>
       DecodedDeleteEmploymentExpensesPayload(expensesData.latestExpenses.expenses).toNrsPayloadModel)
 
-    nrsService.submit(user.nino, latestExpenses, user.mtditid)
+    nrsService.submit(user.nino, latestExpenses, user.mtditid, getTrueUserAgent)
 
   }
 

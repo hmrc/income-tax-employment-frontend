@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{Result, Results}
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockFuelService}
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockFuelService}
 import utils.{TaxYearHelper, UnitTestWithApp}
 import views.html.benefits.fuel.MileageBenefitAmountView
 
@@ -32,7 +32,8 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockFuelService
   with MockAuditService
-  with TaxYearHelper{
+  with TaxYearHelper
+  with MockErrorHandler {
 
   lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
   lazy val controller = new MileageBenefitAmountController()(

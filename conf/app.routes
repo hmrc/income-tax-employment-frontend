@@ -15,6 +15,7 @@ GET         /timeout                                                            
 #################       Summary pages      #########################################
 
 GET         /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+GET         /:taxYear/employment-summary/add-employment                              controllers.employment.EmploymentSummaryController.addNewEmployment(taxYear: Int)
 
 GET         /:taxYear/employer-information                                           controllers.employment.EmployerInformationController.show(taxYear: Int, employmentId: String)
 
@@ -65,6 +66,9 @@ POST        /:taxYear/add-employment                                            
 
 GET         /:taxYear/remove-employment                                              controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/remove-employment                                              controllers.employment.RemoveEmploymentController.submit(taxYear: Int, employmentId: String)
+
+GET         /:taxYear/select-employer                                                controllers.employment.SelectEmployerController.show(taxYear: Int)
+POST        /:taxYear/select-employer                                                controllers.employment.SelectEmployerController.submit(taxYear: Int)
 
 #################       Employment benefits pages      #############################
 

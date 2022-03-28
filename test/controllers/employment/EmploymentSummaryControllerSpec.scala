@@ -18,16 +18,16 @@ package controllers.employment
 
 import common.SessionValues
 import models.employment._
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
-import support.mocks.MockEmploymentSessionService
+import support.mocks.{MockActionsProvider, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentSummaryView
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
+class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockActionsProvider {
 
   object FullModel {
 
@@ -118,9 +118,74 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     mockAppConfig,
     employmentSummaryView,
     mockEmploymentSessionService,
-    inYearAction
+    inYearAction,
+    mockErrorHandler,
+    mockActionsProvider
   )
 
+  ".addNewEmployment" should {
+    "redirect to add employment page when there is no session data and no prior employments" which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, None)
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/add-employment"
+      }
+    }
+    "redirect to employer name page when there is no session data and some prior employment" which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+      }
+    }
+    "redirect to employer name page when there is session data and some prior employment" which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
+        mockClear()
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+      }
+    }
+    "redirect to select employer page when there is no session data and an ignored hmrc employment" which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+      }
+    }
+    "redirect to select employer page when there is session data and an ignored hmrc employment" which {
+      s"has an SEE_OTHER($SEE_OTHER) status when session data is cleared successfully" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
+        mockClear()
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+      }
+      s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
+
+        mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
+        mockClear(Left())
+        mockInternalServerError
+
+        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 
   ".show" should {
     "render single employment summary view when there is only one employment" which {

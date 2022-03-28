@@ -23,7 +23,7 @@ import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockEmploymentSessionService, MockFuelService}
+import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockFuelService}
 import utils.UnitTestWithApp
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
@@ -31,7 +31,8 @@ import scala.concurrent.Future
 
 class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
-  with MockFuelService {
+  with MockFuelService
+  with MockErrorHandler {
 
   private val employmentId = "223/AB12399"
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
@@ -72,7 +73,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     "get user session data and return the result from the given execution block" in new TestWithAuth {
       val anyResult: Results.Status = Ok
       val result: Future[Result] = {
-        mockGetSessionData(taxYearEOY, employmentId, anyResult)
+        mockGetSessionDataResult(taxYearEOY, employmentId, anyResult)
         controller.show(taxYearEOY, employmentId)(fakeRequest)
       }
 
@@ -111,7 +112,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     "return a result" which {
       "has a SEE_OTHER status with valid form body true" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYearEOY, employmentId, InternalServerError("500"))
+          mockGetSessionDataResult(taxYearEOY, employmentId, InternalServerError("500"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
         }
         status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -119,7 +120,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
 
       "has a SEE_OTHER status with valid form body false" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYearEOY, employmentId, InternalServerError("500"))
+          mockGetSessionDataResult(taxYearEOY, employmentId, InternalServerError("500"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -127,7 +128,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
 
       "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYearEOY, employmentId, Redirect("/any-url"))
+          mockGetSessionDataResult(taxYearEOY, employmentId, Redirect("/any-url"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
@@ -135,7 +136,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
 
       "has a SEE_OTHER status with valid form body but no session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYearEOY, employmentId, Redirect("/any-url"))
+          mockGetSessionDataResult(taxYearEOY, employmentId, Redirect("/any-url"))
 
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
@@ -144,7 +145,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
 
       "has a BAD_REQUEST status with invalid form body" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYearEOY, employmentId, BadRequest)
+          mockGetSessionDataResult(taxYearEOY, employmentId, BadRequest)
           controller.submit(taxYearEOY, employmentId)(fakeRequest)
         }
         status(result) shouldBe BAD_REQUEST

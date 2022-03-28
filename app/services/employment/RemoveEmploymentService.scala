@@ -27,8 +27,9 @@ import play.api.Logging
 import play.api.mvc.Request
 import services.{DeleteOrIgnoreExpensesService, NrsService}
 import uk.gov.hmrc.http.HeaderCarrier
-
 import javax.inject.Inject
+import utils.RequestUtils.getTrueUserAgent
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,
@@ -92,7 +93,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     val deductions = employmentSource.employmentData.flatMap(_.deductions)
     val nrsPayload = DecodedDeleteEmploymentPayload(employmentDetailsViewModel, benefits, expenses, deductions)
 
-    nrsService.submit(authorisationRequest.user.nino, nrsPayload.toNrsPayloadModel, authorisationRequest.user.mtditid)
+    nrsService.submit(authorisationRequest.user.nino, nrsPayload.toNrsPayloadModel, authorisationRequest.user.mtditid, getTrueUserAgent)
   }
 
   private def handleConnectorCall(taxYear: Int, employmentId: String,

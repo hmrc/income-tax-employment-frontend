@@ -24,7 +24,7 @@ import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
-import support.mocks.{MockEmploymentService, MockEmploymentSessionService}
+import support.mocks.{MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentTaxView
 
@@ -32,7 +32,8 @@ import scala.concurrent.Future
 
 class EmploymentTaxControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
-  with MockEmploymentService {
+  with MockEmploymentService
+  with MockErrorHandler {
 
   object Model {
 

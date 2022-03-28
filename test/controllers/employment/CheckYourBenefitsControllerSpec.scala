@@ -30,7 +30,7 @@ import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService}
+import support.mocks.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTestWithApp
 import views.html.employment.CheckYourBenefitsView
 
@@ -39,7 +39,8 @@ import scala.concurrent.Future
 class CheckYourBenefitsControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockCheckYourBenefitsService
-  with MockAuditService {
+  with MockAuditService
+  with MockErrorHandler {
 
   private lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
 

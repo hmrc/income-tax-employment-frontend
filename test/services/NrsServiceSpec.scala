@@ -18,11 +18,14 @@ package services
 
 import connectors.NrsConnector
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import models.AuthorisationRequest
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import play.api.libs.json.{JsString, Writes}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+import support.builders.models.UserBuilder.aUser
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.RequestUtils.getTrueUserAgent
 import utils.UnitTest
 
 import scala.concurrent.Future
@@ -67,9 +70,9 @@ class NrsServiceSpec extends UnitTest {
           .expects(nino, payloadModel, headerCarrierWithTrueClientDetails.withExtraHeaders("mtditid" -> mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32", "clientIP" -> "127.0.0.1", "clientPort" -> "80"), writesObject)
           .returning(Future.successful(expectedResult))
 
-        val request = FakeRequest().withHeaders("User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32")
+        val request = AuthorisationRequest(aUser,FakeRequest().withHeaders("User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32"))
 
-        val result = await(service.submit(nino, payloadModel, mtditid)(request, headerCarrierWithTrueClientDetails, writesObject))
+        val result = await(service.submit(nino, payloadModel, mtditid, getTrueUserAgent(request))(headerCarrierWithTrueClientDetails, writesObject))
 
         result shouldBe expectedResult
       }
@@ -85,9 +88,7 @@ class NrsServiceSpec extends UnitTest {
           .expects(nino, payloadModel, headerCarrierWithSession.withExtraHeaders("mtditid" -> mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "No user agent provided"), writesObject)
           .returning(Future.successful(expectedResult))
 
-        val request: Request[_] = FakeRequest()
-
-        val result = await(service.submit(nino, payloadModel, mtditid))
+        val result = await(service.submit(nino, payloadModel, mtditid, getTrueUserAgent))
 
         result shouldBe expectedResult
       }

@@ -34,10 +34,11 @@ import scala.concurrent.{ExecutionContext, Future}
 trait MockAuthorisedAction extends MockFactory {
 
   private val mockAppConfig = new MockAppConfig().config()
-  private val mockAuthConnector = mock[AuthConnector]
+  val mockAuthConnector = mock[AuthConnector]
   private val mockAuthService = new AuthService(mockAuthConnector)
 
   protected val mockAuthorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
+  protected val authorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 
   protected def mockAuthAsAgent(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
     val enrolments: Enrolments = Enrolments(Set(
@@ -56,6 +57,10 @@ trait MockAuthorisedAction extends MockFactory {
       .returning(Future.successful(enrolments))
   }
 
+  protected def mockAuth(nino: Option[String]): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
+    mockAuthAsIndividual(nino)
+  }
+
   protected def mockAuthAsIndividual(nino: Option[String]): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
     val enrolments = Enrolments(Set(
       Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
@@ -71,6 +76,12 @@ trait MockAuthorisedAction extends MockFactory {
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
       .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+  }
+
+  protected def mockAuthReturnException(exception: Exception): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
+      .returning(Future.failed(exception))
   }
 
   protected def mockFailToAuthenticate(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {

@@ -54,6 +54,8 @@ common.notProvided = Not provided
 common.add = Add
 common.employer = Employer
 common.or = or
+common.dateRange = {0} to {1}
+common.dateFrom = From {0}
 
 #################   Subheadings/Captions    ##################################
 
@@ -147,6 +149,13 @@ employment.removeEmployment.remove-all-paragraph = This will also remove any ben
 employment.removeEmployment.remove-paragraph = This will also remove any benefits for this employer.
 employment.removeEmployment.button = Remove employer
 
+#################       Select employer messages        ########################################
+
+employment.unignoreEmployment.title = Which employer do you want to add?
+employment.unignoreEmployment.addANewEmployer = Add a new employer
+employment.unignoreEmployment.individual = Select your employer or add a new employer
+employment.unignoreEmployment.agent = Select your client’s employer or add a new employer
+
 #################       Check Employment details messages        ########################################
 
 employment.employmentDetails.closeCompany =  Close company
@@ -182,7 +191,6 @@ employment.employmentDetails.payrollId = Payroll ID
 employment.employmentDetails.startDate =  Employment start date
 employment.employmentDetails.stillWorkingForEmployer = Still working for your employer
 employment.employmentDetails.employmentDates = Employment dates
-employment.employmentDetails.employmentDates.format = {0} to {1}
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P6
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay

@@ -52,7 +52,7 @@ object ViewUtils {
   }
 
   def employmentDatesFormatter(startDate: Option[String], endDate: Option[String])(implicit messages: Messages): Option[String] = {
-    Some(messages("employment.employmentDetails.employmentDates.format", (startDate).getOrElse(""), endDate.getOrElse("")))
+    Some(messages("common.dateRange", (startDate).getOrElse(""), endDate.getOrElse("")))
   }
 
   def getAgentDynamicContent(msgKey: String, isAgent: Boolean): String = {

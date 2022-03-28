@@ -173,7 +173,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest w
 
     "redirect to Overview page when in year" in {
       mockAuthAsIndividual(Some("AA123456A"))
-      mockGetSessionData(taxYear, employmentId, Redirect("/any-url"))
+      mockGetSessionDataResult(taxYear, employmentId, Redirect("/any-url"))
 
       val request = fakeIndividualRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString).withFormUrlEncodedBody("value" -> "true")
 
@@ -185,7 +185,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest w
       val request = fakeIndividualRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString).withFormUrlEncodedBody("value" -> "true")
 
       mockAuthAsIndividual(Some("AA123456A"))
-      mockGetSessionData(taxYearEOY, employmentId, BadRequest)
+      mockGetSessionDataResult(taxYearEOY, employmentId, BadRequest)
 
       await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe BadRequest
     }

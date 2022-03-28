@@ -18,7 +18,7 @@ package services.employment
 
 import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import models.User
+import models.{AuthorisationRequest, User}
 import models.benefits.{DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment.AllEmploymentData
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
@@ -26,8 +26,9 @@ import play.api.mvc.Request
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-
 import javax.inject.Inject
+import utils.RequestUtils.getTrueUserAgent
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsService @Inject()(nrsService: NrsService,
@@ -37,7 +38,7 @@ class CheckYourBenefitsService @Inject()(nrsService: NrsService,
                               createUpdateEmploymentRequest: CreateUpdateEmploymentRequest,
                               employmentId: String, prior:
                               Option[AllEmploymentData])
-                             (implicit request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val nrsPayload: Either[DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload] = prior.flatMap {
       prior =>
@@ -46,8 +47,8 @@ class CheckYourBenefitsService @Inject()(nrsService: NrsService,
     }.map(Left(_)).getOrElse(Right(createUpdateEmploymentRequest.toCreateDecodedBenefitsPayloadModel()))
 
     nrsPayload match {
-      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
-      case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
+      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid, getTrueUserAgent)
+      case Right(create) => nrsService.submit(user.nino, create, user.mtditid, getTrueUserAgent)
     }
   }
 

@@ -1,0 +1,88 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import controllers.employment.routes.EmploymentSummaryController
+@import controllers.employment.routes.SelectEmployerController
+@import views.html.templates.Layout
+@import models.employment.Employer
+@import common.SessionValues
+@import utils.ViewUtils.dateFormatter
+@import views.html.templates.helpers.{Heading, Link, Button, ErrorSummary}
+
+@this(
+    layout: Layout,
+    heading: Heading,
+    link: Link,
+    formWithCsrf: FormWithCSRF,
+    govUkButton: GovukButton,
+    govukRadios : GovukRadios,
+    errorSummary: ErrorSummary,
+    button: Button
+)
+@(taxYear: Int, employers: Seq[Employer], form: Form[String])(implicit request: UserPriorDataRequest[_], messages: Messages, appConfig: AppConfig)
+
+@hasFormErrors = @{form.hasErrors}
+
+@titleForUse = @{
+    messages("employment.unignoreEmployment.title")
+}
+
+@headingForUse = @{
+    messages("employment.unignoreEmployment.title")
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
+
+    @errorSummary(form.errors)
+
+    @formWithCsrf(action = SelectEmployerController.submit(taxYear)) {
+        @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
+
+        @govukRadios(Radios(
+            name = "value",
+            errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+            items = employers.map { employer =>
+                RadioItem(
+                    content = Text(employer.name),
+                    value = Some(employer.employmentId),
+                    checked = form("value").value.contains(employer.employmentId),
+                    hint = if(employer.startDate.isDefined && employer.leaveDate.isDefined && dateFormatter(employer.startDate.get).isDefined && dateFormatter(employer.leaveDate.get).isDefined){ Some(Hint(
+                        content = Text(messages("common.dateRange", dateFormatter(employer.startDate.get).get, dateFormatter(employer.leaveDate.get).get))
+                    )) } else if(employer.startDate.isDefined && dateFormatter(employer.startDate.get).isDefined){
+                        Some(Hint(
+                            content = Text(messages("common.dateFrom", dateFormatter(employer.startDate.get).get))
+                        ))
+                    } else {
+                        None
+                    }
+                )
+            } ++ Seq(RadioItem(
+                divider = Some(messages("common.or"))
+            ),
+            RadioItem(
+                content = Text(messages("employment.unignoreEmployment.addANewEmployer")),
+                value = Some(SessionValues.ADD_A_NEW_EMPLOYER),
+                checked = form.value.contains(SessionValues.ADD_A_NEW_EMPLOYER)
+            )
+        )))
+
+        @button()
+    }
+}
+
+@{
+// $COVERAGE-OFF$
+}
