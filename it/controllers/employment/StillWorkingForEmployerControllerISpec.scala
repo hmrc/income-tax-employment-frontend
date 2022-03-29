@@ -24,7 +24,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import utils.PageUrls.{employmentStartDateUrl, fullUrl, howMuchPayUrl, overviewUrl, stillWorkingForUrl}
+import utils.PageUrls.{employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, overviewUrl, stillWorkingForUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -37,9 +37,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
-  def cyaModel(employerName: String, hmrc: Boolean, startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
+  def cyaModel(employerName: String, hmrc: Boolean, employerRef: Option[String] = Some("123/AB456"), startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
                cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = Some("123/AB456"), payrollId = Some("payRollId"),
+    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = employerRef, payrollId = Some("payRollId"),
       startDate = startDate, cessationDate = cessationDate, cessationDateQuestion = cessationDateQuestion), None)
 
   object Selectors {
@@ -282,13 +282,10 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
   ".submit" should {
 
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "redirect the user to the overview page when it is not end of year" which {
           lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            authoriseAgentOrIndividual(isAgent = false)
+            urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -303,17 +300,16 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
+            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
               cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            authoriseAgentOrIndividual(isAgent = false)
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          "redirects to the how much pay page" in {
+          "redirects to the start date page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
+            result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe None
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
@@ -328,43 +324,40 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
+            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
               cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            authoriseAgentOrIndividual(isAgent = false)
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          //TODO: should navigate to cessationDate page when available
-          "redirects to the how much pay details page" in {
+          "redirects to the employments dates page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
+            result.header("location").contains(employmentDatesUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-            cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
+            cyaModel.employment.employmentDetails.cessationDate shouldBe None
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
           }
 
         }
 
-        "Redirect to the employer details page when a previous answers is missing after updating the yes/no value" which {
+        "Redirect to employer ref page when there's a missing answer" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)))
+            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, employerRef = None,
+              startDate = None, cessationDate = cessationDate, cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            authoriseAgentOrIndividual(isAgent = false)
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          "redirects to the missing start date page page" in {
+          "redirects to the missing employer ref page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
+            result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
@@ -372,6 +365,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           }
 
         }
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
 

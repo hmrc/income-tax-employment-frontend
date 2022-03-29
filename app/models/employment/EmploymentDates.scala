@@ -18,19 +18,39 @@ package models.employment
 
 import java.time.LocalDate
 
-case class EmploymentDates(startAmountDay: String,
-                           startAmountMonth: String,
-                           startAmountYear: String,
-                           endAmountDay: String,
-                           endAmountMonth: String,
-                           endAmountYear: String
-                         ){
+case class EmploymentDates(startDate: Option[EmploymentDate],
+                           endDate: Option[EmploymentDate]){
 
-  def startDateToLocalDate: LocalDate = LocalDate.of(startAmountYear.toInt, startAmountMonth.toInt, startAmountDay.toInt)
-  def endDateToLocalDate: LocalDate = LocalDate.of(endAmountYear.toInt, endAmountMonth.toInt, endAmountDay.toInt)
+  def startDateToLocalDate: Option[LocalDate] =
+    startDate.map (employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
 
+  def endDateToLocalDate: Option[LocalDate] =
+    endDate.map (employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
 }
 
+object EmploymentDates {
 
+  def formApply(startDay: String,
+                startMonth: String,
+                startYear: String,
+                endDay: String,
+                endMonth: String,
+                endYear: String): EmploymentDates = EmploymentDates(
+    startDate = Some(EmploymentDate(startDay,startMonth,startYear)),
+    endDate = Some(EmploymentDate(endDay,endMonth,endYear))
+  )
+
+  def formUnapply(form: EmploymentDates): Option[(String,String,String,String,String,String)] = Some(
+    (
+      form.startDate.map(_.amountDay).getOrElse(""),
+      form.startDate.map(_.amountMonth).getOrElse(""),
+      form.startDate.map(_.amountYear).getOrElse(""),
+      form.endDate.map(_.amountDay).getOrElse(""),
+      form.endDate.map(_.amountMonth).getOrElse(""),
+      form.endDate.map(_.amountYear).getOrElse("")
+    )
+  )
+
+}
 
 

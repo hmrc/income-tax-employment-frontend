@@ -44,9 +44,6 @@ POST        /:taxYear/employment-start-date                                     
 GET         /:taxYear/still-working-for-employer                                     controllers.employment.StillWorkingForEmployerController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/still-working-for-employer                                     controllers.employment.StillWorkingForEmployerController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/employment-end-date                                            controllers.employment.EmployerLeaveDateController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employment-end-date                                            controllers.employment.EmployerLeaveDateController.submit(taxYear: Int, employmentId: String)
-
 GET         /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.submit(taxYear: Int, employmentId: String)
 

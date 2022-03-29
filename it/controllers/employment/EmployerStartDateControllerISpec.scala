@@ -25,7 +25,7 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, employmentStartDateUrl, fullUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employmentStartDateUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
@@ -814,28 +814,6 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-      }
-    }
-
-    "redirect when the date is now before the end date" which {
-      val cya = cyaModel(employerName, hmrc = true)
-      lazy val form: Map[String, String] = Map(
-        EmploymentDateForm.year -> (taxYearEOY - 1).toString,
-        EmploymentDateForm.month -> "11",
-        EmploymentDateForm.day -> "11")
-
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        insertCyaData(anEmploymentUserData.copy(employment = cya.copy(employmentDetails = cya.employmentDetails.copy(
-          cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has the correct status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentEndDateUrl(taxYearEOY, employmentId)) shouldBe true
-
       }
     }
 
