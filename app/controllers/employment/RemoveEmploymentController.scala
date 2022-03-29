@@ -62,10 +62,11 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
         case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
           allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
-            case Some(EmploymentSourceOrigin(_, _)) => removeEmploymentService.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId).map {
-              case Left(error) => errorHandler.handleError(error.status)
-              case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
-            }
+            case Some(EmploymentSourceOrigin(_, _)) =>
+              removeEmploymentService.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, request.user).map {
+                case Left(error) => errorHandler.handleError(error.status)
+                case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
+              }
             case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
       }

@@ -116,7 +116,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                 case Right(result) =>
                   checkEmploymentExpensesService.performSubmitAudits(request.user, model, taxYear, prior)
 
-                  if (appConfig.nrsEnabled) checkEmploymentExpensesService.performSubmitNrsPayload(model, prior)
+                  if (appConfig.nrsEnabled) checkEmploymentExpensesService.performSubmitNrsPayload(model, prior, request.user)
 
                   employmentSessionService.clearExpenses(taxYear)(result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
               }

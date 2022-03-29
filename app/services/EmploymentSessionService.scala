@@ -20,7 +20,6 @@ import java.util.NoSuchElementException
 
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
-import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
 import javax.inject.{Inject, Singleton}
@@ -33,7 +32,6 @@ import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}

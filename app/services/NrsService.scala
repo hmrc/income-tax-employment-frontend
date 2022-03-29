@@ -18,13 +18,11 @@ package services
 
 import connectors.NrsConnector
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import javax.inject.Inject
 import play.api.http.HeaderNames
 import play.api.libs.json.Writes
-import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.HMRCHeaderNames
-import javax.inject.Inject
-import models.CommonAuthorisationRequest
 
 import scala.concurrent.Future
 

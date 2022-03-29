@@ -25,7 +25,6 @@ import models.{APIErrorModel, CommonAuthorisationRequest, User}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.RequestUtils.getTrueUserAgent
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,14 +34,14 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
                                           implicit val executionContext: ExecutionContext) extends Logging {
 
   def unignoreEmployment(user: User, taxYear: Int, employmentId: String)
-                        (implicit authorisationRequest: CommonAuthorisationRequest, hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
+                        (implicit hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
 
-    unignoreEmploymentConnector.unignoreEmployment(authorisationRequest.user.nino, taxYear, employmentId)(
-      hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
+    unignoreEmploymentConnector.unignoreEmployment(user.nino, taxYear, employmentId)(
+      hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
       case Left(error) => Left(error)
       case _ =>
         sendAuditEvent(user, taxYear, employmentId)
-        performSubmitNrsPayload(user, employmentId)(authorisationRequest.request, hc)
+        performSubmitNrsPayload(user, employmentId)
         Right()
     }
   }
@@ -62,7 +61,7 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
   }
 
   private def performSubmitNrsPayload(user: User, employmentId: String)
-                                     (implicit request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
-    nrsService.submit(user.nino, UnignoreEmploymentNRSModel(employmentId), user.mtditid, getTrueUserAgent)
+                                     (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+    nrsService.submit(user.nino, UnignoreEmploymentNRSModel(employmentId), user.mtditid, user.trueUserAgent)
   }
 }

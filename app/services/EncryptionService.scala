@@ -17,13 +17,12 @@
 package services
 
 import config.AppConfig
+import javax.inject.Inject
 import models.benefits._
 import models.employment.{EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
 import models.expenses.{EncryptedExpensesViewModel, ExpensesViewModel}
 import models.mongo._
 import utils.SecureGCMCipher
-
-import javax.inject.Inject
 
 class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: AppConfig) {
 

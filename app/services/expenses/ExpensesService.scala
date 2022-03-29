@@ -16,12 +16,12 @@
 
 package services.expenses
 
+import javax.inject.Inject
 import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import services.EmploymentSessionService
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ExpensesService @Inject()(employmentSessionService: EmploymentSessionService,

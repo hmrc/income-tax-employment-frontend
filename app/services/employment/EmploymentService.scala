@@ -16,13 +16,14 @@
 
 package services.employment
 
+import java.time.LocalDate
+
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentDate
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject()(employmentSessionService: EmploymentSessionService,
