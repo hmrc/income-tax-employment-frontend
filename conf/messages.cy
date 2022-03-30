@@ -43,7 +43,7 @@ common.saveAndContinue = Save and continue
 common.status.cannotUpdate = Cannot update
 common.status.notStarted = Not started
 common.status.updated = Updated
-common.studentLoans = Student Loans
+common.studentLoans = Student loans
 common.thisIncludes = This includes things like:
 common.update = Update
 common.use = use
@@ -64,7 +64,7 @@ payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
 benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
-studentLoans.subheading = Student Loans for 6 April {0} to 5 April {1}
+studentLoans.subheading = Student loans for 6 April {0} to 5 April {1}
 
 #################       Error messages        ########################################
 
@@ -112,8 +112,8 @@ employment.employmentDetails.heading.agent = Check your client’s employment de
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary
 employment.employerInformation.title = Employer information
-employment.employmentInfo.p1.agent = You cannot change your client’s employment information until 6 April {0}.
-employment.employmentInfo.p1.individual = You cannot change your employment information until 6 April {0}.
+employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
+employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
 employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
 employment.employmentInformation.content.individual = Your employment details are based on the information we already hold about you.
 employment.employmentSummary.content.studentLoansUnreleased.agent = Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits.
@@ -1320,7 +1320,7 @@ expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to 
 
 studentLoans.title.individual = Check your student loan repayment details
 studentLoans.title.agent = Check your client’s student loan repayment details
-studentLoans.slr = Student loan repayments?
+studentLoans.slr = Student loan repayments
 studentLoans.ura = Undergraduate repayments amount
 studentLoans.pra = Postgraduate repayments amount
 studentLoans.undergraduate = Undergraduate
@@ -1345,7 +1345,6 @@ studentLoans.undergraduateLoanAmount.title.individual = How much undergraduate l
 studentLoans.undergraduateLoanAmount.title.agent = How much undergraduate loan did your client repay?
 studentLoans.undergraduateLoanAmount.heading.individual = How much undergraduate loan did you repay while employed by {0}?
 studentLoans.undergraduateLoanAmount.heading.agent = How much undergraduate loan did your client repay while employed by {0}?
-studentLoans.undergraduateLoanAmount.coursesExample = Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
 studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format

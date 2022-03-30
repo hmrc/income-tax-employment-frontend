@@ -88,16 +88,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
     override val title: String = "Check your student loan repayment details"
-    override lazy val caption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override lazy val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText: String = "Your student loan repayment details are based on the information we already hold about you."
 
-    override val questionStudentLoan = "Student loan repayments?"
+    override val questionStudentLoan = "Student loan repayments"
     override val questionUndergraduateAmount = "Undergraduate repayments amount"
     override val questionPostGraduateAmount = "Postgraduate repayments amount"
 
     override val answerStudentLoan = "Undergraduate and Postgraduate"
 
-    override val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
+    override val hiddenTextStudentLoan: String = "Change Change Student loan repayments"
     override val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
@@ -111,16 +111,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val hasPrior: Boolean = false
 
     override lazy val title: String = "Check your student loan repayment details"
-    override lazy val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
+    override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
 
-    override lazy val questionStudentLoan = "Student loan repayments?"
+    override lazy val questionStudentLoan = "Student loan repayments"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
     override lazy val questionPostGraduateAmount = "Postgraduate repayments amount"
 
     override lazy val answerStudentLoan = "Undergraduate and Postgraduate"
 
-    override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
+    override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments"
     override lazy val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
@@ -133,16 +133,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
     override val title: String = "Check your client’s student loan repayment details"
-    override lazy val caption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override lazy val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText: String = "Your client’s student loan repayment details are based on the information we already hold about them."
 
-    override val questionStudentLoan = "Student loan repayments?"
+    override val questionStudentLoan = "Student loan repayments"
     override val questionUndergraduateAmount = "Undergraduate repayments amount"
     override val questionPostGraduateAmount = "Postgraduate repayments amount"
 
     override val answerStudentLoan = "Undergraduate and Postgraduate"
 
-    override val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
+    override val hiddenTextStudentLoan: String = "Change Change Student loan repayments"
     override val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
@@ -156,16 +156,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val hasPrior: Boolean = false
 
     override lazy val title: String = "Check your client’s student loan repayment details"
-    override lazy val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
+    override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
 
-    override lazy val questionStudentLoan = "Student loan repayments?"
+    override lazy val questionStudentLoan = "Student loan repayments"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
     override lazy val questionPostGraduateAmount = "Postgraduate repayments amount"
 
     override lazy val answerStudentLoan = "Undergraduate and Postgraduate"
 
-    override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
+    override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments"
     override lazy val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 

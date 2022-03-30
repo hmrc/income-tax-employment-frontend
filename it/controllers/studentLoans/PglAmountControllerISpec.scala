@@ -67,7 +67,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualEN extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much postgraduate loan did you repay?"
@@ -81,7 +81,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much postgraduate loan did you repay?"
@@ -95,7 +95,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentEN extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much postgraduate loan did your client repay?"
@@ -109,7 +109,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much postgraduate loan did your client repay?"

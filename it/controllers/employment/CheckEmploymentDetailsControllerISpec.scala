@@ -434,7 +434,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+          buttonCheck(user.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
         }
 
         "for in year with multiple employment sources, return a fully populated page when all fields are populated" which {

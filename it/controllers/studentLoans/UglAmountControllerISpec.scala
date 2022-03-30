@@ -49,7 +49,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     val inputSelector = "#amount"
     val hintTextSelector = "#amount-hint"
     val paragraphCheckSelector = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val paragraphExampleSelector = "#main-content > div > div > form > div > label > p:nth-child(3)"
     val headingSelector = "#main-content > div > div > form > div > label > header > h1"
     val errorSummarySelector = "#main-content > div > div > div.govuk-error-summary > div > ul > li > a"
     val errorMessageSelector = "#amount-error"
@@ -61,7 +60,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     val expectedCaption: String
     val expectedButtonText: String
     val expectedParagraphCheckText: String
-    val expectedParagraphExampleText: String
     val hintText: String
     val inputFieldName: String
     val errorSummaryText: String
@@ -71,13 +69,12 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualEN extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much undergraduate loan did you repay?"
     override val expectedH1: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your payslips or P60."
-    override val expectedParagraphExampleText: String = "Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
     override val inputFieldName: String = "amount"
     override val errorSummaryText: String = "Enter the amount of undergraduate loan you repaid while employed by Falador Knights"
     override val noEntryError: String = "Enter the amount of undergraduate loan you repaid while employed by Falador Knights"
@@ -86,13 +83,12 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much undergraduate loan did you repay?"
     override val expectedH1: String = "How much undergraduate loan did you repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your payslips or P60."
-    override val expectedParagraphExampleText: String = "Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
     override val inputFieldName: String = "amount"
     override val errorSummaryText: String = "Enter the amount of undergraduate loan you repaid while employed by Falador Knights"
     override val noEntryError: String = "Enter the amount of undergraduate loan you repaid while employed by Falador Knights"
@@ -101,13 +97,12 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentEN extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much undergraduate loan did your client repay?"
     override val expectedH1: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your client’s payslips or P60."
-    override val expectedParagraphExampleText: String = "Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
     override val inputFieldName: String = "amount"
     override val errorSummaryText: String = "Enter the amount of undergraduate loan your client repaid while employed by Falador Knights"
     override val noEntryError: String = "Enter the amount of undergraduate loan your client repaid while employed by Falador Knights"
@@ -116,13 +111,12 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student Loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val expectedButtonText: String = "Continue"
     override val hintText: String = "For example, £193.52"
     override val title: String = "How much undergraduate loan did your client repay?"
     override val expectedH1: String = "How much undergraduate loan did your client repay while employed by Falador Knights?"
     override val expectedParagraphCheckText: String = "Check with the Student Loans Company, your client’s payslips or P60."
-    override val expectedParagraphExampleText: String = "Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
     override val inputFieldName: String = "amount"
     override val errorSummaryText: String = "Enter the amount of undergraduate loan your client repaid while employed by Falador Knights"
     override val noEntryError: String = "Enter the amount of undergraduate loan your client repaid while employed by Falador Knights"
@@ -197,7 +191,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck(inputFieldName, inputSelector, "")
 
@@ -241,7 +234,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck(inputFieldName, inputSelector, "100")
 
@@ -283,7 +275,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck("amount", inputSelector, "84.73")
 
@@ -491,7 +482,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(noEntryError, errorSummarySelector)
 
@@ -544,7 +534,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(invalidFormatError, errorSummarySelector)
 

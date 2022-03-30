@@ -38,17 +38,7 @@
 }
 
 @margin = @{
-    if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-4"
-}
-
-@employmentSource = {
-        @if(isSingleEmployment) {
-            @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-                        href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
-                } else {
-                    @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
-                        href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentDetails.employmentId).url))
-        }
+    if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-3" else "govuk-!-margin-bottom-5"
 }
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
@@ -155,7 +145,8 @@
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
         }
     } else {
-        @employmentSource
+        @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),
+                href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentDetails.employmentId).url))
     }
 }
 
