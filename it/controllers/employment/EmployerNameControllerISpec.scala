@@ -46,10 +46,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val inputSelector: String = "#name"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val paragraphTextSelector: String = "#main-content > div > div > form > div > label > p"
-    val formatListSelector1: String = "#main-content > div > div > form > div > label > ul > li:nth-child(1)"
-    val formatListSelector2: String = "#main-content > div > div > form > div > label > ul > li:nth-child(2)"
-    val formatListSelector3: String = "#main-content > div > div > form > div > label > ul > li:nth-child(3)"
+    val paragraphTextSelector: String = "#main-content > div > div > p.govuk-body"
+    val formatListSelector1: String = "#main-content > div > div > ul > li:nth-child(1)"
+    val formatListSelector2: String = "#main-content > div > div > ul > li:nth-child(2)"
+    val formatListSelector3: String = "#main-content > div > div > ul > li:nth-child(3)"
   }
 
   trait SpecificExpectedResults {

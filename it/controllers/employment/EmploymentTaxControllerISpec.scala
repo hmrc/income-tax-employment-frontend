@@ -27,7 +27,6 @@ import support.builders.models.AuthorisationRequestBuilder.anAuthorisationReques
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
@@ -120,7 +119,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   )
 
   object Selectors {
-    val pText = "#main-content > div > div > form > div > label > p:nth-child(2)"
+    val pText = "#main-content > div > div > p.govuk-body"
     val hintText = "#amount-hint"
     val continueButton = "#continue"
     val inputAmountField = "#amount"

@@ -1,0 +1,56 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import utils.ViewUtils.bigDecimalCurrency
+
+@this(govukInput: GovukInput)
+
+@(form: Form[_],
+    id: String,
+    name: String,
+    label: String,
+    labelHidden: Boolean = false,
+    isPageHeading: Boolean = false,
+    hint: Option[String] = None,
+    classes: Option[String] = None,
+    autocomplete: Option[String] = None,
+    inputType: String = "text",
+    currency: Boolean = false
+)(implicit messages: Messages)
+
+@govukInput(Input(
+    id,
+    name,
+    classes = if(currency) "govuk-input--width-10 " + classes.fold("")(x => x) else classes.fold("")(x => x),
+    label = Label(
+        content = Text(messages(label)),
+        isPageHeading = isPageHeading,
+        classes = if(isPageHeading) "govuk-label--l" else if (labelHidden) "govuk-visually-hidden" else ""
+    ),
+    hint = hint.map(hintKey => Hint(
+        content = HtmlContent(messages(hintKey))
+    )),
+    value = if(currency && form.errors(id).isEmpty) form(name).value.map(bigDecimalCurrency(_, "")) else form(name).value,
+    autocomplete = autocomplete.map(value => value),
+    inputType = inputType,
+    errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+    prefix = if(currency) Some(PrefixOrSuffix(content = Text("£"))) else None,
+    attributes = Map("maxlength" -> "500")
+))
+
+@{
+//$COVERAGE-OFF$
+}

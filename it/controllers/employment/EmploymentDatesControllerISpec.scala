@@ -42,11 +42,11 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   private val endMonthInputName = "endAmount-month"
   private val endYearInputName = "endAmount-year"
 
-  private def cyaModel(employerName: String, hmrc: Boolean) = EmploymentCYAModel(EmploymentDetails(
+  private def cyaModel(employerName: String): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(
     employerName,
     employerRef = Some("123/12345"),
     cessationDateQuestion = Some(true),
-    currentDataIsHmrcHeld = hmrc,
+    currentDataIsHmrcHeld = true,
     payrollId = Some("12345"),
     taxablePayToDate = Some(5),
     totalTaxToDate = Some(5)
@@ -295,10 +295,10 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
 
-        "render the 'employerment dates' page with an empty form" which {
+        "render the 'employment dates' page with an empty form" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
+            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
             authoriseAgentOrIndividual(isAgent = false)
             urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -349,12 +349,9 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
 
   ".submit" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
           "the start day is empty" which {
             lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "",
               EmploymentDatesForm.startAmountMonth -> "01",
@@ -1646,7 +1643,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     }
 
     "redirect to the check details page when the form is fully filled out" which {
-
       lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "01",
         EmploymentDatesForm.startAmountMonth -> "01",
         EmploymentDatesForm.startAmountYear -> taxYearEOY.toString,

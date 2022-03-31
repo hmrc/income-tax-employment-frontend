@@ -38,8 +38,9 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val formSelector = "#value"
-    val orSelector = "#main-content > div > div > form > div > div > div.govuk-radios__divider"
-    def hintSelector(id: String = "") = s"#value$id-item-hint"
+    val orSelector = ".govuk-radios__divider"
+
+    def hintSelector(id: String = ""): String = s"#value$id-item-hint"
   }
 
   trait SpecificExpectedResults {
@@ -53,8 +54,11 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     val orText: String
     val expectedTitle: String
     val expectedH1: String
+
     def fromText(date: String): String
+
     def datesText(start: String, end: String): String
+
     val expectedErrorTitle: String
   }
 
@@ -65,8 +69,11 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     val orText: String = "or"
     val expectedTitle: String = "Which employer do you want to add?"
     val expectedH1: String = "Which employer do you want to add?"
+
     def fromText(date: String): String = s"From ${ViewUtils.dateFormatter(date).get}"
+
     def datesText(start: String, end: String): String = s"${ViewUtils.dateFormatter(start).get} to ${ViewUtils.dateFormatter(end).get}"
+
     val expectedErrorTitle = s"Error: $expectedTitle"
   }
 
@@ -77,8 +84,11 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     val orText: String = "or"
     val expectedTitle: String = "Which employer do you want to add?"
     val expectedH1: String = "Which employer do you want to add?"
+
     def fromText(date: String): String = s"From ${ViewUtils.dateFormatter(date).get}"
+
     def datesText(start: String, end: String): String = s"${ViewUtils.dateFormatter(start).get} to ${ViewUtils.dateFormatter(end).get}"
+
     val expectedErrorTitle = s"Error: $expectedTitle"
   }
 
@@ -106,15 +116,15 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   )
 
   implicit val request: UserPriorDataRequest[AnyContent] = UserPriorDataRequest(
-    anAllEmploymentData,aUser,individualUserRequest
+    anAllEmploymentData, aUser, individualUserRequest
   )
 
   private def form(isAgent: Boolean): Form[String] = new SelectEmployerForm().employerListForm(isAgent, Seq("id"))
 
   val employers = Seq(
-    Employer("id","Emp 1",Some("2020-11-11"),Some("2020-11-11")),
-    Employer("id2","Emp 2",Some("2020-11-11"),None),
-    Employer("id3","Emp 3",None,None)
+    Employer("id", "Emp 1", Some("2020-11-11"), Some("2020-11-11")),
+    Employer("id2", "Emp 2", Some("2020-11-11"), None),
+    Employer("id3", "Emp 3", None, None)
   )
 
   private lazy val underTest = inject[SelectEmployerView]
@@ -141,9 +151,9 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         radioButtonCheck(userScenario.commonExpectedResults.addNewEmployerText, radioNumber = 4, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.orText,orSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get,employers.head.leaveDate.get),hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get),hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
+        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -166,10 +176,10 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         radioButtonCheck(employers(2).name, radioNumber = 3, checked = false)
         radioButtonCheck(userScenario.commonExpectedResults.addNewEmployerText, radioNumber = 4, checked = true)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.orText,orSelector)
+        textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get,employers.head.leaveDate.get),hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get),hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -192,10 +202,10 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         radioButtonCheck(employers(2).name, radioNumber = 3, checked = false)
         radioButtonCheck(userScenario.commonExpectedResults.addNewEmployerText, radioNumber = 4, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.orText,orSelector)
+        textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get,employers.head.leaveDate.get),hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get),hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
         welshToggleCheck(userScenario.isWelsh)
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.formSelector)
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))
