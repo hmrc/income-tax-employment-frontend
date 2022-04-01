@@ -20,6 +20,7 @@
 @import models.employment.EmploymentDetailsViewModel
 @import utils.ViewUtils._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import controllers.employment.routes.EmploymentTaxController
 
 
 @this(
@@ -56,9 +57,6 @@
     }
 
     @{
-
-        val employmentTaxCall = controllers.employment.routes.EmploymentTaxController.show(taxYear, employmentDetails.employmentId)
-
         val msgKeyGeneric = "employment.employmentDetails"
 
         val employerName = EmploymentDataForView(
@@ -68,6 +66,13 @@
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
+        val payeRef = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payeRef"),
+            employmentDetails.employerRef,
+            controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
+        )
+
         val didYouLeave = EmploymentDataForView(
             messages(s"$msgKeyGeneric.didYouLeave"),
             Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
@@ -75,26 +80,21 @@
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent), employmentDetails.employerName)
         )
 
-        val employmentStartDate = EmploymentDataForView(
-            messages(s"$msgKeyGeneric.startDate"),
-            employmentDetails.startDate.flatMap(dateFormatter),
-            controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
-        )
-
-        val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
-        employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
-        controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent)))
-
-        val datesLineItemToUse = if(employmentDetails.didYouLeaveQuestion.contains(true)) employmentDates else employmentStartDate
-
-        val payeRef = EmploymentDataForView(
-            messages(msgKeyGeneric + ".payeRef"),
-            employmentDetails.employerRef,
-            controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
-        )
+        val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) {
+            EmploymentDataForView(
+                messages(s"$msgKeyGeneric.employmentDates"),
+                employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+                controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
+                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent))
+            )
+        } else {
+            EmploymentDataForView(
+                messages(s"$msgKeyGeneric.startDate"),
+                employmentDetails.startDate.flatMap(dateFormatter),
+                controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
+            )
+        }
 
         val payrollId = EmploymentDataForView(
             messages(msgKeyGeneric + ".payrollId"),
@@ -113,18 +113,19 @@
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            employmentTaxCall,
+            EmploymentTaxController.show(taxYear, employmentDetails.employmentId),
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", request.user.isAgent))
         )
 
-        val employmentDataFields = List(
+        val employmentDataFields = Seq(
             employerName,
             payeRef,
             didYouLeave,
             datesLineItemToUse,
             payrollId,
             payReceived,
-            totalTaxToDate)
+            totalTaxToDate
+        )
 
         govukSummaryList(
             SummaryList(
@@ -140,6 +141,7 @@
             )
         )
     }
+
     @if(!isInYear){
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))

@@ -29,7 +29,6 @@ import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmployme
 import support.builders.models.employment.DeductionsBuilder.aDeductions
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourStudentLoansUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
@@ -222,8 +221,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             val employmentOne = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))
             val employmentTwo = aHmrcEmploymentSource.copy(employmentId = "004", employerName = "someName", hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(
               employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
-              deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = None, pglDeductionAmount = Some(2000)))))
-            )))))
+                deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = None, pglDeductionAmount = Some(2000)))))
+              )))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employmentOne, employmentTwo)))), nino, taxYear)
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }

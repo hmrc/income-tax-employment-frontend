@@ -47,15 +47,20 @@
     }
 
     @{
-        def toSummaryListRow(key: String, value: String, link: Option[Call], updateAvailable: Boolean = false): SummaryListRow = {
+        def toSummaryListRow(
+            labelText: String,
+            valueText: String,
+            link: Option[Call],
+            updateAvailable: Boolean
+        ): SummaryListRow = {
             summaryListRow(
                 if(link.isDefined){
-                    HtmlContent(s"""<a class="govuk-link" id="${key.toLowerCase.replace(' ', '-')}_link" href="${link.get}">$key</a>""")
-                    } else {
-                    HtmlContent(key)
+                    HtmlContent(s"""<a class="govuk-link" id="${labelText.toLowerCase.replace(' ', '-')}_link" href="${link.get}">$labelText</a>""")
+                } else {
+                    HtmlContent(labelText)
                 },
                 HtmlContent(govukTag(Tag(
-                    content = Text(value),
+                    content = Text(valueText),
                     classes = if(!updateAvailable) "govuk-tag--grey" else ""
                 ))),
                 keyClasses = "govuk-!-width-two-thirds",
@@ -64,63 +69,26 @@
             )
         }
 
-        val benefitsRowInYear: Seq[SummaryListRow] = {
-            if (benefitsDefined){
-                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId)), updateAvailable = true))
+        def summaryListRowFor(labelKey: String, isDefined: Boolean, optAction: Option[Call]): SummaryListRow = {
+            val value = if (isDefined) messages("common.status.updated")
+                else if (isInYear) messages("common.status.cannotUpdate")
+                else messages("common.status.notStarted")
+
+            toSummaryListRow(labelText = messages(labelKey), valueText = value, link = optAction, updateAvailable = isDefined)
+        }
+
+        val rows: Seq[SummaryListRow] = Seq(
+            toSummaryListRow(labelText = messages("common.employmentDetails"), valueText = messages("common.status.updated"), link = Some(CheckEmploymentDetailsController.show(taxYear, empId)), updateAvailable = appConfig.studentLoansEnabled),
+            summaryListRowFor("common.employmentBenefits", benefitsDefined, if (isInYear && !benefitsDefined) None else Some(CheckYourBenefitsController.show(taxYear, empId)))
+        ) ++ {
+            if(appConfig.studentLoansEnabled) {
+                Seq(summaryListRowFor("common.studentLoans", studentLoansDefined, if (isInYear && !studentLoansDefined) None else Some(StudentLoansCYAController.show(taxYear, empId))))
             } else {
-                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.cannotUpdate"), None))
+                Seq()
             }
         }
 
-        val benefitsRowEOY: Seq[SummaryListRow] = {
-            if (benefitsDefined){
-                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId)), updateAvailable = true))
-            } else {
-                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.notStarted"), Some(CheckYourBenefitsController.show(taxYear, empId))))
-            }
-        }
-
-        val studentLoansRow: Seq[SummaryListRow] = {
-            if (studentLoansDefined){
-                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.updated"), Some(StudentLoansCYAController.show(taxYear, empId)), updateAvailable = true))
-            } else {
-                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.cannotUpdate"), None))
-            }
-        }
-
-        val studentLoansRowEOY: Seq[SummaryListRow] = {
-            if (studentLoansDefined){
-                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.updated"), Some(StudentLoansCYAController.show(taxYear, empId)), updateAvailable = true))
-            } else {
-                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.notStarted"), Some(StudentLoansCYAController.show(taxYear, empId))))
-            }
-        }
-
-        if(isInYear) {
-            govukSummaryList(
-                SummaryList(
-                    if(appConfig.studentLoansEnabled) {
-                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                        Some(CheckEmploymentDetailsController.show(taxYear, empId)), updateAvailable = true)) ++ benefitsRowInYear ++ studentLoansRow
-                    } else {
-                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowInYear
-                    }
-                )
-            )
-        } else {
-            govukSummaryList(
-                SummaryList(
-                    if(appConfig.studentLoansEnabled) {
-                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                        Some(CheckEmploymentDetailsController.show(taxYear, empId)), updateAvailable = true)) ++ benefitsRowEOY ++ studentLoansRowEOY
-                    } else {
-                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY
-                    }
-                )
-            )
-        }
+        govukSummaryList(SummaryList(rows))
     }
 
 
