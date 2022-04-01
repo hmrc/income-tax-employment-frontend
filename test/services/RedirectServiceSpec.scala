@@ -180,6 +180,34 @@ class RedirectServiceSpec extends UnitTest {
     }
   }
 
+  "getUnfinishedRedirects" should {
+    "return an empty sequence" when {
+      "the CYA data is complete" in {
+        val result = RedirectService.getUnfinishedRedirects(employmentCYA, taxYearEOY, employmentId)
+
+        result shouldBe Seq()
+      }
+
+      "the CYA data is empty and isBenefitsReceived false" in {
+        val result = RedirectService.getUnfinishedRedirects(employmentCYA.copy(
+          employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None, accommodationRelocationModel = None,
+            travelEntertainmentModel = None, utilitiesAndServicesModel = None, medicalChildcareEducationModel = None,
+            incomeTaxAndCostsModel = None, reimbursedCostsVouchersAndNonCashModel = None, assetsModel = None, isBenefitsReceived = false))), taxYearEOY, employmentId)
+
+        result shouldBe Seq()
+      }
+    }
+
+    "return a sequence with calls in" when {
+      "the CYA data is partially complete and isBenefitsReceived true" in {
+        val result = RedirectService.getUnfinishedRedirects(employmentCYA.copy(
+          employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None))), taxYearEOY, employmentId)
+
+        result.isEmpty shouldBe false
+      }
+    }
+  }
+
   "redirectBasedOnCurrentAnswers" should {
     "redirect to benefits yes no page" when {
       "it's a new submission" in {

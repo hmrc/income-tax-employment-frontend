@@ -34,6 +34,7 @@ import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
+import services.RedirectService.getUnfinishedRedirects
 import services.employment.CheckYourBenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -81,15 +82,18 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
           case (Some(cya), _) =>
             cya.employment.employmentBenefits match {
               case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
-              case Some(benefits: BenefitsViewModel) => Future(Ok(checkYourBenefitsView(
-                taxYear,
-                employmentId,
-                cya.employment.employmentDetails.employerName,
-                benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
-                isUsingCustomerData = benefits.isUsingCustomerData,
-                isInYear = false,
-                showNotification = false
-              )))
+              case Some(benefits: BenefitsViewModel) =>
+                getUnfinishedRedirects(cya.employment, taxYear, employmentId).headOption.fold(
+                  Future(Ok(checkYourBenefitsView(
+                    taxYear,
+                    employmentId,
+                    cya.employment.employmentDetails.employerName,
+                    benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
+                    isUsingCustomerData = benefits.isUsingCustomerData,
+                    isInYear = false,
+                    showNotification = false
+                  )))
+                )(redirect => Future(Redirect(redirect)))
             }
           case (None, _) => prior.get.eoyEmploymentSourceWith(employmentId) match {
             case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>

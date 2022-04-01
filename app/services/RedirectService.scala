@@ -745,9 +745,7 @@ object RedirectService extends Logging {
     }
   }
 
-  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String): Result = {
-    implicit val taxYear: Int = _taxYear
-    implicit val employmentId: String = _employmentId
+  private def unfinishedRedirects(cya: EmploymentCYAModel)(implicit taxYear: Int, employmentId: String): Seq[Call] = {
 
     val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
     val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
@@ -767,17 +765,30 @@ object RedirectService extends Logging {
     val reimbursedCostsVouchersAndNonCashSectionFinished = reimbursedCostsVouchersAndNonCashSection.isFinished
     val assetsSectionFinished = assetsSection.isFinished
 
-    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
+    Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
       travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished,
       incomeTaxAndCostsSectionFinished, reimbursedCostsVouchersAndNonCashSectionFinished, assetsSectionFinished).flatten
+  }
 
-    unfinishedRedirects match {
+  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String): Result = {
+    implicit val taxYear: Int = _taxYear
+    implicit val employmentId: String = _employmentId
+
+    unfinishedRedirects(cya) match {
       case calls if calls.isEmpty =>
         logger.info("[RedirectService][benefitsSubmitRedirect] User has completed all sections - Routing to benefits CYA page")
         Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       case _ =>
         logger.info(s"[RedirectService][benefitsSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
         Redirect(nextPage)
+    }
+  }
+
+  def getUnfinishedRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[Call] = {
+    if(cya.employmentBenefits.exists(benefits => benefits.isBenefitsReceived)){
+      unfinishedRedirects(cya)(taxYear, employmentId)
+    } else {
+      Seq()
     }
   }
 

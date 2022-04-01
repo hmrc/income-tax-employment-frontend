@@ -33,6 +33,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
@@ -1440,135 +1441,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
         }
 
-        "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true to check help text isn't shown" which {
-          def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
-
-          def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
-            EmploymentCYAModel(
-              EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
-              Some(BenefitsViewModel(
-                accommodationRelocationModel = Some(AccommodationRelocationModel(
-                  sectionQuestion = Some(true),
-                  accommodationQuestion = Some(true),
-                  accommodation = Some(3.00),
-                  qualifyingRelocationExpensesQuestion = Some(false),
-                  nonQualifyingRelocationExpensesQuestion = Some(false))),
-                isUsingCustomerData = true
-              ))
-            )
-
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
-            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(specific.expectedTitle)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYear - 1))
-          textOnPageCheck("test", fieldHeaderSelector(2))
-          changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", companyBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(4))
-
-          changeAmountRowCheck(common.carSubheading, common.no, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(common.accommodationSubheading, common.yes, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
-            accommodationRelocationBenefitsUrl(taxYearEOY, employmentId))
-          changeAmountRowCheck(common.accommodation, common.yes, 7, 2, s"${common.changeText} ${specific.accommodationHiddenText}", livingAccommodationBenefitsUrl(taxYearEOY, employmentId))
-          changeAmountRowCheck(common.accommodationAmount, "£3", 7, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
-            livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId))
-          changeAmountRowCheck(common.qualifyingRelocationCosts, common.no, 7, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
-            qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
-          changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.no, 7, 5, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
-            nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.travelHeader, fieldHeaderSelector(8))
-          changeAmountRowCheck(common.travelSubheading, common.no, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(common.utilitiesSubheading, common.no, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
-            utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(common.medicalSubheading, common.no, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
-            medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(14))
-          changeAmountRowCheck(common.incomeTaxSubheading, common.no, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
-            incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(common.reimbursedSubheading, common.no, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
-            reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
-
-          textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18), "for section")
-          changeAmountRowCheck(common.assetsSubheading, common.no, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsBenefitsUrl(taxYearEOY, employmentId))
-
-          buttonCheck(common.saveAndContinue)
-
-          welshToggleCheck(user.isWelsh)
-
-          s"should not display the following values" in {
-            document.body().toString.contains(specific.expectedP1) shouldBe false
-            document.body().toString.contains(common.companyCar) shouldBe false
-            document.body().toString.contains(common.fuelForCompanyCar) shouldBe false
-            document.body().toString.contains(common.companyVan) shouldBe false
-            document.body().toString.contains(common.fuelForCompanyVan) shouldBe false
-            document.body().toString.contains(common.mileageBenefit) shouldBe false
-            document.body().toString.contains(common.travelAndSubsistence) shouldBe false
-            document.body().toString.contains(common.personalCosts) shouldBe false
-            document.body().toString.contains(common.entertainment) shouldBe false
-            document.body().toString.contains(common.telephone) shouldBe false
-            document.body().toString.contains(common.servicesProvided) shouldBe false
-            document.body().toString.contains(common.profSubscriptions) shouldBe false
-            document.body().toString.contains(common.otherServices) shouldBe false
-            document.body().toString.contains(common.nursery) shouldBe false
-            document.body().toString.contains(common.beneficialLoans) shouldBe false
-            document.body().toString.contains(common.educational) shouldBe false
-            document.body().toString.contains(common.incomeTaxPaid) shouldBe false
-            document.body().toString.contains(common.incurredCostsPaid) shouldBe false
-            document.body().toString.contains(common.nonTaxable) shouldBe false
-            document.body().toString.contains(common.taxableCosts) shouldBe false
-            document.body().toString.contains(common.vouchers) shouldBe false
-            document.body().toString.contains(common.nonCash) shouldBe false
-            document.body().toString.contains(common.otherBenefits) shouldBe false
-            document.body().toString.contains(common.assetTransfers) shouldBe false
-            document.body().toString.contains(common.companyCarAmount) shouldBe false
-            document.body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
-            document.body().toString.contains(common.companyVanAmount) shouldBe false
-            document.body().toString.contains(common.fuelForCompanyVanAmount) shouldBe false
-            document.body().toString.contains(common.mileageBenefitAmount) shouldBe false
-            document.body().toString.contains(common.travelAndSubsistenceAmount) shouldBe false
-            document.body().toString.contains(common.personalCostsAmount) shouldBe false
-            document.body().toString.contains(common.entertainmentAmount) shouldBe false
-            document.body().toString.contains(common.telephoneAmount) shouldBe false
-            document.body().toString.contains(common.servicesProvidedAmount) shouldBe false
-            document.body().toString.contains(common.profSubscriptionsAmount) shouldBe false
-            document.body().toString.contains(common.otherServicesAmount) shouldBe false
-            document.body().toString.contains(common.medicalInsAmount) shouldBe false
-            document.body().toString.contains(common.nurseryAmount) shouldBe false
-            document.body().toString.contains(common.beneficialLoansAmount) shouldBe false
-            document.body().toString.contains(common.educationalAmount) shouldBe false
-            document.body().toString.contains(common.incomeTaxPaidAmount) shouldBe false
-            document.body().toString.contains(common.incurredCostsPaidAmount) shouldBe false
-            document.body().toString.contains(common.nonTaxableAmount) shouldBe false
-            document.body().toString.contains(common.taxableCostsAmount) shouldBe false
-            document.body().toString.contains(common.vouchersAmount) shouldBe false
-            document.body().toString.contains(common.nonCashAmount) shouldBe false
-            document.body().toString.contains(common.otherBenefitsAmount) shouldBe false
-            document.body().toString.contains(common.assetsAmount) shouldBe false
-            document.body().toString.contains(common.assetTransfersAmount) shouldBe false
-          }
-        }
-
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
             EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
@@ -1718,7 +1590,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       result.header("location").contains(overviewUrl(taxYearEOY)) shouldBe true
     }
 
-    "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
+    "redirect to the Did you receive any benefits page when its EOY and theres no benefits model in the session data" in {
       def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
         EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
@@ -1742,7 +1614,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       result.header("location").contains(companyBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
-    "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongodb data" in {
+    "redirect to the Did you receive any benefits page when its EOY and theres no benefits model in the mongodb data" in {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -1754,6 +1626,27 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       result.status shouldBe SEE_OTHER
       result.header("location").contains(companyBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+    }
+
+    "redirect to the Did you receive any benefits page when its EOY and the benefits journey is not finished" in {
+      def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+        EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
+
+      val cyaModel: EmploymentCYAModel = EmploymentCYAModel(
+          EmploymentDetails("employerName", currentDataIsHmrcHeld = true),
+          Some(aBenefitsViewModel.copy(utilitiesAndServicesModel = None, isBenefitsReceived = true)),
+        )
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location").contains(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+
     }
 
     "redirect to overview page when theres no benefits and in year" in {
