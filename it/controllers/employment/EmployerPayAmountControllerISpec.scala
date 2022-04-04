@@ -27,7 +27,6 @@ import play.api.test.FakeRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
@@ -42,7 +41,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   object Selectors {
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val contentSelector = "#main-content > div > div > p.govuk-body"
     val hintTestSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val inputSelector = "#amount"
@@ -140,7 +139,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   private val multipleEmployments = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
     aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))),
     aHmrcEmploymentSource.copy(employmentId = "002", hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))
-  )))
+    )))
 
   ".show" when {
     userScenarios.foreach { user =>

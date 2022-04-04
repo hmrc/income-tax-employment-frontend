@@ -29,10 +29,10 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val employerName: String = "HMRC"
-  val employmentStartDate: String = "2020-01-01"
-  val employmentId: String = "001"
-  val cessationDate: Option[String] = Some(s"$taxYearEOY-01-01")
+  private val employerName: String = "HMRC"
+  private val employmentStartDate: String = "2020-01-01"
+  private val employmentId: String = "001"
+  private val cessationDate: Option[String] = Some(s"$taxYearEOY-01-01")
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
@@ -149,7 +149,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("$taxYearEOY -01-01"),
-                          cessationDateQuestion = Some(false), hmrc = true)))
+              cessationDateQuestion = Some(false), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -282,89 +282,89 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
   ".submit" should {
 
-        "redirect the user to the overview page when it is not end of year" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(isAgent = false)
-            urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect the user to the overview page when it is not end of year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          "has an SEE_OTHER(303) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-          }
-        }
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      }
+    }
 
-        "Update the cessationDateQuestion to yes and wipe the cessationDate data when the user chooses yes" which {
+    "Update the cessationDateQuestion to yes and wipe the cessationDate data when the user chooses yes" which {
 
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
-              cessationDateQuestion = None, hmrc = true)))
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
+          cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(isAgent = false)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "redirects to the start date page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-            cyaModel.employment.employmentDetails.cessationDate shouldBe None
-            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
+      "redirects to the start date page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        cyaModel.employment.employmentDetails.cessationDate shouldBe None
+        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
 
-          }
+      }
 
-        }
+    }
 
-        "Update the cessationDateQuestion to no and when the user chooses no and not wipe out the cessation date" which {
+    "Update the cessationDateQuestion to no and when the user chooses no and not wipe out the cessation date" which {
 
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
-              cessationDateQuestion = None, hmrc = true)))
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
+          cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(isAgent = false)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "redirects to the employments dates page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(employmentDatesUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-            cyaModel.employment.employmentDetails.cessationDate shouldBe None
-            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+      "redirects to the employments dates page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employmentDatesUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        cyaModel.employment.employmentDetails.cessationDate shouldBe None
+        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
-          }
+      }
 
-        }
+    }
 
-        "Redirect to employer ref page when there's a missing answer" which {
+    "Redirect to employer ref page when there's a missing answer" which {
 
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, employerRef = None,
-              startDate = None, cessationDate = cessationDate, cessationDateQuestion = None, hmrc = true)))
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, employerRef = None,
+          startDate = None, cessationDate = cessationDate, cessationDateQuestion = None, hmrc = true)))
 
-            authoriseAgentOrIndividual(isAgent = false)
-            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "redirects to the missing employer ref page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-            cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
-            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+      "redirects to the missing employer ref page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
+        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
-          }
+      }
 
-        }
+    }
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {

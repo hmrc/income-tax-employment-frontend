@@ -32,17 +32,16 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val payrollId: String = "123456"
-  val employmentId = "001"
+  private val employmentId = "001"
 
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: AuthorisationRequest[_] = anAuthorisationRequest
 
   object Selectors {
-    val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val paragraph2Selector = "#main-content > div > div > form > div > label > p:nth-child(3)"
-    val paragraph3Selector = "#main-content > div > div > form > div > label > p:nth-child(4)"
-    val paragraph4Selector = "#main-content > div > div > form > div > label > p:nth-child(5)"
+    val paragraph1Selector = "p.govuk-body:nth-child(2)"
+    val paragraph2Selector = "p.govuk-body:nth-child(3)"
+    val paragraph3Selector = "p.govuk-body:nth-child(4)"
+    val paragraph4Selector = "p.govuk-body:nth-child(5)"
     val hintTextSelector = "#payrollId-hint"
     val inputSelector = "#payrollId"
     val continueButtonSelector = "#continue"
@@ -50,7 +49,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedErrorHref = "#payrollId"
 
     def bulletSelector(bulletNumber: Int): String =
-      s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
+      s"#main-content > div > div > ul > li:nth-child($bulletNumber)"
   }
 
   val inputName: String = "payrollId"
@@ -270,16 +269,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render the What's your payrollId? page with an error when the payrollId is input as empty" which {
-
           val payrollId = ""
           val body = Map("payrollId" -> payrollId)
 
@@ -302,11 +298,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(get.paragraph1, paragraph2Selector)
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph3Selector)
+          textOnPageCheck(get.paragraph2, paragraph4Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -318,7 +314,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with an error when the payrollId is input as too long" which {
-
           val payrollId = "123456789012345678901234567890123456789"
           val body = Map("payrollId" -> payrollId)
 
@@ -341,11 +336,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(get.paragraph1, paragraph2Selector)
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph3Selector)
+          textOnPageCheck(get.paragraph2, paragraph4Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -357,7 +352,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with an error when the payrollId is input as the wrong format" which {
-
           val payrollId = "$11223"
           val body = Map("payrollId" -> payrollId)
 
@@ -380,11 +374,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(get.paragraph1, paragraph2Selector)
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph3Selector)
+          textOnPageCheck(get.paragraph2, paragraph4Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -415,8 +409,8 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           s"update the cya models payroll id to be $payrollId" in {
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
           }
         }
       }

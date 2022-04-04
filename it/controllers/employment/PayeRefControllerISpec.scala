@@ -28,7 +28,6 @@ import play.api.test.FakeRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
@@ -43,7 +42,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   object Selectors {
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val contentSelector = "#main-content > div > div > p.govuk-body"
     val hintTestSelector = "#payeRef-hint"
     val inputSelector = "#payeRef"
     val continueButtonSelector = "#continue"

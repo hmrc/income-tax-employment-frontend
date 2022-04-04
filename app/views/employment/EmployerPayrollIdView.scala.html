@@ -14,27 +14,34 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n.Messages
 @import views.html.templates.Layout
-@import views.html.templates.helpers.{Button, ErrorSummary, InputText, Heading}
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.InputTextAlt
 @import utils.ViewUtils._
 
 @this(
     layout: Layout,
+    heading: Heading,
     errorSummary: ErrorSummary,
     formWithCsrf: FormWithCSRF,
-    inputText: InputText,
-    button: Button,
-    heading: Heading
+    inputText: InputTextAlt,
+    button: Button
 )
 
 @(form: Form[String], taxYear: Int, employmentId: String, previousPayRollId: Option[String])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"employment.payrollId.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{messages(s"employment.payrollId.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{(titleForUse)}
 
-@contentHtml = {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+
+    @errorSummary(form.errors)
+
+    @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
     @if(previousPayRollId.isDefined){
         <p class="govuk-body">@messages(s"employment.payrollId.previous.paragraph", previousPayRollId.get)</p>
     }
@@ -45,25 +52,16 @@
         <li>@messages("employment.payrollId.bullet3")</li>
     </ul>
     <p class="govuk-body">@messages(s"employment.payrollId.paragraph2.${if(request.user.isAgent) "agent" else "individual"}")</p>
-}
-
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
-
-    @errorSummary(form.errors)
 
     @formWithCsrf(controllers.employment.routes.EmployerPayrollIdController.submit(taxYear, employmentId)) {
-
         @inputText(
             form,
             id = "payrollId",
             name = "payrollId",
-            heading = headingForUse,
-            isPageHeading = false,
-            hint = Some(Html(messages("employment.payrollId.forExample"))),
-            subheading = Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)),
-            content = Some(contentHtml),
-            classes = Some("govuk-input--width-20"),
-            headingClasses = "govuk-!-margin-bottom-2"
+            label = headingForUse,
+            hint = Some(messages("employment.payrollId.forExample")),
+            labelHidden = true,
+            classes = Some("govuk-input--width-20")
         )
 
         @button()
