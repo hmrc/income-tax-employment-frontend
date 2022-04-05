@@ -35,6 +35,10 @@
     if(request.user.isAgent) "agent" else "individual"
 }
 
+@margin = @{
+    if(!isCustomerHeld) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-3"
+}
+
 @summaryRow(key: String, text: Option[String], changeLink: Option[String]) = @{
     val keyMessage = messages(key)
     SummaryListRow(
@@ -63,7 +67,7 @@
 
 @layout(messages("studentLoans.title." + agentOrIndividual), taxYear = Some(taxYear)) {
 
-    @heading(messages("studentLoans.title." + agentOrIndividual), Some(messages("studentLoans.subheading", Seq((taxYear-1).toString, taxYear.toString): _*)))
+    @heading(messages("studentLoans.title." + agentOrIndividual), Some(messages("studentLoans.subheading", Seq((taxYear-1).toString, taxYear.toString): _*)), margin)
 
     @if(!isCustomerHeld) { <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoans.p."+agentOrIndividual)</p> }
     
@@ -78,13 +82,8 @@
     ))
     
     @if(inYear) {
-        @if(isSingleEmployment) {
-            @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
-        } else {
-            @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
+            @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),
             href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
-        }
     } else {
         @formWithCsrf(controllers.studentLoans.routes.StudentLoansCYAController.submit(taxYear, employmentId)) {
             @button(alternativeText = "common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))

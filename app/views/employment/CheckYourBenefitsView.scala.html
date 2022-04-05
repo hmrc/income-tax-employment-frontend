@@ -47,6 +47,11 @@
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
+@margin = @{
+    if(!benefits.isUsingCustomerData) "govuk-!-margin-bottom-3" else ""
+}
+
+
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
 @hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(request.user.isAgent) "agent" else "individual"}"))}
@@ -69,7 +74,7 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
-    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
     @if(isInYear){
         <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
@@ -407,13 +412,8 @@
     }
 
     @if(isInYear){
-        @if(isSingleEmployment) {
-            @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-                href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
-        } else {
-            @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
+            @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),
                 href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
-        }
     } else {
         @formWithCSRF(action = controllers.employment.routes.CheckYourBenefitsController.submit(taxYear, employmentId)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))

@@ -72,7 +72,7 @@
             summaryListRow(
                 key = HtmlContent(employmentSource.employerName),
                 value = HtmlContent(s"""<a class="govuk-link" href="${EmployerInformationController.show(taxYear, employmentSource.employmentId)}"><span aria-hidden="true">${message}</span><span class="govuk-visually-hidden">${message} ${employmentSource.employerName}</span></a>"""),
-                keyClasses = "govuk-!-width-two-thirds",
+                keyClasses = "govuk-!-width-two-thirds govuk-!-font-weight-regular",
                 valueClasses = "govuk-!-width-one-third right-align",
                 actions = actions
             )
@@ -98,7 +98,7 @@
             val expensesRow = summaryListRow(
                 key = HtmlContent(messages("employment.expenses.label")),
                 value = HtmlContent(s"""<a class="govuk-link" href="${CheckEmploymentExpensesController.show(taxYear)}"><span aria-hidden="true">${message}</span><span class="govuk-visually-hidden">${message} ${messages("employment.expenses.label")}</span></a>"""),
-                keyClasses = "govuk-!-width-two-thirds",
+                keyClasses = "govuk-!-width-two-thirds govuk-!-font-weight-regular",
                 valueClasses = "govuk-!-width-one-third right-align",
                 actions = actions
             )

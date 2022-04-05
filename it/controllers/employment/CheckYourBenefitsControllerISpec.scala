@@ -864,7 +864,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(21, 5))
           textOnPageCheck("£280,000", fieldAmountSelector(21, 5))
           elementsNotOnPageCheck(changeLinkCssSelector)
-          buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+          buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -1479,7 +1479,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("£5", fieldAmountSelector(7, 9))
           elementsNotOnPageCheck(changeLinkCssSelector)
 
-          buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+          buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
 
           welshToggleCheck(user.isWelsh)
 

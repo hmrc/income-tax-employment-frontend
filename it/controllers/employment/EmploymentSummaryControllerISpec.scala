@@ -160,28 +160,28 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val yourEmpInfoStudentLoansUnreleased: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot change your employment information until 6 April $taxYear."
+    val cannotUpdateInfo: String = s"You cannot update your employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val yourEmpInfoStudentLoansUnreleased: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot change your client’s employment information until 6 April $taxYear."
+    val cannotUpdateInfo: String = s"You cannot update your client’s employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val yourEmpInfoStudentLoansUnreleased: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot change your employment information until 6 April $taxYear."
+    val cannotUpdateInfo: String = s"You cannot update your employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val yourEmpInfoStudentLoansUnreleased: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot change your client’s employment information until 6 April $taxYear."
+    val cannotUpdateInfo: String = s"You cannot update your client’s employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
   }
 
