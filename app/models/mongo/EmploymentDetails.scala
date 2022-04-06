@@ -32,8 +32,14 @@ case class EmploymentDetails(employerName: String,
                              totalTaxToDate: Option[BigDecimal] = None,
                              currentDataIsHmrcHeld: Boolean) {
 
-  val isFinished: Boolean = {
+  val isSubmittable: Boolean =
+    employerRef.isDefined &&
+      startDate.isDefined &&
+      payrollId.isDefined &&
+      taxablePayToDate.isDefined &&
+      totalTaxToDate.isDefined
 
+  val isFinished: Boolean = {
     val cessationSectionFinished = {
       didYouLeaveQuestion match {
         case Some(true) => cessationDate.isDefined

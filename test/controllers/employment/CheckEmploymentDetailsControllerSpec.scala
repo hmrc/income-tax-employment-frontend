@@ -74,9 +74,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   )
 
   ".show" should {
-
     "return a result when GetEmploymentDataModel is in Session" which {
-
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(
@@ -85,13 +83,13 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
               employerRef = Some("reference"),
               payrollId = Some("12345678"),
               employmentId = "id",
-              startDate = Some(s"${taxYearEOY-1}-02-12"),
+              startDate = Some(s"${taxYearEOY - 1}-02-12"),
               didYouLeaveQuestion = Some(true),
-              cessationDate = Some(s"${taxYearEOY-1}-02-12"),
+              cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
               isUsingCustomerData = false
-            ), taxYear, isInYear = true, isSingleEmployment = true
+            ), taxYear, isInYear = true, showNotification = true
           )))
           controller().show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
@@ -103,7 +101,6 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
     }
 
     "redirect the User to the Overview page no data in session" which {
-
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))

@@ -25,6 +25,8 @@ object EmploymentDetailsBuilder extends TaxYearHelper {
     employerName = "Employer Name",
     employerRef = Some("123/12345"),
     startDate = Some(s"${taxYearEOY-1}-11-11"),
+    payrollId = Some("12345678"),
+    didYouLeaveQuestion = Some(false),
     taxablePayToDate = Some(55.99),
     totalTaxToDate = Some(3453453.00),
     employmentSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),

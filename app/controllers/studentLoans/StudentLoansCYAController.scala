@@ -22,10 +22,8 @@ import config.AppConfig
 import controllers.employment.routes.EmployerInformationController
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import models.AuthorisationRequest
-
-import javax.inject.Inject
-import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
+import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
 import models.mongo.EmploymentUserData
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -36,10 +34,11 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansCYAView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
-                                          view: StudentLoansCYAView,
+                                          studentLoansCYAView: StudentLoansCYAView,
                                           service: StudentLoansCYAService,
                                           employmentSessionService: EmploymentSessionService,
                                           authAction: AuthorisedAction,
@@ -48,13 +47,10 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
                                           implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-
     if (appConfig.studentLoansEnabled) {
-      val inYear: Boolean = inYearAction.inYear(taxYear)
-      
-      service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, isSingleEmployment) =>
+      service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, showNotification) =>
         service.sendViewStudentLoansDeductionsAudit(request.user, taxYear, cya.toDeductions)
-        Ok(view(taxYear, employmentId, cya, isCustomer, inYear, isSingleEmployment))
+        Ok(studentLoansCYAView(taxYear, employmentId, cya, isCustomer, inYearAction.inYear(taxYear), showNotification))
       }
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -84,6 +80,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
             }
         }
       }
+
       def nothingToUpdateRedirect: Future[Result] = {
         val log = "[StudentLoansCYAController][nothingToUpdateRedirect]"
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
@@ -94,6 +91,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
             Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
         }
       }
+
       employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
@@ -117,7 +115,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
 
     implicit val implicitRequest: AuthorisationRequest[_] = request
     service.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConfig.nrsEnabled){
+    if (appConfig.nrsEnabled) {
       service.performSubmitNrsPayload(request.user, model, employmentId, prior)
     }
   }

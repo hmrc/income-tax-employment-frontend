@@ -30,7 +30,7 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService}
-import utils.{TaxYearHelper, UnitTestWithApp}
+import utils.UnitTestWithApp
 import views.html.studentLoans.StudentLoansCYAView
 
 import scala.concurrent.Future

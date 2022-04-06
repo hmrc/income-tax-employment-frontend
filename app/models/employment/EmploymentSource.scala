@@ -16,7 +16,7 @@
 
 package models.employment
 
-import common.EmploymentToRemove.{all, hmrcHeld, customer}
+import common.EmploymentToRemove.{all, hmrcHeld}
 import models.benefits.BenefitsViewModel
 import models.employment.createUpdate.CreateUpdateEmployment
 import models.mongo.EmploymentDetails
@@ -35,7 +35,7 @@ case class HmrcEmploymentSource(employmentId: String,
                                 hmrcEmploymentFinancialData: Option[EmploymentFinancialData],
                                 customerEmploymentFinancialData: Option[EmploymentFinancialData]) extends Logging {
 
-  def toRemove: String ={
+  def toRemove: String = {
     (hmrcEmploymentFinancialData, customerEmploymentFinancialData) match {
       case (_, Some(_)) => all
       case _ => hmrcHeld
@@ -63,8 +63,8 @@ case class HmrcEmploymentSource(employmentId: String,
         val hmrcSubmittedOn: Option[DateTime] = hmrc.employmentData.map(_.submittedOn).flatMap(parseDate)
         val customerSubmittedOn: Option[DateTime] = customer.employmentData.map(_.submittedOn).flatMap(parseDate)
 
-        Some((hmrcSubmittedOn,customerSubmittedOn) match {
-          case (Some(hmrcSubmittedOn), Some(customerSubmittedOn)) => if(hmrcSubmittedOn.isAfter(customerSubmittedOn)) hmrc else customer
+        Some((hmrcSubmittedOn, customerSubmittedOn) match {
+          case (Some(hmrcSubmittedOn), Some(customerSubmittedOn)) => if (hmrcSubmittedOn.isAfter(customerSubmittedOn)) hmrc else customer
           case (Some(_), None) => hmrc
           case (None, Some(_)) => customer
           case (None, None) => customer
@@ -112,6 +112,10 @@ case class EmploymentSource(employmentId: String,
                             employmentData: Option[EmploymentData],
                             employmentBenefits: Option[EmploymentBenefits]
                            ) extends Logging {
+
+  lazy val employmentDetailsSubmittable: Boolean = startDate.isDefined &&
+    employmentData.flatMap(_.pay).flatMap(_.taxablePayToDate).isDefined &&
+    employmentData.flatMap(_.pay).flatMap(_.totalTaxToDate).isDefined
 
   def toEmployerView: Employer = Employer(employmentId, employerName, startDate, cessationDate)
 
