@@ -739,7 +739,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(anIncomeTaxUserData, nino, 2022)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlPost(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 

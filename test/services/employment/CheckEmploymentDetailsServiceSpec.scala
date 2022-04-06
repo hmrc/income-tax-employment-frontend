@@ -63,12 +63,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       val prior = None
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq()
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, prior)) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, prior)) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's a create and theres existing data" in {
 
@@ -137,12 +137,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq(PriorEmploymentAuditInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's an amend" in {
 
@@ -213,7 +213,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditEmploymentData(
           employerName = employmentSource1.employerName,
           employerRef = employmentSource1.employerRef,
           employmentId = employmentSource1.employmentId,
@@ -227,7 +227,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         )
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
   }
 

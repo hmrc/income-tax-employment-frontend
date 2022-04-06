@@ -22,11 +22,10 @@ import controllers.employment.routes.EmploymentSummaryController
 import models.IncomeTaxUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.expenses.ExpensesService
 import services.{DeleteOrIgnoreExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
-import views.html.expenses.{EmploymentExpensesView, RemoveExpensesView}
+import utils.{InYearUtil, SessionHelper}
+import views.html.expenses.RemoveExpensesView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,14 +34,11 @@ class RemoveExpensesController @Inject() (implicit val cc: MessagesControllerCom
                                           authAction: AuthorisedAction,
                                           inYearAction: InYearUtil,
                                           removeExpensesView: RemoveExpensesView,
-                                          employmentExpensesView: EmploymentExpensesView,
                                           appConfig: AppConfig,
                                           employmentSessionService: EmploymentSessionService,
                                           deleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService,
-                                          expensesService: ExpensesService,
                                           errorHandler: ErrorHandler,
-                                          ec: ExecutionContext,
-                                          clock: Clock
+                                          ec: ExecutionContext
                                          ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>

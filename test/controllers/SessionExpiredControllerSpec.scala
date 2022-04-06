@@ -49,7 +49,7 @@ class SessionExpiredControllerSpec extends UnitTestWithApp with DefaultAwaitTime
 
       val request = FakeRequest("GET", "/sign-out")
 
-      val responseF = controller.timeout()(request.withSession("TAX_YEAR" -> "2022"))
+      val responseF = controller.timeout()(request.withSession("TAX_YEAR" -> s"$taxYear"))
 
       "return status code OK" in {
         status(responseF) shouldBe OK

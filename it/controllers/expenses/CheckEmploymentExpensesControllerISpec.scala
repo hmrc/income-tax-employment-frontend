@@ -703,7 +703,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           Some(true), anExpenses.copy(professionalSubscriptions = Some(newAmount))
         )
 
-        stubPutWithHeadersCheck(s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+        stubPutWithHeadersCheck(s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))

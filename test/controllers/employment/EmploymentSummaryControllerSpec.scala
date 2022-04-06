@@ -131,7 +131,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/add-employment"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/add-employment"
       }
     }
     "redirect to employer name page when there is no session data and some prior employment" which {
@@ -141,7 +141,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is session data and some prior employment" which {
@@ -152,7 +152,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
     }
     "redirect to select employer page when there is no session data and an ignored hmrc employment" which {
@@ -162,7 +162,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
     }
     "redirect to select employer page when there is session data and an ignored hmrc employment" which {
@@ -173,7 +173,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
       s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
 

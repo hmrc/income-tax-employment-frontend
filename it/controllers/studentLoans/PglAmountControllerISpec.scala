@@ -164,7 +164,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -205,7 +205,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -245,7 +245,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -286,7 +286,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -332,9 +332,9 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           Seq(EmploymentSource(
             employmentId,
             "Whiterun Guard",
-            None, None, Some("2022-01-01"), None, None, None, Some(EmploymentData(
-              "2022-04-01", None, None, None, None, None, None,
-              Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some("2022-01-01"), Some(3), Some(3))),
+            None, None, Some(s"$taxYear-01-01"), None, None, None, Some(EmploymentData(
+              s"$taxYear-04-01", None, None, None, None, None, None,
+              Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(s"$taxYear-01-01"), Some(3), Some(3))),
               Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
             )), None
           )),
@@ -356,7 +356,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                                 EmploymentDetails(
                                   employerName = "Whiterun Guards",
                                   employerRef = Some("223/AB12399"),
-                                  startDate = Some("2022-04-01"),
+                                  startDate = Some(s"$taxYear-04-01"),
                                   cessationDateQuestion = Some(false),
                                   taxablePayToDate = Some(3000.00),
                                   totalTaxToDate = Some(300.00),
@@ -396,7 +396,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
@@ -448,7 +448,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                             EmploymentDetails(
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
-                              startDate = Some("2022-04-01"),
+                              startDate = Some(s"$taxYear-04-01"),
                               cessationDateQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),

@@ -171,7 +171,7 @@
 //            textOnPageCheck(expectedCaption, captionSelector)
 //            buttonCheck(continueButton)
 //            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/" +
-//              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
+//              ss"$taxYearEOY/payments-not-on-p60?employmentId=$employmentId", formSelector)
 //            formRadioValueCheck(selected = true, formRadioButtonValueSelector)
 //          }
 //
@@ -394,7 +394,7 @@
 //            textOnPageCheck(expectedCaption, captionSelector)
 //            buttonCheck(continueButton)
 //            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/" +
-//              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
+//              ss"$taxYearEOY/payments-not-on-p60?employmentId=$employmentId", formSelector)
 //          }
 //        }
 //

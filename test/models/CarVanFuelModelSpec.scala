@@ -16,7 +16,7 @@
 
 package models
 
-import models.benefits.{CarVanFuelModel, UtilitiesAndServicesModel}
+import models.benefits.CarVanFuelModel
 import play.api.mvc.Call
 import utils.UnitTest
 
@@ -40,51 +40,51 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "isFinished" should {
     "return car yes no page" in {
-      model.copy(carQuestion = None).isFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-car?employmentId=id")
+      model.copy(carQuestion = None).isFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/company-car?employmentId=id")
     }
     "return none when section is finished" in {
-      model.copy(carQuestion = Some(false)).isFinished(2022, "employmentId") shouldBe None
-      model.isFinished(2022, "employmentId") shouldBe None
+      model.copy(carQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "fullCarSectionFinished" should {
     "return car fuel yes no page" in {
-      model.copy(carFuelQuestion = None).fullCarSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/car-fuel?employmentId=id")
+      model.copy(carFuelQuestion = None).fullCarSectionFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/car-fuel?employmentId=id")
     }
 
     "return car amount page" in {
-      model.copy(car = None).fullCarSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-car-amount?employmentId=id")
+      model.copy(car = None).fullCarSectionFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/company-car-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(carFuelQuestion = Some(false)).fullCarSectionFinished(2022, "employmentId") shouldBe None
-      model.fullCarSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(carFuelQuestion = Some(false)).fullCarSectionFinished(taxYear, "employmentId") shouldBe None
+      model.fullCarSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "carFuelSectionFinished" should {
     "return car fuel yes no page" in {
-      model.copy(carFuelQuestion = None).carFuelSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/car-fuel?employmentId=id")
+      model.copy(carFuelQuestion = None).carFuelSectionFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/car-fuel?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(carQuestion = Some(false), carFuelQuestion = None).carFuelSectionFinished(2022, "employmentId") shouldBe None
-      model.carFuelSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(carQuestion = Some(false), carFuelQuestion = None).carFuelSectionFinished(taxYear, "employmentId") shouldBe None
+      model.carFuelSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "vanSectionFinished" should {
     "return van yes no page" in {
-      model.copy(vanQuestion = None).vanSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-van?employmentId=id")
+      model.copy(vanQuestion = None).vanSectionFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/company-van?employmentId=id")
     }
     "return van amount page" in {
-      model.copy(van = None).vanSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-van-amount?employmentId=id")
+      model.copy(van = None).vanSectionFinished(taxYear, "id") shouldBe result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/company-van-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(vanQuestion = Some(false), vanFuelQuestion = None).vanSectionFinished(2022, "employmentId") shouldBe None
-      model.vanSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(vanQuestion = Some(false), vanFuelQuestion = None).vanSectionFinished(taxYear, "employmentId") shouldBe None
+      model.vanSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 

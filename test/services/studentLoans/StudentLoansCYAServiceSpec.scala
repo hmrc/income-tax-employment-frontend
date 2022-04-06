@@ -129,7 +129,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
 
 
       val createNewStudentLoansDeductionsAudit = CreateNewStudentLoansDeductionsAudit(
-        taxYear = 2021,
+        taxYear = taxYearEOY,
         userType = authorisationRequest.user.affinityGroup.toLowerCase,
         nino = authorisationRequest.user.nino,
         mtditid = authorisationRequest.user.mtditid,
@@ -142,7 +142,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       val customerEmploymentData = anEmploymentSource.copy(employmentData = None)
       val employmentDataWithoutDeductions = allEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
 
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = 2021, Some(employmentDataWithoutDeductions))
+      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(employmentDataWithoutDeductions))
 
       await(result) shouldBe AuditResult.Success
 
@@ -220,7 +220,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       )
 
       mockAuditSendEvent(AmendStudentLoansDeductionsUpdateAudit(
-        taxYear = 2021,
+        taxYear = taxYearEOY,
         userType = authorisationRequest.user.affinityGroup.toLowerCase,
         nino = authorisationRequest.user.nino,
         mtditid = authorisationRequest.user.mtditid,
@@ -234,7 +234,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       ).toAuditModel
       )
 
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = 2021, Some(prior))
+      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(prior))
 
       await(result) shouldBe AuditResult.Success
     }
@@ -243,10 +243,10 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
   ".sendViewStudentLoansDeductionsAudit" should {
     "send the audit event" in {
       mockAuditSendEvent(ViewStudentLoansDeductionsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
       ).toAuditModel)
 
-      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, 2021, validModel.toDeductions)) shouldBe AuditResult.Success
+      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, taxYearEOY, validModel.toDeductions)) shouldBe AuditResult.Success
     }
   }
 

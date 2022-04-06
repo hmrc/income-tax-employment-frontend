@@ -75,8 +75,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
         None
       )
 
-      model.toAmendAuditModel(authorisationRequest.user, employmentId = "id", taxYear = 2021, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
-        2021, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some("2020-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
+      model.toAmendAuditModel(authorisationRequest.user, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
+        taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some("2020-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
         AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")))
     }
   }

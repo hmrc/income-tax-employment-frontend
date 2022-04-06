@@ -19,14 +19,15 @@ package support.builders.models.expenses
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import utils.UnitTest
 
-object ExpensesUserDataBuilder {
+object ExpensesUserDataBuilder extends UnitTest {
 
   val anExpensesUserData: ExpensesUserData = ExpensesUserData(
     sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe",
     mtdItId = "1234567890",
     nino = "AA123456A",
-    taxYear = 2021,
+    taxYear = taxYearEOY,
     isPriorSubmission = true,
     hasPriorExpenses = true,
     expensesCya = anExpensesCYAModel

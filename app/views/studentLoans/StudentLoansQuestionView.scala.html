@@ -23,7 +23,6 @@
 @import forms.studentLoans.StudentLoanQuestionForm.StudentLoansQuestionModel
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
 
 @this(
         layout: Layout,
@@ -49,7 +48,6 @@
     <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoansQuestion.inset." + agentOrIndividual, taxYear.toString)</p>
 
     <p class="govuk-body">@messages("studentLoansQuestion.inset.2." + agentOrIndividual, taxYear.toString)</p>
-
 
     @formWithCsrf(controllers.studentLoans.routes.StudentLoansQuestionController.submit(taxYear, employmentId)) {
 

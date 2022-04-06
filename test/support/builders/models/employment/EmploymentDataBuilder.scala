@@ -20,8 +20,9 @@ import DeductionsBuilder.aDeductions
 import PayBuilder.aPay
 import models.employment.{Deductions, EmploymentData, StudentLoans}
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
+import utils.UnitTest
 
-object EmploymentDataBuilder {
+object EmploymentDataBuilder extends UnitTest {
 
   val anEmploymentData: EmploymentData = EmploymentData(
     submittedOn = "2020-02-12",
@@ -36,7 +37,7 @@ object EmploymentDataBuilder {
   )
 
   val aLatestCustomerSubmittedEmploymentData: EmploymentData = EmploymentData(
-    submittedOn = "2021-02-12",
+    submittedOn = s"$taxYearEOY-02-12",
     employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
     closeCompany = Some(false),

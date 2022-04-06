@@ -46,8 +46,8 @@
 //class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 //
 //  val employmentId = "001"
-//  val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
-//  val continueLink = "/update-and-submit-income-tax-return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=001"
+//  val otherPaymentsAmountPageUrl = s"$appUrl/$taxYearEOY/amount-of-payments-not-on-p60?employmentId=$employmentId"
+//  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/amount-of-payments-not-on-p60?employmentId=001"
 //
 //  val amount: String = "100"
 //  val maxLimit: String = "100,000,000,000"
@@ -118,7 +118,7 @@
 //  }
 //
 //  object CommonExpectedEN extends CommonExpectedResults {
-//    val expectedCaption = "Employment for 6 April 2020 to 5 April 2021"
+//    val expectedCaption = s"Employment for 6 April 2020 to 5 April 2021"
 //    val expectedInputName = "amount"
 //    val expectedButtonText = "Continue"
 //    val expectedErrorCharLimit = "The amount of payments must be less than £100,000,000,000"

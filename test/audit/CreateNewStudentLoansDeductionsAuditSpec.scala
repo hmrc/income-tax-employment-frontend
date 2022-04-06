@@ -27,7 +27,7 @@ class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
       "produce valid json" in {
 
         val auditModel: CreateNewStudentLoansDeductionsAudit = CreateNewStudentLoansDeductionsAudit(
-          taxYear = 2021,
+          taxYear = taxYearEOY,
           userType = "individual",
           nino = "AA123456A",
           mtditid = "1234567890",
@@ -40,8 +40,8 @@ class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
         )
 
         val validJson: JsValue = Json.parse(
-          """{
-            |"taxYear": 2021,
+          s"""{
+            |"taxYear": $taxYearEOY,
             |"userType": "individual",
             |"nino": "AA123456A",
             |"mtditid": "1234567890",

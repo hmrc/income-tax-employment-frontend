@@ -107,10 +107,10 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
         startDate = Some("2020-01-10"),
         payrollId = Some("12345"),
         cessationDateQuestion = Some(false),
-        cessationDate = Some("2021-01-01"),
-        dateIgnored = Some("2021-02-02"),
-        employmentSubmittedOn = Some("2021-02-02"),
-        employmentDetailsSubmittedOn = Some("2021-02-02"),
+        cessationDate = Some(s"$taxYearEOY-01-01"),
+        dateIgnored = Some(s"$taxYearEOY-02-02"),
+        employmentSubmittedOn = Some(s"$taxYearEOY-02-02"),
+        employmentDetailsSubmittedOn = Some(s"$taxYearEOY-02-02"),
         taxablePayToDate = Some(55.00),
         totalTaxToDate = Some(55.00),
         currentDataIsHmrcHeld = false
@@ -277,7 +277,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
-      val taxYear = 2021
+      val taxYear: Int = taxYearEOY
       await(employmentRepo.find(taxYear, "employmentId", authRequestOne.user)) mustBe Right(None)
     }
   }
