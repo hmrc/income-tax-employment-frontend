@@ -90,7 +90,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(IncomeTaxAndCostsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
     Some(ReimbursedCostsVouchersAndNonCashModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(AssetsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
-    Some("2020-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
+    Some(s"${taxYearEOY-1}-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
     sessionIdOne,
@@ -104,13 +104,13 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       EmploymentDetails(
         employerName = "Name",
         employerRef = Some("Ref"),
-        startDate = Some("2020-01-10"),
+        startDate = Some(s"${taxYearEOY-1}-01-10"),
         payrollId = Some("12345"),
-        cessationDateQuestion = Some(false),
-        cessationDate = Some("2021-01-01"),
-        dateIgnored = Some("2021-02-02"),
-        employmentSubmittedOn = Some("2021-02-02"),
-        employmentDetailsSubmittedOn = Some("2021-02-02"),
+        didYouLeaveQuestion = Some(false),
+        cessationDate = Some(s"$taxYearEOY-01-01"),
+        dateIgnored = Some(s"$taxYearEOY-02-02"),
+        employmentSubmittedOn = Some(s"$taxYearEOY-02-02"),
+        employmentDetailsSubmittedOn = Some(s"$taxYearEOY-02-02"),
         taxablePayToDate = Some(55.00),
         totalTaxToDate = Some(55.00),
         currentDataIsHmrcHeld = false
@@ -277,7 +277,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
-      val taxYear = 2021
+      val taxYear = taxYearEOY
       await(employmentRepo.find(taxYear, "employmentId", authRequestOne.user)) mustBe Right(None)
     }
   }

@@ -68,11 +68,11 @@
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
-        val stillWorkingForEmployer = EmploymentDataForView(
-            messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
-            Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-            controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", request.user.isAgent), employmentDetails.employerName)
+        val didYouLeave = EmploymentDataForView(
+            messages(s"$msgKeyGeneric.didYouLeave"),
+            Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+            controllers.employment.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent), employmentDetails.employerName)
         )
 
         val employmentStartDate = EmploymentDataForView(
@@ -87,7 +87,7 @@
         controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent)))
 
-        val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) employmentDates else employmentStartDate
+        val datesLineItemToUse = if(employmentDetails.didYouLeaveQuestion.contains(true)) employmentDates else employmentStartDate
 
         val payeRef = EmploymentDataForView(
             messages(msgKeyGeneric + ".payeRef"),
@@ -120,7 +120,7 @@
         val employmentDataFields = List(
             employerName,
             payeRef,
-            stillWorkingForEmployer,
+            didYouLeave,
             datesLineItemToUse,
             payrollId,
             payReceived,
@@ -146,7 +146,7 @@
         }
     } else {
         @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),
-                href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentDetails.employmentId).url))
+            href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentDetails.employmentId).url))
     }
 }
 

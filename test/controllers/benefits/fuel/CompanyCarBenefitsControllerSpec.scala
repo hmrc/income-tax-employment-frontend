@@ -93,7 +93,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
         val result = controller.handleShow(taxYearEOY, employmentId, Some(employmentUserDataWithoutBenefits))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=223%2FAB12399"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=223%2FAB12399"
       }
     }
 

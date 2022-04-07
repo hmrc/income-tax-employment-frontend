@@ -59,7 +59,6 @@ common.dateFrom = From {0}
 
 #################   Subheadings/Captions    ##################################
 
-employment.caption = Employment for 6 April {0} to 5 April {1}
 payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
 benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
@@ -96,7 +95,7 @@ not-found-template.paragraph.1 = If you typed the web address, check it is corre
 not-found-template.paragraph.2 = If you used ‘copy and paste’ to enter the web address, check you copied the full address.
 service-unavailable-error-template.heading = Sorry, the service is unavailable
 service-unavailable-error-template.paragraph.1 = You will be able to use this service later.
-taxYear-error-template.paragraph.1 = You can only enter information for the 2021 to 2022 tax year.
+taxYear-error-template.paragraph.1 = You can only enter information for the {0} to {1} tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
 
 #################       Timeout messages        ########################################
@@ -128,25 +127,23 @@ expenses.hiddenText.agent = your client’s expenses from all employment this ta
 expenses.hiddenText.individual = your expenses from all employment this tax year
 employment.employmentSummary.employers = Employers
 employment.employmentSummary.addAnotherEmployer = Add another employer
+employment.employmentSummary.addAnEmployer = Add an employer
 employment.employmentSummary.noExpensesAdded = No expenses added
+employment.employmentSummary.addExpenses = Add expenses
 employment.employmentSummary.cannotAdd.individual = You cannot add expenses until 6 April {0}.
 employment.employmentSummary.cannotAdd.agent = You cannot add your client’s expenses until 6 April {0}.
-
-#################       Add another employment messages        ########################################
-
-employment.addEmployment.error = Select yes if you want to add an employer
-employment.addEmployment.header = Do you want to add an employer?
-employment.addAnother.error = Select yes if you need to add another employer
-employment.addAnother.hint.agent = You must tell us about all your client’s employment.
-employment.addAnother.hint.individual = You must tell us about all your employment.
-employment.addAnother = Do you need to add another employment?
+employment.employmentSummary.cannotHaveExpensesWithoutEmployer = You cannot have expenses without an employer.
+employment.employmentSummary.addEmployerOrRemoveExpenses = Add an employer or remove expenses.
 
 #################       Remove employment messages        ########################################
 
 employment.removeEmployment.title = Are you sure you want to remove this employment?
 employment.removeEmployment.heading = Are you sure you want to remove {0}?
 employment.removeEmployment.remove-all-paragraph = This will also remove any benefits and expenses for this employer.
-employment.removeEmployment.remove-paragraph = This will also remove any benefits for this employer.
+employment.removeEmployment.remove-paragraph = If you remove this period of employment, you’ll also remove any employment benefits.
+employment.removeEmployment.remove-paragraph.sl = If you remove this period of employment, you’ll also remove any employment benefits and student loans.
+employment.removeEmployment.removeExpenses = You must remove any expenses from the separate expenses section.
+employment.removeEmployment.inset = This is information we hold about you. If the information is incorrect, you need to contact the employer
 employment.removeEmployment.button = Remove employer
 
 #################       Select employer messages        ########################################
@@ -173,8 +170,8 @@ employment.employmentDetails.hiddenText.payReceived.individual = Change the amou
 employment.employmentDetails.hiddenText.payrollId = Change the payroll ID for this employment
 employment.employmentDetails.hiddenText.startDate.agent = Change your client’s start date for {0}
 employment.employmentDetails.hiddenText.startDate.individual = Change your start date for {0}
-employment.employmentDetails.hiddenText.stillWorkingForEmployer.agent = Change if your client is still working for their employer
-employment.employmentDetails.hiddenText.stillWorkingForEmployer.individual = Change if you are still working for your employer
+employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left {0} in the tax year
+employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left {0} in the tax year
 employment.employmentDetails.hiddenText.employmentDates.agent = Change your client’s employment dates
 employment.employmentDetails.hiddenText.employmentDates.individual = Change your employment dates
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = Change the amount of payments that were not on your client’s P60
@@ -189,7 +186,7 @@ employment.employmentDetails.paymentNotOnYourP60.individual =  Payments not on y
 employment.employmentDetails.payReceived =  Pay received
 employment.employmentDetails.payrollId = Payroll ID
 employment.employmentDetails.startDate =  Employment start date
-employment.employmentDetails.stillWorkingForEmployer = Still working for your employer
+employment.employmentDetails.didYouLeave = Left employer
 employment.employmentDetails.employmentDates = Employment dates
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P6
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
@@ -290,12 +287,12 @@ employment.employmentDates.endDate = End date
 
 #################       Still working at employer messages        ########################################
 
-employment.stillWorkingForEmployer.error.agent = Select yes if your client is still working for their employer
-employment.stillWorkingForEmployer.error.individual = Select yes if you are still working for your employer
-employment.stillWorkingForEmployer.heading.agent = Is your client still working at {0}?
-employment.stillWorkingForEmployer.heading.individual = Are you still working at {0}?
-employment.stillWorkingForEmployer.title.agent = Is your client still working for their employer?
-employment.stillWorkingForEmployer.title.individual = Are you still working for your employer?
+employment.didYouLeave.error.agent = Select yes if your client left {0} in the tax year
+employment.didYouLeave.error.individual = Select yes if you left {0} in the tax year
+employment.didYouLeave.heading.agent = Did your client leave {0} in the tax year?
+employment.didYouLeave.heading.individual = Did you leave {0} in the tax year?
+employment.didYouLeave.title.agent = Did your client leave this employer in the tax year?
+employment.didYouLeave.title.individual = Did you leave this employer in the tax year?
 
 #################       Payroll id messages        ########################################
 

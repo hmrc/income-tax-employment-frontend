@@ -23,7 +23,7 @@ case class EmploymentDetails(employerName: String,
                              employerRef: Option[String] = None,
                              startDate: Option[String] = None,
                              payrollId: Option[String] = None,
-                             cessationDateQuestion: Option[Boolean] = None,
+                             didYouLeaveQuestion: Option[Boolean] = None,
                              cessationDate: Option[String] = None,
                              dateIgnored: Option[String] = None,
                              employmentSubmittedOn: Option[String] = None,
@@ -35,9 +35,9 @@ case class EmploymentDetails(employerName: String,
   val isFinished: Boolean = {
 
     val cessationSectionFinished = {
-      cessationDateQuestion match {
-        case Some(true) => true
-        case Some(false) => cessationDate.isDefined
+      didYouLeaveQuestion match {
+        case Some(true) => cessationDate.isDefined
+        case Some(false) => true
         case None => false
       }
     }
@@ -58,7 +58,7 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
                                       employerRef: Option[EncryptedValue] = None,
                                       startDate: Option[EncryptedValue] = None,
                                       payrollId: Option[EncryptedValue] = None,
-                                      cessationDateQuestion: Option[EncryptedValue] = None,
+                                      didYouLeaveQuestion: Option[EncryptedValue] = None,
                                       cessationDate: Option[EncryptedValue] = None,
                                       dateIgnored: Option[EncryptedValue] = None,
                                       employmentSubmittedOn: Option[EncryptedValue] = None,

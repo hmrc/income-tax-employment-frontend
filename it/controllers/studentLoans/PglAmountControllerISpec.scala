@@ -165,7 +165,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -206,7 +206,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -246,7 +246,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -287,7 +287,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -357,7 +357,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                                   employerName = "Whiterun Guards",
                                   employerRef = Some("223/AB12399"),
                                   startDate = Some("2022-04-01"),
-                                  cessationDateQuestion = Some(false),
+                                  didYouLeaveQuestion = Some(false),
                                   taxablePayToDate = Some(3000.00),
                                   totalTaxToDate = Some(300.00),
                                   currentDataIsHmrcHeld = false
@@ -397,7 +397,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -449,7 +449,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some("2022-04-01"),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false

@@ -63,7 +63,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val addNewEmployerText: String = "Add a new employer"
     val orText: String = "or"
@@ -78,7 +78,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val addNewEmployerText: String = "Add a new employer"
     val orText: String = "or"
@@ -122,8 +122,8 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   private def form(isAgent: Boolean): Form[String] = new SelectEmployerForm().employerListForm(isAgent, Seq("id"))
 
   val employers = Seq(
-    Employer("id", "Emp 1", Some("2020-11-11"), Some("2020-11-11")),
-    Employer("id2", "Emp 2", Some("2020-11-11"), None),
+    Employer("id", "Emp 1", Some(s"${taxYearEOY-1}-11-11"), Some(s"${taxYearEOY-1}-11-11")),
+    Employer("id2", "Emp 2", Some(s"${taxYearEOY-1}-11-11"), None),
     Employer("id3", "Emp 3", None, None)
   )
 

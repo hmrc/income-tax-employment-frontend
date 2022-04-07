@@ -51,7 +51,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
     hotelAndMealExpenses = None,
     vehicleExpenses = None,
     mileageAllowanceRelief = None,
-    submittedOn = Some("2020-11-11"),
+    submittedOn = Some(s"${taxYearEOY-1}-11-11"),
     isUsingCustomerData = true
   )
 

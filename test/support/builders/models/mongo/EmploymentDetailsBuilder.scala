@@ -17,17 +17,18 @@
 package support.builders.models.mongo
 
 import models.mongo.EmploymentDetails
+import utils.TaxYearHelper
 
-object EmploymentDetailsBuilder {
+object EmploymentDetailsBuilder extends TaxYearHelper {
 
   val anEmploymentDetails: EmploymentDetails = EmploymentDetails(
     employerName = "Employer Name",
     employerRef = Some("123/12345"),
-    startDate = Some("2020-11-11"),
+    startDate = Some(s"${taxYearEOY-1}-11-11"),
     taxablePayToDate = Some(55.99),
     totalTaxToDate = Some(3453453.00),
-    employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
-    employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
+    employmentSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),
+    employmentDetailsSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),
     currentDataIsHmrcHeld = false
   )
 }

@@ -63,7 +63,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
     SessionValues.CLIENT_NINO -> "AA123456A",
-    SessionValues.TAX_YEAR -> "2022"
+    SessionValues.TAX_YEAR -> taxYear.toString
   ).withHeaders("X-Session-ID" -> sessionId)
   val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_NINO -> "AA123456A"
@@ -113,18 +113,18 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
       employerRef = Some("223/AB12399"),
       payrollId = Some("123456789999"),
       startDate = Some("2019-04-21"),
-      cessationDate = Some("2020-03-11"),
-      dateIgnored = Some("2020-04-04T01:01:01Z"),
-      submittedOn = Some("2020-01-04T05:01:01Z"),
+      cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+      dateIgnored = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
+      submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
       employmentData = Some(EmploymentData(
-        submittedOn = ("2020-02-12"),
+        submittedOn = (s"${taxYearEOY-1}-02-12"),
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),
-        directorshipCeasedDate = Some("2020-02-12"),
+        directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
         Some(Deductions(
           studentLoans = Some(StudentLoans(
             uglDeductionAmount = Some(100.00),
@@ -133,7 +133,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
         ))
       )),
       Some(EmploymentBenefits(
-        submittedOn = "2020-02-12",
+        submittedOn = s"${taxYearEOY-1}-02-12",
         benefits = Some(allBenefits)
       ))
     )),

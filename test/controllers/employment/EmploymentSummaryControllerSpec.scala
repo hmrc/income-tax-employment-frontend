@@ -17,9 +17,10 @@
 package controllers.employment
 
 import common.SessionValues
+import models.OptionalUserPriorDataRequest
 import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.mvc.Result
+import play.api.mvc.{AnyContent, Result}
 import play.api.mvc.Results.{Ok, Redirect}
 import support.mocks.{MockActionsProvider, MockEmploymentSessionService}
 import utils.UnitTestWithApp
@@ -37,20 +38,20 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       employerRef = Some("223/AB12399"),
       payrollId = Some("123456789999"),
       startDate = Some("2019-04-21"),
-      cessationDate = Some("2020-03-11"),
-      dateIgnored = Some("2020-04-04T01:01:01Z"),
-      submittedOn = Some("2020-01-04T05:01:01Z"),
+      cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+      dateIgnored = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
+      submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
       hmrcEmploymentFinancialData = Some(
         EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -69,19 +70,19 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       employerRef = Some("223/AB12399"),
       payrollId = Some("123456789999"),
       startDate = Some("2019-04-21"),
-      cessationDate = Some("2020-03-11"),
-      dateIgnored = Some("2020-04-04T01:01:01Z"),
-      submittedOn = Some("2020-01-04T05:01:01Z"),
+      cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+      dateIgnored = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
+      submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
       hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
         employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
+          submittedOn = s"${taxYearEOY-1}-02-12",
           employmentSequenceNumber = Some("123456789999"),
           companyDirector = Some(true),
           closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
+          directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
           Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(100.00),
@@ -131,7 +132,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/add-employment"
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is no session data and some prior employment" which {
@@ -141,7 +142,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is session data and some prior employment" which {
@@ -152,7 +153,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
     }
     "redirect to select employer page when there is no session data and an ignored hmrc employment" which {
@@ -162,7 +163,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
     }
     "redirect to select employer page when there is session data and an ignored hmrc employment" which {
@@ -173,7 +174,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/2021/select-employer"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
       s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
 
@@ -188,9 +189,14 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
   }
 
   ".show" should {
+
+    implicit val request: OptionalUserPriorDataRequest[AnyContent] = OptionalUserPriorDataRequest(
+      Some(FullModel.oneEmploymentSourceData), authorisationRequest.user, authorisationRequest.request
+    )
+
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1.toEmploymentSource), expensesExist = false, isInYear = true)))
+        mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -200,8 +206,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1.toEmploymentSource,
-          FullModel.employmentSource2.toEmploymentSource), expensesExist = false, isInYear = false)))
+        mockGetPriorRight(taxYear, Some(FullModel.multipleEmploymentSourcesData))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -211,7 +216,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "redirect the User to the Overview page no data in session" which {
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-        mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        mockGetPriorRight(taxYear, None)
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 

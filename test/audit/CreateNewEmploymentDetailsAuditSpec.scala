@@ -26,7 +26,7 @@ class CreateNewEmploymentDetailsAuditSpec extends UnitTestWithApp{
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |	"taxYear": 2020,
+             |	"taxYear": ${taxYearEOY-1},
              |	"userType": "individual",
              |	"nino": "AA12343AA",
              |	"mtditid": "mtditid",
@@ -49,7 +49,7 @@ class CreateNewEmploymentDetailsAuditSpec extends UnitTestWithApp{
              |}""".stripMargin)
 
         //scalastyle:off
-        val auditModel = CreateNewEmploymentDetailsAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = CreateNewEmploymentDetailsAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = AuditNewEmploymentData(
             employerName = Some("Name"),
             employerRef = Some("123/12345"),

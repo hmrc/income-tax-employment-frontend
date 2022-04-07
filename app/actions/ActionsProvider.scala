@@ -18,7 +18,7 @@ package actions
 
 import config.{AppConfig, ErrorHandler}
 import javax.inject.Inject
-import models.{AuthorisationRequest, IncomeTaxUserData, UserPriorDataRequest, UserSessionDataRequest}
+import models.{AuthorisationRequest, IncomeTaxUserData, OptionalUserPriorDataRequest, UserPriorDataRequest, UserSessionDataRequest}
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import services.EmploymentSessionService
@@ -48,6 +48,10 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
     authAction
       .andThen(notInYearActionBuilder(taxYear))
       .andThen(employmentPriorDataAction(taxYear, overrideRedirect))
+
+  def authenticatedPriorDataAction(taxYear: Int): ActionBuilder[OptionalUserPriorDataRequest, AnyContent] =
+    authAction
+      .andThen(optionalEmploymentPriorDataAction(taxYear))
 
   private def notInYearActionBuilder(taxYear: Int): ActionFilter[AuthorisationRequest] = new ActionFilter[AuthorisationRequest] {
     override protected def executionContext: ExecutionContext = ec
@@ -102,6 +106,23 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
           case Left(error) => Left(errorHandler.handleError(error.status)(input))
           case Right(IncomeTaxUserData(None)) => Left(overrideRedirect.getOrElse(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))
           case Right(IncomeTaxUserData(Some(employmentUserData))) => Right(UserPriorDataRequest(employmentUserData, input.user, input.request))
+        }
+      }
+    }
+  }
+
+  private def optionalEmploymentPriorDataAction(taxYear: Int)
+                                               (implicit ec: ExecutionContext): ActionRefiner[AuthorisationRequest, OptionalUserPriorDataRequest] = {
+    new ActionRefiner[AuthorisationRequest, OptionalUserPriorDataRequest] {
+      override protected def executionContext: ExecutionContext = ec
+
+      override protected def refine[A](input: AuthorisationRequest[A]): Future[Either[Result, OptionalUserPriorDataRequest[A]]] = {
+
+        implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(input.request, input.request.session)
+
+        employmentSessionService.getPriorData(input.user, taxYear).map {
+          case Left(error) => Left(errorHandler.handleError(error.status)(input))
+          case Right(IncomeTaxUserData(data)) => Right(OptionalUserPriorDataRequest(data, input.user, input.request))
         }
       }
     }

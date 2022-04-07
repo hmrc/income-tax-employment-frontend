@@ -173,7 +173,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         lazy val response = service.createExpensesModelAndReturnResult(
           authorisationRequest.user,
           expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
@@ -202,7 +202,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         lazy val response = service.createExpensesModelAndReturnResult(
           authorisationRequest.user,
           expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER

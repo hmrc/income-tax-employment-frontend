@@ -18,11 +18,12 @@ package support.builders.models.employment
 
 import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import models.employment.EmploymentExpenses
+import utils.TaxYearHelper
 
-object EmploymentExpensesBuilder {
+object EmploymentExpensesBuilder extends TaxYearHelper {
 
   val anEmploymentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = Some("2020-02-12"),
+    submittedOn = Some(s"${taxYearEOY-1}-02-12"),
     dateIgnored = None,
     totalExpenses = None,
     expenses = Some(anExpenses)

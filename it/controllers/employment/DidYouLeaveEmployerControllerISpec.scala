@@ -24,13 +24,13 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import utils.PageUrls.{employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, overviewUrl, stillWorkingForUrl}
+import utils.PageUrls.{employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, overviewUrl, didYouLeaveUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employerName: String = "HMRC"
-  private val employmentStartDate: String = "2020-01-01"
+  private val employmentStartDate: String = s"${taxYearEOY-1}-01-01"
   private val employmentId: String = "001"
   private val cessationDate: Option[String] = Some(s"$taxYearEOY-01-01")
 
@@ -38,9 +38,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, employerRef: Option[String] = Some("123/AB456"), startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
-               cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =
+               didYouLeaveQuestion: Option[Boolean] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = employerRef, payrollId = Some("payRollId"),
-      startDate = startDate, cessationDate = cessationDate, cessationDateQuestion = cessationDateQuestion), None)
+      startDate = startDate, cessationDate = cessationDate, didYouLeaveQuestion = didYouLeaveQuestion), None)
 
   object Selectors {
     val continueButtonSelector: String = "#continue"
@@ -63,31 +63,31 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Are you still working for your employer?"
-    val expectedH1 = "Are you still working at HMRC?"
+    val expectedTitle = "Did you leave this employer in the tax year?"
+    val expectedH1 = "Did you leave HMRC in the tax year?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you are still working for your employer"
+    val expectedError = "Select yes if you left HMRC in the tax year"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Are you still working for your employer?"
-    val expectedH1 = "Are you still working at HMRC?"
+    val expectedTitle = "Did you leave this employer in the tax year?"
+    val expectedH1 = "Did you leave HMRC in the tax year?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you are still working for your employer"
+    val expectedError = "Select yes if you left HMRC in the tax year"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Is your client still working for their employer?"
-    val expectedH1 = "Is your client still working at HMRC?"
+    val expectedTitle = "Did your client leave this employer in the tax year?"
+    val expectedH1 = "Did your client leave HMRC in the tax year?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client is still working for their employer"
+    val expectedError = "Select yes if your client left HMRC in the tax year"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Is your client still working for their employer?"
-    val expectedH1 = "Is your client still working at HMRC?"
+    val expectedTitle = "Did your client leave this employer in the tax year?"
+    val expectedH1 = "Did your client leave HMRC in the tax year?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client is still working for their employer"
+    val expectedError = "Select yes if your client left HMRC in the tax year"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -121,7 +121,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -141,7 +141,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -149,9 +149,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("$taxYearEOY -01-01"),
-              cessationDateQuestion = Some(false), hmrc = true)))
+              didYouLeaveQuestion = Some(false), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -171,7 +171,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -179,9 +179,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
-              cessationDateQuestion = Some(true), hmrc = true)))
+              didYouLeaveQuestion = Some(true), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -201,16 +201,16 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
         "render the 'still working for employer' page for prior year with correct content and default yes value when cessation date is not present" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDateQuestion = None, hmrc = true)))
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, didYouLeaveQuestion = None, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -230,7 +230,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -238,9 +238,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)))
+              didYouLeaveQuestion = None, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -260,14 +260,14 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
         "redirect the user to the overview page when it is not end of year" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(stillWorkingForUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(didYouLeaveUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -285,7 +285,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -294,17 +294,17 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
       }
     }
 
-    "Update the cessationDateQuestion to yes and wipe the cessationDate data when the user chooses yes" which {
+    "Update the didYouLeaveQuestion to no and wipe the cessationDate data when the user chooses no" which {
 
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
-          cessationDateQuestion = None, hmrc = true)))
+          didYouLeaveQuestion = None, hmrc = true)))
 
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the start date page" in {
@@ -312,23 +312,23 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
-        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
+        cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(false)
 
       }
 
     }
 
-    "Update the cessationDateQuestion to no and when the user chooses no and not wipe out the cessation date" which {
+    "Update the didYouLeaveQuestion to yes and when the user chooses yes and not wipe out the cessation date" which {
 
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
-          cessationDateQuestion = None, hmrc = true)))
+          didYouLeaveQuestion = None, hmrc = true)))
 
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the employments dates page" in {
@@ -336,7 +336,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         result.header("location").contains(employmentDatesUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
-        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+        cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(true)
 
       }
 
@@ -344,15 +344,15 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
     "Redirect to employer ref page when there's a missing answer" which {
 
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, employerRef = None,
-          startDate = None, cessationDate = cessationDate, cessationDateQuestion = None, hmrc = true)))
+          startDate = None, cessationDate = cessationDate, didYouLeaveQuestion = None, hmrc = true)))
 
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the missing employer ref page" in {
@@ -360,7 +360,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
-        cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+        cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(true)
 
       }
 
@@ -378,7 +378,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
               dropEmploymentDB()
               insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
+              urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -399,7 +399,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+            formPostLinkCheck(didYouLeaveUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)

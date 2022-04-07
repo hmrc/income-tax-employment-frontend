@@ -47,13 +47,9 @@
         if (isInYear) "govuk-!-margin-bottom-3" else "govuk-!-margin-bottom-5"
     )
 
-    @if(!isInYear && !expenses.isUsingCustomerData){
-        <p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")</p>
-    } else {
-        <p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    @if(!expenses.isUsingCustomerData){<p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")</p>}
 
-        @{govukInsetText(InsetText(content = Text(messages(s"checkYourExpenses.inYearInfo.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))))}
-    }
+    @if(isInYear) @{govukInsetText(InsetText(content = Text(messages(s"checkYourExpenses.inYearInfo.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))))}
 
     @{
         def toSummaryListRow(

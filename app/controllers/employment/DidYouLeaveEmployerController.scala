@@ -34,31 +34,32 @@ import views.html.employment.StillWorkingForEmployerView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAction,
-                                                  val mcc: MessagesControllerComponents,
-                                                  implicit val appConfig: AppConfig,
-                                                  stillWorkingForEmployerView: StillWorkingForEmployerView,
-                                                  inYearAction: InYearUtil,
-                                                  errorHandler: ErrorHandler,
-                                                  employmentSessionService: EmploymentSessionService,
-                                                  employmentService: EmploymentService,
-                                                  implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction,
+                                              val mcc: MessagesControllerComponents,
+                                              implicit val appConfig: AppConfig,
+                                              didYouLeaveView: StillWorkingForEmployerView,
+                                              inYearAction: InYearUtil,
+                                              errorHandler: ErrorHandler,
+                                              employmentSessionService: EmploymentSessionService,
+                                              employmentService: EmploymentService,
+                                              implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        data.employment.employmentDetails.cessationDateQuestion match {
+        val employerName = data.employment.employmentDetails.employerName
+        data.employment.employmentDetails.didYouLeaveQuestion match {
           case Some(isStillWorkingForEmployer) =>
-            Future.successful(Ok(stillWorkingForEmployerView(yesNoForm(request.user.isAgent).fill(isStillWorkingForEmployer), taxYear,
-              employmentId, data.employment.employmentDetails.employerName)))
+            Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(isStillWorkingForEmployer), taxYear,
+              employmentId, employerName)))
           case None =>
             if (data.isPriorSubmission) {
               val isStillWorkingForEmployer = data.employment.employmentDetails.cessationDate.isEmpty
-              Future.successful(Ok(stillWorkingForEmployerView(yesNoForm(request.user.isAgent).fill(isStillWorkingForEmployer), taxYear,
-                employmentId, data.employment.employmentDetails.employerName)))
+              Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(isStillWorkingForEmployer), taxYear,
+                employmentId, employerName)))
             } else {
-              Future.successful(Ok(stillWorkingForEmployerView(yesNoForm(request.user.isAgent),
-                taxYear, employmentId, data.employment.employmentDetails.employerName)))
+              Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName),
+                taxYear, employmentId, employerName)))
             }
         }
       }
@@ -68,9 +69,9 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        yesNoForm(request.user.isAgent).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(stillWorkingForEmployerView(formWithErrors, taxYear, employmentId,
-            data.employment.employmentDetails.employerName))),
+        val employerName = data.employment.employmentDetails.employerName
+        yesNoForm(request.user.isAgent, employerName).bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(didYouLeaveView(formWithErrors, taxYear, employmentId, employerName))),
           yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
         )
       }
@@ -79,14 +80,14 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentService.updateCessationDateQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
+    employmentService.updateDidYouLeaveQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission, isStandaloneQuestion = false)
     }
   }
 
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"employment.stillWorkingForEmployer.error.${if (isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean, employerName: String): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"employment.didYouLeave.error.${if (isAgent) "agent" else "individual"}", Seq(employerName)
   )
 }

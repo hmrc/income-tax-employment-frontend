@@ -27,7 +27,7 @@ class ViewEmploymentBenefitsSpec extends UnitTestWithApp{
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |"taxYear": 2020,
+             |"taxYear": ${taxYearEOY-1},
              |"userType": "individual",
              |"nino":"AA12343AA",
              |"mtditid":"mtditid",
@@ -63,7 +63,7 @@ class ViewEmploymentBenefitsSpec extends UnitTestWithApp{
              |}
              |}""".stripMargin)
 
-        val auditModel = ViewEmploymentBenefitsAudit(2020, "individual", "AA12343AA",
+        val auditModel = ViewEmploymentBenefitsAudit(taxYearEOY-1, "individual", "AA12343AA",
           "mtditid",
           Benefits(
             accommodation = Some(100),

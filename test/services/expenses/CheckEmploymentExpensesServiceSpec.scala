@@ -174,19 +174,19 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),

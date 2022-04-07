@@ -75,16 +75,16 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCessationDateQuestion(user: User,
-                                  taxYear: Int,
-                                  employmentId: String,
-                                  originalEmploymentUserData: EmploymentUserData,
-                                  questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
+  def updateDidYouLeaveQuestion(user: User,
+                                taxYear: Int,
+                                employmentId: String,
+                                originalEmploymentUserData: EmploymentUserData,
+                                leftEmployer: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val cessationDateUpdated = {
-      if (questionValue) None else cya.employmentDetails.cessationDate
+      if (leftEmployer) cya.employmentDetails.cessationDate else None
     }
-    val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(questionValue), cessationDate = cessationDateUpdated))
+    val updatedEmployment = cya.copy(cya.employmentDetails.copy(didYouLeaveQuestion = Some(leftEmployer), cessationDate = cessationDateUpdated))
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }

@@ -63,12 +63,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       val prior = None
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq()
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, prior)) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, prior)) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's a create and theres existing data" in {
 
@@ -105,19 +105,19 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -137,12 +137,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq(PriorEmploymentAuditInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's an amend" in {
 
@@ -180,19 +180,19 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -213,7 +213,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditEmploymentData(
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditEmploymentData(
           employerName = employmentSource1.employerName,
           employerRef = employmentSource1.employerRef,
           employmentId = employmentSource1.employmentId,
@@ -223,11 +223,11 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
           payrollId = employmentSource1.payrollId
         ), AuditEmploymentData(
-          "name", Some("employerRef"), "001", Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")
+          "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY-1}-03-11"), Some(4354), Some(564), Some("123456789999")
         )
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
   }
 
@@ -305,19 +305,19 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -380,19 +380,19 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -422,7 +422,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
         payrollId = employmentSource1.payrollId
       ), DecodedEmploymentData(
-        "name", Some("employerRef"), "001", Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")
+        "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY-1}-03-11"), Some(4354), Some(564), Some("123456789999")
       )
       ))
 

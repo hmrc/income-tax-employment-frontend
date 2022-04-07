@@ -28,13 +28,13 @@ class AllEmploymentDataSpec extends UnitTest {
 
   private val employmentId = "some-employment-id"
 
-  private val hmrcEmployment1 = aHmrcEmploymentSource.copy(employmentId = "employment-1", employerName = "employer-name-1", submittedOn = Some("2020-01-04T05:01:01Z"))
-  private val hmrcEmployment2 = aHmrcEmploymentSource.copy(employmentId = "employment-2", employerName = "employer-name-2", submittedOn = Some("2020-05-04T05:01:01Z"))
-  private val hmrcEmployment3 = aHmrcEmploymentSource.copy(employmentId = "employment-3", employerName = "employer-name-3", submittedOn = Some("2020-10-04T05:01:01Z"))
+  private val hmrcEmployment1 = aHmrcEmploymentSource.copy(employmentId = "employment-1", employerName = "employer-name-1", submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"))
+  private val hmrcEmployment2 = aHmrcEmploymentSource.copy(employmentId = "employment-2", employerName = "employer-name-2", submittedOn = Some(s"${taxYearEOY-1}-05-04T05:01:01Z"))
+  private val hmrcEmployment3 = aHmrcEmploymentSource.copy(employmentId = "employment-3", employerName = "employer-name-3", submittedOn = Some(s"${taxYearEOY-1}-10-04T05:01:01Z"))
 
-  private val customerEmployment1 = anEmploymentSource.copy(employmentId = "employment-4", employerName = "employer-name-4", submittedOn = Some("2021-01-04T05:01:01Z"))
-  private val customerEmployment2 = anEmploymentSource.copy(employmentId = "employment-5", employerName = "employer-name-5", submittedOn = Some("2021-05-04T05:01:01Z"))
-  private val customerEmployment3 = anEmploymentSource.copy(employmentId = "employment-6", employerName = "employer-name-6", submittedOn = Some("2021-10-04T05:01:01Z"))
+  private val customerEmployment1 = anEmploymentSource.copy(employmentId = "employment-4", employerName = "employer-name-4", submittedOn = Some(s"$taxYearEOY-01-04T05:01:01Z"))
+  private val customerEmployment2 = anEmploymentSource.copy(employmentId = "employment-5", employerName = "employer-name-5", submittedOn = Some(s"$taxYearEOY-05-04T05:01:01Z"))
+  private val customerEmployment3 = anEmploymentSource.copy(employmentId = "employment-6", employerName = "employer-name-6", submittedOn = Some(s"$taxYearEOY-10-04T05:01:01Z"))
 
   private val hmrcExpenses = anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(businessTravelCosts = Some(10.00))))
   private val customerExpenses = anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(businessTravelCosts = Some(20.00))))
@@ -213,7 +213,7 @@ class AllEmploymentDataSpec extends UnitTest {
     }
 
     "return None when employment there is hmrc employment, but it is ignored" in {
-      val ignoredEmployment = hmrcEmployment1.copy(employmentId = "employment-id", dateIgnored = Some("2021-03-11"))
+      val ignoredEmployment = hmrcEmployment1.copy(employmentId = "employment-id", dateIgnored = Some(s"$taxYearEOY-03-11"))
       val allEmploymentData = anAllEmploymentData
         .copy(hmrcEmploymentData = Seq(ignoredEmployment))
         .copy(customerEmploymentData = Seq())

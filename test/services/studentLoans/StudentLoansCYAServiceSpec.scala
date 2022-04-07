@@ -129,7 +129,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
 
 
       val createNewStudentLoansDeductionsAudit = CreateNewStudentLoansDeductionsAudit(
-        taxYear = 2021,
+        taxYear = taxYearEOY,
         userType = authorisationRequest.user.affinityGroup.toLowerCase,
         nino = authorisationRequest.user.nino,
         mtditid = authorisationRequest.user.mtditid,
@@ -142,7 +142,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       val customerEmploymentData = anEmploymentSource.copy(employmentData = None)
       val employmentDataWithoutDeductions = allEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
 
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = 2021, Some(employmentDataWithoutDeductions))
+      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(employmentDataWithoutDeductions))
 
       await(result) shouldBe AuditResult.Success
 
@@ -185,20 +185,20 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(
           EmploymentFinancialData(
             employmentData = Some(EmploymentData(
-              submittedOn = "2020-02-12",
+              submittedOn = s"${taxYearEOY-1}-02-12",
               employmentSequenceNumber = Some("123456789999"),
               companyDirector = Some(true),
               closeCompany = Some(false),
-              directorshipCeasedDate = Some("2020-02-12"),
+              directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
               occPen = Some(false),
               disguisedRemuneration = Some(false),
-              pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+              pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
               Some(Deductions(
                 studentLoans = Some(StudentLoans(
                   uglDeductionAmount = Some(100.00),
@@ -220,7 +220,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       )
 
       mockAuditSendEvent(AmendStudentLoansDeductionsUpdateAudit(
-        taxYear = 2021,
+        taxYear = taxYearEOY,
         userType = authorisationRequest.user.affinityGroup.toLowerCase,
         nino = authorisationRequest.user.nino,
         mtditid = authorisationRequest.user.mtditid,
@@ -234,7 +234,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       ).toAuditModel
       )
 
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = 2021, Some(prior))
+      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(prior))
 
       await(result) shouldBe AuditResult.Success
     }
@@ -243,10 +243,10 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
   ".sendViewStudentLoansDeductionsAudit" should {
     "send the audit event" in {
       mockAuditSendEvent(ViewStudentLoansDeductionsAudit(
-        2021, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
       ).toAuditModel)
 
-      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, 2021, validModel.toDeductions)) shouldBe AuditResult.Success
+      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, taxYearEOY, validModel.toDeductions)) shouldBe AuditResult.Success
     }
   }
 
@@ -326,19 +326,19 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),

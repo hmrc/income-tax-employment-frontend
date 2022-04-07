@@ -51,7 +51,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   object Selectors {
     val valueHref = "#value"
     val cannotUpdateInfoSelector = "#main-content > div > div > div.govuk-inset-text"
-    val employersSelector = "#main-content > div > div > h2.govuk-heading-m"
+    val employersSelector = "#employer-h2"
 
     def yourEmpInfoSelector(id: Int): String = s"#main-content > div > div > p:nth-child($id)"
 
@@ -68,14 +68,15 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
     def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
 
-    val expensesHeadingSelector = "#main-content > div > div > h2.govuk-label--m"
+    val expensesHeadingSelector = "#expenses-h2"
     val thisIsATotalSelector = "#main-content > div > div > p:nth-child(7)"
     val expensesLineSelector = "#main-content > div > div > dl:nth-child(8) > div > dt"
     val viewExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd > a"
     val addAnotherSelector = "#main-content > div > div > p:nth-child(5) > a"
     val changeExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd.govuk-summary-list__value > a"
     val removeExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd.govuk-summary-list__actions > a"
-    val noExpensesAddedSelector = "#main-content > div > div > dl:nth-child(7) > div > dt"
+    val addExpensesSelector = s"#add-expenses"
+    val addEmployerSelector = "#main-content > div > div > p:nth-child(3) > a"
     val addSelector = "#main-content > div > div > dl:nth-child(7) > div > dd > a"
     val cannotAddSelector = "#main-content > div > div > p:nth-child(7)"
     val cannotUpdateSelector = "#main-content > div > div > dl:nth-child(5) > div:nth-child(2) > dd"
@@ -95,13 +96,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def expectedCaption(taxYear: Int): String
 
     val name: String
-    val add: String
     val change: String
     val remove: String
     val addAnother: String
     val thisIsATotal: String
     val expenses: String
-    val noExpensesAdded: String
+    val addEmployer: String
+    val addExpenses: String
     val employer: String
     val employers: String
     val returnToOverview: String
@@ -118,13 +119,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
     val name: String = "maggie"
-    val add: String = "Add"
     val change: String = s"Change"
     val remove: String = s"Remove"
     val addAnother: String = "Add another employer"
     val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
     val expenses: String = "Expenses"
-    val noExpensesAdded: String = "No expenses added"
+    val addEmployer: String = "Add an employer"
+    val addExpenses: String = "Add expenses"
     val employer: String = "Employer"
     val employers: String = "Employers"
     val returnToOverview: String = "Return to overview"
@@ -141,13 +142,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
     val name: String = "maggie"
-    val add: String = "Add"
     val change: String = s"Change"
     val remove: String = s"Remove"
     val addAnother: String = "Add another employer"
     val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
     val expenses: String = "Expenses"
-    val noExpensesAdded: String = "No expenses added"
+    val addEmployer: String = "Add an employer"
+    val addExpenses: String = "Add expenses"
     val employer: String = "Employer"
     val employers: String = "Employers"
     val returnToOverview: String = "Return to overview"
@@ -260,8 +261,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
-            textOnPageCheck(noExpensesAdded, noExpensesAddedSelector)
-            linkCheck(add, addSelector, claimEmploymentExpensesUrl(taxYearEOY))
+            linkCheck(addExpenses, addExpensesSelector, claimEmploymentExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
         }
@@ -490,8 +490,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), removeEmploymentUrl(taxYearEOY, employmentId2))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
-            textOnPageCheck(noExpensesAdded, noExpensesAddedSelector)
-            linkCheck(add, addSelector, claimEmploymentExpensesUrl(taxYearEOY))
+            linkCheck(addExpenses, addExpensesSelector, claimEmploymentExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
         }
@@ -525,6 +524,27 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             buttonCheck(returnToOverview)
           }
         }
+
+        "show the summary page when no data is in session EOY" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(isAgent = true)
+            userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
+            urlGet(s"$appUrl/$taxYearEOY/employment-summary", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+
+          implicit def documentSupplier: () => Document = () => document
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
+          linkCheck(addExpenses, addExpensesSelector, claimEmploymentExpensesUrl(taxYearEOY))
+          textOnPageCheck(employers, employersSelector, "as a heading")
+          linkCheck(addEmployer, addEmployerSelector, summaryAddNewEmployerUrl(taxYearEOY))
+        }
       }
     }
 
@@ -550,21 +570,6 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
         result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
-      }
-
-    }
-
-    "redirect the user to the Add Employment page when no data is in session EOY" which {
-      lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = true)
-        val employmentSources = Seq(HmrcEmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
-        userDataStub(IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYearEOY)
-        urlGet(s"$appUrl/$taxYearEOY/employment-summary", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(addEmploymentUrl(taxYearEOY)) shouldBe true
       }
 
     }

@@ -172,7 +172,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -214,7 +214,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -256,7 +256,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -297,7 +297,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -373,7 +373,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                                   employerName = "Falador Knights",
                                   employerRef = Some("223/AB12399"),
                                   startDate = Some(startDate),
-                                  cessationDateQuestion = Some(false),
+                                  didYouLeaveQuestion = Some(false),
                                   taxablePayToDate = Some(3000.00),
                                   totalTaxToDate = Some(300.00),
                                   currentDataIsHmrcHeld = false
@@ -414,7 +414,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                     employerName = "Falador Knights",
                     employerRef = Some("223/AB12399"),
                     startDate = Some(startDate),
-                    cessationDateQuestion = Some(false),
+                    didYouLeaveQuestion = Some(false),
                     taxablePayToDate = Some(90000.00),
                     totalTaxToDate = Some(111),
                     currentDataIsHmrcHeld = false
@@ -455,7 +455,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(90000.00),
                               totalTaxToDate = Some(111),
                               currentDataIsHmrcHeld = false
@@ -507,7 +507,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                               employerName = "Falador Knights",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(9000.00),
                               totalTaxToDate = Some(3),
                               currentDataIsHmrcHeld = false
