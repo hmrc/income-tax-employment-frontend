@@ -20,16 +20,16 @@ import models.benefits.Benefits
 import models.employment.{Deductions, EmploymentDetailsViewModel, StudentLoans}
 import models.expenses.Expenses
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.{TaxYearHelper, UnitTestWithApp}
 
-class DeleteEmploymentAuditSpec extends UnitTestWithApp {
+class DeleteEmploymentAuditSpec extends UnitTestWithApp with TaxYearHelper {
 
   "writes" when {
     "passed a DeleteEmploymentAudit model" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": $taxYearEOY,
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -38,9 +38,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -89,15 +89,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -156,7 +156,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit employment data fields if fields are undefined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": $taxYearEOY,
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -209,14 +209,14 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = None,
             payrollId = None,
             employmentId = "id",
             startDate = None,
-            cessationDateQuestion = None,
+            didYouLeaveQuestion = None,
             cessationDate = None,
             taxablePayToDate = None,
             totalTaxToDate = None,
@@ -276,7 +276,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit benefits if undefined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": $taxYearEOY,
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -285,9 +285,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -306,15 +306,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -344,7 +344,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit benefits fields if fields are undefined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": $taxYearEOY,
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -353,9 +353,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -374,15 +374,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -408,7 +408,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
 
         val jsonWithBenefitsFieldsDefined = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": $taxYearEOY,
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -417,9 +417,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -454,15 +454,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModelWithBenefitsFieldsDefined = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModelWithBenefitsFieldsDefined = DeleteEmploymentAudit(taxYearEOY, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -508,7 +508,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit expenses if undefined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -517,9 +517,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -562,15 +562,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -620,7 +620,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit expenses fields if fields are undefined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -629,9 +629,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -674,15 +674,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -728,7 +728,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
 
         val jsonWithExpensesFieldsDefined = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -737,9 +737,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -786,15 +786,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModelWithExpensesFieldsDefined = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModelWithExpensesFieldsDefined = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -843,7 +843,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
 
         val jsonWithUnusedExpensesFieldsDefined = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -852,9 +852,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -897,15 +897,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModelWithUnusedExpensesFieldsDefined = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModelWithUnusedExpensesFieldsDefined = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -962,7 +962,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit deductions block if deductions are not defined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -971,9 +971,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -1016,15 +1016,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -1078,7 +1078,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit deductions block if student loans are not defined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -1087,9 +1087,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -1132,15 +1132,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -1196,7 +1196,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit deductions block if undergraduate loan deduction amount and postgraduate loan deduction amount values are not defined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -1205,9 +1205,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -1250,15 +1250,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -1314,7 +1314,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit undergraduate loan deduction amount in deductions block if value is not defined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -1323,9 +1323,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -1373,15 +1373,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false
@@ -1437,7 +1437,7 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
       "omit postgraduate loan deduction amount in deductions block if value is not defined" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -1446,9 +1446,9 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |    "employerRef": "reference",
              |    "payrollId": "12345678",
              |    "employmentId": "id",
-             |    "startDate": "2020-02-12",
-             |    "cessationDateQuestion": true,
-             |    "cessationDate": "2020-02-12",
+             |    "startDate": "${taxYearEOY-1}-02-12",
+             |    "didYouLeaveQuestion": true,
+             |    "cessationDate": "${taxYearEOY-1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
@@ -1496,15 +1496,15 @@ class DeleteEmploymentAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = DeleteEmploymentAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = DeleteEmploymentAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           employmentData = EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false

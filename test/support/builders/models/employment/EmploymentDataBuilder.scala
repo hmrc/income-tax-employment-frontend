@@ -20,15 +20,16 @@ import DeductionsBuilder.aDeductions
 import PayBuilder.aPay
 import models.employment.{Deductions, EmploymentData, StudentLoans}
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
+import utils.TaxYearHelper
 
-object EmploymentDataBuilder {
+object EmploymentDataBuilder extends TaxYearHelper {
 
   val anEmploymentData: EmploymentData = EmploymentData(
-    submittedOn = "2020-02-12",
+    submittedOn = s"${taxYearEOY-1}-02-12",
     employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
     closeCompany = Some(false),
-    directorshipCeasedDate = Some("2020-02-12"),
+    directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
     occPen = Some(false),
     disguisedRemuneration = Some(false),
     pay = Some(aPay),
@@ -36,11 +37,11 @@ object EmploymentDataBuilder {
   )
 
   val aLatestCustomerSubmittedEmploymentData: EmploymentData = EmploymentData(
-    submittedOn = "2021-02-12",
+    submittedOn = s"$taxYearEOY-02-12",
     employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
     closeCompany = Some(false),
-    directorshipCeasedDate = Some("2020-02-12"),
+    directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
     occPen = Some(false),
     disguisedRemuneration = Some(false),
     pay = Some(aPay.copy(

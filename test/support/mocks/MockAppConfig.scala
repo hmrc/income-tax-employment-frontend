@@ -20,14 +20,15 @@ import config.AppConfig
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.TaxYearHelper
 
-class MockAppConfig extends MockFactory {
+class MockAppConfig extends MockFactory with TaxYearHelper {
 
   def config(encrypt: Boolean = true, _mimicEmploymentAPICalls: Boolean = false, slEnabled: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
 
-    override lazy val defaultTaxYear: Int = 2022
+    override lazy val defaultTaxYear: Int = taxYear
 
     override def incomeTaxSubmissionOverviewUrl(taxYear: Int): String = "/overview"
 

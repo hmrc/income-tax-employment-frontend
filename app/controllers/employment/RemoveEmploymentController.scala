@@ -47,8 +47,10 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
     inYearAction.notInYear(taxYear) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
         allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
-          case Some(EmploymentSourceOrigin(source, _)) => val employerName = source.employerName
-            Ok(removeEmploymentView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment))
+          case Some(EmploymentSourceOrigin(source, isCustomerData)) =>
+            val employerName = source.employerName
+            val isHmrcEmployment = !isCustomerData
+            Ok(removeEmploymentView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment, isHmrcEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }

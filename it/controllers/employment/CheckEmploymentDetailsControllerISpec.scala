@@ -67,7 +67,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedInsetText: String
     val changeEmploymentStartDateHiddenText: String
     val changeEmploymentDatesHiddenText: String
-    val changeStillWorkingForEmployerHiddenText: String
+    def changeLeftEmployerHiddenText(name: String): String
     val paymentsNotOnYourP60: String
     val changePAYERefHiddenText: String
     val changePayReceivedHiddenText: String
@@ -92,20 +92,20 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeEmployerNameHiddenText: String
     val returnToEmploymentSummaryText: String
     val returnToEmployerText: String
+    val employmentStartDate: String
+    val employmentEndDate: String
+    val employmentDates: String
+    val didYouLeaveNo: String
+    val didYouLeaveYes: String
   }
 
   object ContentValues {
     val employerName = "maggie"
-    val employmentStartDate = "21 April 2019"
-    val employmentEndDate = "11 March 2020"
-    val employmentDates = s"$employmentStartDate to $employmentEndDate"
     val payeRef = "223/AB12399"
     val payReceived = "£100"
     val payReceivedB = "£34,234.50"
     val taxTakenFromPay = "£200"
     val taxTakenFromPayB = "£6,782.90"
-    val stillWorkingYes = "Yes"
-    val stillWorkingNo = "No"
     val payrollId = "12345678"
   }
 
@@ -115,7 +115,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val continueButtonText = "Save and continue"
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
-    val stillWorkingForEmployerField1 = "Still working for your employer"
+    val stillWorkingForEmployerField1 = "Left employer"
     val employmentDatesField = "Employment dates"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
@@ -125,6 +125,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmployerText: String = "Return to employer"
+    val employmentStartDate = "21 April 2019"
+    val employmentEndDate = s"11 March ${taxYearEOY-1}"
+    val employmentDates = s"$employmentStartDate to $employmentEndDate"
+    val didYouLeaveNo = "No"
+    val didYouLeaveYes = "Yes"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -133,7 +138,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val continueButtonText = "Save and continue"
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
-    val stillWorkingForEmployerField1 = "Still working for your employer"
+    val stillWorkingForEmployerField1 = "Left employer"
     val employmentDatesField = "Employment dates"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
@@ -143,6 +148,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmployerText: String = "Return to employer"
+    val employmentStartDate = "21 April 2019"
+    val employmentEndDate = s"11 March ${taxYearEOY-1}"
+    val employmentDates = s"$employmentStartDate to $employmentEndDate"
+    val didYouLeaveNo = "No"
+    val didYouLeaveYes = "Yes"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -159,7 +169,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
-    val changeStillWorkingForEmployerHiddenText = "Change if you are still working for your employer"
+    def changeLeftEmployerHiddenText(name: String) = s"Change if you left $name in the tax year"
     val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
@@ -175,7 +185,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
-    val changeStillWorkingForEmployerHiddenText = "Change if your client is still working for their employer"
+    def changeLeftEmployerHiddenText(name: String) = s"Change if your client left $name in the tax year"
     val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
@@ -191,7 +201,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
-    val changeStillWorkingForEmployerHiddenText = "Change if you are still working for your employer"
+    def changeLeftEmployerHiddenText(name: String) = s"Change if you left $name in the tax year"
     val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
@@ -209,7 +219,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
-    val changeStillWorkingForEmployerHiddenText = "Change if your client is still working for their employer"
+    def changeLeftEmployerHiddenText(name: String) = s"Change if your client left $name in the tax year"
     val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
@@ -235,7 +245,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           hmrcEmploymentFinancialData = Some(
             EmploymentFinancialData(
               employmentData = Some(EmploymentData(
-                submittedOn = "2020-02-12",
+                submittedOn = s"${taxYearEOY-1}-02-12",
                 employmentSequenceNumber = None,
                 companyDirector = None,
                 closeCompany = None,
@@ -275,7 +285,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           dateIgnored = None,
           submittedOn = None,
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = None,
             companyDirector = None,
             closeCompany = None,
@@ -312,7 +322,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           hmrcEmploymentFinancialData = Some(
             EmploymentFinancialData(
               employmentData = Some(EmploymentData(
-                submittedOn = "2020-02-12",
+                submittedOn = s"${taxYearEOY-1}-02-12",
                 employmentSequenceNumber = None,
                 companyDirector = Some(true),
                 closeCompany = Some(true),
@@ -359,7 +369,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                           hasPriorBenefits = true,
                           hasPriorStudentLoans = true,
                           EmploymentCYAModel(
-                            anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
+                            anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(didYouLeaveQuestion = Some(true)),
                             None
                           )
                         ))
@@ -386,10 +396,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), stillWorkingForUrl(taxYearEOY, employmentId))
+          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
@@ -425,9 +435,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
@@ -472,9 +482,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
@@ -512,11 +522,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3),
-            stillWorkingForUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(3)))
+          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3),
+            didYouLeaveUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(3)))
           textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentDatesHiddenText}", cyaChangeLink(4), employmentDatesUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
@@ -555,7 +565,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
@@ -594,8 +604,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
           linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), stillWorkingForUrl(taxYearEOY, employmentId))
+          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
           linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentStartDateHiddenText}", cyaChangeLink(4),
@@ -640,7 +650,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))

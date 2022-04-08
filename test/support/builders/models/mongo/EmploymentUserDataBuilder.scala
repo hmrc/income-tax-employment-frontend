@@ -21,14 +21,15 @@ import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import utils.TaxYearHelper
 
-object EmploymentUserDataBuilder {
+object EmploymentUserDataBuilder extends TaxYearHelper {
 
   val anEmploymentUserData: EmploymentUserData = EmploymentUserData(
     sessionId = aUser.sessionId,
     mtdItId = aUser.mtditid,
     nino = aUser.nino,
-    taxYear = 2021,
+    taxYear = taxYearEOY,
     employmentId = "employmentId",
     isPriorSubmission = true,
     hasPriorBenefits = true, hasPriorStudentLoans = true,

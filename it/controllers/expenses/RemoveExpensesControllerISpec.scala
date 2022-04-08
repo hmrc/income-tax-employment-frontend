@@ -64,14 +64,14 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedRemoveExpensesText = "This will remove expenses for all employment in this tax year."
     val expectedRemoveExpensesButton = "Remove expenses"
     val expectedCancelLink = "Cancel"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedRemoveExpensesText = "This will remove expenses for all employment in this tax year."
     val expectedRemoveExpensesButton = "Remove expenses"
     val expectedCancelLink = "Cancel"

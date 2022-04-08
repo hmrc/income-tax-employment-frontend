@@ -85,9 +85,9 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
               employerRef = Some("reference"),
               payrollId = Some("12345678"),
               employmentId = "id",
-              startDate = Some("2020-02-12"),
-              cessationDateQuestion = Some(true),
-              cessationDate = Some("2020-02-12"),
+              startDate = Some(s"${taxYearEOY-1}-02-12"),
+              didYouLeaveQuestion = Some(true),
+              cessationDate = Some(s"${taxYearEOY-1}-02-12"),
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
               isUsingCustomerData = false

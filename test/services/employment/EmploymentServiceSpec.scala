@@ -43,28 +43,28 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
   "updateStartDate" should {
     "set startDate and update cessationDate to None" when {
       "cessationDate defined and before startDate" in {
-        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("2021-01-01"))
+        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-01"))
         val givenEmploymentUserData = anEmploymentUserDataWithDetails(givenEmploymentDetails, isPriorSubmission = false, hasPriorBenefits = false)
-        val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = None, startDate = Some("2021-01-02"))
+        val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = None, startDate = Some(s"$taxYearEOY-01-02"))
         val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", "2021"))) shouldBe
+        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
 
     "set startDate and keep cessationDate" when {
       "cessationDate defined and on or after startDate" in {
-        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("2021-01-02"), startDate = Some("2020-01-01"))
+        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"), startDate = Some(s"${taxYearEOY-1}-01-01"))
         val givenEmploymentUserData = anEmploymentUserDataWithDetails(givenEmploymentDetails, isPriorSubmission = false, hasPriorBenefits = false)
-        val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("2021-01-02"), startDate = Some("2021-01-02"))
+        val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"), startDate = Some(s"$taxYearEOY-01-02"))
         val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", "2021"))) shouldBe
+        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -82,28 +82,28 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
     }
   }
 
-  "updateCessationDateQuestion" should {
-    "set cessationDateQuestion to true and cessationDate value is cleared when true" in {
-      val givenEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(false), cessationDate = Some("some-date"))
+  "updateDidYouLeaveQuestion" should {
+    "set didYouLeaveQuestion to false and cessationDate value is cleared when false" in {
+      val givenEmploymentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = Some("some-date"))
       val givenEmploymentUserData = anEmploymentUserDataWithDetails(givenEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
-      val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(true), cessationDate = None)
+      val expectedEmploymentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false), cessationDate = None)
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateCessationDateQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
+      await(underTest.updateDidYouLeaveQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
-    "set cessationDateQuestion to false and cessationDate value is preserved when false" in {
-      val givenEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(true), cessationDate = Some("some-date"))
+    "set didYouLeaveQuestion to true and cessationDate value is preserved when true" in {
+      val givenEmploymentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false), cessationDate = Some("some-date"))
       val givenEmploymentUserData = anEmploymentUserDataWithDetails(givenEmploymentDetails)
-      val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(false), cessationDate = Some("some-date"))
+      val expectedEmploymentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = Some("some-date"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails)
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateCessationDateQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateDidYouLeaveQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }

@@ -135,19 +135,19 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
+        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -155,7 +155,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
               ))
             ))
           )),
-          employmentBenefits = Some(EmploymentBenefits("2020-02-15", Some(allBenefits)))
+          employmentBenefits = Some(EmploymentBenefits(s"${taxYearEOY-1}-02-15", Some(allBenefits)))
         )),
         None
       )
@@ -265,7 +265,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         Some("employmentId")
       )
 
-      val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(2021,
+      val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(taxYearEOY,
         authorisationRequest.user.affinityGroup.toLowerCase,
         authorisationRequest.user.nino,
         authorisationRequest.user.mtditid,
@@ -279,7 +279,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       val employmentDataWithoutBenefits = anAllEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
       val expected: AuditResult = Success
 
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(employmentDataWithoutBenefits)).get
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = taxYearEOY, Some(employmentDataWithoutBenefits)).get
       await(result) shouldBe expected
     }
 
@@ -314,7 +314,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       )
 
       val amendAudit = AmendEmploymentBenefitsUpdateAudit(
-        2021,
+        taxYearEOY,
         authorisationRequest.user.affinityGroup.toLowerCase,
         authorisationRequest.user.nino,
         authorisationRequest.user.mtditid,
@@ -323,7 +323,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       mockAuditSendEvent(amendAudit.toAuditModel)
 
       val expected: AuditResult = Success
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(anAllEmploymentData)).get
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = taxYearEOY, Some(anAllEmploymentData)).get
       await(result) shouldBe expected
     }
 
@@ -356,7 +356,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         ),
         Some("001")
       )
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = "003", taxYear = 2021, Some(employmentsModel))
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = "003", taxYear = taxYearEOY, Some(employmentsModel))
       result shouldBe None
     }
   }

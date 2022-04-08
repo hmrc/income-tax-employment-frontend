@@ -62,16 +62,18 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "This will also remove any benefits for this employer."
+    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedRemoveAccountText = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
+      " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
     val expectedCancelLink = "Cancel"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "This will also remove any benefits for this employer."
+    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedRemoveAccountText = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
+      " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
     val expectedCancelLink = "Cancel"

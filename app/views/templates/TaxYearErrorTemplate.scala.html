@@ -25,7 +25,7 @@
 @heading(messages("not-found-template.heading"), None, "govuk-!-margin-bottom-5", "xl")
 
 <div class="govuk-body">
-    <p>@messages("taxYear-error-template.paragraph.1")</p>
+    <p>@messages("taxYear-error-template.paragraph.1", (appConfig.defaultTaxYear -1).toString, appConfig.defaultTaxYear.toString)</p>
     <p>@messages("taxYear-error-template.paragraph.2")</p>
 
     <p>

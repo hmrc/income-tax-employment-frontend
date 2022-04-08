@@ -24,9 +24,9 @@ import play.api.test.Helpers._
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class InYearUtilSpec extends UnitTest {
-  val year2021: Int = 2021
-  val year2022: Int = 2022
+class InYearUtilSpec extends UnitTest with TaxYearHelper {
+  val yearEnd: Int = taxYearEOY
+  val yearCurrent: Int = taxYear
   val month4: Int = 4
   val day5: Int = 5
   val day6: Int = 6
@@ -40,24 +40,24 @@ class InYearUtilSpec extends UnitTest {
 
   "InYearAction.inYear" when {
 
-    "return true when taxYear is 2022 and current date is 5th April 2022 and time is just before midnight" in {
-      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day5, hour23, minute59)
-      inYearAction.inYear(year2022, currentDate) shouldBe true
+    s"return true when taxYear is $yearCurrent and current date is 5th April $yearCurrent and time is just before midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(yearCurrent, month4, day5, hour23, minute59)
+      inYearAction.inYear(yearCurrent, currentDate) shouldBe true
     }
 
-    "return false when taxYear is 2022 and current date is 6th April 2022 at midnight" in {
-      val currentDate: LocalDateTime = newDate(year2022, month4, day6)
-      inYearAction.inYear(year2022, currentDate) shouldBe false
+    s"return false when taxYear is $yearCurrent and current date is 6th April $yearCurrent at midnight" in {
+      val currentDate: LocalDateTime = newDate(yearCurrent, month4, day6)
+      inYearAction.inYear(yearCurrent, currentDate) shouldBe false
     }
 
-    "return false when taxYear is 2022 and current date is 6th April 2022 at one minute past midnight" in {
-      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day6, 0, 1)
-      inYearAction.inYear(year2022, currentDate) shouldBe false
+    s"return false when taxYear is $yearCurrent and current date is 6th April $yearCurrent at one minute past midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(yearCurrent, month4, day6, 0, 1)
+      inYearAction.inYear(yearCurrent, currentDate) shouldBe false
     }
 
-    "return false when taxYear is 2022 and current date is 6th April 2022 at one hour past midnight" in {
-      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day6, 1, 1)
-      inYearAction.inYear(year2022, currentDate) shouldBe false
+    s"return false when taxYear is $yearCurrent and current date is 6th April $yearCurrent at one hour past midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(yearCurrent, month4, day6, 1, 1)
+      inYearAction.inYear(yearCurrent, currentDate) shouldBe false
     }
   }
 
@@ -65,7 +65,7 @@ class InYearUtilSpec extends UnitTest {
 
     def block: Future[Result] = { Future.successful(Results.Ok("Success Response")) }
 
-    "current date is before April 6th 2021 which means the tax year is 2020-21" should {
+    s"current date is before April 6th 2021 which means the tax year is 2020-21" should {
       val currentDate = LocalDateTime.of(2021, 4, 5, 23, 59, 59, 999)
 
       "return redirect to incomeTaxSubmissionOverview page when the requested tax year is 2022" in {
@@ -80,7 +80,7 @@ class InYearUtilSpec extends UnitTest {
         val result = inYearAction.notInYear(2021, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(year2022))
+        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(yearCurrent))
       }
 
       Seq(2018, 2019, 2020).foreach{ previousTaxYear =>
@@ -105,10 +105,10 @@ class InYearUtilSpec extends UnitTest {
       }
 
       "return redirect to incomeTaxSubmissionOverview page when the requested tax year is in year (2022)" in {
-        val result = inYearAction.notInYear(year2022, currentDate)(block)
+        val result = inYearAction.notInYear(yearCurrent, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(year2022))
+        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(yearCurrent))
       }
 
       Seq(2019, 2020, 2021).foreach{ previousTaxYear =>

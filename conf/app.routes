@@ -41,8 +41,8 @@ POST        /:taxYear/employer-paye-reference                                   
 GET         /:taxYear/employment-start-date                                          controllers.employment.EmployerStartDateController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/employment-start-date                                          controllers.employment.EmployerStartDateController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/still-working-for-employer                                     controllers.employment.StillWorkingForEmployerController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/still-working-for-employer                                     controllers.employment.StillWorkingForEmployerController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/leave-employer                                                 controllers.employment.DidYouLeaveEmployerController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/leave-employer                                                 controllers.employment.DidYouLeaveEmployerController.submit(taxYear: Int, employmentId: String)
 
 GET         /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.submit(taxYear: Int, employmentId: String)
@@ -57,9 +57,6 @@ GET         /:taxYear/employment-dates                                          
 POST        /:taxYear/employment-dates                                               controllers.employment.EmploymentDatesController.submit(taxYear: Int, employmentId: String)
 
 #################       Employment management pages      ###########################
-
-GET         /:taxYear/add-employment                                                 controllers.employment.AddEmploymentController.show(taxYear: Int)
-POST        /:taxYear/add-employment                                                 controllers.employment.AddEmploymentController.submit(taxYear: Int)
 
 GET         /:taxYear/remove-employment                                              controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/remove-employment                                              controllers.employment.RemoveEmploymentController.submit(taxYear: Int, employmentId: String)

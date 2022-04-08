@@ -170,7 +170,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -222,7 +222,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -297,7 +297,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -336,7 +336,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -372,7 +372,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -407,7 +407,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -444,7 +444,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                           employerName = "Whiterun Guards",
                           employerRef = Some("223/AB12399"),
                           startDate = Some(startDate),
-                          cessationDateQuestion = Some(false),
+                          didYouLeaveQuestion = Some(false),
                           taxablePayToDate = Some(3000.00),
                           totalTaxToDate = Some(300.00),
                           currentDataIsHmrcHeld = false
@@ -486,7 +486,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -525,7 +525,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false

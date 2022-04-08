@@ -112,7 +112,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         submittedOn = None,
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
+            submittedOn = s"${taxYearEOY-1}-02-12",
             employmentSequenceNumber = None,
             companyDirector = None,
             closeCompany = None,
@@ -134,7 +134,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     ),
     hmrcExpenses = Some(
       EmploymentExpenses(
-        Some("2020-01-04T05:01:01Z"), None, Some(800.00), Some(
+        Some(s"${taxYearEOY-1}-01-04T05:01:01Z"), None, Some(800.00), Some(
           Expenses(
             Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00)
           )
@@ -144,7 +144,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     customerEmploymentData = Seq(),
     customerExpenses = Some(
       EmploymentExpenses(
-        Some("2020-01-04T05:01:01Z"), None, Some(800.00), Some(
+        Some(s"${taxYearEOY-1}-01-04T05:01:01Z"), None, Some(800.00), Some(
           Expenses(
             Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00)
           )
@@ -160,17 +160,17 @@ class EmploymentSessionServiceSpec extends UnitTest
         employerRef = Some(
           "123/12345"
         ),
-        startDate = Some("2020-11-11"),
+        startDate = Some(s"${taxYearEOY-1}-11-11"),
         taxablePayToDate = Some(55.99),
         totalTaxToDate = Some(3453453.00),
-        employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
-        employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
+        employmentSubmittedOn = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
+        employmentDetailsSubmittedOn = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
         currentDataIsHmrcHeld = false
       ),
       employmentBenefits = Some(
         BenefitsViewModel(
           assetsModel = Some(AssetsModel(Some(true), Some(true), Some(100.00), Some(true), Some(100.00))),
-          submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
+          submittedOn = Some(s"${taxYearEOY-1}-02-04T05:01:01Z"), isUsingCustomerData = true
         )
       ),
       studentLoans = Some(
@@ -1087,7 +1087,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None, None)), None
+        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY-1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None, None)), None
       )
     }
 
@@ -1096,12 +1096,12 @@ class EmploymentSessionServiceSpec extends UnitTest
       val response = underTest.createModelOrReturnError(
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(_.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = None, employmentBenefits = Some(EmploymentBenefits(
-            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
+            s"${taxYearEOY-1}-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
           )))))), EmploymentSection.EMPLOYMENT_DETAILS
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
+        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY-1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
           Some(Benefits(Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), Some("employmentId")
       )
     }
@@ -1111,12 +1111,12 @@ class EmploymentSessionServiceSpec extends UnitTest
       val response = underTest.createModelOrReturnError(
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(x => x.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = x.hmrcEmploymentFinancialData.get.employmentData,employmentBenefits = Some(EmploymentBenefits(
-            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
+            s"${taxYearEOY-1}-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
           )))))), EmploymentSection.EMPLOYMENT_DETAILS
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))),
+        None, Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY-1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))),
           Some(Benefits(Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), Some("employmentId")
       )
     }
@@ -1130,7 +1130,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))), None)), None
+        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY-1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))), None)), None
       )
     }
 
@@ -1170,7 +1170,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       )
 
       response.right.get shouldBe CreateUpdateEmploymentRequest(
-        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", "2020-11-11", None, None)), None, None
+        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY-1}-11-11", None, None)), None, None
       )
     }
 

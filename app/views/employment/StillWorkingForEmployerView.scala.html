@@ -31,9 +31,9 @@
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"employment.stillWorkingForEmployer.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"employment.didYouLeave.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{messages(s"employment.stillWorkingForEmployer.heading.${if(request.user.isAgent) "agent" else "individual"}", employerName)}
+@headingForUse = @{messages(s"employment.didYouLeave.heading.${if(request.user.isAgent) "agent" else "individual"}", employerName)}
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -43,7 +43,7 @@
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
-    @formWithCsrf(action = controllers.employment.routes.StillWorkingForEmployerController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.employment.routes.DidYouLeaveEmployerController.submit(taxYear, employmentId)) {
         @inputRadio(
             legendHeading = Some(Html(headingForUse)),
             legendHidden = true,

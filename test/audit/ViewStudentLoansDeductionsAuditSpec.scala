@@ -27,7 +27,7 @@ class ViewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "PW106933A",
              |  "mtditid": "1234567890",
@@ -39,7 +39,7 @@ class ViewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = ViewStudentLoansDeductionsAudit(2020, "individual", "PW106933A", "1234567890",
+        val auditModel = ViewStudentLoansDeductionsAudit(taxYearEOY-1, "individual", "PW106933A", "1234567890",
           Some(
             Deductions(
               Some(

@@ -27,7 +27,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |	"taxYear": 2020,
+             |	"taxYear": ${taxYearEOY-1},
              |	"userType": "individual",
              |	"nino": "AA12343AA",
              |	"mtditid": "mtditid",
@@ -36,9 +36,9 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |		"employerRef": "reference",
              |		"payrollId": "12345678",
              |		"employmentId": "id",
-             |		"startDate": "2020-02-12",
-             |		"cessationDateQuestion": true,
-             |		"cessationDate": "2020-02-12",
+             |		"startDate": "${taxYearEOY-1}-02-12",
+             |		"didYouLeaveQuestion": true,
+             |		"cessationDate": "${taxYearEOY-1}-02-12",
              |		"taxablePayToDate": 34234.15,
              |		"totalTaxToDate": 6782.92,
              |		"isUsingCustomerData": false
@@ -46,16 +46,16 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |}""".stripMargin)
 
         //scalastyle:off
-        val auditModel = ViewEmploymentDetailsAudit(2020, "individual", "AA12343AA",
+        val auditModel = ViewEmploymentDetailsAudit(taxYearEOY-1, "individual", "AA12343AA",
           "mtditid",
           EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some("2020-02-12"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-02-12"),
+            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false

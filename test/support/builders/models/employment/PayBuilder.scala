@@ -17,14 +17,15 @@
 package support.builders.models.employment
 
 import models.employment.Pay
+import utils.TaxYearHelper
 
-object PayBuilder {
+object PayBuilder extends TaxYearHelper {
 
   val aPay: Pay = Pay(
     taxablePayToDate = Some(100),
     totalTaxToDate = Some(200),
     payFrequency = Some("CALENDAR MONTHLY"),
-    paymentDate = Some("2020-04-23"),
+    paymentDate = Some(s"${taxYearEOY-1}-04-23"),
     taxWeekNo = Some(1),
     taxMonthNo = Some(1)
   )

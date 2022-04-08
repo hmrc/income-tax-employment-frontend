@@ -60,7 +60,7 @@ object PageUrls extends IntegrationTest {
   def employerNameUrlWithoutEmploymentId(taxYear: Int): String = s"$appUrl/$taxYear/employer-name?employmentId="
   def employerPayeReferenceUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-paye-reference?employmentId=$employmentId"
   def employmentStartDateUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId"
-  def stillWorkingForUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/still-working-for-employer?employmentId=$employmentId"
+  def didYouLeaveUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/leave-employer?employmentId=$employmentId"
   def payrollIdUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/payroll-id?employmentId=$employmentId"
   def howMuchPayUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
   def howMuchTaxUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/uk-tax?employmentId=$employmentId"

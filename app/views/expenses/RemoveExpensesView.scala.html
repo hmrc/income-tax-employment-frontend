@@ -15,7 +15,6 @@
  *@
 
 @import controllers.employment.routes.EmploymentSummaryController
-@import controllers.expenses.routes.RemoveExpensesController
 @import views.html.templates.Layout
 @import views.html.templates.helpers.{Heading, Link}
 
@@ -36,7 +35,7 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
     @formWithCsrf(action = controllers.expenses.routes.RemoveExpensesController.submit(taxYear)) {
-        @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
+        @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
             <p class="govuk-body">@messages("expenses.removeExpenses.remove-paragraph")</p>
 

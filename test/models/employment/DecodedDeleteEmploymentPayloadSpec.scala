@@ -29,15 +29,15 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest {
       "produce valid json" in {
 
         val validJson: JsValue = Json.parse(
-          """{
+          s"""{
             |    "employmentData": {
             |      "employerName": "AMD infotech Ltd",
             |      "employerRef": "123/AZ12334",
             |      "employmentId": "ff4e1365-ad4f-406e-abdc-20c589d8c217",
             |      "payrollId": "abcd1234",
             |      "startDate": "2019-01-01",
-            |      "cessationDateQuestion": true,
-            |      "cessationDate": "2020-06-01",
+            |      "didYouLeaveQuestion": true,
+            |      "cessationDate": "${taxYearEOY-1}-06-01",
             |      "taxablePayToDate": 100,
             |      "totalTaxToDate": 100,
             |      "isUsingCustomerData": true
@@ -94,8 +94,8 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest {
             payrollId = Some("abcd1234"),
             employmentId = "ff4e1365-ad4f-406e-abdc-20c589d8c217",
             startDate = Some("2019-01-01"),
-            cessationDateQuestion = Some(true),
-            cessationDate = Some("2020-06-01"),
+            didYouLeaveQuestion = Some(true),
+            cessationDate = Some(s"${taxYearEOY-1}-06-01"),
             taxablePayToDate = Some(100),
             totalTaxToDate = Some(100),
             isUsingCustomerData = true

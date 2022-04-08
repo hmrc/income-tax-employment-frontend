@@ -31,6 +31,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
 
+//scalastyle:off
 class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employerName: String = "HMRC"
@@ -45,7 +46,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   private def cyaModel(employerName: String): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(
     employerName,
     employerRef = Some("123/12345"),
-    cessationDateQuestion = Some(true),
+    didYouLeaveQuestion = Some(true),
     currentDataIsHmrcHeld = true,
     payrollId = Some("12345"),
     taxablePayToDate = Some(5),
@@ -247,7 +248,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
   private val employmentDetailsWithCessationDate = anEmploymentUserData.copy(
     employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(
-      cessationDateQuestion = Some(true),
+      didYouLeaveQuestion = Some(true),
       cessationDate = Some(s"$taxYearEOY-12-12"),
       payrollId = Some("payrollId"))))
 
@@ -283,7 +284,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
           textOnPageCheck(forExample, startForExampleSelector, "forStart")
           inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "11")
           inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "11")
-          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, "2020")
+          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, s"${taxYearEOY-1}")
           textOnPageCheck(forExample, endForExampleSelector, "forEnd")
           inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "12")
           inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "12")
@@ -882,10 +883,10 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
           "the start date and the end dates are too recent i.e. after 5th April" which {
             lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "06",
-              EmploymentDatesForm.startAmountMonth -> "09",
+              EmploymentDatesForm.startAmountMonth -> "04",
               EmploymentDatesForm.startAmountYear -> taxYearEOY.toString,
-              EmploymentDatesForm.endAmountDay -> "07",
-              EmploymentDatesForm.endAmountMonth -> "09",
+              EmploymentDatesForm.endAmountDay -> "06",
+              EmploymentDatesForm.endAmountMonth -> "04",
               EmploymentDatesForm.endAmountYear -> taxYearEOY.toString)
 
             lazy val result: WSResponse = {
@@ -911,10 +912,10 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "06")
-            inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "09")
+            inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "04")
             inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, taxYearEOY.toString)
-            inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "07")
-            inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "09")
+            inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "06")
+            inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "04")
             inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, taxYearEOY.toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentDatesUrl(taxYearEOY, employmentId), continueButtonFormSelector)
@@ -1554,7 +1555,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               EmploymentDatesForm.startAmountMonth -> "03",
               EmploymentDatesForm.startAmountYear -> taxYearEOY.toString,
               EmploymentDatesForm.endAmountDay -> "06",
-              EmploymentDatesForm.endAmountMonth -> "06",
+              EmploymentDatesForm.endAmountMonth -> "04",
               EmploymentDatesForm.endAmountYear -> taxYearEOY.toString)
 
             lazy val result: WSResponse = {
@@ -1583,7 +1584,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "03")
             inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, taxYearEOY.toString)
             inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "06")
-            inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "06")
+            inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "04")
             inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, taxYearEOY.toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentDatesUrl(taxYearEOY, employmentId), continueButtonFormSelector)

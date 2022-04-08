@@ -255,7 +255,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -327,7 +327,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -448,7 +448,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -501,7 +501,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -554,7 +554,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false
@@ -637,7 +637,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                               employerName = "Whiterun Guards",
                               employerRef = Some("223/AB12399"),
                               startDate = Some(startDate),
-                              cessationDateQuestion = Some(false),
+                              didYouLeaveQuestion = Some(false),
                               taxablePayToDate = Some(3000.00),
                               totalTaxToDate = Some(300.00),
                               currentDataIsHmrcHeld = false

@@ -23,3 +23,8 @@ case class UserPriorDataRequest[T](employmentPriorData: AllEmploymentData,
                                    user: User,
                                    request: Request[T]
                                   ) extends WrappedRequest[T](request) with CommonAuthorisationRequest
+
+case class OptionalUserPriorDataRequest[T](employmentPriorData: Option[AllEmploymentData],
+                                           user: User,
+                                           request: Request[T]
+                                          ) extends WrappedRequest[T](request) with CommonAuthorisationRequest

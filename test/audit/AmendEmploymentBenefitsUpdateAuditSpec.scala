@@ -18,16 +18,16 @@ package audit
 
 import models.benefits.Benefits
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.{TaxYearHelper, UnitTestWithApp}
 
-class AmendEmploymentBenefitsUpdateAuditSpec extends UnitTestWithApp {
+class AmendEmploymentBenefitsUpdateAuditSpec extends UnitTestWithApp with TaxYearHelper {
 
   "writes" when {
     "passed a AmendEmploymentBenefitsUpdate model" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": 2020,
+             |  "taxYear": ${taxYearEOY-1},
              |  "userType": "individual",
              |  "nino": "AA12343AA",
              |  "mtditid": "mtditid",
@@ -69,7 +69,7 @@ class AmendEmploymentBenefitsUpdateAuditSpec extends UnitTestWithApp {
              |}""".stripMargin)
 
         //scalastyle:off magic.number
-        val auditModel = AmendEmploymentBenefitsUpdateAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = AmendEmploymentBenefitsUpdateAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
           priorEmploymentBenefitsData = Benefits(
             accommodation = Some(150.00),
             assets = Some(200.00),

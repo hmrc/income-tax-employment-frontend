@@ -23,8 +23,8 @@ import utils.UnitTestWithApp
 class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
 
   val fullJson: JsValue = Json.parse(
-    """{
-      |    "taxYear": 2021,
+    s"""{
+      |    "taxYear": $taxYearEOY,
       |    "userType": "individual",
       |    "nino": "AA12343AA",
       |    "mtditid": "mtditid",
@@ -38,7 +38,7 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
   )
 
   val fullAuditModel = DeleteEmploymentExpensesAudit(
-    2021, "individual", "AA12343AA", "mtditid",
+    taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       businessTravelCosts = None,
       jobExpenses = Some(100.01),
@@ -52,7 +52,7 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
   )
 
   val fullAuditModelWithExtraFields = DeleteEmploymentExpensesAudit(
-    2021, "individual", "AA12343AA", "mtditid",
+    taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       businessTravelCosts = Some(400),
       jobExpenses = Some(100.01),
@@ -66,8 +66,8 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
   )
 
   val jsonWithSomeFieldsUndefined: JsValue = Json.parse(
-    """{
-      |    "taxYear": 2021,
+    s"""{
+      |    "taxYear": $taxYearEOY,
       |    "userType": "individual",
       |    "nino": "AA12343AA",
       |    "mtditid": "mtditid",
@@ -78,7 +78,7 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
   )
 
   val auditModelWithSomeFieldsUndefined = DeleteEmploymentExpensesAudit(
-    2021, "individual", "AA12343AA", "mtditid",
+    taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       otherAndCapitalAllowances = Some(400.04)
     )
