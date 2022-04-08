@@ -57,7 +57,7 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
     override protected def executionContext: ExecutionContext = ec
 
     override protected def filter[A](request: AuthorisationRequest[A]): Future[Option[Result]] = Future.successful {
-      if (inYearUtil.inYear(taxYear)) {
+      if (inYearUtil.inYear(taxYear) || !appConfig.employmentEOYEnabled) {
         Some(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       } else {
         None

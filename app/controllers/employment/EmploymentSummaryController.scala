@@ -20,8 +20,7 @@ import actions.{ActionsProvider, AuthorisedAction}
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.{EmployerNameController, SelectEmployerController}
-import javax.inject.Inject
-import models.employment.{AllEmploymentData, LatestExpensesOrigin}
+import models.employment.AllEmploymentData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -29,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmploymentSummaryView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
@@ -46,15 +46,21 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
   def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
 
     val isInYear: Boolean = inYearAction.inYear(taxYear)
-    val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
-    val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
-    lazy val latestExpenses: Option[LatestExpensesOrigin] = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
-    lazy val doExpensesExist = latestExpenses.isDefined
+    if (!isInYear && !appConfig.employmentEOYEnabled) {
+      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    } else {
 
-    employmentData match {
-      case Seq() if isInYear && !doExpensesExist => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-      case _ => Ok(employmentSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
+      val priorData: Option[AllEmploymentData] = request.employmentPriorData
+
+      val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
+      lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
+      lazy val doExpensesExist = latestExpenses.isDefined
+
+      employmentData match {
+        case Seq() if isInYear && !doExpensesExist => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case _ => Ok(employmentSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
+      }
     }
   }
 
@@ -62,7 +68,7 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
 
     lazy val hasIgnoredEmployments = request.employmentPriorData.map(_.ignoredEmployments).getOrElse(Seq()).nonEmpty
 
-    val result = Redirect(if(hasIgnoredEmployments) SelectEmployerController.show(taxYear) else EmployerNameController.show(taxYear, UUID.randomUUID))
+    val result = Redirect(if (hasIgnoredEmployments) SelectEmployerController.show(taxYear) else EmployerNameController.show(taxYear, UUID.randomUUID))
 
     getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).fold(Future.successful(result))(employmentSessionService.clear(request.user, taxYear, _).flatMap {
       case Left(_) => Future.successful(errorHandler.internalServerError())

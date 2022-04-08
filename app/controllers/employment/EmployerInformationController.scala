@@ -27,7 +27,7 @@ import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerInformationView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerInformationController @Inject()(implicit val cc: MessagesControllerComponents,
                                               authAction: AuthorisedAction,
@@ -39,22 +39,26 @@ class EmployerInformationController @Inject()(implicit val cc: MessagesControlle
                                              ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
-      val isInYear = inYearAction.inYear(taxYear)
-      val source = if (isInYear) allEmploymentData.inYearEmploymentSourceWith(employmentId) else allEmploymentData.eoyEmploymentSourceWith(employmentId)
+    if (!inYearAction.inYear(taxYear) && !appConfig.employmentEOYEnabled) {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    } else {
+      employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
+        val isInYear = inYearAction.inYear(taxYear)
+        val source = if (isInYear) allEmploymentData.inYearEmploymentSourceWith(employmentId) else allEmploymentData.eoyEmploymentSourceWith(employmentId)
 
-      source match {
-        case Some(EmploymentSourceOrigin(source, _)) =>
-          val uglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.uglDeductionAmount).isDefined
-          val pglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.pglDeductionAmount).isDefined
-          val showNotification = !isInYear && !source.employmentDetailsSubmittable
+        source match {
+          case Some(EmploymentSourceOrigin(source, _)) =>
+            val uglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.uglDeductionAmount).isDefined
+            val pglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.pglDeductionAmount).isDefined
+            val showNotification = !isInYear && !source.employmentDetailsSubmittable
 
-          def studentLoansCheck: Boolean = uglExists || pglExists
+            def studentLoansCheck: Boolean = uglExists || pglExists
 
-          val (name, benefitsIsDefined, studentLoansIsDefined) = (source.employerName, source.employmentBenefits.isDefined,
-            studentLoansCheck)
-          Ok(employerInformationView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear, showNotification))
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            val (name, benefitsIsDefined, studentLoansIsDefined) = (source.employerName, source.employmentBenefits.isDefined,
+              studentLoansCheck)
+            Ok(employerInformationView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear, showNotification))
+          case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        }
       }
     }
   }

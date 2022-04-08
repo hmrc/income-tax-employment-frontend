@@ -40,12 +40,12 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
 
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
 
-  private def controller(mimic: Boolean = false) = new CheckEmploymentDetailsController()(
+  private def controller(mimic: Boolean = false, isEmploymentEOYEnabled: Boolean = true) = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     view,
     authorisedAction,
     inYearAction,
-    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic),
+    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled),
     mockEmploymentSessionService,
     mockCheckEmploymentDetailsService,
     ec,
@@ -175,7 +175,6 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
         redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYearEOY, "id").url
       }
       "a new employment is created and mimic api calls is on" in new TestWithAuth {
-
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYearEOY, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
@@ -184,12 +183,19 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
           mockCreateOrUpdateSessionData(Redirect(CheckYourBenefitsController.show(taxYearEOY, "id").url))
           (mockErrorHandler.internalServerError()(_: Request[_])).expects(*).returns(InternalServerError)
 
-          controller(true).submit(taxYearEOY, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+          controller(mimic = true).submit(taxYearEOY, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         }
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYearEOY, "id").url
       }
+    }
+
+    "redirect to Overview page when EOY and employmentEOYEnabled not enabled" in new TestWithAuth {
+      val result: Future[Result] = controller(isEmploymentEOYEnabled = false).submit(taxYearEOY, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
     }
   }
 }

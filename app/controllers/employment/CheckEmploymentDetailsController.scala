@@ -47,7 +47,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  checkEmploymentDetailsService: CheckEmploymentDetailsService,
                                                  ec: ExecutionContext,
                                                  errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper with Logging {
-
+  //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { employmentData =>
@@ -62,6 +62,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
+    } else if (!appConfig.employmentEOYEnabled) {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
@@ -69,7 +71,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             Future.successful(employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
           } else {
             prior match {
-              case Some(employment) => Future.successful {
+              case Some(_) => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
                 val showNotification = !cya.employment.employmentDetails.isSubmittable
@@ -89,32 +91,39 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
       }
     }
   }
+  //scalastyle:on
 
+  //scalastyle:off
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
-      case Left(result) => Future.successful(result)
-      case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
+    if (!inYearAction.inYear(taxYear) && !appConfig.employmentEOYEnabled) {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    } else {
+      employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
+        case Left(result) => Future.successful(result)
+        case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
 
-        employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_DETAILS) match {
-          case Left(NothingToUpdate) =>
-            logger.info("[CheckEmploymentDetailsController][submit] Nothing to update for employment details. Returning to employer information.")
-            Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
-          case Left(JourneyNotFinished) =>
-            //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
-            Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_DETAILS) match {
+            case Left(NothingToUpdate) =>
+              logger.info("[CheckEmploymentDetailsController][submit] Nothing to update for employment details. Returning to employer information.")
+              Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))
+            case Left(JourneyNotFinished) =>
+              //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
+              Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
 
-          case Right(model) =>
-            employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNRS)).flatMap {
-              case Left(result) => Future.successful(result)
-              case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId, cya)
-            }
-        }
+            case Right(model) =>
+              employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNRS)).flatMap {
+                case Left(result) => Future.successful(result)
+                case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId, cya)
+              }
+          }
 
-      case _ =>
-        logger.info("[CheckEmploymentDetailsController][submit] User has no cya data in order to submit. Redirecting to cya page show method.")
-        Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+        case _ =>
+          logger.info("[CheckEmploymentDetailsController][submit] User has no cya data in order to submit. Redirecting to cya page show method.")
+          Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+      }
     }
   }
+  //scalastyle:on
 
   private def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
                           prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {

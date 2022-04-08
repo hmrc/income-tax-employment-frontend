@@ -42,16 +42,14 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
 
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
 
-  private def controller(mimic: Boolean = false, slEnabled: Boolean = true) = new StudentLoansCYAController(
+  private def controller(mimic: Boolean = false, slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansCYAController(
     mockMessagesControllerComponents,
     view,
     mockStudentLoansCYAService,
     mockEmploymentSessionService,
     authorisedAction,
-    inYearAction,
-    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled),
-    ec
-  )
+    inYearAction)(appConfig = new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled,
+    isEmploymentEOYEnabled = isEmploymentEOYEnabled, taxYearErrorEnabled = taxYearErrorFeature), ec)
 
   private val employmentId = "223AB12399"
   val employerName: String = "Mishima Zaibatsu"
@@ -96,6 +94,26 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
       )
     )
   )
+
+  ".show" should {
+    "redirect to the overview page" when {
+      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
+          employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+      }
+
+      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+        val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
+          employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+      }
+    }
+  }
 
   ".submit" should {
     "return to employment information" when {
@@ -227,6 +245,24 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
         }
 
         status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "redirect to the overview page" when {
+      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
+          employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+      }
+
+      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+        val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
+          employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
       }
     }
   }

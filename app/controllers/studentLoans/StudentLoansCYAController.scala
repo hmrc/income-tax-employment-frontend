@@ -42,12 +42,12 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
                                           service: StudentLoansCYAService,
                                           employmentSessionService: EmploymentSessionService,
                                           authAction: AuthorisedAction,
-                                          inYearAction: InYearUtil,
-                                          implicit val appConfig: AppConfig,
-                                          implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
+                                          inYearAction: InYearUtil)
+                                         (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+  with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, showNotification) =>
         service.sendViewStudentLoansDeductionsAudit(request.user, taxYear, cya.toDeductions)
         Ok(studentLoansCYAView(taxYear, employmentId, cya, isCustomer, inYearAction.inYear(taxYear), showNotification))
@@ -57,8 +57,9 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
+  //scalastyle:off
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       def getResultFromResponse(returnedEmploymentId: Option[String], cya: EmploymentUserData): Future[Result] = {
         val log = "[StudentLoansCYAController][getResultFromResponse]"
         returnedEmploymentId match {
@@ -119,4 +120,5 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
       service.performSubmitNrsPayload(request.user, model, employmentId, prior)
     }
   }
+  //scalastyle:on
 }
