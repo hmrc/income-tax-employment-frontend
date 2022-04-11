@@ -14,22 +14,27 @@
  * limitations under the License.
  *@
 
-@import views.html.templates.Layout
+@import controllers.employment.routes.CheckEmploymentDetailsController
+@import controllers.studentLoans.routes.StudentLoansQuestionController
 @import models.employment.StudentLoansCYAModel
-@import utils.ViewUtils.{bigDecimalCurrency, ariaVisuallyHiddenText}
-@import views.html.templates.helpers.Heading
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.NotificationBanner
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
+@import utils.ViewUtils.{bigDecimalCurrency, ariaVisuallyHiddenText}
 
 @this(
-        layout: Layout,
-        govukSummaryList: GovukSummaryList,
-        heading: Heading,
-        button: Button,
-        govukInsetText : GovukInsetText,
-        formWithCsrf: FormWithCSRF
+    layout: Layout,
+    notificationBanner: NotificationBanner,
+    heading: Heading,
+    govukSummaryList: GovukSummaryList,
+    govukInsetText : GovukInsetText,
+    formWithCsrf: FormWithCSRF,
+    button: Button
 )
-@(taxYear: Int, employmentId: String, model: StudentLoansCYAModel, isCustomerHeld: Boolean, inYear: Boolean = false, isSingleEmployment: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+
+@(taxYear: Int, employmentId: String, model: StudentLoansCYAModel, isCustomerHeld: Boolean, inYear: Boolean = false, showNotification: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @agentOrIndividual = @{
     if(request.user.isAgent) "agent" else "individual"
@@ -41,17 +46,18 @@
 
 @summaryRow(key: String, text: Option[String], changeLink: Option[String]) = @{
     val keyMessage = messages(key)
+    val actions = if(inYear || showNotification) None else changeLink.map ( href => Actions(
+        items = Seq(ActionItem(
+            href = href,
+            content = HtmlContent("""<span aria-hidden="true">""" + messages("common.change") + "</span>"),
+            visuallyHiddenText = Some(s"Change ${keyMessage}")
+        ))
+    ))
+
     SummaryListRow(
         key = Key(content = Text(keyMessage), "govuk-!-width-one-third"),
         value = Value(text.fold(ariaVisuallyHiddenText(messages("common.notProvided"))){ textValue => HtmlContent(Text(bigDecimalCurrency(messages(textValue))).asHtml)}, "govuk-!-width-one-third"),
-        actions = if(inYear) None else changeLink.map ( href =>
-            Actions(
-                items = Seq(ActionItem(
-                    href = href,
-                    content = HtmlContent("""<span aria-hidden="true">""" + messages("common.change") + "</span>"),
-                    visuallyHiddenText = Some(s"Change ${keyMessage}")
-                ))
-            )),
+        actions = actions,
         classes = "govuk-!-width-one-third"
     )
 }
@@ -61,27 +67,37 @@
         if(model.uglDeduction) Some(messages("studentLoans.undergraduate")) else None,
         if(model.pglDeduction) Some(messages("studentLoans.postgraduate")) else None
     ).flatten.mkString(" " + messages("common.and") + " ")
-    
+
     if(message.nonEmpty) Some(message) else Some(messages("common.no"))
+}
+
+@bannerHtml = {
+    <p class="govuk-notification-banner__heading">@messages("studentLoans.bannerText")
+        <a class="govuk-notification-banner__link" href="@CheckEmploymentDetailsController.show(taxYear, employmentId).url">@messages("common.add.missing.employment.details")</a>
+    </p>
 }
 
 @layout(messages("studentLoans.title." + agentOrIndividual), taxYear = Some(taxYear)) {
 
+    @if(showNotification){
+        @notificationBanner(bannerHtml)
+    }
+
     @heading(messages("studentLoans.title." + agentOrIndividual), Some(messages("studentLoans.subheading", Seq((taxYear-1).toString, taxYear.toString): _*)), margin)
 
     @if(!isCustomerHeld) { <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoans.p."+agentOrIndividual)</p> }
-    
+
     @if(inYear) { @govukInsetText(InsetText(content = Text(messages("studentLoans.inset."+agentOrIndividual, taxYear.toString)))) }
-    
+
     @govukSummaryList(SummaryList(
         rows = Seq(
-            Some(summaryRow("studentLoans.slr", studentLoanRepaymentText, Some(controllers.studentLoans.routes.StudentLoansQuestionController.show(taxYear, employmentId).url))),
+            Some(summaryRow("studentLoans.slr", studentLoanRepaymentText, Some(StudentLoansQuestionController.show(taxYear, employmentId).url))),
             if(model.uglDeduction) Some(summaryRow("studentLoans.ura", model.uglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId).url))) else None,
             if(model.pglDeduction) Some(summaryRow("studentLoans.pra", model.pglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId).url))) else None
         ).flatten
     ))
-    
-    @if(inYear) {
+
+    @if(inYear || showNotification) {
             @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),
             href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
     } else {
@@ -89,7 +105,6 @@
             @button(alternativeText = "common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
         }
     }
-
 }
 
 @{

@@ -47,12 +47,13 @@ class EmployerInformationController @Inject()(implicit val cc: MessagesControlle
         case Some(EmploymentSourceOrigin(source, _)) =>
           val uglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.uglDeductionAmount).isDefined
           val pglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.pglDeductionAmount).isDefined
+          val showNotification = !isInYear && !source.employmentDetailsSubmittable
 
           def studentLoansCheck: Boolean = uglExists || pglExists
 
           val (name, benefitsIsDefined, studentLoansIsDefined) = (source.employerName, source.employmentBenefits.isDefined,
             studentLoansCheck)
-          Ok(employerInformationView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear))
+          Ok(employerInformationView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear, showNotification))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }

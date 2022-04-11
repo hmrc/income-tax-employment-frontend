@@ -26,7 +26,7 @@ import controllers.employment.routes.{CheckYourBenefitsController, EmployerInfor
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.studentLoans.routes.StudentLoansCYAController
 import models.AuthorisationRequest
-import models.benefits.Benefits
+import models.benefits.{Benefits, BenefitsViewModel}
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin, OptionalCyaAndPrior}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -66,28 +66,32 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
               case Some(benefits) =>
                 val auditModel = ViewEmploymentBenefitsAudit(taxYear, request.user.affinityGroup.toLowerCase, request.user.nino, request.user.mtditid, benefits)
                 auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
-                Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, isUsingCustomerData = false, isInYear = true))
+                Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), isUsingCustomerData = false, isInYear = true, showNotification = false))
             }
           case None => redirect
         }
       }
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId, redirectWhenNoPrior = true) { (cya, prior) =>
-        cya match {
-          case Some(cya) =>
+        (cya, prior) match {
+          case (_, Some(allEmploymentData)) if allEmploymentData.eoyEmploymentSourceWith(employmentId).exists(!_.employmentSource.employmentDetailsSubmittable) =>
+            val sourceOrigin = allEmploymentData.eoyEmploymentSourceWith(employmentId).get
+            val benefits = sourceOrigin.employmentSource.employmentBenefits.flatMap(_.benefits).getOrElse(Benefits())
+            Future.successful(Ok(checkYourBenefitsView(taxYear, employmentId, sourceOrigin.employmentSource.employerName, benefits.toBenefitsViewModel(sourceOrigin.isCustomerData), sourceOrigin.isCustomerData, isInYear = false, showNotification = true)))
+          case (Some(cya), _) =>
             cya.employment.employmentBenefits match {
               case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
-              case Some(benefits) => Future(Ok(checkYourBenefitsView(
+              case Some(benefits: BenefitsViewModel) => Future(Ok(checkYourBenefitsView(
                 taxYear,
                 employmentId,
                 cya.employment.employmentDetails.employerName,
                 benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
-                isSingleEmployment = false,
                 isUsingCustomerData = benefits.isUsingCustomerData,
-                isInYear = false
+                isInYear = false,
+                showNotification = false
               )))
             }
-          case None => prior.get.eoyEmploymentSourceWith(employmentId) match {
+          case (None, _) => prior.get.eoyEmploymentSourceWith(employmentId) match {
             case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
               employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData),
                 isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans)(errorHandler.internalServerError())({
@@ -95,7 +99,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                 benefits match {
                   case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
                   case Some(benefits) =>
-                    Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), isSingleEmployment = false, isUsingCustomerData, isInYear = false))
+                    Ok(checkYourBenefitsView(taxYear, employmentId, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), isUsingCustomerData, isInYear = false, showNotification = false))
                 }
               })
             case None =>
@@ -109,11 +113,9 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-
     employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
       case Left(result) => Future.successful(result)
       case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
-
         employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_BENEFITS) match {
           case Left(NothingToUpdate) =>
             getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {

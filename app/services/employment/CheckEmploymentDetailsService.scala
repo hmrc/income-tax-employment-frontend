@@ -18,14 +18,14 @@ package services.employment
 
 import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import javax.inject.Inject
+import models.User
 import models.employment._
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.{AuthorisationRequest, User}
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsService @Inject()(nrsService: NrsService, auditService: AuditService) {
@@ -79,20 +79,11 @@ class CheckEmploymentDetailsService @Inject()(nrsService: NrsService, auditServi
     }
   }
 
-  def isSingleEmploymentAndAudit(user: User,
-                                 employmentDetails: EmploymentDetailsViewModel,
-                                 taxYear: Int,
-                                 isInYear: Boolean,
-                                 allEmploymentData: Option[AllEmploymentData])
-                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+  def sendViewEmploymentDetailsAudit(user: User,
+                                     employmentDetails: EmploymentDetailsViewModel,
+                                     taxYear: Int)
+                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
     auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
-
-    val employmentSource = allEmploymentData match {
-      case Some(allEmploymentData) => if (isInYear) allEmploymentData.latestInYearEmployments else allEmploymentData.latestEOYEmployments
-      case None => Seq[EmploymentSource]()
-    }
-
-    employmentSource.length <= 1
   }
 }

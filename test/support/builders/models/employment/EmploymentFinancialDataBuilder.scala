@@ -21,10 +21,12 @@ import support.builders.models.employment.EmploymentBenefitsBuilder.anEmployment
 import support.builders.models.employment.EmploymentDataBuilder.{aLatestCustomerSubmittedEmploymentData, anEmploymentData}
 
 object EmploymentFinancialDataBuilder {
+
   val aHmrcEmploymentFinancialData: EmploymentFinancialData = EmploymentFinancialData(
     employmentData = Some(anEmploymentData),
     employmentBenefits = Some(anEmploymentBenefits)
   )
+
   val aCustomerEmploymentFinancialData: EmploymentFinancialData = EmploymentFinancialData(
     employmentData = Some(aLatestCustomerSubmittedEmploymentData),
     employmentBenefits = Some(anEmploymentBenefits)

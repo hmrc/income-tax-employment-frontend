@@ -19,9 +19,8 @@ package controllers.studentLoans
 import common.SessionValues
 import models.IncomeTaxUserData
 import models.employment._
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,19 +30,24 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
+import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import utils.PageUrls._
-import utils.{EmploymentDatabaseHelper, IntegrationTest, TaxYearHelper, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
 
 class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val employmentId: String = "1234567890-0987654321"
+  private val employmentId: String = "1234567890-0987654321"
+  private val startDate = s"$taxYear-04-01"
+  private val submittedOnDate = s"$taxYear-01-01"
+  private val default = "{}"
 
-  def url(taxYearUnique: Int): String = fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
-  val startDate = s"$taxYear-04-01"
-  val submittedOnDate = s"$taxYear-01-01"
-  val default = "{}"
+  private def url(taxYearUnique: Int): String = fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
 
   private def stubEmploymentPost(request: CreateUpdateEmploymentRequest, taxYear: Int, employmentIdResponse: String = default) =
     stubPostWithHeadersCheck(
@@ -65,6 +69,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   trait CommonExpectedResults {
     val isEndOfYear: Boolean
     val hasPrior: Boolean
+    val bannerParagraph: String
+    val bannerLinkText: String
     val title: String
     val caption: String
     val paragraphText: String
@@ -87,6 +93,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsEnglishEOY extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
+    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
+    override val bannerLinkText: String = "add missing employment details."
     override val title: String = "Check your student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText: String = "Your student loan repayment details are based on the information we already hold about you."
@@ -110,6 +118,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val isEndOfYear: Boolean = false
     override lazy val hasPrior: Boolean = false
 
+    override val bannerParagraph: String = ""
+    override val bannerLinkText: String = ""
     override lazy val title: String = "Check your student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
@@ -132,6 +142,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsEnglishEOYAgent extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
+    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
+    override val bannerLinkText: String = "add missing employment details."
     override val title: String = "Check your client’s student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText: String = "Your client’s student loan repayment details are based on the information we already hold about them."
@@ -155,6 +167,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val isEndOfYear: Boolean = false
     override lazy val hasPrior: Boolean = false
 
+    override val bannerParagraph: String = ""
+    override val bannerLinkText: String = ""
     override lazy val title: String = "Check your client’s student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
@@ -175,15 +189,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object Selectors {
+    val bannerParagraphSelector: String = ".govuk-notification-banner__heading"
+    val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val paragraphSelector = ".govuk-body"
+    val insetText: String = ".govuk-inset-text"
 
     def column1Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__key"
 
     def column2Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__value"
 
     def column3Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__actions > .govuk-link"
-
-    val insetText: String = ".govuk-inset-text"
   }
 
   override val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
@@ -213,9 +228,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   ".show" should {
-
     "immediately redirect the user to the overview page" when {
-
       "the student loans feature switch is off" in {
         val request = FakeRequest("GET", studentLoansCyaPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
 
@@ -234,10 +247,9 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val taxYearInUse = if(scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
+      val taxYearInUse = if (scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
 
       s"render the page for $inYearText, for an $affinityText when there is $prior" when {
-
         "there is CYA data in session" which {
           import scenarioData.commonExpectedResults._
 
@@ -245,27 +257,27 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearInUse,
-                          employmentId, isPriorSubmission = hasPrior, hasPriorBenefits = false, hasPriorStudentLoans = true,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-                            ))
-                          )
-                        ))
-            userDataStub(IncomeTaxUserData(), nino, if(isEndOfYear) taxYearEOY else taxYear)
+              sessionId,
+              mtditid,
+              nino,
+              taxYearInUse,
+              employmentId, isPriorSubmission = hasPrior, hasPriorBenefits = false, hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                ))
+              )
+            ))
+            userDataStub(IncomeTaxUserData(), nino, if (isEndOfYear) taxYearEOY else taxYear)
 
             urlGet(url(taxYearInUse), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearInUse)))
           }
@@ -278,7 +290,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
 
           answerRowInYearOrEndOfYear(questionStudentLoan, answerStudentLoan, hiddenTextStudentLoan, studentLoansQuestionPage(taxYearInUse, employmentId), 1, isEndOfYear)
-          answerRowInYearOrEndOfYear(questionUndergraduateAmount, "£1,000.22", hiddenTextUndergraduate, studentLoansUglAmountUrl(taxYearInUse, employmentId),2, isEndOfYear)
+          answerRowInYearOrEndOfYear(questionUndergraduateAmount, "£1,000.22", hiddenTextUndergraduate, studentLoansUglAmountUrl(taxYearInUse, employmentId), 2, isEndOfYear)
           answerRowInYearOrEndOfYear(questionPostGraduateAmount, "£3,000.22", hiddenTextPostgraduate, pglAmountUrl(taxYearInUse, employmentId), 3, isEndOfYear)
 
           if (!isEndOfYear) {
@@ -289,6 +301,43 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         }
       }
 
+      if (scenarioData.commonExpectedResults.isEndOfYear && scenarioData.commonExpectedResults.hasPrior) {
+        s"render page for EOY when not submittable for an $affinityText" when {
+          import scenarioData.commonExpectedResults._
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            val employmentData = anEmploymentData.copy(pay = None)
+            val hmrcEmploymentSource = aHmrcEmploymentSource.copy(employmentId = employmentId,
+              hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentData))))
+            userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource)))), nino, if (isEndOfYear) taxYearEOY else taxYear)
+            urlGet(url(taxYearInUse), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearInUse)))
+          }
+
+          implicit val document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a Notification banner" which {
+            textOnPageCheck(scenarioData.commonExpectedResults.bannerParagraph, Selectors.bannerParagraphSelector)
+            linkCheck(scenarioData.commonExpectedResults.bannerLinkText, Selectors.bannerLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+          }
+
+          titleCheck(title)
+          h1Check(title)
+          captionCheck(caption)
+          if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
+
+          textOnPageCheck("Student loan repayments", Selectors.column1Selector(1))
+          textOnPageCheck("Undergraduate and Postgraduate", Selectors.column2Selector(1))
+          textOnPageCheck("Undergraduate repayments amount", Selectors.column1Selector(2))
+          textOnPageCheck("£100", Selectors.column2Selector(2))
+          textOnPageCheck("Postgraduate repayments amount", Selectors.column1Selector(3))
+          textOnPageCheck("£200", Selectors.column2Selector(3))
+
+          buttonCheck("Return to employer")
+        }
+      }
+
       s"redirect the user to the select student loans contributions for $inYearText for an $affinityText when there is $prior" when {
 
         if (scenarioData.commonExpectedResults.hasPrior) {
@@ -296,10 +345,9 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             lazy val result = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(scenarioData.isAgent)
+              val hmrcEmploymentFinancialData = aHmrcEmploymentFinancialData.copy(employmentData = Some(anEmploymentData.copy(deductions = None)))
               userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
-                Seq(HmrcEmploymentSource(
-                  employmentId, "Whiterun Guards", None, None, None, None, None, None, None, None
-                )), None,
+                Seq(aHmrcEmploymentSource.copy(employmentId = employmentId, employerName = "Whiterun Guards", hmrcEmploymentFinancialData = Some(hmrcEmploymentFinancialData))), None,
                 Seq(), None
               ))), nino, taxYearInUse)
 
@@ -317,28 +365,26 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearInUse,
-                          employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = None
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYearInUse,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = None
+              )
+            ))
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
-              Seq(HmrcEmploymentSource(
-                employmentId, "Whiterun Guards", None, None, None, None, None, None, None, None
-              )), None,
+              Seq(aHmrcEmploymentSource.copy(employmentId = employmentId, employerName = "Whiterun Guards")), None,
               Seq(), None
             ))), nino, taxYearInUse)
 
@@ -349,7 +395,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
           result.headers("Location").headOption shouldBe Some(studentLoansQuestionPage(taxYearInUse, employmentId))
         }
-
       }
 
       s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior" when {
@@ -371,13 +416,10 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
       }
     }
-
   }
 
   ".submit" should {
-
     "immediately redirect the user to the overview page" when {
-
       "the student loans feature switch is off" in {
         val request = FakeRequest("POST", studentLoansCyaPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
 
@@ -438,26 +480,26 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearEOY,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
-                            ))
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
+                ))
+              )
+            ))
             userDataStub(incomeTaxUserData, nino, taxYearEOY)
             stubEmploymentPost(createUpdateRequest, taxYearEOY)
 
@@ -491,26 +533,26 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearEOY,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
-                            ))
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
+                ))
+              )
+            ))
             userDataStub(incomeTaxUserData, nino, taxYearEOY)
             stubEmploymentPost(createUpdateRequest, taxYearEOY)
 
@@ -544,26 +586,26 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearEOY,
-                          employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(2600.00), pglDeduction = true, Some(4001.00)
-                            ))
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYearEOY,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2600.00), pglDeduction = true, Some(4001.00)
+                ))
+              )
+            ))
 
             val data = incomeTaxUserData.copy(
               employment = incomeTaxUserData.employment.map(
@@ -627,26 +669,26 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             wireMockServer.resetAll()
             authoriseIndividual()
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYearEOY,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
-                            ))
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
+                ))
+              )
+            ))
             userDataStub(incomeTaxUserData, nino, taxYearEOY)
             stubEmploymentPostFailure(createUpdateRequest, taxYearEOY)
 

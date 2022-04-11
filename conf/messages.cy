@@ -11,6 +11,7 @@ service.name = Update and submit an Income Tax Return
 
 common.account-details = account details
 common.account = account
+common.add.missing.employment.details = add missing employment details.
 common.aDifferentAmount = A different amount
 common.back = Back
 common.benefits = Benefits
@@ -43,6 +44,7 @@ common.saveAndContinue = Save and continue
 common.status.cannotUpdate = Cannot update
 common.status.notStarted = Not started
 common.status.updated = Updated
+common.status.toDo = To do
 common.studentLoans = Student loans
 common.thisIncludes = This includes things like:
 common.update = Update
@@ -109,6 +111,7 @@ timeout.p1 = We did not save your answers.
 employment.employment.details.label = Employment Details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 employment.employmentDetails.heading.individual = Check your employment details
+employment.employmentInfo.you.must = You must
 employment.employmentInfo.buttonText = Return to employment summary
 employment.employerInformation.title = Employer information
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
@@ -155,6 +158,7 @@ employment.unignoreEmployment.agent = Select your client’s employer or add a n
 
 #################       Check Employment details messages        ########################################
 
+employment.employmentDetails.bannerHeading = You must add missing employment details:
 employment.employmentDetails.closeCompany =  Close company
 employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.content.agent = Your client’s employment details are based on the details we already hold about them.
@@ -420,6 +424,7 @@ checkYourBenefits.assetTransfers = Assets to keep
 checkYourBenefits.assetTransfersAmount.hiddenText.agent = Change the amount your client got for assets to keep as an employment benefit from this company
 checkYourBenefits.assetTransfersAmount.hiddenText.individual = Change the amount you got for assets to keep as an employment benefit from this company
 checkYourBenefits.assetTransfersAmount = Amount for assets to keep
+checkYourBenefits.bannerText = You cannot update employment benefits until you
 checkYourBenefits.beneficialLoans.hiddenText.agent = Change if your client got beneficial loans as an employment benefit from this company
 checkYourBenefits.beneficialLoans.hiddenText.individual = Change if you got beneficial loans as an employment benefit from this company
 checkYourBenefits.beneficialLoans = Beneficial loans
@@ -1315,6 +1320,7 @@ expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to 
 
 #####################    Check your Student Loans messages    #####################
 
+studentLoans.bannerText = You cannot update student loans until you
 studentLoans.title.individual = Check your student loan repayment details
 studentLoans.title.agent = Check your client’s student loan repayment details
 studentLoans.slr = Student loan repayments

@@ -30,7 +30,7 @@ import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAppConfig, MockAuditService, MockCheckYourBenefitsService, MockEmploymentSessionService, MockErrorHandler}
+import support.mocks._
 import utils.UnitTestWithApp
 import views.html.employment.CheckYourBenefitsView
 
@@ -97,7 +97,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     "return a result when all data is in Session" which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, employmentId, employerName, aBenefitsViewModel, isSingleEmployment = true, isUsingCustomerData = false, isInYear = true)))
+          mockFind(taxYear, Ok(view(taxYear, employmentId, employerName, aBenefitsViewModel, isUsingCustomerData = false, isInYear = true, showNotification = true)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -111,7 +111,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(taxYear, employmentId, employerName, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
-            isSingleEmployment = false, isUsingCustomerData = true, isInYear = false)))
+            isUsingCustomerData = true, isInYear = false, showNotification = false)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

@@ -14,24 +14,33 @@
  * limitations under the License.
  *@
 
-@import views.html.templates.Layout
+@import controllers.employment.routes.EmployerPayAmountController
+@import controllers.employment.routes.EmployerPayrollIdController
+@import controllers.employment.routes.EmployerStartDateController
+@import controllers.employment.routes.EmploymentDatesController
+@import controllers.employment.routes.EmploymentTaxController
+@import controllers.employment.routes.PayeRefController
+@import models.employment.EmploymentDetailsViewModel
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
-@import models.employment.EmploymentDetailsViewModel
-@import utils.ViewUtils._
+@import views.html.templates.helpers.Link
+@import views.html.templates.helpers.NotificationBanner
+@import views.html.templates.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-
+@import utils.ViewUtils._
 
 @this(
-        layout: Layout,
-        formWithCSRF: FormWithCSRF,
-        button: Button,
-        heading: Heading,
-        govukSummaryList: GovukSummaryList,
-        govukInsetText: GovukInsetText,
-        govUkButton: GovukButton
+    layout: Layout,
+    notificationBanner: NotificationBanner,
+    heading: Heading,
+    govukSummaryList: GovukSummaryList,
+    govukInsetText: GovukInsetText,
+    formWithCSRF: FormWithCSRF,
+    button: Button,
+    link: Link
 )
-@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, isSingleEmployment: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+
+@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, showNotification: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages(s"employment.employmentDetails.heading.${if(request.user.isAgent) "agent" else "individual"}")
@@ -41,7 +50,38 @@
     if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-3" else "govuk-!-margin-bottom-5"
 }
 
+@bannerHtml(items: Seq[Html]) = {
+    <p class="govuk-notification-banner__heading">@messages("employment.employmentDetails.bannerHeading")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        @for(item <- items){
+            <li>@item</li>
+        }
+    </ul>
+}
+
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
+
+    @if(showNotification)@{
+        val missingEmployerRef = if (employmentDetails.employerRef.isEmpty){
+            Some(link(PayeRefController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.payeRef", Some("paye-ref-link")))
+        } else None
+        val missingStartDate = if (employmentDetails.startDate.isEmpty){
+            if(!employmentDetails.didYouLeaveQuestion.contains(false)) Some(link(EmploymentDatesController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.employmentDates", Some("employment-dates-link")))
+            else Some(link(EmployerStartDateController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.startDate", Some("employer-start-date-link")))
+        } else None
+        val missingPayrollId = if (employmentDetails.payrollId.isEmpty){
+            Some(link(EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.payrollId", Some("employer-payroll-id-link")))
+        } else None
+        val missingTaxablePayToDate = if (employmentDetails.taxablePayToDate.isEmpty) {
+            Some(link(EmployerPayAmountController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.payReceived", Some("employer-pay-amount-link")))
+        } else None
+        val missingTotalTaxToDate = if (employmentDetails.totalTaxToDate.isEmpty){
+            Some(link(EmploymentTaxController.show(taxYear, employmentDetails.employmentId).url, "employment.employmentDetails.totalTaxToDate", Some("employment-tax-link")))
+        } else None
+
+        val missingDataItems = Seq(missingEmployerRef, missingStartDate, missingPayrollId, missingTaxablePayToDate, missingTotalTaxToDate).flatten
+        notificationBanner(bannerHtml(missingDataItems))
+    }
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
@@ -56,9 +96,6 @@
     }
 
     @{
-
-        val employmentTaxCall = controllers.employment.routes.EmploymentTaxController.show(taxYear, employmentDetails.employmentId)
-
         val msgKeyGeneric = "employment.employmentDetails"
 
         val employerName = EmploymentDataForView(
@@ -68,6 +105,13 @@
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
+        val payeRef = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payeRef"),
+            employmentDetails.employerRef,
+            PayeRefController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
+        )
+
         val didYouLeave = EmploymentDataForView(
             messages(s"$msgKeyGeneric.didYouLeave"),
             Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
@@ -75,56 +119,52 @@
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent), employmentDetails.employerName)
         )
 
-        val employmentStartDate = EmploymentDataForView(
-            messages(s"$msgKeyGeneric.startDate"),
-            employmentDetails.startDate.flatMap(dateFormatter),
-            controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
-        )
-
-        val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
-        employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
-        controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent)))
-
-        val datesLineItemToUse = if(employmentDetails.didYouLeaveQuestion.contains(true)) employmentDates else employmentStartDate
-
-        val payeRef = EmploymentDataForView(
-            messages(msgKeyGeneric + ".payeRef"),
-            employmentDetails.employerRef,
-            controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
-        )
+        val employmentDates = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
+            EmploymentDataForView(
+                messages(s"$msgKeyGeneric.employmentDates"),
+                employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+                EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
+                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent))
+            )
+        } else {
+            EmploymentDataForView(
+                messages(s"$msgKeyGeneric.startDate"),
+                employmentDetails.startDate.flatMap(dateFormatter),
+                EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
+            )
+        }
 
         val payrollId = EmploymentDataForView(
             messages(msgKeyGeneric + ".payrollId"),
             employmentDetails.payrollId,
-            controllers.employment.routes.EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
+            EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.payrollId")
         )
 
         val payReceived = EmploymentDataForView(
             messages(msgKeyGeneric + ".payReceived"),
             employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
+            EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", request.user.isAgent), employmentDetails.employerName)
         )
 
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            employmentTaxCall,
+            EmploymentTaxController.show(taxYear, employmentDetails.employmentId),
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", request.user.isAgent))
         )
 
-        val employmentDataFields = List(
+        val employmentDataFields = Seq(
             employerName,
             payeRef,
             didYouLeave,
-            datesLineItemToUse,
+            employmentDates,
             payrollId,
             payReceived,
-            totalTaxToDate)
+            totalTaxToDate
+        )
 
         govukSummaryList(
             SummaryList(
@@ -134,12 +174,17 @@
                             key = HtmlContent(fieldHeading),
                             value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
                             keyClasses = "govuk-!-width-two-thirds",
-                            actions = if(!isInYear) Seq((changeLink, messages("common.change"), Some(hiddenText))) else Seq.empty
+                            actions = if(!isInYear) {
+                                mayBeFieldValue
+                                    .map(_ => Seq((changeLink, messages("common.change"), Some(hiddenText))))
+                                    .getOrElse(Seq((changeLink, messages("common.add"), Some(hiddenText))))
+                            } else Seq.empty
                         )
                 }
             )
         )
     }
+
     @if(!isInYear){
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))

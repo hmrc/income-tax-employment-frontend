@@ -19,7 +19,7 @@ package controllers.employment
 import common.SessionValues
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel}
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{Deductions, EmploymentBenefits}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -35,6 +35,7 @@ import play.api.test.Helpers.route
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
@@ -49,7 +50,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId = "employmentId"
 
   private lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
-    submittedOn = s"${taxYearEOY-1}-02-12",
+    submittedOn = s"${taxYearEOY - 1}-02-12",
     benefits = Some(Benefits(
       van = Some(3.00),
       vanFuel = Some(4.00),
@@ -58,6 +59,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   ))
 
   object Selectors {
+    val bannerParagraphSelector: String = ".govuk-notification-banner__heading"
+    val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val p1 = "#main-content > div > div > p.govuk-body"
     val p2 = "#main-content > div > div > div.govuk-inset-text"
     val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
@@ -147,8 +150,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   trait CommonExpectedResults {
+
     def expectedCaption(year: Int = taxYear): String
 
+    val bannerParagraph: String
+    val bannerLinkText: String
     val employerName: String
     val changeText: String
     val vehicleHeader: String
@@ -234,6 +240,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(year: Int = taxYear): String = s"Employment benefits for 6 April ${year - 1} to 5 April $year"
 
+    val bannerParagraph: String = "You cannot update employment benefits until you add missing employment details."
+    val bannerLinkText: String = "add missing employment details."
     val employerName: String = "maggie"
     val changeText: String = "Change"
     val vehicleHeader = "Vehicles, fuel and mileage"
@@ -319,6 +327,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(year: Int = taxYear): String = s"Employment benefits for 6 April ${year - 1} to 5 April $year"
 
+    val bannerParagraph: String = "You cannot update employment benefits until you add missing employment details."
+    val bannerLinkText: String = "add missing employment details."
     val employerName: String = "maggie"
     val changeText: String = "Change"
     val vehicleHeader = "Vehicles, fuel and mileage"
@@ -1038,6 +1048,173 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
         }
 
+        "return a fully populated page without links when EOY and non submittable prior data exists" which {
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            val employmentData = anEmploymentData.copy(pay = None)
+            val hmrcEmploymentSource = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(employmentData))))
+            userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource)))), nino, taxYearEOY)
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+
+          implicit def documentSupplier: () => Document = () => document
+
+          "has a Notification banner" which {
+            textOnPageCheck(user.commonExpectedResults.bannerParagraph, bannerParagraphSelector)
+            linkCheck(user.commonExpectedResults.bannerLinkText, bannerLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+          }
+
+          titleCheck(specific.expectedTitle)
+          h1Check(specific.expectedH1)
+          captionCheck(common.expectedCaption(taxYearEOY))
+          textOnPageCheck(specific.expectedP1, Selectors.p1)
+          elementsNotOnPageCheck(changeLinkCssSelector)
+          textOnPageCheck(common.employerName, fieldHeaderSelector(4))
+          textOnPageCheck(common.benefitsReceived, fieldNameSelector(5, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(5, 1), "for benefits question")
+          textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(6))
+          textOnPageCheck(common.carSubheading, fieldNameSelector(7, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 1), "for vehicles section question")
+          textOnPageCheck(common.companyCar, fieldNameSelector(7, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 2), "for carQuestion")
+          textOnPageCheck(common.companyCarAmount, fieldNameSelector(7, 3))
+          textOnPageCheck("£1.23", fieldAmountSelector(7, 3))
+          textOnPageCheck(common.fuelForCompanyCar, fieldNameSelector(7, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 4), "for carFuelQuestion")
+          textOnPageCheck(common.fuelForCompanyCarAmount, fieldNameSelector(7, 5))
+          textOnPageCheck("£2", fieldAmountSelector(7, 5))
+          textOnPageCheck(common.companyVan, fieldNameSelector(7, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 6), "for vanQuestion")
+          textOnPageCheck(common.companyVanAmount, fieldNameSelector(7, 7))
+          textOnPageCheck("£3", fieldAmountSelector(7, 7))
+          textOnPageCheck(common.fuelForCompanyVan, fieldNameSelector(7, 8))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 8), "for vanFuelQuestion")
+          textOnPageCheck(common.fuelForCompanyVanAmount, fieldNameSelector(7, 9))
+          textOnPageCheck("£4", fieldAmountSelector(7, 9))
+          textOnPageCheck(common.mileageBenefit, fieldNameSelector(7, 10))
+          textOnPageCheck("Yes", fieldAmountSelector(7, 10), "for mileageQuestion")
+          textOnPageCheck(common.mileageBenefitAmount, fieldNameSelector(7, 11))
+          textOnPageCheck("£5", fieldAmountSelector(7, 11))
+          textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(8))
+          textOnPageCheck(common.accommodationSubheading, fieldNameSelector(9, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(9, 1), "for accommodation section question")
+          textOnPageCheck(common.accommodation, fieldNameSelector(9, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(9, 2), "for accommodationQuestion")
+          textOnPageCheck(common.accommodationAmount, fieldNameSelector(9, 3))
+          textOnPageCheck("£6", fieldAmountSelector(9, 3))
+          textOnPageCheck(common.qualifyingRelocationCosts, fieldNameSelector(9, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(9, 4), "for qualifyingRelocationExpensesQuestion")
+          textOnPageCheck(common.qualifyingRelocationCostsAmount, fieldNameSelector(9, 5))
+          textOnPageCheck("£7", fieldAmountSelector(9, 5))
+          textOnPageCheck(common.nonQualifyingRelocationCosts, fieldNameSelector(9, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(9, 6), "for nonQualifyingRelocationExpensesQuestion")
+          textOnPageCheck(common.nonQualifyingRelocationCostsAmount, fieldNameSelector(9, 7))
+          textOnPageCheck("£8", fieldAmountSelector(9, 7))
+          textOnPageCheck(common.travelHeader, fieldHeaderSelector(10))
+          textOnPageCheck(common.travelSubheading, fieldNameSelector(11, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(11, 1), "for travel section question")
+          textOnPageCheck(common.travelAndSubsistence, fieldNameSelector(11, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(11, 2), "for travelAndSubsistenceQuestion")
+          textOnPageCheck(common.travelAndSubsistenceAmount, fieldNameSelector(11, 3))
+          textOnPageCheck("£9", fieldAmountSelector(11, 3))
+          textOnPageCheck(common.personalCosts, fieldNameSelector(11, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(11, 4), "for personalIncidentalExpensesQuestion")
+          textOnPageCheck(common.personalCostsAmount, fieldNameSelector(11, 5))
+          textOnPageCheck("£10", fieldAmountSelector(11, 5))
+          textOnPageCheck(common.entertainment, fieldNameSelector(11, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(11, 6), "for entertainingQuestion")
+          textOnPageCheck(common.entertainmentAmount, fieldNameSelector(11, 7))
+          textOnPageCheck("£11", fieldAmountSelector(11, 7))
+          textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(12))
+          textOnPageCheck(common.utilitiesSubheading, fieldNameSelector(13, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(13, 1), "for utilities section question")
+          textOnPageCheck(common.telephone, fieldNameSelector(13, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(13, 2), "for telephoneQuestion")
+          textOnPageCheck(common.telephoneAmount, fieldNameSelector(13, 3))
+          textOnPageCheck("£12", fieldAmountSelector(13, 3))
+          textOnPageCheck(common.servicesProvided, fieldNameSelector(13, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(13, 4), "for employerProvidedServicesQuestion")
+          textOnPageCheck(common.servicesProvidedAmount, fieldNameSelector(13, 5))
+          textOnPageCheck("£13", fieldAmountSelector(13, 5))
+          textOnPageCheck(common.profSubscriptions, fieldNameSelector(13, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(13, 6), "for employerProvidedProfessionalSubscriptionsQuestion")
+          textOnPageCheck(common.profSubscriptionsAmount, fieldNameSelector(13, 7))
+          textOnPageCheck("£14", fieldAmountSelector(13, 7))
+          textOnPageCheck(common.otherServices, fieldNameSelector(13, 8))
+          textOnPageCheck("Yes", fieldAmountSelector(13, 8), "for serviceQuestion")
+          textOnPageCheck(common.otherServicesAmount, fieldNameSelector(13, 9))
+          textOnPageCheck("£15", fieldAmountSelector(13, 9))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14))
+          textOnPageCheck(common.medicalSubheading, fieldNameSelector(15, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(15, 1), "for medical section question")
+          textOnPageCheck(common.medicalIns, fieldNameSelector(15, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(15, 2), "for medicalInsuranceQuestion")
+          textOnPageCheck(common.medicalInsAmount, fieldNameSelector(15, 3))
+          textOnPageCheck("£16", fieldAmountSelector(15, 3))
+          textOnPageCheck(common.nursery, fieldNameSelector(15, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(15, 4), "for nurseryPlacesQuestion")
+          textOnPageCheck(common.nurseryAmount, fieldNameSelector(15, 5))
+          textOnPageCheck("£17", fieldAmountSelector(15, 5))
+          textOnPageCheck(common.educational, fieldNameSelector(15, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(15, 6), "for educationalServicesQuestion")
+          textOnPageCheck(common.educationalAmount, fieldNameSelector(15, 7))
+          textOnPageCheck("£19", fieldAmountSelector(15, 7))
+          textOnPageCheck(common.beneficialLoans, fieldNameSelector(15, 8))
+          textOnPageCheck("Yes", fieldAmountSelector(15, 8), "for beneficialLoanQuestion")
+          textOnPageCheck(common.beneficialLoansAmount, fieldNameSelector(15, 9))
+          textOnPageCheck("£18", fieldAmountSelector(15, 9))
+          textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(16))
+          textOnPageCheck(common.incomeTaxSubheading, fieldNameSelector(17, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(17, 1), "for income tax section question")
+          textOnPageCheck(common.incomeTaxPaid, fieldNameSelector(17, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(17, 2), "for incomeTaxPaidByDirectorQuestion")
+          textOnPageCheck(common.incomeTaxPaidAmount, fieldNameSelector(17, 3))
+          textOnPageCheck("£20", fieldAmountSelector(17, 3))
+          textOnPageCheck(common.incurredCostsPaid, fieldNameSelector(17, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(17, 4), "for paymentsOnEmployeesBehalfQuestion")
+          textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(17, 5))
+          textOnPageCheck("£21", fieldAmountSelector(17, 5))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18))
+          textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(19, 1))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 1), "for reimbursements section question")
+          textOnPageCheck(common.nonTaxable, fieldNameSelector(19, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 2), "for expensesQuestion")
+          textOnPageCheck(common.nonTaxableAmount, fieldNameSelector(19, 3))
+          textOnPageCheck("£22", fieldAmountSelector(19, 3))
+          textOnPageCheck(common.taxableCosts, fieldNameSelector(19, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 4), "for taxableExpensesQuestion")
+          textOnPageCheck(common.taxableCostsAmount, fieldNameSelector(19, 5))
+          textOnPageCheck("£23", fieldAmountSelector(19, 5))
+          textOnPageCheck(common.vouchers, fieldNameSelector(19, 6))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 6), "for vouchersAndCreditCardsQuestion")
+          textOnPageCheck(common.vouchersAmount, fieldNameSelector(19, 7))
+          textOnPageCheck("£24", fieldAmountSelector(19, 7))
+          textOnPageCheck(common.nonCash, fieldNameSelector(19, 8))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 8), "for nonCashQuestion")
+          textOnPageCheck(common.nonCashAmount, fieldNameSelector(19, 9))
+          textOnPageCheck("£25", fieldAmountSelector(19, 9))
+          textOnPageCheck(common.otherBenefits, fieldNameSelector(19, 10))
+          textOnPageCheck("Yes", fieldAmountSelector(19, 10), "for otherItemsQuestion")
+          textOnPageCheck(common.otherBenefitsAmount, fieldNameSelector(19, 11))
+          textOnPageCheck("£26", fieldAmountSelector(19, 11))
+          textOnPageCheck(common.assetsHeader, fieldHeaderSelector(20))
+          textOnPageCheck(common.assetsSubheading, fieldNameSelector(21, 1), "subHeading")
+          textOnPageCheck("Yes", fieldAmountSelector(21, 1), "for assets section question")
+          textOnPageCheck(common.assets, fieldNameSelector(21, 2))
+          textOnPageCheck("Yes", fieldAmountSelector(21, 2), "for assetsQuestion")
+          textOnPageCheck(common.assetsAmount, fieldNameSelector(21, 3))
+          textOnPageCheck("£27", fieldAmountSelector(21, 3))
+          textOnPageCheck(common.assetTransfers, fieldNameSelector(21, 4))
+          textOnPageCheck("Yes", fieldAmountSelector(21, 4), "for assetTransferQuestion")
+          textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(21, 5))
+          textOnPageCheck("£280,000", fieldAmountSelector(21, 5))
+          buttonCheck(common.returnToEmployerText)
+          welshToggleCheck(user.isWelsh)
+        }
+
         "return a fully populated page when all the fields are populated when at the end of the year" which {
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -1555,7 +1732,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
-        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData =
+          Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear - 1)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -1568,7 +1746,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData =
+          Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear)
         urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }

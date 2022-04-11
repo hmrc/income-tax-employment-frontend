@@ -29,8 +29,8 @@ import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmployme
 import support.builders.models.employment.DeductionsBuilder.aDeductions
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
+import support.builders.models.employment.PayBuilder.aPay
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourStudentLoansUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import utils.{IntegrationTest, ViewHelpers}
@@ -42,6 +42,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   private val employmentId = "employmentId"
 
   object Selectors {
+    val bannerParagraphSelector: String = ".govuk-notification-banner__heading"
+    val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
@@ -70,21 +72,29 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   }
 
   trait CommonExpectedResults {
+
     def expectedCaption(taxYear: Int): String
 
+    val bannerParagraph: String
+    val bannerLinkText: String
     val fieldNames: Seq[String]
     val buttonText: String
     val updated: String
+    val toDo: String
     val cannotUpdate: String
     val notStarted: String
+
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
+    val bannerParagraph: String = "You must add missing employment details."
+    val bannerLinkText: String = "add missing employment details."
     val fieldNames = Seq("Employment details", "Employment benefits", "Student loans")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
+    val toDo: String = "To do"
     val cannotUpdate = "Cannot update"
     val notStarted = "Not started"
   }
@@ -92,9 +102,12 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
+    val bannerParagraph: String = "You must add missing employment details."
+    val bannerLinkText: String = "add missing employment details."
     val fieldNames = Seq("Employment details", "Employment benefits", "Student loans")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
+    val toDo: String = "To do"
     val cannotUpdate = "Cannot update"
     val notStarted = "Not started"
   }
@@ -138,6 +151,51 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     import Selectors._
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+        "render the page where total tax to date is None and end of year" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            val employment = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentData = Some(anEmploymentData.copy(
+              deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = Some(2000), pglDeductionAmount = None)))),
+              pay = Some(aPay.copy(totalTaxToDate = None))
+            )))))
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employment)))), nino, taxYearEOY)
+            urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+
+          implicit def documentSupplier: () => Document = () => document
+
+          "has a Notification banner" which {
+            textOnPageCheck(user.commonExpectedResults.bannerParagraph, bannerParagraphSelector)
+            linkCheck(user.commonExpectedResults.bannerLinkText, bannerLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
+
+          "has an employment details section" which {
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            textOnPageCheck(user.commonExpectedResults.toDo, summaryListStatusTagsSelector(1))
+          }
+
+          "has a benefits section" which {
+            textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListKeySelector(2))
+            textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(2))
+          }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYearEOY, employmentId))
+            textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(3))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY), "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+
         "render the page where the status for benefits is Cannot Update when there is no Benefits data in year and Undergraduate loans" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -222,8 +280,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             val employmentOne = aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None)))
             val employmentTwo = aHmrcEmploymentSource.copy(employmentId = "004", employerName = "someName", hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(
               employmentBenefits = None, employmentData = Some(anEmploymentData.copy(
-              deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = None, pglDeductionAmount = Some(2000)))))
-            )))))
+                deductions = Some(aDeductions.copy(studentLoans = Some(aStudentLoans.copy(uglDeductionAmount = None, pglDeductionAmount = Some(2000)))))
+              )))))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employmentOne, employmentTwo)))), nino, taxYear)
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -257,7 +315,6 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           welshToggleCheck(user.isWelsh)
         }
-
 
         "render the page where the status for benefits is Updated when there is Benefits data in year" which {
           implicit lazy val result: WSResponse = {
@@ -297,7 +354,6 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         }
 
         "render the page where the status for benefits is Not Started when there is no Benefits data for end of year" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData.copy(Some(
@@ -372,7 +428,6 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         }
 
         "render the page without the Student Loans Row when the feature switch is turned off in year" which {
-
           val headers = if (user.isWelsh) {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear), HeaderNames.ACCEPT_LANGUAGE -> "cy")
           } else {
@@ -415,7 +470,6 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         }
 
         "render the page without the Student Loans Row when the feature switch is turned off end of year" which {
-
           val headers = if (user.isWelsh) {
             Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy")
           } else {
