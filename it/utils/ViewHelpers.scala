@@ -116,6 +116,15 @@ trait ViewHelpers {
     }
   }
 
+  def notificationBannerCheck(title: String, content: String)(implicit document: () => Document): Unit = {
+    s"have the correct notification title of $title" in {
+      document().select("#govuk-notification-banner-title").text() shouldBe title
+    }
+    s"have the correct content" in {
+      document().select("#main-content > div > div > div.govuk-notification-banner > div.govuk-notification-banner__content > p").text() shouldBe content
+    }
+  }
+
   def changeAmountRowCheck(item: String, value: String, itemSelector: String, valueSelector: String, changeSelector: String,
                            changeHiddenText: String, href: String)
                           (implicit document: () => Document): Unit = {

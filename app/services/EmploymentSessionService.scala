@@ -539,14 +539,19 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def clear(user: User, taxYear: Int, employmentId: String)
+  def clear(user: User, taxYear: Int, employmentId: String, clearCYA: Boolean = true)
            (implicit hc: HeaderCarrier, request: CommonAuthorisationRequest): Future[Either[Unit, Unit]] = {
     incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
       case Left(_) => Future.successful(Left())
-      case _ => employmentUserDataRepository.clear(taxYear, employmentId, user).map {
-        case true => Right()
-        case false => Left()
-      }
+      case _ =>
+        if(clearCYA) {
+          employmentUserDataRepository.clear(taxYear, employmentId, user).map {
+            case true => Right()
+            case false => Left()
+          }
+        } else {
+          Future.successful(Right())
+        }
     }
   }
 

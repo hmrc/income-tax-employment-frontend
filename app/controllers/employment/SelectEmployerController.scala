@@ -96,10 +96,18 @@ class SelectEmployerController @Inject()(implicit val cc: MessagesControllerComp
             case Left(error) => Future.successful(errorHandler.handleError(error.status))
             case Right(_) =>
               val redirect = Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
-              idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(request.user, taxYear, _).map {
-                case Left(_) => errorHandler.internalServerError()
-                case Right(_) => redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
-              })
+
+              idInSession.fold{
+                employmentSessionService.clear(request.user, taxYear, employer, clearCYA = false).map {
+                  case Left(_) => errorHandler.internalServerError()
+                  case Right(_) => redirect
+                }
+              }{
+                employmentSessionService.clear(request.user, taxYear, _).map {
+                  case Left(_) => errorHandler.internalServerError()
+                  case Right(_) => redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+                }
+              }
           }
         }
     )

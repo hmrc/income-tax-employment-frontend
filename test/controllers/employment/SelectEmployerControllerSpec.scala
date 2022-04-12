@@ -106,11 +106,27 @@ class SelectEmployerControllerSpec extends UnitTestWithApp
       s"form is submitted" in new TestWithAuth {
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, "employmentId",Right(()))
+        mockClear(clearCya = false)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
           .withFormUrlEncodedBody("value" -> "employmentId")
           .withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString
+          ))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
+      }
+      s"form is submitted with an id in session" in new TestWithAuth {
+        mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
+        mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, "employmentId",Right(()))
+        mockClear()
+
+        val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withFormUrlEncodedBody("value" -> "employmentId")
+          .withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString,
+            SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "id"
           ))
 
         status(result) shouldBe SEE_OTHER
@@ -145,6 +161,19 @@ class SelectEmployerControllerSpec extends UnitTestWithApp
             SessionValues.TAX_YEAR -> taxYearEOY.toString,
             SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "id"
           ))
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+      s"clear fails with no id in session" in new TestWithAuth {
+        mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
+        mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, "employmentId",Right(()))
+        mockClear(Left(()), clearCya = false)
+        mockInternalServerError
+
+        val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withFormUrlEncodedBody("value" -> "employmentId")
+          .withSession(
+            SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }

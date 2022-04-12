@@ -1833,7 +1833,7 @@ class RedirectServiceSpec extends UnitTest {
       redirectUrl(Future(response)) shouldBe PayeRefController.show(taxYearEOY, employmentId).url
     }
 
-    "redirect to still working for employer page" in {
+    "redirect to did you leave employer page" in {
       val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some(s"${taxYearEOY-1}-11-01")))
       val response = employmentDetailsRedirect(employment, taxYearEOY, employmentId, isPriorSubmission = false)
 

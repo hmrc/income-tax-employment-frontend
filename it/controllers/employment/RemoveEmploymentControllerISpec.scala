@@ -48,6 +48,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
   object Selectors {
     val paragraphTextSelector = "#main-content > div > div > form > p"
+    val insetTextSelector = "#main-content > div > div > form > div.govuk-inset-text"
     val removeEmployerButtonSelector = "#remove-employer-button-id"
     val cancelLinkSelector = "#cancel-link-id"
     val formSelector = "#main-content > div > div > form"
@@ -59,6 +60,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     val expectedLastAccountText: String
     val expectedRemoveEmployerButton: String
     val expectedCancelLink: String
+    val infoWeHold: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -67,6 +69,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
       " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
+    val infoWeHold = "This is information we hold about you. If the information is incorrect, you need to contact the employer"
     val expectedCancelLink = "Cancel"
   }
 
@@ -76,41 +79,42 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
       " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
+    val infoWeHold = "This is information we hold about you. If the information is incorrect, you need to contact the employer"
     val expectedCancelLink = "Cancel"
   }
 
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedErrorTitle: String
-    val expectedHeading: String
+    def expectedHeading(employerName: String): String
     val expectedErrorNoEntry: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedHeading = s"Are you sure you want to remove $employerName?"
+    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedHeading = s"Are you sure you want to remove $employerName?"
+    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedHeading = s"Are you sure you want to remove $employerName?"
+    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedHeading = s"Are you sure you want to remove $employerName?"
+    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
@@ -150,12 +154,39 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           welshToggleCheck(user.isWelsh)
 
           titleCheck(specific.expectedTitle)
-          h1Check(specific.expectedHeading)
+          h1Check(specific.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
           buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
           linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
           formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
+        }
+        "render the remove employment page for when it isn't the last employment and removing a hmrc employment" which {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
+            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "002")), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          s"has an OK ($OK) status" in {
+            result.status shouldBe OK
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+
+          implicit def documentSupplier: () => Document = () => document
+
+          welshToggleCheck(user.isWelsh)
+
+          titleCheck(specific.expectedTitle)
+          h1Check(specific.expectedHeading("apple"))
+          captionCheck(common.expectedCaption)
+          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
+          textOnPageCheck(common.infoWeHold, insetTextSelector)
+          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
+          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
+          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, "002"), formSelector)
         }
 
         "render the remove employment page for when it's the last employment" which {
@@ -177,7 +208,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           welshToggleCheck(user.isWelsh)
 
           titleCheck(specific.expectedTitle)
-          h1Check(specific.expectedHeading)
+          h1Check(specific.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
           buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)

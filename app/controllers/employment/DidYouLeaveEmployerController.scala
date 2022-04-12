@@ -29,7 +29,7 @@ import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
-import views.html.employment.StillWorkingForEmployerView
+import views.html.employment.DidYouLeaveEmployerView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction,
                                               val mcc: MessagesControllerComponents,
                                               implicit val appConfig: AppConfig,
-                                              didYouLeaveView: StillWorkingForEmployerView,
+                                              didYouLeaveView: DidYouLeaveEmployerView,
                                               inYearAction: InYearUtil,
                                               errorHandler: ErrorHandler,
                                               employmentSessionService: EmploymentSessionService,
@@ -49,13 +49,13 @@ class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         val employerName = data.employment.employmentDetails.employerName
         data.employment.employmentDetails.didYouLeaveQuestion match {
-          case Some(isStillWorkingForEmployer) =>
-            Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(isStillWorkingForEmployer), taxYear,
+          case Some(didYouLeaveEmployer) =>
+            Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(didYouLeaveEmployer), taxYear,
               employmentId, employerName)))
           case None =>
             if (data.isPriorSubmission) {
-              val isStillWorkingForEmployer = data.employment.employmentDetails.cessationDate.isEmpty
-              Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(isStillWorkingForEmployer), taxYear,
+              val didYouLeaveEmployer = data.employment.employmentDetails.cessationDate.isEmpty
+              Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName).fill(didYouLeaveEmployer), taxYear,
                 employmentId, employerName)))
             } else {
               Future.successful(Ok(didYouLeaveView(yesNoForm(request.user.isAgent, employerName),

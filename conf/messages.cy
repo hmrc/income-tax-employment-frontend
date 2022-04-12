@@ -137,6 +137,7 @@ employment.employmentSummary.cannotAdd.individual = You cannot add expenses unti
 employment.employmentSummary.cannotAdd.agent = You cannot add your client’s expenses until 6 April {0}.
 employment.employmentSummary.cannotHaveExpensesWithoutEmployer = You cannot have expenses without an employer.
 employment.employmentSummary.addEmployerOrRemoveExpenses = Add an employer or remove expenses.
+employment.noEmployers = No employers
 
 #################       Remove employment messages        ########################################
 
@@ -289,7 +290,7 @@ employment.employmentDates.tellUs.agent = Tell us when your client’s employmen
 employment.employmentDates.startDate = Start date
 employment.employmentDates.endDate = End date
 
-#################       Still working at employer messages        ########################################
+#################       Did you leave employer messages        ########################################
 
 employment.didYouLeave.error.agent = Select yes if your client left {0} in the tax year
 employment.didYouLeave.error.individual = Select yes if you left {0} in the tax year
