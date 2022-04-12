@@ -48,12 +48,12 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
     val isInYear: Boolean = inYearAction.inYear(taxYear)
     val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
-    val employmentData = if (isInYear)priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
+    val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
     lazy val latestExpenses: Option[LatestExpensesOrigin] = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
     lazy val doExpensesExist = latestExpenses.isDefined
 
     employmentData match {
-      case Seq() if isInYear => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case Seq() if isInYear && !doExpensesExist => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       case _ => Ok(employmentSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
     }
   }

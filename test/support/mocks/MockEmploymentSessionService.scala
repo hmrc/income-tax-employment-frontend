@@ -78,9 +78,9 @@ trait MockEmploymentSessionService extends MockFactory {
       .anyNumberOfTimes()
   }
 
-  def mockClear(response: Either[Unit, Unit] = Right(())): CallHandler5[User, Int, String, HeaderCarrier, CommonAuthorisationRequest, Future[Either[Unit, Unit]]] = {
-    (mockEmploymentSessionService.clear(_: User, _: Int, _:String)(_: HeaderCarrier, _:CommonAuthorisationRequest))
-      .expects(*, *, *, *, *)
+  def mockClear(response: Either[Unit, Unit] = Right(()), clearCya: Boolean = true): CallHandler6[User, Int, String, Boolean, HeaderCarrier, CommonAuthorisationRequest, Future[Either[Unit, Unit]]] = {
+    (mockEmploymentSessionService.clear(_: User, _: Int, _:String, _:Boolean)(_: HeaderCarrier, _:CommonAuthorisationRequest))
+      .expects(*, *, *, clearCya, *, *)
       .returns(Future.successful(response))
   }
 

@@ -116,7 +116,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the 'still working for employer' page with the correct content" which {
+        "render the 'did you leave employer' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = true)))
@@ -145,7 +145,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'still working for employer' with the correct content and the yes radio populated when its already in session" which {
+        "render the 'did you leave employer' with the correct content and the yes radio populated when its already in session" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("$taxYearEOY -01-01"),
@@ -175,7 +175,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'still working for employer' with the correct content and the no radio populated when its already in session" which {
+        "render the 'did you leave employer' with the correct content and the no radio populated when its already in session" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
@@ -205,7 +205,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'still working for employer' page for prior year with correct content and default yes value when cessation date is not present" which {
+        "render the 'did you leave employer' page for prior year with correct content and default yes value when cessation date is not present" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, didYouLeaveQuestion = None, hmrc = true)))
@@ -234,7 +234,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'still working for employer' page for prior year with correct content and default no when cessation is present" which {
+        "render the 'did you leave employer' page for prior year with correct content and default no when cessation is present" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = cessationDate,
