@@ -73,7 +73,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any non-cash benefits?"
     val expectedHeading = "Did you get any non-cash benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got any non-cash benefits"
     val paragraph = "This is the value of anything that cannot be used or exchanged as cash."
   }
@@ -89,7 +89,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any non-cash benefits?"
     val expectedHeading = "Did your client get any non-cash benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got any non-cash benefits"
     val paragraph = "This is the value of anything that cannot be used or exchanged as cash."
   }
@@ -103,9 +103,9 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -141,7 +141,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -169,7 +169,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -198,7 +198,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -310,7 +310,7 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)

@@ -46,7 +46,6 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
   private val modelToDelete: AllEmploymentData = model.copy(
     hmrcExpenses = Some(anEmploymentExpenses),
     customerExpenses = Some(anEmploymentExpenses)
-
   )
 
   object Selectors {
@@ -134,7 +133,7 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveExpensesText, paragraphTextSelector)

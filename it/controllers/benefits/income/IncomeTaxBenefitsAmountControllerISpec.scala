@@ -85,12 +85,11 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val enterTotalText = "Enter the total."
   }
-
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "How much of your Income Tax did your employer pay?"
@@ -104,7 +103,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your Income Tax did your employer pay?"
     val expectedHeading = "How much of your Income Tax did your employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your employer"
     val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your employer in the correct format"
     val expectedErrorOverMaximum = "The Income Tax paid by your employer must be less than £100,000,000,000"
@@ -122,7 +121,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your client’s Income Tax did their employer pay?"
     val expectedHeading = "How much of your client’s Income Tax did their employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your client’s employer"
     val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your client’s employer in the correct format"
     val expectedErrorOverMaximum = "The Income Tax paid by your client’s employer must be less than £100,000,000,000"
@@ -158,7 +157,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
@@ -188,7 +187,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
@@ -217,7 +216,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -334,7 +333,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
@@ -370,7 +369,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -405,7 +404,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             captionCheck(expectedCaption)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)

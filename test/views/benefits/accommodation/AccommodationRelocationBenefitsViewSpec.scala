@@ -61,9 +61,9 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -76,7 +76,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get accommodation or relocation benefits from this company?"
     val expectedH1 = "Did you get accommodation or relocation benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got accommodation or relocation benefits"
   }
 
@@ -90,7 +90,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get accommodation or relocation benefits from this company?"
     val expectedH1 = "Did your client get accommodation or relocation benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got accommodation or relocation benefits"
   }
 
@@ -118,7 +118,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle)
+        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
@@ -139,7 +139,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle)
+        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
@@ -160,7 +160,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle)
+        titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)

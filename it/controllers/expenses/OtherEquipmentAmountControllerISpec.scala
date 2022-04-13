@@ -89,7 +89,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment. Tell us if this has changed."
 
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for buying other equipment in the correct format"
     val expectedOverMaximumErrorMessage = "The amount you want to claim for buying other equipment must be less than £100,000,000,000"
@@ -113,7 +113,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment for your client. Tell us if this has changed."
 
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client buying other equipment in the correct format"
     val expectedOverMaximumErrorMessage = "The amount you want to claim for your client buying other equipment must be less than £100,000,000,000"
@@ -127,8 +127,8 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val hintText = "For example, £193.52"
+    val continueButtonText = "Yn eich blaen"
+    val hintText = "Er enghraifft, £193.52"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -167,7 +167,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           elementsNotOnPageCheck(wantToClaimSelector)
@@ -198,7 +198,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
@@ -228,7 +228,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
@@ -325,7 +325,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
@@ -356,7 +356,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
@@ -387,7 +387,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)

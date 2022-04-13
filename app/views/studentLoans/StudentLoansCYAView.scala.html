@@ -50,7 +50,7 @@
         items = Seq(ActionItem(
             href = href,
             content = HtmlContent("""<span aria-hidden="true">""" + messages("common.change") + "</span>"),
-            visuallyHiddenText = Some(s"Change ${keyMessage}")
+            visuallyHiddenText = Some(messages("common.change") + s" ${keyMessage}")
         ))
     ))
 

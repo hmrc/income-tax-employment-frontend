@@ -104,7 +104,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "When did you start working for your employer?"
     val expectedH1 = s"When did you start working at $employerName?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val emptyDayError = "The date you started employment must include a day"
     val emptyMonthError = "The date you started employment must include a month"
     val emptyYearError = "The date you started employment must include a year"
@@ -138,7 +138,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "When did your client start working for their employer?"
     val expectedH1 = s"When did your client start working at $employerName?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val emptyDayError = "The date your client started their employment must include a day"
     val emptyMonthError = "The date your client started their employment must include a month"
     val emptyYearError = "The date your client started their employment must include a year"
@@ -163,7 +163,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
+    val expectedButtonText = "Yn eich blaen"
     val day = "day"
     val month = "month"
     val year = "year"
@@ -210,7 +210,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
@@ -242,7 +242,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
@@ -302,7 +302,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -339,7 +339,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -376,7 +376,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -413,7 +413,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -450,7 +450,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -487,7 +487,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -524,7 +524,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -561,7 +561,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -598,7 +598,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -635,7 +635,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -672,7 +672,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -709,7 +709,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -746,7 +746,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
@@ -786,7 +786,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)

@@ -68,7 +68,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did your employer pay any of your incurred costs?"
     val expectedHeading = "Did your employer pay any of your incurred costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your employer paid any of your incurred costs"
   }
 
@@ -82,7 +82,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client’s employer pay any of their incurred costs?"
     val expectedHeading = "Did your client’s employer pay any of their incurred costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client’s employer paid any of their incurred costs"
   }
 
@@ -96,9 +96,9 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val forExampleText = "For example, a speeding ticket or childcare."
   }
 
@@ -134,7 +134,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(forExampleText, paragraphSelector)
@@ -165,7 +165,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(forExampleText, paragraphSelector)
@@ -197,7 +197,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(forExampleText, paragraphSelector)
@@ -305,7 +305,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(forExampleText, paragraphSelector)

@@ -75,9 +75,9 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
+    val continue = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £100, tell us the correct amount."
   }
 
@@ -95,7 +95,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
     val expectedTitle: String = "How much did you get in total for travel and subsistence?"
     val expectedHeading: String = "How much did you get in total for travel and subsistence?"
     val expectedContent: String = "You can find this information in section N of your P11D form."
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter the amount you got for travel and subsistence in the correct format"
     val emptyErrorText: String = "Enter the amount you got for travel and subsistence"
     val maxAmountErrorText: String = "Your travel and subsistence benefit must be less than £100,000,000,000"
@@ -115,7 +115,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
     val expectedTitle: String = "How much did your client get in total for travel and subsistence?"
     val expectedHeading: String = "How much did your client get in total for travel and subsistence?"
     val expectedContent: String = "You can find this information in section N of your client’s P11D form."
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter the amount your client got for travel and subsistence in the correct format"
     val emptyErrorText: String = "Enter the amount your client got for travel and subsistence"
     val maxAmountErrorText: String = "Your client’s travel and subsistence benefit must be less than £100,000,000,000"
@@ -153,7 +153,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
@@ -186,7 +186,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
@@ -253,7 +253,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
@@ -285,7 +285,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
@@ -317,7 +317,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)

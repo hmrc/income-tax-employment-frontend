@@ -32,6 +32,7 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
   lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
   val serviceName = "Update and submit an Income Tax Return"
+  val serviceNameWelsh = "Diweddaru a chyflwyno Ffurflen Dreth Incwm"
   val govUkExtension = "GOV.UK"
 
   def elements(selector: String)(implicit document: Document): Elements = {
@@ -68,9 +69,9 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
     elementText(selector) shouldBe text
   }
 
-  def titleCheck(title: String)(implicit document: Document): Unit = {
+  def titleCheck(title: String, isWelsh: Boolean)(implicit document: Document): Unit = {
     s"has a title of $title" in {
-      document.title() shouldBe s"$title - $serviceName - $govUkExtension"
+      document.title() shouldBe s"$title - ${if(isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
     }
   }
 

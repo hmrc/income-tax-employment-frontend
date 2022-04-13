@@ -84,9 +84,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val expectedIncorrectFormatErrorMessage = "Enter the amount for non-cash benefits in the correct format"
     val expectedOverMaximumErrorMessage = "The amount for non-cash benefits must be less than £100,000,000,000"
   }
@@ -101,7 +101,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much did you get in total for non-cash benefits?"
     val expectedHeading = "How much did you get in total for non-cash benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you got for non-cash benefits"
   }
 
@@ -115,7 +115,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much did your client get in total for non-cash benefits?"
     val expectedHeading = "How much did your client get in total for non-cash benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount your client got for non-cash benefits"
   }
 
@@ -152,7 +152,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
@@ -183,7 +183,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             elementsNotOnPageCheck(ifItWasNotTextSelector)
@@ -215,7 +215,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -245,7 +245,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -345,7 +345,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -377,7 +377,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -408,7 +408,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)

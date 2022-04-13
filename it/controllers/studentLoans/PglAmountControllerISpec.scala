@@ -81,17 +81,17 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
-    override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £193.52"
-    override val title: String = "How much postgraduate loan did you repay?"
-    override val expectedH1: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
-    override val expectedParagraphText: String = "Check with the Student Loans Company, your payslips or P60."
+    override val expectedCaption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    override val expectedButtonText: String = "Yn eich blaen"
+    override val hintText: String = "Er enghraifft, £193.52"
+    override val title: String = "Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu?"
+    override val expectedH1: String = "Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan Whiterun Guards?"
+    override val expectedParagraphText: String = "Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60."
     override val inputFieldName: String = "amount"
-    override val errorSummaryText: String = "Enter the amount of postgraduate loan you repaid while employed by Whiterun Guards"
-    override val noEntryError: String = "Enter the amount of postgraduate loan you repaid while employed by Whiterun Guards"
-    override val invalidFormatError: String = "Enter the amount of postgraduate loan in the correct format"
-    override val expectedErrorTitle: String = s"Error: $title"
+    override val errorSummaryText: String = "Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan Whiterun Guards"
+    override val noEntryError: String = "Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan Whiterun Guards"
+    override val invalidFormatError: String = "Nodwch swm y benthyciad ôl-raddedig yn y fformat cywir"
+    override val expectedErrorTitle: String = s"Gwall: $title"
   }
 
   object ExpectedResultsAgentEN extends CommonExpectedResults {
@@ -109,17 +109,17 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   object ExpectedResultsAgentCY extends CommonExpectedResults {
-    override val expectedCaption: String = s"Student loans for 6 April ${taxYearEOY-1} to 5 April $taxYearEOY"
-    override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £193.52"
-    override val title: String = "How much postgraduate loan did your client repay?"
-    override val expectedH1: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
-    override val expectedParagraphText: String = "Check with the Student Loans Company, your client’s payslips or P60."
+    override val expectedCaption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    override val expectedButtonText: String = "Yn eich blaen"
+    override val hintText: String = "Er enghraifft, £193.52"
+    override val title: String = "Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu?"
+    override val expectedH1: String = "Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu tra ei fod wedi’i gyflogi gan Whiterun Guards?"
+    override val expectedParagraphText: String = "Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, slipiau cyflog neu P60 eich cleient."
     override val inputFieldName: String = "amount"
-    override val errorSummaryText: String = "Enter the amount of postgraduate loan your client repaid while employed by Whiterun Guards"
-    override val noEntryError: String = "Enter the amount of postgraduate loan your client repaid while employed by Whiterun Guards"
-    override val invalidFormatError: String = "Enter the amount of postgraduate loan in the correct format"
-    override val expectedErrorTitle: String = s"Error: $title"
+    override val errorSummaryText: String = "Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan Whiterun Guards"
+    override val noEntryError: String = "Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan Whiterun Guards"
+    override val invalidFormatError: String = "Nodwch swm y benthyciad ôl-raddedig yn y fformat cywir"
+    override val expectedErrorTitle: String = s"Gwall: $title"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
@@ -180,7 +180,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -221,7 +221,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -262,7 +262,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -420,7 +420,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(expectedErrorTitle)
+          titleCheck(expectedErrorTitle, scenarioData.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -472,7 +472,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(expectedErrorTitle)
+          titleCheck(expectedErrorTitle, scenarioData.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedParagraphText, paragraphSelector)

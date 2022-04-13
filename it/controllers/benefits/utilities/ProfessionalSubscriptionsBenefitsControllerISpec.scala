@@ -72,9 +72,9 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueButtonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -90,7 +90,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did your employer cover costs for any professional fees or subscriptions?"
     val expectedHeading = "Did your employer cover costs for any professional fees or subscriptions?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedParagraphText: String = "Your employer may have covered fees you must pay to be able to do your job. " +
       "This includes annual subscriptions to approved professional bodies that are relevant to your work."
     val checkWithEmployerText = "Check with your employer if you are unsure."
@@ -110,7 +110,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client’s employer cover costs for any professional fees or subscriptions?"
     val expectedHeading = "Did your client’s employer cover costs for any professional fees or subscriptions?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedParagraphText: String = "Your client’s employer may have covered fees they must pay to be able to do their job. " +
       "This includes annual subscriptions to approved professional bodies that are relevant to their work."
     val checkWithEmployerText = "Check with your client’s employer if you are unsure."
@@ -147,7 +147,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
@@ -178,7 +178,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
@@ -209,7 +209,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
@@ -277,7 +277,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)

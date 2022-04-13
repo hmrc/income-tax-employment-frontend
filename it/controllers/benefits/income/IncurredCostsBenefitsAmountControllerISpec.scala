@@ -84,9 +84,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val enterTotalText = "Enter the total."
   }
 
@@ -102,7 +102,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your incurred costs did your employer pay?"
     val expectedHeading = "How much of your incurred costs did your employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of incurred costs paid by your employer"
     val expectedErrorIncorrectFormat = "Enter the amount of incurred costs paid by your employer in the correct format"
     val expectedErrorOverMaximum = "The incurred costs paid by your employer must be less than £100,000,000,000"
@@ -120,7 +120,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your client’s incurred costs did their employer pay?"
     val expectedHeading = "How much of your client’s incurred costs did their employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of incurred costs paid by your client’s employer"
     val expectedErrorIncorrectFormat = "Enter the amount of incurred costs paid by your client’s employer in the correct format"
     val expectedErrorOverMaximum = "The incurred costs paid by your client’s employer must be less than £100,000,000,000"
@@ -157,7 +157,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
@@ -186,7 +186,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -215,7 +215,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -331,7 +331,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -366,7 +366,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
@@ -401,7 +401,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))

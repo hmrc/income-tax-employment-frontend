@@ -110,7 +110,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
     override val insetText: String = "NOT IMPLEMENTED"
-
     override val buttonText: String = "Save and continue"
   }
 
@@ -122,7 +121,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val bannerLinkText: String = ""
     override lazy val title: String = "Check your student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
-    override lazy val paragraphText: String = "NOT IMPLEMENTED"
+    override lazy val paragraphText: String = "Your student loan repayment details are based on the information we already hold about you."
 
     override lazy val questionStudentLoan = "Student loan repayments"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
@@ -135,7 +134,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
     override lazy val insetText: String = s"You cannot update your student loan details until 6 April $taxYear."
-
     override lazy val buttonText: String = "Return to employer"
   }
 
@@ -159,7 +157,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
     override val insetText: String = "NOT IMPLEMENTED"
-
     override val buttonText: String = "Save and continue"
   }
 
@@ -171,7 +168,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val bannerLinkText: String = ""
     override lazy val title: String = "Check your client’s student loan repayment details"
     override lazy val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
-    override lazy val paragraphText: String = "NOT IMPLEMENTED"
+    override lazy val paragraphText: String = "Your client’s student loan repayment details are based on the information we already hold about them."
 
     override lazy val questionStudentLoan = "Student loan repayments"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
@@ -184,8 +181,101 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
 
     override lazy val insetText: String = s"You cannot update your client’s student loan details until 6 April $taxYear."
-
     override lazy val buttonText: String = "Return to employer"
+  }
+
+  object ExpectedResultsWelshEOY extends CommonExpectedResults {
+    override val isEndOfYear: Boolean = true
+    override val hasPrior: Boolean = true
+    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
+    override val bannerLinkText: String = "add missing employment details."
+    override val title: String = "Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr"
+    override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    override val paragraphText: String = "Mae’ch manylion ad-dalu benthyciad myfyriwr yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+
+    override val questionStudentLoan = "Ad-daliadau Benthyciad Myfyriwr"
+    override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
+    override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
+
+    override val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+
+    override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
+    override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
+    override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
+
+    override val insetText: String = "NOT IMPLEMENTED"
+    override val buttonText: String = "Cadw ac yn eich blaen"
+  }
+
+  object ExpectedResultsWelshInYear extends CommonExpectedResults {
+    override lazy val isEndOfYear: Boolean = false
+    override lazy val hasPrior: Boolean = false
+
+    override val bannerParagraph: String = ""
+    override val bannerLinkText: String = ""
+    override lazy val title: String = "Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr"
+    override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override lazy val paragraphText: String = "Mae’ch manylion ad-dalu benthyciad myfyriwr yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+
+    override val questionStudentLoan = "Ad-daliadau Benthyciad Myfyriwr"
+    override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
+    override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
+
+    override lazy val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+
+    override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
+    override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
+    override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
+
+    override lazy val insetText: String = s"Ni allwch ddiweddaru’ch manylion benthyciad myfyriwr tan 6 Ebrill $taxYear."
+    override lazy val buttonText: String = "Dychwelyd i‘r cyflogwr"
+  }
+
+  object ExpectedResultsWelshEOYAgent extends CommonExpectedResults {
+    override val isEndOfYear: Boolean = true
+    override val hasPrior: Boolean = true
+    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
+    override val bannerLinkText: String = "add missing employment details."
+    override val title: String = "Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient"
+    override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    override val paragraphText: String = "Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
+
+    override val questionStudentLoan = "Ad-daliadau Benthyciad Myfyriwr"
+    override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
+    override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
+
+    override val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+
+    override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
+    override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
+    override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
+
+    override val insetText: String = "NOT IMPLEMENTED"
+    override val buttonText: String = "Cadw ac yn eich blaen"
+  }
+
+  object ExpectedResultsWelshInYearAgent extends CommonExpectedResults {
+    override lazy val isEndOfYear: Boolean = false
+    override lazy val hasPrior: Boolean = false
+
+    override val bannerParagraph: String = ""
+    override val bannerLinkText: String = ""
+    override lazy val title: String = "Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient"
+    override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override lazy val paragraphText: String = "Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
+
+    override val questionStudentLoan = "Ad-daliadau Benthyciad Myfyriwr"
+    override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
+    override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
+
+    override lazy val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+
+    override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
+    override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
+    override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
+
+    override lazy val insetText: String = s"Ni allwch ddiweddaru manylion benthyciad myfyriwr eich cleient tan 6 Ebrill $taxYear."
+    override lazy val buttonText: String = "Dychwelyd i‘r cyflogwr"
   }
 
   object Selectors {
@@ -205,7 +295,11 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     UserScenario(isWelsh = false, isAgent = false, ExpectedResultsEnglishEOY),
     UserScenario(isWelsh = false, isAgent = false, ExpectedResultsEnglishInYear),
     UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishEOYAgent),
-    UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishInYearAgent)
+    UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishInYearAgent),
+    UserScenario(isWelsh = true, isAgent = false, ExpectedResultsWelshEOY),
+    UserScenario(isWelsh = true, isAgent = false, ExpectedResultsWelshInYear),
+    UserScenario(isWelsh = true, isAgent = true, ExpectedResultsWelshEOYAgent),
+    UserScenario(isWelsh = true, isAgent = true, ExpectedResultsWelshInYearAgent)
   )
 
   private def answerRowInYearOrEndOfYear(keyName: String, value: String, hiddenText: String, href: String, row: Int, isEndOfYear: Boolean)(implicit document: () => Document): Unit = {
@@ -240,16 +334,17 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
         await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
-
     }
 
     userScenarios.foreach { scenarioData =>
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val taxYearInUse = if (scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
+      val taxYearInUse = if(scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
+      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
 
-      s"render the page for $inYearText, for an $affinityText when there is $prior" when {
+      s"render the page for $inYearText, for an $affinityText when there is $prior in $welshLang" when {
+
         "there is CYA data in session" which {
           import scenarioData.commonExpectedResults._
 
@@ -284,7 +379,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(title)
           captionCheck(caption)
           if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
@@ -302,7 +397,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       }
 
       if (scenarioData.commonExpectedResults.isEndOfYear && scenarioData.commonExpectedResults.hasPrior) {
-        s"render page for EOY when not submittable for an $affinityText" when {
+        s"render page for EOY when not submittable for an $affinityText in $welshLang" when {
           import scenarioData.commonExpectedResults._
 
           lazy val result = {
@@ -322,23 +417,25 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             linkCheck(scenarioData.commonExpectedResults.bannerLinkText, Selectors.bannerLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
           }
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(title)
           captionCheck(caption)
           if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
 
-          textOnPageCheck("Student loan repayments", Selectors.column1Selector(1))
-          textOnPageCheck("Undergraduate and Postgraduate", Selectors.column2Selector(1))
-          textOnPageCheck("Undergraduate repayments amount", Selectors.column1Selector(2))
+          textOnPageCheck(questionStudentLoan, Selectors.column1Selector(1))
+          textOnPageCheck(answerStudentLoan, Selectors.column2Selector(1))
+          textOnPageCheck(questionUndergraduateAmount, Selectors.column1Selector(2))
           textOnPageCheck("£100", Selectors.column2Selector(2))
-          textOnPageCheck("Postgraduate repayments amount", Selectors.column1Selector(3))
+          textOnPageCheck(questionPostGraduateAmount, Selectors.column1Selector(3))
           textOnPageCheck("£200", Selectors.column2Selector(3))
 
-          buttonCheck("Return to employer")
+          if (!isEndOfYear) {
+            buttonCheck(buttonText)
+          }
         }
       }
 
-      s"redirect the user to the select student loans contributions for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect the user to the select student loans contributions for $inYearText for an $affinityText when there is $prior in $welshLang" when {
 
         if (scenarioData.commonExpectedResults.hasPrior) {
           "there is no CYA data but there is Prior data that does not contain Student Loans information" in {
@@ -397,7 +494,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         }
       }
 
-      s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior in $welshLang" when {
         "there is no data in session" in {
           val request = {
             dropEmploymentDB()
@@ -410,10 +507,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearInUse))
             )
           }
-
           request.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearInUse))
         }
-
       }
     }
   }
@@ -437,6 +532,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
+      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
 
       lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
         Seq(),
@@ -463,7 +559,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         )), None)), None
       )
 
-      s"redirect to the employment information overview page for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect to the employment information overview page for $inYearText for an $affinityText when there is $prior in $welshLang" when {
 
         "the student loans submission is successful" in {
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
@@ -516,7 +612,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
       }
-      s"redirect to the employment expenses page for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect to the employment expenses page for $inYearText for an $affinityText when there is $prior in $welshLang" when {
 
         "the student loans submission is successful" in {
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
@@ -569,7 +665,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
       }
-      s"redirect to the employment information page for $inYearText for an $affinityText when there is $prior that is hmrc data" when {
+      s"redirect to the employment information page for $inYearText for an $affinityText when there is $prior that is hmrc data $welshLang" when {
 
         "the student loans submission is successful" in {
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
@@ -633,7 +729,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
       }
 
-      s"redirect to the overview page for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect to the overview page for $inYearText for an $affinityText when there is $prior in $welshLang" when {
 
         "there is no CYA data in session" in {
           val result: WSResponse = {
@@ -649,7 +745,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
       }
 
-      s"show an internal server error for $inYearText for an $affinityText when there is $prior" when {
+      s"show an internal server error for $inYearText for an $affinityText when there is $prior in $welshLang" when {
 
         "an error is returned from the submission" in {
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(

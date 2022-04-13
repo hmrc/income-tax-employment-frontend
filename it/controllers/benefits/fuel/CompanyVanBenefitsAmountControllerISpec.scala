@@ -71,9 +71,9 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
+    val continue = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount. "
   }
 
@@ -91,7 +91,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle: String = "How much was your total company van benefit?"
     val expectedHeading: String = "How much was your total company van benefit?"
     val expectedContent: String = "You can find this information on your P11D form in section G, box 9."
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your company van benefit amount in the correct format"
     val emptyErrorText: String = "Enter your company van benefit amount"
     val maxAmountErrorText: String = "Your company van benefit must be less than £100,000,000,000"
@@ -111,7 +111,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle: String = "How much was your client’s total company van benefit?"
     val expectedHeading: String = "How much was your client’s total company van benefit?"
     val expectedContent: String = "You can find this information on your client’s P11D form in section G, box 9."
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your client’s company van benefit amount in the correct format"
     val emptyErrorText: String = "Enter your client’s company van benefit amount"
     val maxAmountErrorText: String = "Your client’s company van benefit must be less than £100,000,000,000"
@@ -148,7 +148,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
@@ -181,7 +181,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent + get.expectedContent, contentSelector)
@@ -292,7 +292,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -315,7 +315,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "|")
@@ -339,7 +339,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")

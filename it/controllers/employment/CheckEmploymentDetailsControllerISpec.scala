@@ -140,15 +140,15 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = s"11 March ${taxYearEOY - 1}"
     val employmentDates = s"$employmentStartDate to $employmentEndDate"
-    val didYouLeaveNo = "No"
     val didYouLeaveYes = "Yes"
+    val didYouLeaveNo = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val addLinkExpected = "Add"
-    val changeLinkExpected = "Change"
-    val continueButtonText = "Save and continue"
+    val changeLinkExpected = "Newid"
+    val continueButtonText = "Cadw ac yn eich blaen"
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val didYouLeaveEmployerField = "Left employer"
@@ -160,12 +160,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
-    val returnToEmployerText: String = "Return to employer"
+    val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = s"11 March ${taxYearEOY - 1}"
-    val employmentDates = s"$employmentStartDate to $employmentEndDate"
-    val didYouLeaveNo = "No"
-    val didYouLeaveYes = "Yes"
+    val employmentDates = s"$employmentStartDate i $employmentEndDate"
+    val didYouLeaveYes = "Iawn"
+    val didYouLeaveNo = "Na"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -403,7 +403,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             textOnPageCheck(user.commonExpectedResults.taxField4, Selectors.bannerTotalTaxToDateSelector)
           }
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
@@ -414,7 +414,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "paye ref")
           linkCheck(s"${common.addLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck("No", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "employment start date")
@@ -460,7 +460,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYearEOY))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
@@ -502,7 +502,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             elementExist(notificationBanner) shouldBe false
           }
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
@@ -549,7 +549,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
@@ -588,7 +588,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYearEOY))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
@@ -633,7 +633,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
@@ -672,7 +672,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
@@ -719,7 +719,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)

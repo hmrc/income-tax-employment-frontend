@@ -80,8 +80,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (yn agor tab newydd)."
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
   }
 
@@ -98,8 +98,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (yn agor tab newydd)."
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
   }
 
@@ -118,9 +118,9 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedCanClaim = "You might be able to claim for the cost of:"
     val expectedCanClaimExample2 = "cleaning, repairing or replacing uniforms or specialist work clothes"
     val flatRateExpense = "These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’)."
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -153,7 +153,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
@@ -188,7 +188,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
@@ -221,7 +221,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
@@ -302,7 +302,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(expectedCaption, captionSelector)
             textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)

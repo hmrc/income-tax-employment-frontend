@@ -81,7 +81,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "What’s the name of your employer?"
     val expectedH1 = "What’s the name of your employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your employer"
     val expectedErrorWrongFormat = "Enter your employer name in the correct format"
   }
@@ -97,7 +97,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "What’s the name of your client’s employer?"
     val expectedH1 = "What’s the name of your client’s employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your client’s employer"
     val expectedErrorWrongFormat = "Enter your client’s employer name in the correct format"
   }
@@ -115,7 +115,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
+    val expectedButtonText = "Yn eich blaen"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
     val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
@@ -155,7 +155,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -187,7 +187,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           inputFieldValueCheck(amountInputName, inputSelector, employerName)
@@ -245,7 +245,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -276,7 +276,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, "~name~")
@@ -307,7 +307,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, charLimit)

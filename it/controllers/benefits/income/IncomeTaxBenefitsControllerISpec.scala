@@ -69,7 +69,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did your employer pay any of your Income Tax?"
     val expectedHeading = "Did your employer pay any of your Income Tax?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your employer paid any of your Income Tax"
     val ifYouText = "If you have not paid PAYE tax, we can recover this from your employer."
   }
@@ -85,7 +85,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client’s employer pay any of their Income Tax?"
     val expectedHeading = "Did your client’s employer pay any of their Income Tax?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client’s employer paid any of their Income Tax"
     val ifYouText = "If your client has not paid PAYE tax, we can recover this from their employer."
   }
@@ -99,9 +99,9 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -135,7 +135,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.ifYouText, paragraphSelector)
@@ -166,7 +166,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.ifYouText, paragraphSelector)
@@ -198,7 +198,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.ifYouText, paragraphSelector)
@@ -308,7 +308,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.ifYouText, paragraphSelector)

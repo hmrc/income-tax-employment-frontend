@@ -1,62 +1,62 @@
 #################       Service messages       ########################################
 
-betaBar.banner.message.1 = This is a new service – your
-betaBar.banner.message.2 = feedback
-betaBar.banner.message.3 = will help us to improve it.
+betaBar.banner.message.1 = Gwasanaeth newydd yw hwn – bydd eich
+betaBar.banner.message.2 = adborth
+betaBar.banner.message.3 = yn ein helpu i’w wella.
 betaBar.beta = beta
 service.govUkExtension = GOV.UK
-service.name = Update and submit an Income Tax Return
+service.name = Diweddaru a chyflwyno Ffurflen Dreth Incwm
 
 #################       Common messages        ########################################
 
 common.account-details = account details
 common.account = account
 common.add.missing.employment.details = add missing employment details.
-common.aDifferentAmount = A different amount
-common.back = Back
+common.aDifferentAmount = Swm gwahanol
+common.back = Yn ôl
 common.benefits = Benefits
 common.cancel = Cancel
-common.change = Change
+common.change = Newid
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
-common.continue = Continue
-common.currency.hint = For example, £193.52
+common.continue = Yn eich blaen
+common.currency.hint = Er enghraifft, £193.52
 common.employmentBenefits = Employment benefits
 common.employmentDetails = Employment details
-common.enterAmount = Enter amount
+common.enterAmount = Nodwch y swm
 common.enterTheTotal = Enter the total.
-common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
-common.error.errorKey = Error:
-common.error.invalid_currency_format = Enter the amount in the correct format
-common.error.invalid_number = Enter an amount using numbers 0 to 9
+common.error.amountMaxLimit = Nodwch swm sy’n llai na £100,000,000,000
+common.error.errorKey = Gwall:
+common.error.invalid_currency_format = Nodwch y swm yn y fformat cywir
+common.error.invalid_number = Nodwch swm gan ddefnyddio’r rhifau 0 i 9
 common.fullStop = .
-common.help.getHelpWithThisPage = Get help with this page
+common.help.getHelpWithThisPage = Help gyda’r dudalen hon
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
 common.letters.case = upper and lower case letters (a to z)
-common.no = No
+common.no = Na
 common.numbers = numbers
-common.opensInNewTab = (opens in new tab)
-common.remove = Remove
+common.opensInNewTab = (yn agor tab newydd)
+common.remove = Tynnu
 common.return.overview.buttonText = Return to overview
-common.returnToEmployer = Return to employer
+common.returnToEmployer = Dychwelyd i‘r cyflogwr
 common.returnToPayeEmployment = Return to PAYE employment
-common.saveAndContinue = Save and continue
+common.saveAndContinue = Cadw ac yn eich blaen
 common.status.cannotUpdate = Cannot update
 common.status.notStarted = Not started
 common.status.updated = Updated
 common.status.toDo = To do
-common.studentLoans = Student loans
+common.studentLoans = Benthyciadau Myfyrwyr
 common.thisIncludes = This includes things like:
 common.update = Update
 common.use = use
-common.yes = Yes
+common.yes = Iawn
 common.view = View
-common.and = and
+common.and = ac
 common.notProvided = Not provided
 common.add = Add
 common.employer = Employer
-common.or = or
-common.dateRange = {0} to {1}
+common.or = neu
+common.dateRange = {0} i {1}
 common.dateFrom = From {0}
 
 #################   Subheadings/Captions    ##################################
@@ -65,7 +65,7 @@ payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
 benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
-studentLoans.subheading = Student loans for 6 April {0} to 5 April {1}
+studentLoans.subheading = Benthyciadau Myfyrwyr ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 
 #################       Error messages        ########################################
 
@@ -78,10 +78,10 @@ error-template.paragraph.1.1a = You can:
 error-template.paragraph.1.2 = go to the
 error-template.paragraph.1.3 = Income Tax home page
 error-template.paragraph.1.4 = for more information
-error.agent.paragraph1 = You cannot view this client’s information. Your client needs to
-error.agent.paragraph2 = authorise you as their agent
-error.agent.paragraph3 = before you can sign in to this service.
-error.agent.paragraph4 = Try another client’s details
+error.agent.paragraph1 = Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient
+error.agent.paragraph2 = eich awdurdodi fel ei asiant
+error.agent.paragraph3 = cyn y gallwch fewngofnodi i’r gwasanaeth hwn.
+error.agent.paragraph4 = Rhowch gynnig ar fanylion cleient arall
 error.agent.title = There’s a problem
 error.summary.title = Mae problem wedi codi
 error.unauthorised-user.heading = You are not authorised to use this service
@@ -90,15 +90,15 @@ error.unauthorised.2 = create an agent services account
 error.unauthorised.2a = sign up for Making Tax Digital for Income Tax
 error.unauthorised.3 = before you can view this page.
 error.unauthorised.title = You cannot view this page
-internal-server-error-template.heading = Sorry, there is a problem with the service
-internal-server-error-template.paragraph.1 = Try again later.
-not-found-template.heading = Page not found
-not-found-template.paragraph.1 = If you typed the web address, check it is correct.
-not-found-template.paragraph.2 = If you used ‘copy and paste’ to enter the web address, check you copied the full address.
-service-unavailable-error-template.heading = Sorry, the service is unavailable
-service-unavailable-error-template.paragraph.1 = You will be able to use this service later.
-taxYear-error-template.paragraph.1 = You can only enter information for the {0} to {1} tax year.
-taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
+internal-server-error-template.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth
+internal-server-error-template.paragraph.1 = Rhowch gynnig arall arni yn nes ymlaen.
+not-found-template.heading = Heb ddod o hyd i’r dudalen
+not-found-template.paragraph.1 = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
+not-found-template.paragraph.2 = Os gwnaethoch ddefnyddio ‘copïo a gludo’ i nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn.
+service-unavailable-error-template.heading = Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael
+service-unavailable-error-template.paragraph.1 = Byddwch yn gallu defnyddio’r gwasanaeth hwn nes ymlaen.
+taxYear-error-template.paragraph.1 = Dim ond ar gyfer blwyddyn dreth {0} i {1} y gallwch nodi gwybodaeth.
+taxYear-error-template.paragraph.2 = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
 
 #################       Timeout messages        ########################################
 
@@ -1319,57 +1319,61 @@ expenses.otherEquipmentAmount.title.individual = How much do you want to claim f
 expenses.otherEquipmentAmount.wantToClaim.agent =  You told us you want to claim {0} for buying other equipment for your client. Tell us if this has changed.
 expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to claim {0} for buying other equipment. Tell us if this has changed.
 
+#####################    Student Loans Question messages    #####################
+
+studentLoansQuestion.title.individual = A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?
+studentLoansQuestion.title.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?
+studentLoansQuestion.heading.individual = A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr tra’ch bod wedi’ch cyflogi gan {0}?
+studentLoansQuestion.heading.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr tra ei fod wedi’i gyflogi gan {0}?
+studentLoansQuestion.inset.individual = Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog.
+studentLoansQuestion.inset.agent = Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog.
+studentLoansQuestion.inset.2.individual = Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi am hyn. Gwiriwch eich slipiau cyflog neu P60 am ddidyniadau benthyciad myfyrwyr.
+studentLoansQuestion.inset.2.agent = Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient am hyn. Gwiriwch slipiau cyflog neu P60 eich cleient am ddidyniadau benthyciadau myfyrwyr.
+studentLoansQuestion.checkbox.hint = Dewiswch bob un sy’n berthnasol.
+studentLoansQuestion.checkbox.1 = Iawn, ad-daliadau israddedig
+studentLoansQuestion.checkbox.1.hint = Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE).
+studentLoansQuestion.checkbox.2 = Iawn, ad-daliadau ôl-raddedig
+studentLoansQuestion.checkbox.2.hint = Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth.
+studentLoansQuestion.checkbox.error.individual = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch "Na"
+studentLoansQuestion.checkbox.error.agent = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch "Na"
+
+#####################    Undergraduate Amount Student Loans messages    #####################
+
+studentLoans.undergraduateLoanAmount.title.individual = Faint o fenthyciad israddedig a wnaethoch ei ad-dalu?
+studentLoans.undergraduateLoanAmount.title.agent = Faint o fenthyciad israddedig a wnaeth eich cleient ei ad-dalu?
+studentLoans.undergraduateLoanAmount.heading.individual = Faint o fenthyciad israddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan {0}?
+studentLoans.undergraduateLoanAmount.heading.agent = Faint o fenthyciad israddedig a wnaeth eich cleient ei ad-dalu tra ei fod wedi’i gyflogi gan {0}?
+studentLoans.undergraduateLoanAmount.error.noEntry.individual = Nodwch swm y benthyciad israddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan {0}
+studentLoans.undergraduateLoanAmount.error.noEntry.agent = Nodwch swm y benthyciad israddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan {0}
+studentLoans.undergraduateLoanAmount.error.invalidFormat = Nodwch swm y benthyciad israddedig yn y fformat cywir
+
+#####################    Postgraduate Amount Student Loans messages    #####################
+
+studentLoans.postgraduateLoanAmount.title.individual = Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu?
+studentLoans.postgraduateLoanAmount.title.agent = Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu?
+studentLoans.postgraduateLoanAmount.heading.individual = Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan {0}?
+studentLoans.postgraduateLoanAmount.heading.agent = Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu tra ei fod wedi’i gyflogi gan {0}?
+studentLoans.postgraduateLoanAmount.error.noEntry.individual = Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan {0}
+studentLoans.postgraduateLoanAmount.error.noEntry.agent = Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan {0}
+studentLoans.postgraduateLoanAmount.error.invalidFormat = Nodwch swm y benthyciad ôl-raddedig yn y fformat cywir
+
 #####################    Check your Student Loans messages    #####################
 
 studentLoans.bannerText = You cannot update student loans until you
-studentLoans.title.individual = Check your student loan repayment details
-studentLoans.title.agent = Check your client’s student loan repayment details
-studentLoans.slr = Student loan repayments
-studentLoans.ura = Undergraduate repayments amount
-studentLoans.pra = Postgraduate repayments amount
-studentLoans.undergraduate = Undergraduate
-studentLoans.postgraduate = Postgraduate
-studentLoans.p.individual = Your student loan repayment details are based on the information we already hold about you.
-studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about them.
-studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
-studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.
+studentLoans.title.individual = Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr
+studentLoans.title.agent = Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient
+studentLoans.slr = Ad-daliadau Benthyciad Myfyriwr
+studentLoans.ura = Swm ad-daliadau israddedig
+studentLoans.pra = Swm ad-daliadau ôl-raddedig
+studentLoans.undergraduate = Israddedig
+studentLoans.postgraduate = Ôl-raddedig
+studentLoans.p.individual = Mae’ch manylion ad-dalu benthyciad myfyriwr yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
+studentLoans.p.agent = Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano.
+studentLoans.inset.individual = Ni allwch ddiweddaru’ch manylion benthyciad myfyriwr tan 6 Ebrill {0}.
+studentLoans.inset.agent = Ni allwch ddiweddaru manylion benthyciad myfyriwr eich cleient tan 6 Ebrill {0}.
 
-studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
-studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
-
-studentLoans.postgraduateLoanAmount.title.agent = How much postgraduate loan did your client repay?
-studentLoans.postgraduateLoanAmount.title.individual = How much postgraduate loan did you repay?
-studentLoans.postgraduateLoanAmount.heading.agent = How much postgraduate loan did your client repay while employed by {0}?
-studentLoans.postgraduateLoanAmount.heading.individual = How much postgraduate loan did you repay while employed by {0}?
-studentLoans.postgraduateLoanAmount.error.noEntry.agent = Enter the amount of postgraduate loan your client repaid while employed by {0}
-studentLoans.postgraduateLoanAmount.error.noEntry.individual = Enter the amount of postgraduate loan you repaid while employed by {0}
-studentLoans.postgraduateLoanAmount.error.invalidFormat = Enter the amount of postgraduate loan in the correct format
-
-studentLoans.undergraduateLoanAmount.title.individual = How much undergraduate loan did you repay?
-studentLoans.undergraduateLoanAmount.title.agent = How much undergraduate loan did your client repay?
-studentLoans.undergraduateLoanAmount.heading.individual = How much undergraduate loan did you repay while employed by {0}?
-studentLoans.undergraduateLoanAmount.heading.agent = How much undergraduate loan did your client repay while employed by {0}?
-studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
-studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
-studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format
-
-#####################    Student Loans Question messages    #####################
-
-studentLoansQuestion.title.individual = Did you repay any student loan?
-studentLoansQuestion.title.agent = Did your client repay any student loan?
-studentLoansQuestion.heading.individual = Did you repay any student loan while employed by {0}?
-studentLoansQuestion.heading.agent = Did your client repay any student loan while employed by {0}?
-studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
-studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
-studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.
-studentLoansQuestion.inset.2.agent = The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions.
-studentLoansQuestion.checkbox.hint = Select all that apply.
-studentLoansQuestion.checkbox.1 = Yes, undergraduate repayments
-studentLoansQuestion.checkbox.1.hint = This covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
-studentLoansQuestion.checkbox.2 = Yes, postgraduate repayments
-studentLoansQuestion.checkbox.2.hint = This covers courses like master’s or doctorates.
-studentLoansQuestion.checkbox.error.individual = Select the types of student loan you repaid, or select "No"
-studentLoansQuestion.checkbox.error.agent = Select the types of student loan your client repaid, or select "No"
+studentLoans.common.checkWith.individual = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60.
+studentLoans.common.checkWith.agent = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, slipiau cyflog neu P60 eich cleient.
 
 #################       Remove Expenses messages        ########################################
 

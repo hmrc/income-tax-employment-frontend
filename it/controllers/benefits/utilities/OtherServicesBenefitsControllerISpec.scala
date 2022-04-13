@@ -71,7 +71,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any benefits for other services?"
     val expectedH1 = "Did you get any benefits for other services?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got benefits for other services"
     val expectedContent = "These are any other services you have used that are required for your job. Your employer pays for them."
   }
@@ -87,7 +87,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any benefits for other services?"
     val expectedH1 = "Did your client get any benefits for other services?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got benefits for other services"
     val expectedContent = "These are any other services they have used that are required for their job. Their employer pays for them."
   }
@@ -102,9 +102,9 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val theseAre = "These are any other services they have used that are required for their job. Their employer pays for them."
   }
 
@@ -138,7 +138,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, theseAreSelector)
@@ -168,7 +168,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, theseAreSelector)
@@ -254,7 +254,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, theseAreSelector)

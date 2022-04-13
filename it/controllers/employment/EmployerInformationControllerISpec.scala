@@ -48,7 +48,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
-    val studentLoansLinkSelector = "#student-loans_link"
+    def studentLoansLinkSelector(welshLang: Boolean): String = if(welshLang){ "#benthyciadau-myfyrwyr_link" }else{ "#student-loans_link" }
     val formSelector = "#main-content > div > div > form"
 
     def summaryListKeySelector(i: Int): String = {
@@ -104,7 +104,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
     val bannerParagraph: String = "You must add missing employment details."
     val bannerLinkText: String = "add missing employment details."
-    val fieldNames = Seq("Employment details", "Employment benefits", "Student loans")
+    val fieldNames = Seq("Employment details", "Employment benefits", "Benthyciadau Myfyrwyr")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
     val toDo: String = "To do"
@@ -171,7 +171,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             linkCheck(user.commonExpectedResults.bannerLinkText, bannerLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
@@ -186,7 +186,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(3))
           }
 
@@ -210,7 +210,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
@@ -226,7 +226,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
           }
 
@@ -249,7 +249,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
@@ -290,7 +290,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
@@ -306,7 +306,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
           }
 
@@ -327,7 +327,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
@@ -343,7 +343,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
           }
 
@@ -366,7 +366,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
@@ -381,7 +381,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(3))
           }
 
@@ -402,7 +402,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
@@ -417,7 +417,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector(user.isWelsh), checkYourStudentLoansUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(3))
           }
 
@@ -444,7 +444,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def document: () => Document = () => Jsoup.parse(bodyOf(result))
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
@@ -460,7 +460,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "does not have a student loans section" which {
-            elementsNotOnPageCheck(studentLoansLinkSelector)
+            elementsNotOnPageCheck(studentLoansLinkSelector(user.isWelsh))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
@@ -486,7 +486,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
           implicit def document: () => Document = () => Jsoup.parse(bodyOf(result))
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
@@ -501,7 +501,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "does not have a student loans section" which {
-            elementsNotOnPageCheck(studentLoansLinkSelector)
+            elementsNotOnPageCheck(studentLoansLinkSelector(user.isWelsh))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)

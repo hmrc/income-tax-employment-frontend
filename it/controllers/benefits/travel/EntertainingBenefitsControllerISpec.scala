@@ -71,9 +71,9 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueButtonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -87,7 +87,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any entertainment benefits?"
     val expectedH1 = "Did you get any entertainment benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got any entertainment benefits"
     val expectedContent = "These are entertainment costs that your employer has paid for, or reimbursed you for. For example, eating, drinking and other hospitality."
   }
@@ -103,7 +103,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any entertainment benefits?"
     val expectedH1 = "Did your client get any entertainment benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got any entertainment benefits"
     val expectedContent = "These are entertainment costs that their employer has paid for, or reimbursed them for. For example, eating, drinking and other hospitality."
   }
@@ -137,7 +137,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
@@ -164,7 +164,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
@@ -258,7 +258,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)

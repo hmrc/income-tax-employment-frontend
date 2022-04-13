@@ -82,7 +82,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedTitle = "Do you want to claim employment expenses?"
     val expectedHeading = "Do you want to claim employment expenses?"
     val expectedCanClaim = "You can claim employment expenses you did not claim through your employer."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you want to claim employment expenses"
   }
 
@@ -98,7 +98,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedTitle = "Do you want to claim employment expenses for your client?"
     val expectedHeading = "Do you want to claim employment expenses for your client?"
     val expectedCanClaim = "You can claim employment expenses your client did not claim through their employer."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses"
   }
 
@@ -121,11 +121,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedThisIncludesExample1 = "business travel and hotels and meals"
     val expectedThisIncludesExample2 = "professional fees and subscriptions"
     val expectedThisIncludesExample3 = "uniforms, work clothes and tools"
-    val expectedFindOutMore = "Find out more about claiming employment expenses (opens in new tab)."
-    val expectedFindOutMoreLink = "claiming employment expenses (opens in new tab)."
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedFindOutMore = "Find out more about claiming employment expenses (yn agor tab newydd)."
+    val expectedFindOutMoreLink = "claiming employment expenses (yn agor tab newydd)."
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -163,7 +163,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
@@ -201,7 +201,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
@@ -241,7 +241,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
@@ -316,7 +316,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)

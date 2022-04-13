@@ -76,8 +76,8 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val hintText = "For example, £193.52"
+    val continueButtonText = "Yn eich blaen"
+    val hintText = "Er enghraifft, £193.52"
     val optionalText = s"If it was not £${livingAccommodationBenefitAmount.get}, tell us the correct amount."
   }
 
@@ -104,7 +104,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "How much was your total living accommodation benefit?"
     val expectedTitle: String = "How much was your total living accommodation benefit?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContent: String = "You can find this information on your P11D form in section D, box 14."
     val emptyErrorText: String = "Enter your living accommodation benefit amount"
     val wrongFormatErrorText: String = "Enter your living accommodation benefit amount in the correct format"
@@ -114,7 +114,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "How much was your client’s total living accommodation benefit?"
     val expectedTitle: String = "How much was your client’s total living accommodation benefit?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContent: String = "You can find this information on your client’s P11D form in section D, box 14."
     val emptyErrorText: String = "Enter your client’s living accommodation benefit amount"
     val wrongFormatErrorText: String = "Enter your client’s living accommodation benefit amount in the correct format"
@@ -153,7 +153,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
@@ -184,7 +184,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalText, paragraphTextSelector(2))
@@ -216,7 +216,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalText, paragraphTextSelector(2))
@@ -352,7 +352,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
@@ -386,7 +386,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
@@ -420,7 +420,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))

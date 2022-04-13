@@ -99,8 +99,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val hintText = "For example, £193.52"
-    val continueButtonText = "Continue"
+    val hintText = "Er enghraifft, £193.52"
+    val continueButtonText = "Yn eich blaen"
     val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
 
@@ -118,7 +118,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle = "How much was your total company car benefit?"
     val expectedHeading = "How much was your total company car benefit?"
     val expectedParagraphText = "You can find this information on your P11D form in section F, box 9."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your company car benefit amount"
     val expectedInvalidFormatErrorMessage = "Enter your company car benefit amount in the correct format"
     val expectedMaxLengthErrorMessage = "Your company car benefit must be less than £100,000,000,000"
@@ -138,7 +138,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle = "How much was your client’s total company car benefit?"
     val expectedHeading = "How much was your client’s total company car benefit?"
     val expectedParagraphText = "You can find this information on your client’s P11D form in section F, box 9."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s company car benefit amount"
     val expectedInvalidFormatErrorMessage = "Enter your client’s company car benefit amount in the correct format"
     val expectedMaxLengthErrorMessage = "Your client’s company car benefit must be less than £100,000,000,000"
@@ -169,7 +169,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
           import Selectors._
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(2))
@@ -195,7 +195,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
           import Selectors._
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
@@ -221,7 +221,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
           import Selectors._
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
@@ -360,7 +360,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             import Selectors._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, inputSelector)
@@ -388,7 +388,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             import Selectors._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, inputSelector)
@@ -416,7 +416,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             import Selectors._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedMaxLengthErrorMessage, inputSelector)

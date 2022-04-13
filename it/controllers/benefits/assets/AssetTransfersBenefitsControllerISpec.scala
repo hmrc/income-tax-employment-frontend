@@ -71,7 +71,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle = "Did your employer give you any assets to keep?"
     val expectedHeading = "Did your employer give you any assets to keep?"
     val expectedParagraph = "You became the owner of these assets."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your employer gave you assets to keep"
   }
 
@@ -87,7 +87,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle = "Did your client’s employer give them any assets to keep?"
     val expectedHeading = "Did your client’s employer give them any assets to keep?"
     val expectedParagraph = "Your client became the owner of these assets."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client’s employer gave them assets to keep"
   }
 
@@ -100,9 +100,9 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -137,7 +137,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
@@ -166,7 +166,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
@@ -195,7 +195,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
@@ -295,7 +295,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)

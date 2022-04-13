@@ -24,6 +24,7 @@ trait ViewHelper {
   self: AnyWordSpec with Matchers =>
 
   private val serviceName = "Update and submit an Income Tax Return"
+  private val serviceNameWelsh = "Diweddaru a chyflwyno Ffurflen Dreth Incwm"
   private val govUkExtension = "GOV.UK"
   private val ENGLISH = "English"
   private val WELSH = "Welsh"
@@ -40,9 +41,9 @@ trait ViewHelper {
     !document.select(selector).isEmpty
   }
 
-  def titleCheck(title: String)(implicit document: Document): Unit = {
+  def titleCheck(title: String, isWelsh: Boolean)(implicit document: Document): Unit = {
     s"has a title of $title" in {
-      document.title() shouldBe s"$title - $serviceName - $govUkExtension"
+      document.title() shouldBe s"$title - ${if(isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
     }
   }
 

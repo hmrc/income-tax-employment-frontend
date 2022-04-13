@@ -51,12 +51,12 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "Page not found"
-    val p1Expected = s"You can only enter information for the ${taxYear - 1} to $taxYear tax year."
-    val p2Expected = "Check that you’ve entered the correct web address."
+    val h1Expected = "Heb ddod o hyd i’r dudalen"
+    val p1Expected = s"Dim ond ar gyfer blwyddyn dreth ${taxYear - 1} i $taxYear y gallwch nodi gwybodaeth."
+    val p2Expected = "Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
-      "general enquiries (opens in new tab) to speak to someone about your income tax."
-    val p3ExpectedLinkText = "Self Assessment: general enquiries (opens in new tab)"
+      "general enquiries (yn agor tab newydd) to speak to someone about your income tax."
+    val p3ExpectedLinkText = "Self Assessment: general enquiries (yn agor tab newydd)"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -86,7 +86,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
           import user.commonExpectedResults._
 
-          titleCheck(h1Expected)
+          titleCheck(h1Expected, user.isWelsh)
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
           textOnPageCheck(p1Expected,p1Selector)

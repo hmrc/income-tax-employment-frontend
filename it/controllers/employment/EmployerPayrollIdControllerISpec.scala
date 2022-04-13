@@ -87,7 +87,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val hintText = "For example, 123456"
     val bullet1: String = "upper and lower case letters (a to z)"
     val bullet2: String = "numbers"
@@ -119,7 +119,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "What’s your payroll ID for this employment?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedH1: String = "What’s your payroll ID for this employment?"
     val emptyErrorText: String = "Enter your payroll ID"
     val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
@@ -130,7 +130,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedH1: String = "What’s your client’s payroll ID for this employment?"
     val emptyErrorText: String = "Enter your client’s payroll ID"
     val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
@@ -186,7 +186,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.paragraph1, paragraph1Selector)
@@ -219,7 +219,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(previousParagraph, paragraph1Selector)
@@ -295,7 +295,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.paragraph1, paragraph2Selector)
@@ -333,7 +333,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.paragraph1, paragraph2Selector)
@@ -371,7 +371,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.paragraph1, paragraph2Selector)

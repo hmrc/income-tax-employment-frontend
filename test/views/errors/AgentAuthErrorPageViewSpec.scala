@@ -26,26 +26,41 @@ import utils.ViewTest
 
 class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with ViewTest{
 
-  val p1Selector = "#main-content > div > div > p:nth-child(2)"
-  val p2Selector = "#main-content > div > div > p:nth-child(3)"
-  val authoriseAsAnAgentLinkSelector = "#client_auth_link"
-  val anotherClientDetailsButtonSelector = "#main-content > div > div > a"
+  object Selectors {
+    val p1Selector = "#main-content > div > div > p:nth-child(2)"
+    val p2Selector = "#main-content > div > div > p:nth-child(3)"
+    val authoriseAsAnAgentLinkSelector = "#client_auth_link"
+    val anotherClientDetailsButtonSelector = "#main-content > div > div > a"
+  }
 
-  val h1Expected = "There’s a problem"
-  val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
-  val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
-  val beforeYouCanTryText = "before you can sign in to this service."
-  val tryAnotherClientText = "Try another client’s details"
-  val tryAnotherClientExpectedHref = "/report-quarterly/income-and-expenses/view/agents/client-utr"
-  val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+  object ExpectedResultsEN {
+    val h1Expected = "There’s a problem"
+    val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
+    val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
+    val beforeYouCanTryText = "before you can sign in to this service."
+    val tryAnotherClientText = "Try another client’s details"
+    val tryAnotherClientExpectedHref = "/report-quarterly/income-and-expenses/view/agents/client-utr"
+    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+  }
 
+  object ExpectedResultsCY {
+    val h1Expected = "There’s a problem"
+    val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
+    val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
+    val beforeYouCanTryText = "cyn y gallwch fewngofnodi i’r gwasanaeth hwn."
+    val tryAnotherClientText = "Rhowch gynnig ar fanylion cleient arall"
+    val tryAnotherClientExpectedHref = "/report-quarterly/income-and-expenses/view/agents/client-utr"
+    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+  }
+
+  import Selectors._
   "AgentAuthErrorPageView in English" should {
-
+    import ExpectedResultsEN._
     "Render correctly" which {
       lazy val view: Html = agentAuthErrorPageView()(fakeRequest, messages, mockAppConfig)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      titleCheck(h1Expected)
+      titleCheck(h1Expected, isWelsh = false)
       welshMessages("English")
       h1Check(h1Expected, "xl")
       textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
@@ -55,12 +70,12 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
   }
 
   "AgentAuthErrorPageView in Welsh" should {
-
+    import ExpectedResultsCY._
     "Render correctly" which {
       lazy val view: Html = agentAuthErrorPageView()(fakeRequest, welshMessages, mockAppConfig)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      titleCheck(h1Expected)
+      titleCheck(h1Expected, isWelsh = true)
       welshMessages("Welsh")
       h1Check(h1Expected, "xl")
       textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)

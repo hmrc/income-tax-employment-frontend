@@ -72,7 +72,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Were any of your taxable costs reimbursed by your employer?"
     val expectedHeading = "Were any of your taxable costs reimbursed by your employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if any of your taxable costs were reimbursed by your employer"
   }
 
@@ -86,7 +86,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Were any of your client’s taxable costs reimbursed by their employer?"
     val expectedHeading = "Were any of your client’s taxable costs reimbursed by their employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if any of your client’s taxable costs were reimbursed by their employer"
   }
 
@@ -100,9 +100,9 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val theseAreText = "These are any costs that are not taxed at source, for example, commuting for a non-business purpose."
   }
 
@@ -137,7 +137,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(theseAreText, paragraphSelector)
@@ -170,7 +170,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(theseAreText, paragraphSelector)
@@ -202,7 +202,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(theseAreText, paragraphSelector)
@@ -309,7 +309,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(theseAreText, paragraphSelector)

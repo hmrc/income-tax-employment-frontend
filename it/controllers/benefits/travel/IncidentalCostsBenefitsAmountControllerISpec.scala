@@ -84,9 +84,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -101,7 +101,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much did you get in total for incidental overnight costs?"
     val expectedHeading = "How much did you get in total for incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount you got for incidental overnight costs"
     val expectedErrorIncorrectFormat = "Enter the amount you got for incidental overnight costs in the correct format"
     val expectedErrorOverMaximum = "Your incidental overnight costs must be less than £100,000,000,000"
@@ -119,7 +119,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much did your client get in total for incidental overnight costs?"
     val expectedHeading = "How much did your client get in total for incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount your client got for incidental overnight costs"
     val expectedErrorIncorrectFormat = "Enter the amount your client got for incidental overnight costs in the correct format"
     val expectedErrorOverMaximum = "Your client’s incidental overnight costs must be less than £100,000,000,000"
@@ -155,7 +155,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           elementsNotOnPageCheck(optionalParagraphSelector)
@@ -185,7 +185,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
@@ -215,7 +215,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
@@ -318,7 +318,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
@@ -353,7 +353,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
@@ -388,7 +388,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)

@@ -71,9 +71,9 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueButtonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -89,7 +89,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any non-qualifying relocation benefits?"
     val expectedH1 = "Did you get any non-qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got non-qualifying relocation benefits"
     val expectedContent = "These are relocation costs that your employer has paid for, or reimbursed you for. Examples include:"
     val expectedExample1 = "mortgage or housing payments if you’re moving to a more expensive area"
@@ -109,7 +109,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any non-qualifying relocation benefits?"
     val expectedH1 = "Did your client get any non-qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got non-qualifying relocation benefits"
     val expectedContent = "These are relocation costs that their employer has paid for, or reimbursed them for. Examples include:"
     val expectedExample1 = "mortgage or housing payments if they’re moving to a more expensive area"
@@ -146,7 +146,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
@@ -177,7 +177,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
@@ -265,7 +265,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption)
             textOnPageCheck(get.expectedContent, contentSelector)

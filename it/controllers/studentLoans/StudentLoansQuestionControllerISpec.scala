@@ -35,7 +35,6 @@ import scala.concurrent.Future
 
 class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-
   val employmentId: String = "1234567890-0987654321"
   val startDate = s"$taxYear-04-01"
 
@@ -76,7 +75,6 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     override val errorAll: String = "Select the types of student loan you repaid, or select \"No\""
   }
 
-
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
     override val title: String = "Did your client repay any student loan?"
     override val heading: String = "Did your client repay any student loan while employed by Whiterun Guards?"
@@ -94,6 +92,39 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     override val errorAll: String = "Select the types of student loan your client repaid, or select \"No\""
   }
 
+  object ExpectedResultsWelsh extends CommonExpectedResults {
+    override val title: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?"
+    override val heading: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr tra’ch bod wedi’ch cyflogi gan Whiterun Guards?"
+    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog."
+    override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi am hyn. Gwiriwch eich slipiau cyflog neu P60 am ddidyniadau benthyciad myfyrwyr."
+    override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
+    override val checkboxUgl: String = "Iawn, ad-daliadau israddedig"
+    override val checkboxUglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE)."
+    override val checkboxPgl: String = "Iawn, ad-daliadau ôl-raddedig"
+    override val checkboxPglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth."
+    override val checkboxNo: String = "Na"
+    override val buttonText: String = "Cadw ac yn eich blaen"
+    override val errorEmpty: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch \"Na\""
+    override val errorAll: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch \"Na\""
+  }
+
+  object ExpectedResultsWelshAgent extends CommonExpectedResults {
+    override val title: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?"
+    override val heading: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr tra ei fod wedi’i gyflogi gan Whiterun Guards?"
+    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog."
+    override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient am hyn. Gwiriwch slipiau cyflog neu P60 eich cleient am ddidyniadau benthyciadau myfyrwyr."
+    override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
+    override val checkboxUgl: String = "Iawn, ad-daliadau israddedig"
+    override val checkboxUglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE)."
+    override val checkboxPgl: String = "Iawn, ad-daliadau ôl-raddedig"
+    override val checkboxPglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth."
+    override val checkboxNo: String = "Na"
+    override val buttonText: String = "Cadw ac yn eich blaen"
+    override val errorEmpty: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch \"Na\""
+    override val errorAll: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch \"Na\""
+  }
 
   object Selectors {
     val paragraphSelector = "#main-content > div > div > p:nth-child(2)"
@@ -117,8 +148,9 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   override val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, ExpectedResultsEnglish),
     UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishAgent),
+    UserScenario(isWelsh = true, isAgent = false, ExpectedResultsWelsh),
+    UserScenario(isWelsh = true, isAgent = true, ExpectedResultsWelshAgent)
   )
-
 
   ".show" should {
 
@@ -160,26 +192,26 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYear,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            ),
-                            studentLoans = Some(StudentLoansCYAModel(
-                              uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-                            ))
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYear,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                ))
+              )
+            ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -188,7 +220,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(title)
+          titleCheck(title, scenarioData.isWelsh)
           h1Check(heading)
           captionCheck(caption)
           textOnPageCheck(paragraphText_1, Selectors.paragraphSelector)
@@ -205,37 +237,39 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(buttonText)
         }
       }
-    }
-    "render the page" when {
-      "there is cya in session without studentLoans" which {
-        lazy val result = {
-          dropEmploymentDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        ),
-                      )
-                    ))
 
-          urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+
+      "render the page" when {
+        s"render the page for isAgent: ${scenarioData.isAgent} isWelsh: ${scenarioData.isWelsh} content" which {
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              taxYear,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+              )
+            ))
+
+            urlGet(url(taxYear), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit val document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(title, scenarioData.isWelsh)
         }
-
-        implicit val document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ExpectedResultsEnglish.title)
       }
     }
 
@@ -287,26 +321,26 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        ),
-                        studentLoans = Some(StudentLoansCYAModel(
-                          uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-                        ))
-                      )
-                    ))
+            sessionId,
+            mtditid,
+            nino,
+            taxYear,
+            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+            EmploymentCYAModel(
+              EmploymentDetails(
+                employerName = "Whiterun Guards",
+                employerRef = Some("223/AB12399"),
+                startDate = Some(startDate),
+                didYouLeaveQuestion = Some(false),
+                taxablePayToDate = Some(3000.00),
+                totalTaxToDate = Some(300.00),
+                currentDataIsHmrcHeld = false
+              ),
+              studentLoans = Some(StudentLoansCYAModel(
+                uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+              ))
+            )
+          ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
@@ -326,23 +360,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        )
-                      )
-                    ))
+            sessionId,
+            mtditid,
+            nino,
+            taxYear,
+            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+            EmploymentCYAModel(
+              EmploymentDetails(
+                employerName = "Whiterun Guards",
+                employerRef = Some("223/AB12399"),
+                startDate = Some(startDate),
+                didYouLeaveQuestion = Some(false),
+                taxablePayToDate = Some(3000.00),
+                totalTaxToDate = Some(300.00),
+                currentDataIsHmrcHeld = false
+              )
+            )
+          ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
@@ -356,29 +390,30 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           StudentLoansCYAModel(uglDeduction = true, None, pglDeduction = false, None)
 
       }
+
       "there is cya data in session without StudentLoans (pgl)" in {
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("pgl"))
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        )
-                      )
-                    ))
+            sessionId,
+            mtditid,
+            nino,
+            taxYear,
+            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+            EmploymentCYAModel(
+              EmploymentDetails(
+                employerName = "Whiterun Guards",
+                employerRef = Some("223/AB12399"),
+                startDate = Some(startDate),
+                didYouLeaveQuestion = Some(false),
+                taxablePayToDate = Some(3000.00),
+                totalTaxToDate = Some(300.00),
+                currentDataIsHmrcHeld = false
+              )
+            )
+          ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -391,31 +426,31 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = true, None)
 
       }
+
       "there is cya data in session without StudentLoans (none)" in {
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("none"))
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        )
-                      )
-                    ))
+            sessionId,
+            mtditid,
+            nino,
+            taxYear,
+            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+            EmploymentCYAModel(
+              EmploymentDetails(
+                employerName = "Whiterun Guards",
+                employerRef = Some("223/AB12399"),
+                startDate = Some(startDate),
+                didYouLeaveQuestion = Some(false),
+                taxablePayToDate = Some(3000.00),
+                totalTaxToDate = Some(300.00),
+                currentDataIsHmrcHeld = false
+              )
+            )
+          ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
-
 
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -434,23 +469,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-                      sessionId,
-                      mtditid,
-                      nino,
-                      taxYear,
-                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                      EmploymentCYAModel(
-                        EmploymentDetails(
-                          employerName = "Whiterun Guards",
-                          employerRef = Some("223/AB12399"),
-                          startDate = Some(startDate),
-                          didYouLeaveQuestion = Some(false),
-                          taxablePayToDate = Some(3000.00),
-                          totalTaxToDate = Some(300.00),
-                          currentDataIsHmrcHeld = false
-                        )
-                      )
-                    ))
+            sessionId,
+            mtditid,
+            nino,
+            taxYear,
+            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+            EmploymentCYAModel(
+              EmploymentDetails(
+                employerName = "Whiterun Guards",
+                employerRef = Some("223/AB12399"),
+                startDate = Some(startDate),
+                didYouLeaveQuestion = Some(false),
+                taxablePayToDate = Some(3000.00),
+                totalTaxToDate = Some(300.00),
+                currentDataIsHmrcHeld = false
+              )
+            )
+          ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -476,23 +511,23 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYear,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            )
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYear,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                )
+              )
+            ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
             urlPost(url(taxYear), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -503,37 +538,35 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(errorPrefix + title)
+          titleCheck(errorPrefix(scenarioData.isWelsh) + title, scenarioData.isWelsh)
           errorSummaryCheck(errorEmpty, Selectors.checkboxHref)
           errorAboveElementCheck(errorEmpty)
-
-
         }
+
         s"all options have been selected for isAgent: ${scenarioData.isAgent} isWelsh: ${scenarioData.isWelsh}" which {
           lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl", "pgl", "none"))
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-                          sessionId,
-                          mtditid,
-                          nino,
-                          taxYear,
-                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-                          EmploymentCYAModel(
-                            EmploymentDetails(
-                              employerName = "Whiterun Guards",
-                              employerRef = Some("223/AB12399"),
-                              startDate = Some(startDate),
-                              didYouLeaveQuestion = Some(false),
-                              taxablePayToDate = Some(3000.00),
-                              totalTaxToDate = Some(300.00),
-                              currentDataIsHmrcHeld = false
-                            )
-                          )
-                        ))
+              sessionId,
+              mtditid,
+              nino,
+              taxYear,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some(startDate),
+                  didYouLeaveQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                )
+              )
+            ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-
 
             urlPost(url(taxYear), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -544,16 +577,11 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(errorPrefix + title)
+          titleCheck(errorPrefix(scenarioData.isWelsh) + title, scenarioData.isWelsh)
           errorSummaryCheck(errorEmpty, Selectors.checkboxHref)
           errorAboveElementCheck(errorEmpty)
-
-
         }
       }
     }
-
   }
-
-
 }

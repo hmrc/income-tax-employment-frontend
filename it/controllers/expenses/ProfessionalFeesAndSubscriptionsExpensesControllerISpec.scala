@@ -77,9 +77,9 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedParagraphText = "This includes things like:"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val buttonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -95,11 +95,11 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim for professional fees and subscriptions?"
     val expectedHeading = "Do you want to claim for professional fees and subscriptions?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if you have to pay the fees to do your job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your job"
-    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)."
+    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (yn agor tab newydd)."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -115,11 +115,11 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim for professional fees and subscriptions for your client?"
     val expectedHeading = "Do you want to claim for professional fees and subscriptions for your client?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for your client’s professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if your client has to pay the fees to do their job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job"
-    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)."
+    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (yn agor tab newydd)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -152,7 +152,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -185,7 +185,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -219,7 +219,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -305,7 +305,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))

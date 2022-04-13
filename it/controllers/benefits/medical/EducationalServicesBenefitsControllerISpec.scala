@@ -69,7 +69,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
     val expectedTitle = "Did you get any benefits for educational services?"
     val expectedHeading = "Did you get any benefits for educational services?"
     val expectedParagraph = "These are scholarships or school fees paid for by your employer."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got benefits for educational services"
   }
 
@@ -85,7 +85,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
     val expectedTitle = "Did your client get any benefits for educational services?"
     val expectedHeading = "Did your client get any benefits for educational services?"
     val expectedParagraph = "These are scholarships or school fees paid for by their employer."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got benefits for educational services"
   }
 
@@ -98,9 +98,9 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -135,7 +135,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
@@ -166,7 +166,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
@@ -281,7 +281,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)

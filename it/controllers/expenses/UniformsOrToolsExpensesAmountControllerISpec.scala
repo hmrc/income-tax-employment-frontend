@@ -90,7 +90,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for uniform, work clothes, or tools. Tell us if this has changed."
 
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format"
     val expectedOverMaximumErrorMessage = "The amount you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000"
@@ -114,7 +114,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s uniform, work clothes, or tools. Tell us if this has changed."
 
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format"
     val expectedOverMaximumErrorMessage = "The amount you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000"
@@ -129,8 +129,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val hintText = "For example, £193.52"
+    val continueButtonText = "Yn eich blaen"
+    val hintText = "Er enghraifft, £193.52"
     val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
   }
 
@@ -172,7 +172,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           elementsNotOnPageCheck(wantToClaimSelector)
@@ -206,7 +206,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
@@ -239,7 +239,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
@@ -339,7 +339,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
@@ -374,7 +374,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
@@ -409,7 +409,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)

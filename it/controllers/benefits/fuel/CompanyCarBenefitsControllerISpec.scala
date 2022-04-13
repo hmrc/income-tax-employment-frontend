@@ -48,6 +48,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     val radioTextYes: String
     val radioTextNo: String
+    val errorText: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -79,13 +80,15 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
+    val errorText: String = "Error: "
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val radioTextYes: String = "Yes"
-    val radioTextNo: String = "No"
+    val radioTextYes: String = "Iawn"
+    val radioTextNo: String = "Na"
+    val errorText: String = "Gwall: "
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -112,7 +115,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
@@ -140,7 +143,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck("Error: " + user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.commonExpectedResults.errorText + user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)

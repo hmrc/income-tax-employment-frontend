@@ -80,9 +80,9 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -97,7 +97,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much was your total childcare benefit?"
     val expectedHeading = "How much was your total childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter your childcare benefit amount"
     val expectedErrorIncorrectFormat = "Enter your childcare benefit amount in the correct format"
     val expectedErrorOverMaximum = "Your childcare benefit must be less than £100,000,000,000"
@@ -115,7 +115,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much was your client’s total childcare benefit?"
     val expectedHeading = "How much was your client’s total childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter your client’s childcare benefit amount"
     val expectedErrorIncorrectFormat = "Enter your client’s childcare benefit amount in the correct format"
     val expectedErrorOverMaximum = "Your client’s childcare benefit must be less than £100,000,000,000"
@@ -152,7 +152,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           elementsNotOnPageCheck(optionalParagraphTextSelector)
@@ -181,7 +181,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
@@ -209,7 +209,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
@@ -276,7 +276,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
@@ -311,7 +311,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
@@ -345,7 +345,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)

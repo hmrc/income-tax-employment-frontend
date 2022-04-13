@@ -83,9 +83,9 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedParagraphText = "This includes things like:"
     val expectedExample1 = "the cost of buying small items - like electrical drills and protective clothing"
     val expectedExample2 = "capital allowances for larger items - like machinery and computers"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val buttonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -98,7 +98,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim for buying other equipment?"
     val expectedHeading = "Do you want to claim for buying other equipment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for buying other equipment"
   }
 
@@ -112,7 +112,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim for buying other equipment for your client?"
     val expectedHeading = "Do you want to claim for buying other equipment for your client?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for your client buying other equipment"
   }
 
@@ -147,7 +147,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -176,7 +176,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -206,7 +206,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -276,7 +276,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))

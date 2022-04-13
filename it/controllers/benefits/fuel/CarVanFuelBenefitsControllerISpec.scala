@@ -66,7 +66,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any car, van or fuel benefits from this company?"
     val expectedH1 = "Did you get any car, van or fuel benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got car, van or fuel benefits"
   }
 
@@ -80,7 +80,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any car, van or fuel benefits from this company?"
     val expectedH1 = "Did your client get any car, van or fuel benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got car, van or fuel benefits"
   }
 
@@ -94,9 +94,9 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val thisIncludes = "This includes benefits such as company cars or vans, company car or van fuel, and privately owned vehicle mileage allowances."
   }
 
@@ -130,7 +130,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(thisIncludes, thisIncludesSelector)
@@ -160,7 +160,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(thisIncludes, thisIncludesSelector)
@@ -225,7 +225,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(thisIncludes, thisIncludesSelector)

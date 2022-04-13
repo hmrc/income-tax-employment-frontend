@@ -75,8 +75,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val hintText = "For example, £193.52"
-    val continueButtonText = "Continue"
+    val hintText = "Er enghraifft, £193.52"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -93,7 +93,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much mileage benefit did you get in total for using your own car?"
     val expectedHeading = "How much mileage benefit did you get in total for using your own car?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
     val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
@@ -115,7 +115,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much mileage benefit did your client get in total for using their own car?"
     val expectedHeading = "How much mileage benefit did your client get in total for using their own car?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
     val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
@@ -150,7 +150,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -183,7 +183,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -330,7 +330,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Selectors.inputSelector)
@@ -356,7 +356,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Selectors.inputSelector)
@@ -383,7 +383,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Selectors.inputSelector)

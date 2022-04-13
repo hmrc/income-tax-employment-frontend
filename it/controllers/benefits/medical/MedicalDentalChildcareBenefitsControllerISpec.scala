@@ -66,7 +66,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any medical, dental, childcare, education benefits or loans from this company?"
     val expectedHeading = "Did you get any medical, dental, childcare, education benefits or loans from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got medical, dental, childcare, education benefits or loans"
   }
 
@@ -80,7 +80,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any medical, dental, childcare, education benefits or loans from this company?"
     val expectedHeading = "Did your client get any medical, dental, childcare, education benefits or loans from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got medical, dental, childcare, education benefits or loans"
   }
 
@@ -93,9 +93,9 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -130,7 +130,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, radioNumber = 1, checked = false)
@@ -160,7 +160,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = true)
@@ -276,7 +276,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             radioButtonCheck(yesText, 1, checked = false)

@@ -71,7 +71,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any travel and subsistence benefits?"
     val expectedH1 = "Did you get any travel and subsistence benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got travel and subsistence benefits"
     val thisIs = "This is the cost of any travel and subsistence that is paid for by your employer and is not exempt from tax. This includes hotels and meals."
   }
@@ -87,7 +87,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any travel and subsistence benefits?"
     val expectedH1 = "Did your client get any travel and subsistence benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got travel and subsistence benefits"
     val thisIs = "This is the cost of any travel and subsistence that is paid for by their employer and is not exempt from tax. This includes hotels and meals."
   }
@@ -101,9 +101,9 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -136,7 +136,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.thisIs, thisIsSelector)
@@ -166,7 +166,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.thisIs, thisIsSelector)
@@ -314,7 +314,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.thisIs, thisIsSelector)

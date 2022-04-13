@@ -69,7 +69,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a medical or dental benefit?"
     val expectedHeading = "Did you get a medical or dental benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got a medical or dental benefit"
     val expectedParagraphText = "This is medical or dental treatment or insurance provided by your employer."
   }
@@ -85,7 +85,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a medical or dental benefit?"
     val expectedHeading = "Did your client get a medical or dental benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got a medical or dental benefit"
     val expectedParagraphText: String = "This is medical or dental treatment or insurance provided by their employer."
   }
@@ -99,9 +99,9 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -135,7 +135,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -165,7 +165,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -310,7 +310,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)

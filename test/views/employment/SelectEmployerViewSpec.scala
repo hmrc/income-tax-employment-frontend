@@ -79,17 +79,17 @@ class SelectEmployerViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
+    val expectedButtonText = "Yn eich blaen"
     val addNewEmployerText: String = "Add a new employer"
-    val orText: String = "or"
+    val orText: String = "neu"
     val expectedTitle: String = "Which employer do you want to add?"
     val expectedH1: String = "Which employer do you want to add?"
 
     def fromText(date: String): String = s"From ${ViewUtils.dateFormatter(date).get}"
 
-    def datesText(start: String, end: String): String = s"${ViewUtils.dateFormatter(start).get} to ${ViewUtils.dateFormatter(end).get}"
+    def datesText(start: String, end: String): String = s"${ViewUtils.dateFormatter(start).get} i ${ViewUtils.dateFormatter(end).get}"
 
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -142,7 +142,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.commonExpectedResults.expectedTitle)
+        titleCheck(userScenario.commonExpectedResults.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
@@ -168,7 +168,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.commonExpectedResults.expectedTitle)
+        titleCheck(userScenario.commonExpectedResults.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
@@ -194,7 +194,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.commonExpectedResults.expectedErrorTitle)
+        titleCheck(userScenario.commonExpectedResults.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
