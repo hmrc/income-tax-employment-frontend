@@ -72,7 +72,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any travel or entertainment benefits from this company?"
     val expectedH1 = "Did you get any travel or entertainment benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got travel or entertainment benefits"
   }
 
@@ -86,7 +86,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any travel or entertainment benefits from this company?"
     val expectedH1 = "Did your client get any travel or entertainment benefits from this company?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got travel or entertainment benefits"
   }
 
@@ -100,9 +100,9 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val thisIncludes = "This includes benefits such as travel, incidental overnight expenses and entertaining."
   }
 
@@ -137,7 +137,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
@@ -167,7 +167,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
@@ -299,7 +299,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption)
             textOnPageCheck(thisIncludes, thisIncludesSelector)

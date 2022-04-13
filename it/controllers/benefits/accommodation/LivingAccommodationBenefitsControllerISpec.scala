@@ -85,9 +85,9 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedParagraphText: String = "Living accommodation is any accommodation that you can live in, whether you live there all " +
       "the time or only occasionally. It includes houses, flats, houseboats, holiday homes and apartments."
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val buttonText = "Yn eich blaen"
     val expectedDetailsTitle = "More information about living accommodation"
     val expectedDetailsText1: String = "Living accommodation doesn’t include hotel rooms or board and lodgings, where you’re " +
       "dependent on someone else for cooking, cleaning or laundry."
@@ -107,7 +107,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any living accommodation benefits?"
     val expectedHeading = "Did you get any living accommodation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got living accommodation benefits"
     val expectedDetailsText2: String = "Your employment income should include the value of any living accommodation you or your " +
       "relations get because of your employment."
@@ -125,7 +125,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any living accommodation benefits?"
     val expectedHeading = "Did your client get any living accommodation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got living accommodation benefits"
     val expectedDetailsText2: String = "Your client’s employment income should include the value of any living accommodation they " +
       "or their relations get because of their employment."
@@ -161,7 +161,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -194,7 +194,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -227,7 +227,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
@@ -331,7 +331,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesSelector)

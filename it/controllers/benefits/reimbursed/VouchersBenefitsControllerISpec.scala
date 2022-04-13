@@ -77,7 +77,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get vouchers or credit cards?"
     val expectedHeading = "Did you get vouchers or credit cards?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got vouchers or credit cards"
     val paragraph = "We only need to know about vouchers you can exchange for:"
   }
@@ -93,7 +93,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get vouchers or credit cards?"
     val expectedHeading = "Did your client get vouchers or credit cards?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got vouchers or credit cards"
     val paragraph = "We only need to know about vouchers your client can exchange for:"
   }
@@ -113,9 +113,9 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedBullet1 = "goods and services"
     val expectedBullet2 = "a sum of money substantially less than the cost to provide them"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val bullet1 = "goods and services"
     val bullet2 = "a sum of money substantially less than the cost to provide them"
   }
@@ -150,7 +150,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -180,7 +180,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -212,7 +212,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -327,7 +327,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)

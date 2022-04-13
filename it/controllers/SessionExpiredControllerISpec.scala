@@ -76,7 +76,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
           import user.commonExpectedResults._
 
-          titleCheck(h1Expected)
+          titleCheck(h1Expected, user.isWelsh)
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
 

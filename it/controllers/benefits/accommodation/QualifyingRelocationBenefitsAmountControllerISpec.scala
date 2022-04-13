@@ -69,9 +69,9 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
+    val continue = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
   }
 
@@ -87,7 +87,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did you get in total for qualifying relocation benefits?"
     val expectedHeading: String = "How much did you get in total for qualifying relocation benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your qualifying relocation benefit amount in the correct format"
     val emptyErrorText: String = "Enter your qualifying relocation benefit amount"
     val maxAmountErrorText: String = "Your qualifying relocation benefit must be less than £100,000,000,000"
@@ -105,7 +105,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much was your client’s total qualifying relocation benefit?"
     val expectedHeading: String = "How much was your client’s total qualifying relocation benefit?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your client’s qualifying relocation benefit amount in the correct format"
     val emptyErrorText: String = "Enter your client’s qualifying relocation benefit amount"
     val maxAmountErrorText: String = "Your client’s qualifying relocation benefit must be less than £100,000,000,000"
@@ -141,7 +141,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck("", contentSelector)
@@ -173,7 +173,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, contentSelector)
@@ -240,7 +240,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
@@ -272,7 +272,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
@@ -304,7 +304,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)

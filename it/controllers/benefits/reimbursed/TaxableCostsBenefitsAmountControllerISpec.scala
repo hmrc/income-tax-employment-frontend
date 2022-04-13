@@ -78,9 +78,9 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
+    val continue = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
     val enterTotalText: String = "Enter the total."
   }
@@ -97,7 +97,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much of your taxable costs were reimbursed by your employer?"
     val expectedHeading: String = "How much of your taxable costs were reimbursed by your employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Enter the amount of taxable costs reimbursed by your employer"
     val invalidFormatErrorText: String = "Enter the amount of taxable costs reimbursed by your employer in the correct format"
     val maxAmountErrorText: String = "The taxable costs reimbursed by your employer must be less than £100,000,000,000"
@@ -115,7 +115,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much of your client’s taxable costs were reimbursed by their employer?"
     val expectedHeading: String = "How much of your client’s taxable costs were reimbursed by their employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Enter the amount of taxable costs reimbursed by your client’s employer"
     val invalidFormatErrorText: String = "Enter the amount of taxable costs reimbursed by your client’s employer in the correct format"
     val maxAmountErrorText: String = "The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000"
@@ -153,7 +153,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           elementsNotOnPageCheck(previousAmountTextSelector)
@@ -183,7 +183,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -213,7 +213,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -290,7 +290,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -323,7 +323,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -356,7 +356,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)

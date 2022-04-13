@@ -69,7 +69,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any beneficial loans?"
     val expectedHeading = "Did you get any beneficial loans?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got beneficial loans"
     val theseAreText = "These are interest free or low interest loans from your employer."
   }
@@ -85,7 +85,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any beneficial loans?"
     val expectedHeading = "Did your client get any beneficial loans?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got beneficial loans"
     val theseAreText = "These are any interest free or low interest loans their employer has given them."
   }
@@ -99,9 +99,9 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -136,7 +136,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
@@ -167,7 +167,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
@@ -199,7 +199,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
@@ -316,7 +316,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)

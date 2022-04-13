@@ -72,7 +72,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a benefit for using a telephone?"
     val expectedHeading = "Did you get a benefit for using a telephone?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got a benefit for using a telephone"
     val expectedParagraphText: String = "These are telephone costs paid by your employer that are not exempt from tax."
   }
@@ -88,7 +88,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a benefit for using a telephone?"
     val expectedHeading = "Did your client get a benefit for using a telephone?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got a benefit for using a telephone"
     val expectedParagraphText: String = "These are telephone costs paid by their employer that are not exempt from tax."
   }
@@ -102,9 +102,9 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -138,7 +138,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -168,7 +168,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -325,7 +325,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)

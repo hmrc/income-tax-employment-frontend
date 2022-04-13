@@ -71,9 +71,9 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -100,7 +100,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     val expectedH1 = "Did you get a mileage benefit for using your own car for work?"
     val expectedP1 = "We only need to know about payments made above our ‘approved amount’. If you have payments above the ‘approved amount’, they should be recorded in section E of your P11D form."
     val expectedP2 = "Check with your employer if you are unsure."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got a mileage benefit for using your own car for work"
   }
 
@@ -110,7 +110,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     val expectedP1: String = "We only need to know about payments made above our ‘approved amount’. " +
       "If your client has payments above the ‘approved amount’, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
   }
 
@@ -187,7 +187,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
@@ -216,7 +216,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
@@ -247,7 +247,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
@@ -276,7 +276,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
@@ -332,7 +332,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)

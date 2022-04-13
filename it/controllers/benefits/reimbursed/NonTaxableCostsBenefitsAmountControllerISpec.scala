@@ -86,9 +86,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
     val enterTotalText = "Enter the total."
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -103,7 +103,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your non-taxable costs were reimbursed by your employer?"
     val expectedHeading = "How much of your non-taxable costs were reimbursed by your employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of non-taxable costs reimbursed by your employer"
     val expectedIncorrectFormatErrorMessage = "Enter the amount of non-taxable costs reimbursed by your employer in the correct format"
     val expectedOverMaximumErrorMessage = "The non-taxable costs reimbursed by your employer must be less than £100,000,000,000"
@@ -121,7 +121,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much of your client’s non-taxable costs were reimbursed by their employer?"
     val expectedHeading = "How much of your client’s non-taxable costs were reimbursed by their employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of non-taxable costs reimbursed by your client’s employer"
     val expectedIncorrectFormatErrorMessage = "Enter the amount of non-taxable costs reimbursed by your client’s employer in the correct format"
     val expectedOverMaximumErrorMessage = "The non-taxable costs reimbursed by your client’s employer must be less than £100,000,000,000"
@@ -159,7 +159,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
@@ -191,7 +191,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(enterTotalText, enterTotalSelector)
@@ -224,7 +224,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -255,7 +255,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -356,7 +356,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -388,7 +388,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
@@ -420,7 +420,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)

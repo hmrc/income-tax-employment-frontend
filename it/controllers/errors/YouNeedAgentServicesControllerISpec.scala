@@ -78,7 +78,7 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
 
           import user.commonExpectedResults._
 
-          titleCheck(h1Expected)
+          titleCheck(h1Expected, user.isWelsh)
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
           textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", p1Selector)

@@ -80,8 +80,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val hintText = "For example, £193.52"
-    val continueButtonText = "Continue"
+    val hintText = "Er enghraifft, £193.52"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -106,7 +106,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
     val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
     val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your medical or dental benefit amount in the correct format"
     val expectedMaxErrorMessage = "Your medical or dental benefit must be less than £100,000,000,000"
@@ -134,7 +134,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
     val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
     val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your client’s medical or dental benefit amount in the correct format"
     val expectedMaxErrorMessage = "Your client’s medical or dental benefit must be less than £100,000,000,000"
@@ -170,7 +170,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -200,7 +200,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -231,7 +231,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -348,7 +348,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -382,7 +382,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -416,7 +416,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)

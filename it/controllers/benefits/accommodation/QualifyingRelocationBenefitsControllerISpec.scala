@@ -75,9 +75,9 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -101,7 +101,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any qualifying relocation benefits?"
     val expectedH1 = "Did you get any qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got qualifying relocation benefits"
     val expectedContent = "These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees. "
     val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
@@ -110,7 +110,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any qualifying relocation benefits?"
     val expectedH1 = "Did your client get any qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got qualifying relocation benefits"
     val expectedContent = "These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees. "
     val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
@@ -139,7 +139,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -163,7 +163,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             urlGet(fullUrl(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -203,7 +203,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               result.status shouldBe OK
             }
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             radioButtonCheck(yesText, 1, checked = true)
@@ -234,7 +234,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               result.status shouldBe OK
             }
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             radioButtonCheck(yesText, 1, checked = false)
@@ -334,7 +334,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, yesSelector)

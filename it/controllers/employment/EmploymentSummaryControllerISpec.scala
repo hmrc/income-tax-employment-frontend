@@ -152,8 +152,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val notificationContent: String = "You cannot have expenses without an employer. Add an employer or remove expenses."
     val noEmployers: String = "No employers"
     val name: String = "maggie"
-    val change: String = s"Change"
-    val remove: String = s"Remove"
+    val add: String = "Add"
+    val change: String = s"Newid"
+    val remove: String = s"Tynnu"
     val addAnother: String = "Add another employer"
     val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
     val expenses: String = "Expenses"
@@ -229,7 +230,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employer, employersSelector)
@@ -261,7 +262,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
@@ -291,7 +292,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employer, employersSelector)
@@ -323,7 +324,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
             captionCheck(expectedCaption(taxYear))
@@ -350,7 +351,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYear))
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
@@ -381,7 +382,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYear))
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
@@ -418,7 +419,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             textOnPageCheck(specific.yourEmpInfoStudentLoansUnreleased, yourEmpInfoSelector(4))
             buttonCheck(returnToOverview)
@@ -442,7 +443,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYear))
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
@@ -475,7 +476,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYear))
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
@@ -508,7 +509,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
@@ -544,7 +545,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
@@ -585,7 +586,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             }
 
             welshToggleCheck(user.isWelsh)
-            titleCheck(expectedTitle)
+            titleCheck(expectedTitle, user.isWelsh)
             h1Check(expectedH1)
             textOnPageCheck(specific.yourEmpInfoStudentLoansUnreleased, yourEmpInfoSelector(3))
             buttonCheck(returnToOverview)

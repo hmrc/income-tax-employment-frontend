@@ -68,10 +68,10 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueText = "Continue"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val continueText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -86,7 +86,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedTitle = "Did your employer make any assets available for your use?"
     val expectedHeading = "Did your employer make any assets available for your use?"
     val youCanUseText = "You can use these assets but you do not own them."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your employer made assets available for your use"
   }
 
@@ -102,7 +102,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedTitle = "Did your client’s employer make any assets available for their use?"
     val expectedHeading = "Did your client’s employer make any assets available for their use?"
     val youCanUseText = "They can use these assets but they do not own them."
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client’s employer made assets available for their use"
   }
 
@@ -140,7 +140,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
@@ -169,7 +169,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
@@ -199,7 +199,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
@@ -283,7 +283,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)

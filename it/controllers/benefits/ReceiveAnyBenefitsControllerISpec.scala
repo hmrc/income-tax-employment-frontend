@@ -61,11 +61,11 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val continueButton: String = "Continue"
+    val continueButton: String = "Yn eich blaen"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val paragraphText = "Examples of benefits include company cars or vans, fuel allowance and medical insurance."
-    val yesText = "Yes"
-    val noText = "No"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -85,14 +85,14 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "Did you get any benefits from this company?"
     val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got any benefits from this company"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "Did your client get any benefits from this company?"
     val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got any benefits from this company"
   }
 
@@ -126,7 +126,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(paragraphText, paragraphSelector)
@@ -156,7 +156,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(paragraphText, paragraphSelector)
@@ -231,7 +231,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedErrorTitle)
+          titleCheck(specific.expectedErrorTitle, user.isWelsh)
           h1Check(specific.expectedH1)
           captionCheck(expectedCaption)
           buttonCheck(continueButton)

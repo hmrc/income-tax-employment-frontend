@@ -82,9 +82,9 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -100,7 +100,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much were your beneficial loans in total?"
     val expectedHeading = "How much were your beneficial loans in total?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val youCanFindText = "You can find this information on your P11D form in section H, box 15."
     val expectedNoEntryErrorMessage = "Enter your beneficial loans amount"
     val expectedIncorrectFormatErrorMessage = "Enter your beneficial loans amount in the correct format"
@@ -120,7 +120,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much were your client’s beneficial loans in total?"
     val expectedHeading = "How much were your client’s beneficial loans in total?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val youCanFindText = "You can find this information on your client’s P11D form in section H, box 15."
     val expectedNoEntryErrorMessage = "Enter your client’s beneficial loans amount"
     val expectedIncorrectFormatErrorMessage = "Enter your client’s beneficial loans amount in the correct format"
@@ -159,7 +159,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), paragraphTextSelector)
@@ -191,7 +191,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector)
@@ -224,7 +224,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
@@ -255,7 +255,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedTitle)
+            titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
@@ -325,7 +325,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
@@ -357,7 +357,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
@@ -389,7 +389,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)

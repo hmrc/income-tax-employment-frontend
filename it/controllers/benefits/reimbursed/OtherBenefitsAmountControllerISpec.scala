@@ -76,9 +76,9 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue: String = "Continue"
+    val continue: String = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £500, tell us the correct amount."
     val maxAmountErrorText: String = "The amount for other benefits must be less than £100,000,000,000"
   }
@@ -94,7 +94,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did you get in total for other benefits?"
     val expectedHeading: String = "How much did you get in total for other benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Enter the amount you got for other benefits"
     val invalidFormatErrorText: String = "Enter the amount you got for other benefits in the correct format"
   }
@@ -110,7 +110,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did your client get in total for other benefits?"
     val expectedHeading: String = "How much did your client get in total for other benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Enter the amount your client got for other benefits"
     val invalidFormatErrorText: String = "Enter the amount your client got for other benefits in the correct format"
   }
@@ -147,7 +147,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           elementsNotOnPageCheck(previousAmountTextSelector)
@@ -176,7 +176,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -205,7 +205,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -305,7 +305,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -336,7 +336,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -368,7 +368,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)

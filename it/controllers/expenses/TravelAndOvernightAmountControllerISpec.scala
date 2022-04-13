@@ -79,8 +79,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hintText = "Total amount for the year For example, £193.52"
-    val buttonText = "Continue"
+    val hintText = "Total amount for the year Er enghraifft, £193.52"
+    val buttonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -98,7 +98,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for business travel and overnight stays?"
     val expectedHeading = "How much do you want to claim for business travel and overnight stays?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim travel and overnight stays"
     val expectedDoNotClaim = "Do not claim any amount your employer has paid you for."
     val expectedReplay: Int => String = amount =>
@@ -124,7 +124,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for your client’s business travel and overnight stays?"
     val expectedHeading = "How much do you want to claim for your client’s business travel and overnight stays?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for your client’s travel and overnight stays"
     val expectedDoNotClaim = "Do not claim any amount your client’s employer has paid them for."
     val expectedReplay: Int => String = amount =>
@@ -166,7 +166,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
@@ -195,7 +195,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(2))
@@ -279,7 +279,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
@@ -312,7 +312,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
@@ -345,7 +345,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
           }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))

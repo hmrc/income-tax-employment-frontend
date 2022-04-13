@@ -83,7 +83,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedH1: String = "What’s the PAYE reference of maggie?"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val hintText = "For example, 123/AB456"
     val expectedContent: String = "If the PAYE reference is not 123/AA12345, tell us the correct reference."
     val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
@@ -105,13 +105,13 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "What’s the PAYE reference of your employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "What’s the PAYE reference of your client’s employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
@@ -157,7 +157,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedContent, contentSelector)
@@ -186,7 +186,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(hintText, hintTestSelector)
@@ -328,7 +328,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(emptyErrorText, expectedErrorHref)
         }
@@ -353,7 +353,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, invalidPaye)
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         }

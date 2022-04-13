@@ -67,9 +67,9 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val yesText = "Yes"
-    val noText = "No"
-    val continueButtonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -82,7 +82,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a company van benefit?"
     val expectedHeading = "Did you get a company van benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Select yes if you got a company van benefit"
   }
 
@@ -96,7 +96,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a company van benefit?"
     val expectedHeading = "Did your client get a company van benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Select yes if your client got a company van benefit"
   }
 
@@ -126,7 +126,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = false)
@@ -155,7 +155,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = true)
@@ -219,7 +219,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, yesRadioButtonSelector)

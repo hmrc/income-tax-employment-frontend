@@ -26,7 +26,6 @@ import views.html.templates.NotFoundTemplate
 class NotFoundTemplateSpec extends ViewTest {
 
   object Selectors {
-
     val h1Selector = "#main-content > div > div > header > h1"
     val p1Selector = "#main-content > div > div > div.govuk-body > p:nth-child(1)"
     val p2Selector = "#main-content > div > div > div.govuk-body > p:nth-child(2)"
@@ -34,25 +33,37 @@ class NotFoundTemplateSpec extends ViewTest {
     val linkSelector = "#govuk-self-assessment-link"
   }
 
-  val h1Expected = "Page not found"
-  val p1Expected = "If you typed the web address, check it is correct."
-  val p2Expected = "If you used ‘copy and paste’ to enter the web address, check you copied the full address."
-  val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
-    "general enquiries (opens in new tab) to speak to someone about your income tax."
-  val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
-  val p3ExpectedLinkText = "Self Assessment: general enquiries (opens in new tab)"
+  object expectedResultsEN {
+    val h1Expected = "Page not found"
+    val p1Expected = "If you typed the web address, check it is correct."
+    val p2Expected = "If you used ‘copy and paste’ to enter the web address, check you copied the full address."
+    val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
+      "general enquiries (opens in new tab) to speak to someone about your income tax."
+    val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
+    val p3ExpectedLinkText = "Self Assessment: general enquiries (opens in new tab)"
+  }
+
+  object expectedResultsCY {
+    val h1Expected = "Heb ddod o hyd i’r dudalen"
+    val p1Expected = "Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir."
+    val p2Expected = "Os gwnaethoch ddefnyddio ‘copïo a gludo’ i nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn."
+    val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
+      "general enquiries (yn agor tab newydd) to speak to someone about your income tax."
+    val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
+    val p3ExpectedLinkText = "Self Assessment: general enquiries (yn agor tab newydd)"
+  }
 
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
   val appConfig: AppConfig = mockAppConfig
 
   "NotFoundTemplate in English" should {
-
+    import expectedResultsEN._
     "render the page correctly" which {
 
       lazy val view: HtmlFormat.Appendable = notFoundTemplate()(fakeRequest, messages, mockAppConfig)
       implicit lazy val document: Document = Jsoup.parse(view.body)
 
-      titleCheck(h1Expected)
+      titleCheck(h1Expected, isWelsh = false)
       welshToggleCheck("English")
       h1Check(h1Expected, "xl")
 
@@ -60,18 +71,17 @@ class NotFoundTemplateSpec extends ViewTest {
       textOnPageCheck(p2Expected,Selectors.p2Selector)
       textOnPageCheck(p3Expected,Selectors.p3Selector)
       linkCheck(p3ExpectedLinkText, Selectors.linkSelector, p3ExpectedLink)
-
     }
   }
 
   "NotFoundTemplate in Welsh" should {
-
+    import expectedResultsCY._
     "render the page correctly" which {
 
       lazy val view: HtmlFormat.Appendable = notFoundTemplate()(fakeRequest, welshMessages, mockAppConfig)
       implicit lazy val document: Document = Jsoup.parse(view.body)
 
-      titleCheck(h1Expected)
+      titleCheck(h1Expected, isWelsh = true)
       welshToggleCheck("Welsh")
       h1Check(h1Expected, "xl")
 
@@ -79,8 +89,6 @@ class NotFoundTemplateSpec extends ViewTest {
       textOnPageCheck(p2Expected,Selectors.p2Selector)
       textOnPageCheck(p3Expected,Selectors.p3Selector)
       linkCheck(p3ExpectedLinkText, Selectors.linkSelector, p3ExpectedLink)
-
     }
   }
-
 }

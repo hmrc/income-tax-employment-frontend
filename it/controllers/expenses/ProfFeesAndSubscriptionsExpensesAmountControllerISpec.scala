@@ -84,9 +84,9 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -103,7 +103,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for professional fees and subscriptions?"
     val expectedHeading = "How much do you want to claim for professional fees and subscriptions?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount you want to claim for professional fees and subscriptions"
     val expectedErrorIncorrectFormat = "Enter the amount you want to claim for professional fees and subscriptions in the correct format"
     val expectedErrorOverMaximum = "The amount you want to claim for professional fees and subscriptions must be less than £100,000,000,000"
@@ -125,7 +125,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for professional fees and subscriptions for your client?"
     val expectedHeading = "How much do you want to claim for professional fees and subscriptions for your client?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount you want to claim for your client’s professional fees and subscriptions"
     val expectedErrorIncorrectFormat = "Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format"
     val expectedErrorOverMaximum = "The amount you want to claim for your client’s professional fees and subscriptions must be less than £100,000,000,000"
@@ -165,7 +165,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           elementsNotOnPageCheck(replayTextSelector)
@@ -196,7 +196,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(newAmount), replayTextSelector)
@@ -226,7 +226,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
@@ -313,7 +313,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
@@ -345,7 +345,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
@@ -377,7 +377,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)

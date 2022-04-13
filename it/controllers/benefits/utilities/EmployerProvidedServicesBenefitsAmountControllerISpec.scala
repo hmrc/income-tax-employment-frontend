@@ -74,9 +74,9 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
+    val continue = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
   }
 
@@ -92,7 +92,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did you get in total for services provided by your employer?"
     val expectedHeading: String = "How much did you get in total for services provided by your employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter the amount you got for services provided by your employer in the correct format"
     val emptyErrorText: String = "Enter the amount you got for services provided by your employer"
     val maxAmountErrorText: String = "The amount you got for services provided by your employer must be less than £100,000,000,000"
@@ -110,7 +110,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did your client get in total for services provided by their employer?"
     val expectedHeading: String = "How much did your client get in total for services provided by their employer?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Enter the amount your client got for services provided by their employer in the correct format"
     val emptyErrorText: String = "Enter the amount your client got for services provided by their employer"
     val maxAmountErrorText: String = "The amount your client got for services provided by their employer must be less than £100,000,000,000"
@@ -147,7 +147,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck("", contentSelector)
@@ -180,7 +180,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, contentSelector)
@@ -248,7 +248,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
@@ -280,7 +280,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
@@ -312,7 +312,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)

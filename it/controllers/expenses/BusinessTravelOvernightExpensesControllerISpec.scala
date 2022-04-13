@@ -117,9 +117,9 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedParagraphText = "These expenses are things like:"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val buttonText = "Yn eich blaen"
     val expectedExample1 = "public transport costs"
     val expectedExample2 = "using a vehicle for business travel"
     val expectedExample3 = "hotel accommodation if you have to stay overnight"
@@ -152,7 +152,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim business travel and overnight expenses?"
     val expectedHeading = "Do you want to claim business travel and overnight expenses?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim travel and overnight stays"
     val expectedDoNotInclude = "Do not include your usual travel to work costs."
     val expectedDetailsInfo = "To work out how much you can claim for the tax year, you’ll need to:"
@@ -174,7 +174,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Do you want to claim your client’s business travel and overnight expenses?"
     val expectedHeading = "Do you want to claim your client’s business travel and overnight expenses?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for your client’s travel and overnight stays"
     val expectedDoNotInclude = "Do not include your client’s usual travel to work costs."
     val expectedDetailsInfo = "To work out how much your client can claim for the tax year, you’ll need to:"
@@ -212,7 +212,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -263,7 +263,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -315,7 +315,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
@@ -402,7 +402,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))

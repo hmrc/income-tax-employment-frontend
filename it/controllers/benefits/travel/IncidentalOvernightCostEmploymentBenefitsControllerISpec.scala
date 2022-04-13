@@ -75,7 +75,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get any incidental overnight costs?"
     val expectedH1 = "Did you get any incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got incidental overnight costs"
     val costInformation = "These are personal costs you incurred while travelling overnight on business."
   }
@@ -91,7 +91,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get any incidental overnight costs?"
     val expectedH1 = "Did your client get any incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got incidental overnight costs"
     val costInformation = "These are personal costs they incurred while travelling overnight on business."
   }
@@ -106,9 +106,9 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
     val allowanceInformation: String = "The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance."
   }
 
@@ -143,7 +143,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
@@ -174,7 +174,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
@@ -323,7 +323,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)

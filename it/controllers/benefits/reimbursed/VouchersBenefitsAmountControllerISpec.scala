@@ -83,13 +83,13 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
+    override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue: String = "Continue"
+    val continue: String = "Yn eich blaen"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
     val expectedTitle: String = "What is the total value of vouchers and credit card payments?"
     val expectedHeading: String = "What is the total value of vouchers and credit card payments?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Enter the amount for vouchers or credit cards"
     val invalidFormatErrorText: String = "Enter the amount for vouchers or credit cards in the correct format"
     val maxAmountErrorText: String = "The amount for vouchers or credit cards must be less than £100,000,000,000"
@@ -143,7 +143,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           elementsNotOnPageCheck(previousAmountTextSelector)
@@ -173,7 +173,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -203,7 +203,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -304,7 +304,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(expectedErrorTitle)
+          titleCheck(expectedErrorTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -337,7 +337,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(expectedErrorTitle)
+          titleCheck(expectedErrorTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)
@@ -370,7 +370,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(expectedErrorTitle)
+          titleCheck(expectedErrorTitle, user.isWelsh)
           h1Check(expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(previousExpectedContent, previousAmountTextSelector)

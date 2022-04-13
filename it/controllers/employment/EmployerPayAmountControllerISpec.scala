@@ -80,8 +80,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val hintText = "For example, £193.52"
+    val continueButtonText = "Yn eich blaen"
+    val hintText = "Er enghraifft, £193.52"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
     val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
   }
@@ -107,7 +107,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "How much did maggie pay you?"
     val expectedTitle: String = "How much did your employer pay you?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContent: String = s"If you were not paid £$amount, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
     val emptyErrorText: String = "Enter the amount you were paid"
@@ -116,7 +116,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "How much did maggie pay your client?"
     val expectedTitle: String = "How much did your client’s employer pay them?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContent: String = "If your client was not paid £100, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
     val emptyErrorText: String = "Enter the amount your client was paid"
@@ -165,7 +165,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
@@ -195,7 +195,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(get.expectedTitle)
+          titleCheck(get.expectedTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(hintText, hintTestSelector)
@@ -339,7 +339,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
         }
@@ -361,7 +361,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, "|")
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         }
@@ -384,7 +384,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe BAD_REQUEST
           }
 
-          titleCheck(get.expectedErrorTitle)
+          titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
         }

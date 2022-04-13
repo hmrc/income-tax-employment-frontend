@@ -78,7 +78,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
     val expectedHeading = "Did you get any assets from this company?"
     val expectedIncludesParagraph = "Include assets that your employer let you:"
     val expectedBullet2 = "keep for yourself"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if you got assets"
   }
 
@@ -96,7 +96,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
     val expectedHeading = "Did your client get any assets from this company?"
     val expectedIncludesParagraph = "Include assets that their employer let them:"
     val expectedBullet2 = "keep for themselves"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if your client got assets"
   }
 
@@ -113,9 +113,9 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedDescriptionParagraph = "Assets are things like computers, televisions or bicycles."
     val expectedBullet1 = "use"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -148,7 +148,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
@@ -180,7 +180,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
@@ -212,7 +212,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
@@ -315,7 +315,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)

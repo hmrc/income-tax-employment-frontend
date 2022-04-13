@@ -73,7 +73,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Were any of your non-taxable costs reimbursed by your employer?"
     val expectedHeading = "Were any of your non-taxable costs reimbursed by your employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if any of your non-taxable costs were reimbursed by your employer"
     val paragraph = "This includes costs of equipment or supplies required to carry out your job."
   }
@@ -89,7 +89,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Were any of your client’s non-taxable costs reimbursed by their employer?"
     val expectedHeading = "Were any of your client’s non-taxable costs reimbursed by their employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Select yes if any of your client’s non-taxable costs were reimbursed by their employer"
     val paragraph = "This includes costs of equipment or supplies required to carry out their job."
   }
@@ -103,9 +103,9 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -138,7 +138,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -166,7 +166,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -195,7 +195,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
@@ -309,7 +309,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)

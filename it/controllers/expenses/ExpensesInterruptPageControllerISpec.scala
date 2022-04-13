@@ -62,7 +62,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val buttonText = "Continue"
+    val buttonText = "Yn eich blaen"
     val expectedTitle = "Employment expenses"
     val expectedHeading = "Employment expenses"
   }
@@ -121,7 +121,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
@@ -150,7 +150,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
@@ -180,7 +180,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             result.status shouldBe OK
           }
 
-          titleCheck(expectedTitle)
+          titleCheck(expectedTitle, user.isWelsh)
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))

@@ -60,10 +60,10 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val h1Expected = "You are not authorised to use this service"
     val youCanText = "You can:"
     val goToTheText = "go to the"
-    val incomeTaxHomePageText = "Income Tax home page (opens in new tab)"
+    val incomeTaxHomePageText = "Income Tax home page (yn agor tab newydd)"
     val forMoreInformationText = "for more information"
     val useText = "use"
-    val selfAssessmentText = "Self Assessment: general enquiries (opens in new tab)"
+    val selfAssessmentText = "Self Assessment: general enquiries (yn agor tab newydd)"
     val toSpeakText = "to speak to someone about your income tax"
   }
 
@@ -94,7 +94,7 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
 
           import user.commonExpectedResults._
 
-          titleCheck(h1Expected)
+          titleCheck(h1Expected, user.isWelsh)
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
           textOnPageCheck(youCanText, p1Selector)

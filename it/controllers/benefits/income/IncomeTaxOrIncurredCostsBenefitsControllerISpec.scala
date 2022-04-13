@@ -64,7 +64,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did your employer pay any of your Income Tax or incurred costs?"
     val expectedH1 = "Did your employer pay any of your Income Tax or incurred costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your employer paid any of your Income Tax or incurred costs"
   }
 
@@ -78,7 +78,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client’s employer pay any of their Income Tax or incurred costs?"
     val expectedH1 = "Did your client’s employer pay any of their Income Tax or incurred costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client’s employer paid any of their Income Tax or incurred costs"
   }
 
@@ -91,9 +91,9 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -127,7 +127,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = false)
@@ -157,7 +157,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = true)
@@ -188,7 +188,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = false)
@@ -264,7 +264,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = false)

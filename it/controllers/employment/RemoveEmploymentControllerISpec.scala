@@ -106,14 +106,14 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
@@ -153,7 +153,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
@@ -179,7 +179,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedHeading("apple"))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
@@ -207,7 +207,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle)
+          titleCheck(specific.expectedTitle, user.isWelsh)
           h1Check(specific.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)

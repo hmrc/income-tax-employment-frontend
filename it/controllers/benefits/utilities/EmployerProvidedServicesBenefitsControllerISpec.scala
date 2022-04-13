@@ -71,9 +71,9 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val buttonText = "Yn eich blaen"
     val expectedHintText = "For example, subscriptions or laundry services."
   }
 
@@ -88,7 +88,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a benefit for services provided by your employer?"
     val expectedHeading = "Did you get a benefit for services provided by your employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
     val expectedParagraphText = "These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services."
   }
@@ -104,7 +104,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a benefit for services provided by their employer?"
     val expectedHeading = "Did your client get a benefit for services provided by their employer?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
     val expectedParagraphText = "These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services."
   }
@@ -139,7 +139,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -169,7 +169,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -198,7 +198,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
@@ -296,7 +296,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)

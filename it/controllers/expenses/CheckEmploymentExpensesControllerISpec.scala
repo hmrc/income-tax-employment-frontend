@@ -130,7 +130,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val changeText: String = "Change"
+    val changeText: String = "Newid"
     val employmentExpenses = "Employment expenses"
     val jobExpensesQuestion = "Business travel and overnight stays"
     val jobExpensesAmount = "Amount for business travel and overnight stays"
@@ -141,7 +141,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
-    val continueButtonText = "Save and continue"
+    val continueButtonText = "Cadw ac yn eich blaen"
     val returnToEmploymentSummaryText: String = "Return to PAYE employment"
 
     val fieldNames = Seq(
@@ -155,8 +155,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       "Other equipment",
       "Amount for other equipment",
     )
-    val yes: String = "Yes"
-    val no: String = "No"
+    val yes: String = "Iawn"
+    val no: String = "Na"
 
     def expectedCaption(taxYear: Int = taxYear): String = s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
   }
@@ -261,7 +261,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption())
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
@@ -269,19 +269,19 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           welshToggleCheck(user.isWelsh)
 
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(1), "for section question")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(1), "for section question")
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
           textOnPageCheck("£200", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
           textOnPageCheck("£300", summaryListRowFieldAmountSelector(5))
           textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
-          textOnPageCheck("No", summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
+          textOnPageCheck(user.commonExpectedResults.no, summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(7))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(7), "otherAndCapitalAllowancesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(7), "otherAndCapitalAllowancesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(8), summaryListRowFieldNameSelector(8))
           textOnPageCheck("£600", summaryListRowFieldAmountSelector(8))
           buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, returnToEmploymentSummarySelector)
@@ -301,7 +301,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(specificResults.expectedTitle)
+          titleCheck(specificResults.expectedTitle, user.isWelsh)
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(taxYear - 1))
           textOnPageCheck(specificResults.expectedContent, contentSelector)
@@ -344,7 +344,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(specificResults.expectedTitle)
+          titleCheck(specificResults.expectedTitle, user.isWelsh)
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(taxYear - 1))
           welshToggleCheck(user.isWelsh)
@@ -367,7 +367,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           welshToggleCheck(user.isWelsh)
@@ -398,7 +398,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
@@ -438,7 +438,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
@@ -446,21 +446,21 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           welshToggleCheck(user.isWelsh)
 
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(1), "for section question")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(1), "for section question")
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
           textOnPageCheck("£200", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
           textOnPageCheck("£300", summaryListRowFieldAmountSelector(5))
           textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
           textOnPageCheck("£400", summaryListRowFieldAmountSelector(7))
           textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
-          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(8), "otherAndCapitalAllowancesQuestion")
+          textOnPageCheck(user.commonExpectedResults.yes, summaryListRowFieldAmountSelector(8), "otherAndCapitalAllowancesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(8), summaryListRowFieldNameSelector(9))
           textOnPageCheck("£600", summaryListRowFieldAmountSelector(9))
           buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, returnToEmploymentSummarySelector)
@@ -480,7 +480,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -522,7 +522,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)

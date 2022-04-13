@@ -74,7 +74,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a childcare benefit?"
     val expectedH1 = "Did you get a childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got a childcare benefit"
     val expectedTheseAre = "These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs."
     val expectedCheckWith = "Check with your employer if you are unsure."
@@ -92,7 +92,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a childcare benefit?"
     val expectedH1 = "Did your client get a childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got a childcare benefit"
     val expectedTheseAre = "These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs."
     val expectedCheckWith = "Check with your client’s employer if you are unsure."
@@ -109,11 +109,11 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (opens in new tab)."
-    val expectedWeOnlyLink = "exempt limit (opens in new tab)."
+    val expectedButtonText = "Yn eich blaen"
+    val yesText = "Iawn"
+    val noText = "Na"
+    val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (yn agor tab newydd)."
+    val expectedWeOnlyLink = "exempt limit (yn agor tab newydd)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -146,7 +146,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
@@ -179,7 +179,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
@@ -213,7 +213,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
@@ -317,7 +317,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))

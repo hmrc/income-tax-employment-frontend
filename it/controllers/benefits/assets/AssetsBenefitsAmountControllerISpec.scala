@@ -87,9 +87,9 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £193.52"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
-    val continueButtonText = "Continue"
+    val continueButtonText = "Yn eich blaen"
     val enterTotalText = "Enter the total."
   }
 
@@ -106,7 +106,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much were the assets made available for your use?"
     val expectedHeading = "How much were the assets made available for your use?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedYouCanText: String = "You can find this information on your P11D form in section L, box 13."
     val expectedErrorNoEntry = "Enter the amount for assets made available for your use"
     val expectedErrorIncorrectFormat = "Enter the amount for assets made available for your use in the correct format"
@@ -126,7 +126,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much were the assets made available for your client’s use?"
     val expectedHeading = "How much were the assets made available for your client’s use?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedYouCanText: String = "You can find this information on your client’s P11D form in section L, box 13."
     val expectedErrorNoEntry = "Enter the amount for assets made available for your client’s use"
     val expectedErrorIncorrectFormat = "Enter the amount for assets made available for your client’s use in the correct format"
@@ -165,7 +165,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           elementsNotOnPageCheck(previousAmountSelector)
@@ -197,7 +197,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
@@ -228,7 +228,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
@@ -346,7 +346,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
@@ -384,7 +384,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
@@ -422,7 +422,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             implicit def documentSupplier: () => Document = () => document
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
