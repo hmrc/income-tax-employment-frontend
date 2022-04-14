@@ -27,11 +27,13 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import play.api.{Environment, Mode}
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -45,6 +47,8 @@ import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAMo
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+
+import scala.concurrent.Future
 
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
@@ -1790,8 +1794,23 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       result.status shouldBe SEE_OTHER
       result.header("location").contains(overviewUrl(taxYear)) shouldBe true
     }
-  }
 
+    "redirect to overview page when theres no benefits and in year but employmentEOYEnabled is false" in {
+      implicit lazy val result: Future[Result] = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+        val request = FakeRequest("GET", checkYourBenefitsUrl(taxYearEOY, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
+        route(GuiceApplicationBuilder().in(Environment.simple(mode = Mode.Dev))
+          .configure(config() + ("feature-switch.employmentEOYEnabled" -> "false"))
+          .build(),
+          request,
+          "{}").get
+      }
+
+      await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+    }
+  }
 
   ".submit" when {
     "return a redirect when in year" which {

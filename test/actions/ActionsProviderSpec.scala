@@ -27,7 +27,6 @@ import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler}
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.InYearUtil
 
 class ActionsProviderSpec extends ControllerUnitTest
@@ -40,7 +39,6 @@ class ActionsProviderSpec extends ControllerUnitTest
   private val fakeIndividualRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withHeaders("X-Session-ID" -> aUser.sessionId)
 
-  private val hc: HeaderCarrier = HeaderCarrier()
   private val mockAppConfig = new MockAppConfig().config()
   private val anyBlock = (_: Request[AnyContent]) => Ok("any-result")
 
@@ -149,7 +147,7 @@ class ActionsProviderSpec extends ControllerUnitTest
       status(underTest(fakeIndividualRequest)) shouldBe OK
     }
   }
-  
+
   ".notInYearWithSessionData" should {
     "redirect to UnauthorisedUserErrorController when authentication fails" in {
       mockFailToAuthenticate()
@@ -165,6 +163,22 @@ class ActionsProviderSpec extends ControllerUnitTest
       val underTest = actionsProvider.notInYearWithSessionData(taxYear, employmentId)(anyBlock)
 
       await(underTest(fakeIndividualRequest)) shouldBe Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
+
+    "redirect to Income Tax Submission Overview when EOY and employmentEOYEnabled is false" in {
+      val actionsProvider = new ActionsProvider(
+        mockAuthorisedAction,
+        mockEmploymentSessionService,
+        mockErrorHandler,
+        new InYearUtil,
+        new MockAppConfig().config(isEmploymentEOYEnabled = false)
+      )
+
+      mockAuthAsIndividual(Some(aUser.nino))
+
+      val underTest = actionsProvider.notInYearWithSessionData(taxYearEOY, employmentId)(anyBlock)
+
+      await(underTest(fakeIndividualRequest)) shouldBe Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
     }
 
     "handle internal server error when getting session data result in database error" in {

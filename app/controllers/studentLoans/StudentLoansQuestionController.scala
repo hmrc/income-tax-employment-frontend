@@ -31,21 +31,17 @@ import views.html.studentLoans.StudentLoansQuestionView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StudentLoansQuestionController @Inject()(
-                                                mcc: MessagesControllerComponents,
+class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents,
                                                 view: StudentLoansQuestionView,
                                                 employmentSessionService: EmploymentSessionService,
                                                 authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
-                                                errorHandler: ErrorHandler,
-                                                implicit val appConfig: AppConfig,
-                                                implicit val ec: ExecutionContext
-                                              ) extends FrontendController(mcc) with I18nSupport {
-
+                                                errorHandler: ErrorHandler)
+                                              (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       val inYear: Boolean = inYearAction.inYear(taxYear)
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(employmentData) =>
@@ -67,7 +63,7 @@ class StudentLoansQuestionController @Inject()(
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       val inYear: Boolean = inYearAction.inYear(taxYear)
       StudentLoanQuestionForm.studentLoanForm(request.user.isAgent).bindFromRequest().fold(
         formWithErrors => {

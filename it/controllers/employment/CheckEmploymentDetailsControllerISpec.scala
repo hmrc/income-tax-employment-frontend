@@ -24,8 +24,13 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
+import play.api.{Environment, Mode}
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -39,6 +44,8 @@ import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetail
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+
+import scala.concurrent.Future
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -741,6 +748,22 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
         }
       }
+    }
+
+    "redirect to the overview page when prior data exists but employmentEOYEnabled is false" in {
+      implicit lazy val result: Future[Result] = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val request = FakeRequest("GET", checkYourDetailsUrl(taxYearEOY, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
+        route(GuiceApplicationBuilder().in(Environment.simple(mode = Mode.Dev))
+          .configure(config() + ("feature-switch.employmentEOYEnabled" -> "false"))
+          .build(),
+          request,
+          "{}").get
+      }
+
+      await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
     }
 
     "redirect to the overview page when prior data exists but not matching the id" which {

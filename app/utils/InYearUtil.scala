@@ -50,7 +50,7 @@ class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
   }
 
   def notInYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now)(block: Future[Result]): Future[Result] = {
-    if (!inYear(taxYear, now)) {
+    if (!inYear(taxYear, now) && appConfig.employmentEOYEnabled) {
       block
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))

@@ -34,18 +34,18 @@ import views.html.studentLoans.PglAmountView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponents,
+class PglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     authAction: AuthorisedAction,
-                                    val employmentSessionService: EmploymentSessionService,
-                                    val studentLoansService: StudentLoansService,
+                                    employmentSessionService: EmploymentSessionService,
+                                    studentLoansService: StudentLoansService,
                                     view: PglAmountView,
-                                    appConfig: AppConfig,
-                                    errorHandler: ErrorHandler,
-                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
+                                    errorHandler: ErrorHandler)
+                                   (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+  with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
@@ -76,7 +76,7 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
-    if (appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       val redirectUrl = StudentLoansCYAController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         amountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(

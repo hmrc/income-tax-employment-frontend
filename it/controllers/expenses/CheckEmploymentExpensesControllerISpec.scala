@@ -26,10 +26,15 @@ import models.requests.CreateUpdateExpensesRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
+import play.api.{Environment, Mode}
 import play.api.http.HeaderNames
 import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -42,6 +47,8 @@ import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewM
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+
+import scala.concurrent.Future
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
@@ -546,6 +553,22 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       }
     }
 
+    "redirect to overview page when all the fields are populated at the end of the year and employmentEOYEnabled is false" in {
+      implicit lazy val result: Future[Result] = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val request = FakeRequest("GET", checkYourExpensesUrl(taxYearEOY)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
+        route(GuiceApplicationBuilder().in(Environment.simple(mode = Mode.Dev))
+          .configure(config() + ("feature-switch.employmentEOYEnabled" -> "false"))
+          .build(),
+          request,
+          "{}").get
+      }
+
+      await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+    }
+
     "redirect to overview page when theres no expenses" in {
       lazy val result: WSResponse = {
         dropExpensesDB()
@@ -644,7 +667,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "redirect to the missing section if the expense questions are incomplete when submitting CYA data at the end of the year" which {
-
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -667,7 +689,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "redirect to the first missing section if there are more than one incomplete expense questions when submitting CYA data at the end of the year" which {
-
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -687,7 +708,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "create the model to update the data and return the correct redirect when no customer data and cya data submitted cya data is different from hmrc expense" which {
-
       implicit lazy val result: WSResponse = {
 
         val newAmount = BigDecimal(10000.99)
@@ -718,7 +738,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "create the model to update the data and return redirect when there is no customer expenses and nothing has changed in relation to hmrc expenses" which {
-
       implicit lazy val result: WSResponse = {
 
         dropEmploymentDB()
@@ -741,7 +760,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "create the model to update the data and return redirect when there are no hmrc expenses and nothing has changed in relation to customer expenses" which {
-
       implicit lazy val result: WSResponse = {
 
         dropEmploymentDB()
@@ -763,6 +781,23 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     }
 
-  }
+    "redirect to overview page when employmentEOYEnabled is false" in {
+      implicit val result: Future[Result] = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
+        val headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), "Csrf-Token" -> "nocheck")
+        val request = FakeRequest("POST", checkYourExpensesUrl(taxYearEOY)).withHeaders(headers: _*)
+        route(GuiceApplicationBuilder().in(Environment.simple(mode = Mode.Dev))
+          .configure(config() + ("feature-switch.employmentEOYEnabled" -> "false"))
+          .build(),
+          request,
+          "{}").get
+      }
 
+      await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+    }
+  }
 }

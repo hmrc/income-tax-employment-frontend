@@ -24,7 +24,12 @@ import utils.TaxYearHelper
 
 class MockAppConfig extends MockFactory with TaxYearHelper {
 
-  def config(encrypt: Boolean = true, _mimicEmploymentAPICalls: Boolean = false, slEnabled: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
+  def config(encrypt: Boolean = true,
+             _mimicEmploymentAPICalls: Boolean = false,
+             slEnabled: Boolean = true,
+             isEmploymentEOYEnabled: Boolean = true,
+             taxYearErrorEnabled: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
+
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
 
@@ -45,13 +50,15 @@ class MockAppConfig extends MockFactory with TaxYearHelper {
     override lazy val timeoutDialogTimeout: Int = 900
     override lazy val timeoutDialogCountdown: Int = 120
 
-    override lazy val taxYearErrorFeature: Boolean = true
+    override lazy val taxYearErrorFeature: Boolean = taxYearErrorEnabled
 
     override lazy val welshToggleEnabled: Boolean = true
 
     override lazy val nrsEnabled: Boolean = true
 
     override lazy val studentLoansEnabled: Boolean = slEnabled
+
+    override lazy val employmentEOYEnabled: Boolean = isEmploymentEOYEnabled
 
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"
 

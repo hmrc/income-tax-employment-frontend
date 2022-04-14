@@ -21,7 +21,7 @@ import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.MockEmploymentSessionService
+import support.mocks.{MockAppConfig, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.EmployerInformationView
 
@@ -31,12 +31,12 @@ class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploym
 
   private lazy val view = app.injector.instanceOf[EmployerInformationView]
 
-  private lazy val controller = new EmployerInformationController()(
+  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController()(
     mockMessagesControllerComponents,
     authorisedAction,
     view,
     inYearAction,
-    mockAppConfig,
+    new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled),
     mockEmploymentSessionService,
     ec
   )
@@ -53,7 +53,7 @@ class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploym
 
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear = true, showNotification = false)))
-          controller.show(taxYear, employmentId)(fakeRequest.withSession(
+          controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
         }
@@ -62,11 +62,20 @@ class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploym
       }
     }
 
+    "redirect the User to the Overview page when GetEmploymentDataModel is in mongo but " which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+        val result = controller(isEmploymentEOYEnabled = false).show(taxYearEOY, anEmploymentSource.employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+      }
+    }
+
     "redirect the User to the Overview page no data in mongo" which {
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+          controller().show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
 
         status(result) shouldBe SEE_OTHER

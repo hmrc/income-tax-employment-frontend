@@ -100,7 +100,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val nrsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.nrsEnabled")
 
   lazy val studentLoansEnabled: Boolean = servicesConfig.getBoolean("feature-switch.studentLoans")
-  
+
+  lazy val employmentEOYEnabled: Boolean = servicesConfig.getBoolean("feature-switch.employmentEOYEnabled")
+
   lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
 
   lazy val mimicEmploymentAPICalls: Boolean = servicesConfig.getBoolean("mimicEmploymentAPICalls")

@@ -48,6 +48,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
+  //scalastyle:off
   def show(taxYear: Int): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear)(allEmploymentData =>
@@ -56,6 +57,8 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
             taxYear, isInYear = true, isUsingCustomerData = isUsingCustomerData)
           case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         })
+    } else if (!appConfig.employmentEOYEnabled) {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
@@ -102,9 +105,10 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
       })
     }
   }
+  //scalastyle:on
 
   def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
+    if(!inYearAction.inYear(taxYear) && appConfig.employmentEOYEnabled) {
       employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
           case Some(cya) => cya.expensesCya.expenses.expensesIsFinished(taxYear) match {
@@ -125,6 +129,8 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
           case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
         }
       })
+    } else {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
 

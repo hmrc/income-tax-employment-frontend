@@ -72,6 +72,8 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
           case None => redirect
         }
       }
+    } else if (!appConfig.employmentEOYEnabled) {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId, redirectWhenNoPrior = true) { (cya, prior) =>
         (cya, prior) match {

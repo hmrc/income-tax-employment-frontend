@@ -21,8 +21,7 @@ import models.OptionalUserPriorDataRequest
 import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.{AnyContent, Result}
-import play.api.mvc.Results.{Ok, Redirect}
-import support.mocks.{MockActionsProvider, MockEmploymentSessionService}
+import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentSummaryView
 
@@ -38,20 +37,20 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       employerRef = Some("223/AB12399"),
       payrollId = Some("123456789999"),
       startDate = Some("2019-04-21"),
-      cessationDate = Some(s"${taxYearEOY-1}-03-11"),
-      dateIgnored = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
-      submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+      cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
+      dateIgnored = Some(s"${taxYearEOY - 1}-04-04T01:01:01Z"),
+      submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
       hmrcEmploymentFinancialData = Some(
         EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = s"${taxYearEOY-1}-02-12",
+            submittedOn = s"${taxYearEOY - 1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -70,19 +69,19 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       employerRef = Some("223/AB12399"),
       payrollId = Some("123456789999"),
       startDate = Some("2019-04-21"),
-      cessationDate = Some(s"${taxYearEOY-1}-03-11"),
-      dateIgnored = Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
-      submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+      cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
+      dateIgnored = Some(s"${taxYearEOY - 1}-04-04T01:01:01Z"),
+      submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
       hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
         employmentData = Some(EmploymentData(
-          submittedOn = s"${taxYearEOY-1}-02-12",
+          submittedOn = s"${taxYearEOY - 1}-02-12",
           employmentSequenceNumber = Some("123456789999"),
           companyDirector = Some(true),
           closeCompany = Some(false),
-          directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+          directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
           Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(100.00),
@@ -113,10 +112,10 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
   private val employmentSummaryView = app.injector.instanceOf[EmploymentSummaryView]
 
-  private lazy val controller = new EmploymentSummaryController()(
+  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController()(
     mockMessagesControllerComponents,
     authorisedAction,
-    mockAppConfig,
+    new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled),
     employmentSummaryView,
     mockEmploymentSessionService,
     inYearAction,
@@ -130,7 +129,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         mockGetPriorRight(taxYearEOY, None)
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -140,7 +139,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -151,7 +150,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
         mockClear()
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -161,7 +160,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
@@ -172,7 +171,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
         mockClear()
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
@@ -182,7 +181,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
         mockClear(Left())
         mockInternalServerError
 
-        val result: Future[Result] = controller.addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -198,7 +197,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       s"has an OK($OK) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))
 
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest)
+        val result: Future[Result] = controller().show(taxYear)(fakeRequest)
         status(result) shouldBe OK
         bodyOf(result).contains("Mishima Zaibatsu") shouldBe true
       }
@@ -208,9 +207,20 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       s"has an OK($OK) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, Some(FullModel.multipleEmploymentSourcesData))
 
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest)
+        val result: Future[Result] = controller().show(taxYear)(fakeRequest)
         status(result) shouldBe OK
         bodyOf(result).contains("Violet Systems") shouldBe true
+      }
+    }
+
+    "redirect the User to the Overview page when EOY and employmentEOYEnabled is false" which {
+      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+        mockGetPriorRight(taxYearEOY, Some(FullModel.multipleEmploymentSourcesData))
+
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY)(fakeRequest)
+
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
       }
     }
 
@@ -218,7 +228,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, None)
 
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
