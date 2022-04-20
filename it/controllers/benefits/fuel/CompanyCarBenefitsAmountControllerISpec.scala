@@ -62,7 +62,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       car = Some(carAmount))), isUsingCustomerData = true)
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"

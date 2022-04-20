@@ -40,7 +40,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   private val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
@@ -198,7 +198,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           welshToggleCheck(user.isWelsh)
         }
 
-        "should render How much was your How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior benefits" which {
+        "render How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior benefits" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -355,7 +355,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
@@ -367,7 +367,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           errorAboveElementCheck(get.emptyErrorText)
         }
 
-        "should render the How much was your total living accommodation benefit? page with an error when the amount is invalid" which {
+        "render the How much was your total living accommodation benefit? page with an error when the amount is invalid" which {
           val errorAmount = "abc"
           val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
           implicit lazy val result: WSResponse = {
@@ -389,7 +389,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
@@ -423,7 +423,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)

@@ -38,14 +38,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 // TODO: This controller does not have enough test coverage in CompanyCarBenefitsControllerISpec
-class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                             authAction: AuthorisedAction,
+class CompanyCarBenefitsController @Inject()(authAction: AuthorisedAction,
                                              inYearAction: InYearUtil,
                                              companyCarBenefitsView: CompanyCarBenefitsView,
-                                             appConfig: AppConfig,
                                              employmentSessionService: EmploymentSessionService,
                                              fuelService: FuelService,
-                                             errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                             errorHandler: ErrorHandler)
+                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = cc.executionContext
 

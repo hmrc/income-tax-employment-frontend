@@ -47,7 +47,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
@@ -392,7 +392,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, errorAmount)
@@ -426,7 +426,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, errorAmount)
@@ -461,7 +461,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
+          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, errorAmount)

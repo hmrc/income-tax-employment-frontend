@@ -37,15 +37,14 @@ import views.html.benefits.accommodation.QualifyingRelocationBenefitsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class QualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                       authAction: AuthorisedAction,
+class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAction,
                                                        inYearAction: InYearUtil,
                                                        qualifyingRelocationBenefitsView: QualifyingRelocationBenefitsView,
-                                                       appConfig: AppConfig,
                                                        employmentSessionService: EmploymentSessionService,
                                                        accommodationService: AccommodationService,
-                                                       errorHandler: ErrorHandler,
-                                                       ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                       errorHandler: ErrorHandler)
+                                                      (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

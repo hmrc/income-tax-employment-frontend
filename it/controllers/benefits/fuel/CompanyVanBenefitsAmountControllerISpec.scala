@@ -37,7 +37,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   private val employmentId = "employmentId"
 
   object Selectors {
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val contentSelector = "#main-content > div > div > p"
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"
     val poundPrefixSelector = ".govuk-input__prefix"

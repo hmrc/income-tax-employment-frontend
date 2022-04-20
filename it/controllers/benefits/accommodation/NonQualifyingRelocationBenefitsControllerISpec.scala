@@ -40,9 +40,9 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
     val yesSelector = "#value"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
-    val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"
-    val contentExample1Selector = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(1)"
-    val contentExample2Selector = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(2)"
+    val contentSelector = "#main-content > div > div > p"
+    val contentExample1Selector = "#main-content > div > div > ul > li:nth-child(1)"
+    val contentExample2Selector = "#main-content > div > div > ul > li:nth-child(2)"
   }
 
   trait CommonExpectedResults {
