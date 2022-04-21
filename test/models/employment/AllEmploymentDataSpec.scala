@@ -131,6 +131,14 @@ class AllEmploymentDataSpec extends UnitTest {
       allEmploymentData.latestInYearExpenses shouldBe Some(LatestExpensesOrigin(hmrcExpenses, isCustomerData = false))
     }
 
+    "return none when ignored" in {
+      val allEmploymentData = anAllEmploymentData
+        .copy(hmrcExpenses = Some(hmrcExpenses.copy(dateIgnored = Some("2020-10-10"))))
+        .copy(customerExpenses = None)
+
+      allEmploymentData.latestInYearExpenses shouldBe None
+    }
+
     "return None when hmrc expenses do not exist" in {
       val allEmploymentData = anAllEmploymentData
         .copy(hmrcExpenses = None)
@@ -147,6 +155,13 @@ class AllEmploymentDataSpec extends UnitTest {
         .copy(customerExpenses = None)
 
       allEmploymentData.latestEOYExpenses shouldBe Some(LatestExpensesOrigin(hmrcExpenses, isCustomerData = false))
+    }
+    "return none when ignored" in {
+      val allEmploymentData = anAllEmploymentData
+        .copy(hmrcExpenses = Some(hmrcExpenses.copy(dateIgnored = Some("2020-10-10"))))
+        .copy(customerExpenses = None)
+
+      allEmploymentData.latestEOYExpenses shouldBe None
     }
 
     "return a pair of customer expenses and isCustomerData true when customer expenses exist" in {

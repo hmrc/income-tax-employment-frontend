@@ -48,7 +48,7 @@ class RemoveExpensesController @Inject() (implicit val cc: MessagesControllerCom
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
-        (allEmploymentData.customerExpenses, allEmploymentData.hmrcExpenses) match {
+        (allEmploymentData.customerExpenses, allEmploymentData.notIgnoredHmrcExpenses) match {
           case (None, None) => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
           case _ => Ok(removeExpensesView(taxYear))
         }
@@ -62,12 +62,14 @@ class RemoveExpensesController @Inject() (implicit val cc: MessagesControllerCom
         case Left(error) => Future.successful(errorHandler.handleError(error.status))
         case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
-          deleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(request.user, allEmploymentData, taxYear).map {
-            case Left(error) => errorHandler.handleError(error.status)
-            case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
+          (allEmploymentData.customerExpenses, allEmploymentData.notIgnoredHmrcExpenses) match {
+            case (None, None) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+            case _ => deleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(request.user, allEmploymentData, taxYear).map {
+              case Left(error) => errorHandler.handleError(error.status)
+              case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
+            }
           }
       }
     }
   }
-
 }

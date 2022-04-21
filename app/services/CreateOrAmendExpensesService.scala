@@ -64,7 +64,7 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
                                                cya: ExpensesUserData,
                                                prior: Option[AllEmploymentData]): Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = {
 
-    val hmrcExpenses: Option[EmploymentExpenses] = prior.flatMap(res => res.hmrcExpenses.filter(_.dateIgnored.isEmpty))
+    val hmrcExpenses: Option[EmploymentExpenses] = prior.flatMap(res => res.notIgnoredHmrcExpenses)
     val expensesData = formCreateUpdateExpenses(cya, prior)
 
     if (expensesData.dataHasNotChanged) {

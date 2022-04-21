@@ -24,6 +24,8 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
                              customerEmploymentData: Seq[EmploymentSource],
                              customerExpenses: Option[EmploymentExpenses]) extends Logging {
 
+  def notIgnoredHmrcExpenses: Option[EmploymentExpenses] = hmrcExpenses.filter(_.dateIgnored.isEmpty)
+
   def latestInYearEmployments: Seq[EmploymentSource] = {
     hmrcEmploymentData.map(_.toEmploymentSource).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
   }
@@ -39,17 +41,17 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
 
   def isLastInYearEmployment: Boolean = latestInYearEmployments.length == 1
 
-  def latestInYearExpenses: Option[LatestExpensesOrigin] = hmrcExpenses.map(LatestExpensesOrigin(_, isCustomerData = false))
+  def latestInYearExpenses: Option[LatestExpensesOrigin] = notIgnoredHmrcExpenses.map(LatestExpensesOrigin(_, isCustomerData = false))
 
   def latestEOYExpenses: Option[LatestExpensesOrigin] = {
-    val hmrcExp = hmrcExpenses.filter(_.dateIgnored.isEmpty)
+    val hmrcExp = notIgnoredHmrcExpenses
 
     // TODO: This logging should be moved to wherever the object is read from, e.g. connector or repository
     if (hmrcExp.isDefined && customerExpenses.isDefined) {
       logger.warn("[AllEmploymentData][latestEOYExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
     }
 
-    lazy val default = hmrcExpenses.map(LatestExpensesOrigin(_, isCustomerData = false))
+    lazy val default = hmrcExp.map(LatestExpensesOrigin(_, isCustomerData = false))
     customerExpenses.fold(default)(customerExpenses => Some(LatestExpensesOrigin(customerExpenses, isCustomerData = true)))
   }
 

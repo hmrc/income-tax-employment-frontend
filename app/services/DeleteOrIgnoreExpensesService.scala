@@ -39,7 +39,7 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
   def deleteOrIgnoreExpenses(user: User, employmentData: AllEmploymentData, taxYear: Int)
                             (implicit hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
 
-    val hmrcExpenses = employmentData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
+    val hmrcExpenses = employmentData.notIgnoredHmrcExpenses
     val customerExpenses = employmentData.customerExpenses
     val eventualResult = (hmrcExpenses, customerExpenses) match {
       case (Some(_), Some(_)) =>
