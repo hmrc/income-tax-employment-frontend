@@ -15,44 +15,45 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
-@import views.html.templates.helpers.InputRadio
-@import views.html.templates.helpers.Details
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.InputRadioAlt
 @import utils.ViewUtils._
 
 @this(
     layout: Layout,
-    inputRadio: InputRadio,
-    formWithCsrf: FormWithCSRF,
+    heading: Heading,
     errorSummary: ErrorSummary,
-    button: Button,
-    details: Details
+    formWithCsrf: FormWithCSRF,
+    inputRadio: InputRadioAlt,
+    button: Button
 )
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(getAgentDynamicContent("benefits.entertainingBenefits.title", request.user.isAgent))}
+
 @headingForUse = @{titleForUse}
 
-@contentHtml = {
-    <p class="govuk-body">@messages(s"benefits.entertainingBenefits.paragraph.${if(request.user.isAgent) "agent" else "individual"}")</p>
-}
-
 @hasFormErrors = @{form.hasErrors}
+
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.travel.routes.EntertainingBenefitsController.submit(taxYear, employmentId)) {
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
+    <p class="govuk-body">@messages(s"benefits.entertainingBenefits.paragraph.${if(request.user.isAgent) "agent" else "individual"}")</p>
+
+    @formWithCsrf(action = controllers.benefits.travel.routes.EntertainingBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
-            heading = headingForUse,
-            inline = true,
-            content = Some(contentHtml),
-            subheading = Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString))
-            )
+            legendHeading = Some(Html(headingForUse)),
+            legendHidden = true,
+            inline = true
+        )
+
         @button()
     }
 }
@@ -60,4 +61,3 @@
 @{
 // $COVERAGE-OFF$
 }
-

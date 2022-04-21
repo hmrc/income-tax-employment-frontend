@@ -41,11 +41,11 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
     anEmploymentUserData.copy(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   object Selectors {
-    val costInformationSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
-    val allowanceInformationSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
+
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
   }
 
   trait SpecificExpectedResults {
@@ -146,8 +146,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
-          textOnPageCheck(allowanceInformation, allowanceInformationSelector)
+          textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
+          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -177,8 +177,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
-          textOnPageCheck(allowanceInformation, allowanceInformationSelector)
+          textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
+          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -326,8 +326,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
-            textOnPageCheck(allowanceInformation, allowanceInformationSelector)
+            textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 3))
+            textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 4))
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)

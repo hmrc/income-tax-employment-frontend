@@ -39,7 +39,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val thisIsSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
+    val thisIsSelector: String = "#main-content > div > div > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"

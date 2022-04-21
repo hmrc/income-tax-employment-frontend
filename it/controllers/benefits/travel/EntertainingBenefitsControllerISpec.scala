@@ -44,7 +44,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     val yesSelector = "#value"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
-    val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val contentSelector = "#main-content > div > div > p"
   }
 
   trait CommonExpectedResults {

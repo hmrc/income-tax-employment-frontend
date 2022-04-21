@@ -41,7 +41,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val contentSelector = "#main-content > div > div > p"
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"
     val poundPrefixSelector = ".govuk-input__prefix"
