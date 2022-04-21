@@ -35,7 +35,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val employmentId = "employmentId"
 
   object Selectors {
-    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
+    val thisIncludesSelector: String = "#main-content > div > div > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"

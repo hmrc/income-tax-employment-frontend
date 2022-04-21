@@ -35,17 +35,15 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
   with TaxYearHelper
   with MockErrorHandler {
 
-  lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
-  lazy val controller = new MileageBenefitAmountController()(
-    mockMessagesControllerComponents,
+  private lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
+  private lazy val controller = new MileageBenefitAmountController(
     authorisedAction,
     view,
     inYearAction,
-    mockAppConfig,
     mockEmploymentSessionService,
     mockFuelService,
     mockErrorHandler
-  )
+  )(mockMessagesControllerComponents, mockAppConfig, ec)
   val employmentId = "12345"
   val form: Form[BigDecimal] = AmountForm.amountForm("benefits.mileageBenefitAmount.error.empty.individual")
 

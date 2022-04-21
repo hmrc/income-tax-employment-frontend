@@ -59,15 +59,14 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     employment = EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
-  private lazy val controller = new CompanyCarBenefitsController()(
-    mockMessagesControllerComponents,
+  private lazy val controller = new CompanyCarBenefitsController(
     authorisedAction,
     inYearAction,
     view,
-    mockAppConfig,
     mockEmploymentSessionService,
     mockFuelService,
     mockErrorHandler)
+  (mockMessagesControllerComponents, mockAppConfig)
 
   ".show" should {
     "get user session data and return the result from the given execution block" in new TestWithAuth {

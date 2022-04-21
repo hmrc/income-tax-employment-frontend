@@ -38,7 +38,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val paragraphSelector = "#main-content > div > div > p"
     val yesSelector = "#value"
     val continueButtonSelector = "#continue"
     val detailsTitleSelector = "#main-content > div > div > form > details > summary > span"

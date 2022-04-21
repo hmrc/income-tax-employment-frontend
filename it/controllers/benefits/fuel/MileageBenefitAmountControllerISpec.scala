@@ -41,7 +41,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   object Selectors {
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val contentSelector = "#main-content > div > div > p"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val inputSelector = "#amount"

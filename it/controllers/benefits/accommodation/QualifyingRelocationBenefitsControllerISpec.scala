@@ -62,7 +62,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   object Selectors {
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val contentSelector = "#main-content > div > div > p"
     val yesSelector = "#value"
   }
 
