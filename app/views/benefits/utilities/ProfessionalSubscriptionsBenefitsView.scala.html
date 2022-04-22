@@ -15,16 +15,18 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
-@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.InputRadioAlt
 @import utils.ViewUtils._
 
 @this(
     layout: Layout,
-    inputRadio: InputRadio,
-    formWithCsrf: FormWithCSRF,
+    heading: Heading,
     errorSummary: ErrorSummary,
+    formWithCsrf: FormWithCSRF,
+    inputRadio: InputRadioAlt,
     button: Button
 )
 
@@ -32,10 +34,7 @@
 
 @titleForUse = @{messages(getAgentDynamicContent("benefits.professionalSubscriptions.title", request.user.isAgent))}
 
-@contentHtml = {
-    <p class="govuk-body">@messages(s"benefits.professionalSubscriptions.paragraphText.${if(request.user.isAgent) "agent" else "individual"}")</p>
-    <p class="govuk-body">@messages(s"common.checkWithEmployer.${if(request.user.isAgent) "agent" else "individual"}")</p>
-}
+@headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -43,15 +42,19 @@
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.utilities.routes.ProfessionalSubscriptionsBenefitsController.submit(taxYear, employmentId)) {
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-4")
 
+    <p class="govuk-body">@messages(s"benefits.professionalSubscriptions.paragraphText.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"common.checkWithEmployer.${if(request.user.isAgent) "agent" else "individual"}")</p>
+
+    @formWithCsrf(action = controllers.benefits.utilities.routes.ProfessionalSubscriptionsBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
-            heading = titleForUse,
-            inline = true,
-            content = Some(contentHtml),
-            subheading = Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString))
+            legendHeading = Some(Html(headingForUse)),
+            legendHidden = true,
+            inline = true
         )
+
         @button()
     }
 }

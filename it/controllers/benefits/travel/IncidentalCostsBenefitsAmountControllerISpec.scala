@@ -42,7 +42,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     anEmploymentUserData.copy(isPriorSubmission = hasPriorBenefits, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
-    val optionalParagraphSelector = "#main-content > div > div > form > div > label > p"
+    val optionalParagraphSelector = "#main-content > div > div > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"

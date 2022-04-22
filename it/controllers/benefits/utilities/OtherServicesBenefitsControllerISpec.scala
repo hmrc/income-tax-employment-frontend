@@ -39,7 +39,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
     anEmploymentUserData.copy(isPriorSubmission = hasPriorBenefits, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
-    val theseAreSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
+    val theseAreSelector: String = "#main-content > div > div > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"

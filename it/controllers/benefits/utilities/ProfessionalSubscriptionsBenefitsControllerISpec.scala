@@ -40,11 +40,11 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
-    val paragraphTextSelector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
-    val checkWithEmployerSelector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
     val yesRadioSelector = "#value"
     val continueButtonSelector = "#main-content > div > div > form > button"
     val formSelector = "#main-content > div > div > form"
+
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
   }
 
   trait CommonExpectedResults {
@@ -150,8 +150,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
+          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -181,8 +181,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
+          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -212,8 +212,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
+          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -280,8 +280,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 3))
+          textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 4))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesRadioSelector)

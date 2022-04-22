@@ -41,7 +41,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val paragraphSelector = "#main-content > div > div > p"
     val yesSelector = "#value"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
