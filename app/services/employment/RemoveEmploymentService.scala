@@ -73,7 +73,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val employmentDetailsViewModel = employmentSource.toEmploymentDetailsViewModel(isUsingCustomerData = isUsingCustomerData)
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
-    val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
+    val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.notIgnoredHmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
     val deductions = employmentSource.employmentData.flatMap(_.deductions)
     val auditModel = DeleteEmploymentAudit(taxYear, user.affinityGroup.toLowerCase,
@@ -87,7 +87,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
                              (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val employmentDetailsViewModel = employmentSource.toEmploymentDetailsViewModel(isUsingCustomerData = isUsingCustomerData)
-    val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
+    val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.notIgnoredHmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
     val deductions = employmentSource.employmentData.flatMap(_.deductions)
