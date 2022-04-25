@@ -140,6 +140,14 @@ trait MockEmploymentSessionService extends MockFactory {
       .once()
   }
 
+  def mockGetAndHandleExpenses(taxYear: Int, result: Result)(implicit authorisationRequest: AuthorisationRequest[_], hc: HeaderCarrier, ec: ExecutionContext):
+  CallHandler4[Int, (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result], AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
+    (mockEmploymentSessionService.getAndHandleExpenses(_: Int)(_: (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result])
+    (_: AuthorisationRequest[_], _: HeaderCarrier))
+      .expects(taxYear, *, *, *)
+      .returns(Future(result))
+  }
+
   def mockSubmitAndClear(taxYear: Int, employmentId: String, model: CreateUpdateEmploymentRequest, result: Either[Result, (Option[String], EmploymentUserData)]): CallHandler8[Int,
     String, CreateUpdateEmploymentRequest, EmploymentUserData, Option[AllEmploymentData], Option[(String, Int, CreateUpdateEmploymentRequest,
     Option[AllEmploymentData], AuthorisationRequest[_]) => Unit], AuthorisationRequest[_], HeaderCarrier, Future[Either[Result, (Option[String], EmploymentUserData)]]] = {

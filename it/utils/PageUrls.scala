@@ -53,6 +53,7 @@ object PageUrls extends IntegrationTest {
   def checkYourBenefitsUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId"
   def checkYourStudentLoansUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/check-student-loans-repayments?employmentId=$employmentId"
   def checkYourExpensesUrl(taxYear: Int): String = s"$appUrl/$taxYear/expenses/check-employment-expenses"
+  def expensesInterruptUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment/expenses/start-employment-expenses"
 
 //  *****************       Employment details pages      ******************************
 

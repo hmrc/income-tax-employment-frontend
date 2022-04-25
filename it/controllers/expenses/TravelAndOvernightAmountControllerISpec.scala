@@ -73,13 +73,13 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hintText = "Total amount for the year For example, £193.52"
+    val hintText = "Total amount for all employers For example, £193.52"
     val buttonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hintText = "Total amount for the year Er enghraifft, £193.52"
+    val hintText = "Total amount for all employers Er enghraifft, £193.52"
     val buttonText = "Yn eich blaen"
   }
 

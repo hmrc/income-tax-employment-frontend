@@ -58,6 +58,7 @@ common.employer = Employer
 common.or = or
 common.dateRange = {0} to {1}
 common.dateFrom = From {0}
+common.expenses.totalForAllEmployers = Total amount for all employers
 
 #################   Subheadings/Captions    ##################################
 
@@ -1202,10 +1203,9 @@ expenses.claimEmploymentExpenses.title.individual = Do you want to claim employm
 
 expenses.startEmploymentExpenses.details1.individual = Use this section to update your employment expenses.
 expenses.startEmploymentExpenses.details1.agent = Use this section to update your client’s employment expenses.
-expenses.startEmploymentExpenses.details2.individual = You can claim expenses you did not claim through your employer.
-expenses.startEmploymentExpenses.details2.agent = You can claim expenses your client did not claim through their employer.
-expenses.startEmploymentExpenses.details3.individual = There is one expenses section. This section is for all your employment in the tax year.
-expenses.startEmploymentExpenses.details3.agent = There is one expenses section. This section is for all your client’s employment in the tax year.
+expenses.startEmploymentExpenses.details2 = You must add expenses as a total for all employment.
+expenses.startEmploymentExpenses.details3.individual = Tell us about expenses you did not claim through your employers.
+expenses.startEmploymentExpenses.details3.agent = Tell us about expenses your client did not claim through their employers.
 
 #################       Business travel messages        ########################################
 
@@ -1221,7 +1221,6 @@ expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to
 expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
 expenses.businessTravelAndOvernightAmount.title.agent = How much do you want to claim for your client’s business travel and overnight stays?
 expenses.businessTravelAndOvernightAmount.title.individual = How much do you want to claim for business travel and overnight stays?
-expenses.businessTravelAndOvernightAmount.totalForYear = Total amount for the year
 expenses.businessTravelOvernightExpenses.details.1.agent = add up the mileage for each vehicle type your client used for work
 expenses.businessTravelOvernightExpenses.details.1.individual = add up the mileage for each vehicle type you’ve used for work
 expenses.businessTravelOvernightExpenses.details.2 = multiply the mileage by the approved mileage allowance

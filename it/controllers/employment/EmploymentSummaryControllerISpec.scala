@@ -241,7 +241,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-            linkCheck(s"$change$change $expenses", changeExpensesSelector(), checkYourExpensesUrl(taxYearEOY))
+            linkCheck(s"$change$change $expenses", changeExpensesSelector(), expensesInterruptUrl(taxYearEOY))
             linkCheck(s"$remove $remove $expenses", removeExpensesSelector(), removeExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
@@ -271,7 +271,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             linkCheck(addEmployer, addEmployerSelector(4), summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(expenses, expensesLineSelector(true), "as a line item")
-            linkCheck(s"$change$change $expenses", changeExpensesSelector(true), checkYourExpensesUrl(taxYearEOY))
+            linkCheck(s"$change$change $expenses", changeExpensesSelector(true), expensesInterruptUrl(taxYearEOY))
             linkCheck(s"$remove $remove $expenses", removeExpensesSelector(true), removeExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
@@ -362,7 +362,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
             textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-            linkCheck(s"$view$view $expenses", viewExpensesSelector, checkYourExpensesUrl(taxYear))
+            linkCheck(s"$view$view $expenses", viewExpensesSelector, expensesInterruptUrl(taxYear))
             buttonCheck(returnToOverview)
           }
 
@@ -456,7 +456,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
             textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-            linkCheck(s"$view$view $expenses", viewExpensesSelector, checkYourExpensesUrl(taxYear))
+            linkCheck(s"$view$view $expenses", viewExpensesSelector, expensesInterruptUrl(taxYear))
             buttonCheck(returnToOverview)
           }
 
@@ -524,7 +524,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
             textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-            linkCheck(s"$change$change $expenses", changeExpensesSelector(), checkYourExpensesUrl(taxYearEOY))
+            linkCheck(s"$change$change $expenses", changeExpensesSelector(), expensesInterruptUrl(taxYearEOY))
             linkCheck(s"$remove $remove $expenses", removeExpensesSelector(), removeExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }

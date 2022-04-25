@@ -77,7 +77,6 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                     employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn),
                       taxYear, isPriorSubmission = true, hasPriorExpenses = true, request.user)(errorHandler.internalServerError()) {
                       if (employmentIdExists(allEmploymentData, getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))) {
-                        //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
                         Redirect(EmploymentExpensesController.show(taxYear))
                       } else {
                         performAuditAndRenderView(
@@ -98,7 +97,6 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                         isUsingCustomerData = true))
                     }
                 }
-              //TODO redirect to receive any expenses page
               case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear = false, isUsingCustomerData = true))
             }
         }

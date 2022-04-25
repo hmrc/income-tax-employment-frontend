@@ -25,7 +25,7 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import utils.PageUrls.{fullUrl, overviewUrl, startEmploymentExpensesUrl}
+import utils.PageUrls.{checkYourExpensesUrl, fullUrl, startEmploymentExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -44,11 +44,11 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
     val buttonText: String
     val expectedTitle: String
     val expectedHeading: String
+    val expectedExample2: String
   }
 
   trait SpecificExpectedResults {
     val expectedExample1: String
-    val expectedExample2: String
     val expectedExample3: String
   }
 
@@ -57,6 +57,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
     val buttonText = "Continue"
     val expectedTitle = "Employment expenses"
     val expectedHeading = "Employment expenses"
+    val expectedExample2 = "You must add expenses as a total for all employment."
 
   }
 
@@ -65,30 +66,27 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
     val buttonText = "Yn eich blaen"
     val expectedTitle = "Employment expenses"
     val expectedHeading = "Employment expenses"
+    val expectedExample2 = "You must add expenses as a total for all employment."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedExample1 = "Use this section to update your employment expenses."
-    val expectedExample2 = "You can claim expenses you did not claim through your employer."
-    val expectedExample3 = "There is one expenses section. This section is for all your employment in the tax year."
+    val expectedExample3 = "Tell us about expenses you did not claim through your employers."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedExample1 = "Use this section to update your employment expenses."
-    val expectedExample2 = "You can claim expenses you did not claim through your employer."
-    val expectedExample3 = "There is one expenses section. This section is for all your employment in the tax year."
+    val expectedExample3 = "Tell us about expenses you did not claim through your employers."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedExample1 = "Use this section to update your client’s employment expenses."
-    val expectedExample2 = "You can claim expenses your client did not claim through their employer."
-    val expectedExample3 = "There is one expenses section. This section is for all your client’s employment in the tax year."
+    val expectedExample3 = "Tell us about expenses your client did not claim through their employers."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedExample1 = "Use this section to update your client’s employment expenses."
-    val expectedExample2 = "You can claim expenses your client did not claim through their employer."
-    val expectedExample3 = "There is one expenses section. This section is for all your client’s employment in the tax year."
+    val expectedExample3 = "Tell us about expenses your client did not claim through their employers."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -125,7 +123,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
+          textOnPageCheck(expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))
           buttonCheck(buttonText, continueButtonSelector)
           welshToggleCheck(user.isWelsh)
@@ -154,7 +152,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
+          textOnPageCheck(expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))
           buttonCheck(buttonText, continueButtonSelector)
           welshToggleCheck(user.isWelsh)
@@ -184,7 +182,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           h1Check(expectedTitle)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
+          textOnPageCheck(expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))
           buttonCheck(buttonText, continueButtonSelector)
           welshToggleCheck(user.isWelsh)
@@ -194,7 +192,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
     }
 
 
-    "redirect to tax overview page with it's not EOY" which {
+    "redirect to check employment expenses page with it's not EOY" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -204,7 +202,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+        result.header("location").contains(checkYourExpensesUrl(taxYear)) shouldBe true
       }
     }
 

@@ -29,7 +29,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService}
+import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTestWithApp
 import views.html.studentLoans.StudentLoansCYAView
 
@@ -38,7 +38,8 @@ import scala.concurrent.Future
 class StudentLoansCYAControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
   with MockStudentLoansCYAService
-  with MockAuditService {
+  with MockAuditService
+  with MockErrorHandler{
 
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
 
@@ -48,7 +49,8 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
     mockStudentLoansCYAService,
     mockEmploymentSessionService,
     authorisedAction,
-    inYearAction)(appConfig = new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled,
+    inYearAction,
+    mockErrorHandler)(appConfig = new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled,
     isEmploymentEOYEnabled = isEmploymentEOYEnabled, taxYearErrorEnabled = taxYearErrorFeature), ec)
 
   private val employmentId = "223AB12399"
@@ -150,6 +152,7 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
+          mockGetPriorRight(taxYear, Some(anAllEmploymentData))
           mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
 
@@ -157,13 +160,14 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CheckEmploymentExpensesController.show(taxYear).url
+        redirectUrl(result) shouldBe ExpensesInterruptPageController.show(taxYear).url
       }
       "student loans are added and when mimicking the apis" in new TestWithAuth {
 
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
+          mockGetPriorRight(taxYear, None)
           mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
           mockCreateOrUpdateSessionData(Redirect(StudentLoansCYAController.show(taxYear, employmentId).url))

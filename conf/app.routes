@@ -312,6 +312,7 @@ GET         /:taxYear/expenses/amount-for-other-equipment                       
 POST        /:taxYear/expenses/amount-for-other-equipment                            controllers.expenses.OtherEquipmentAmountController.submit(taxYear: Int)
 
 GET         /:taxYear/employment/expenses/start-employment-expenses                  controllers.expenses.ExpensesInterruptPageController.show(taxYear: Int)
+POST        /:taxYear/employment/expenses/start-employment-expenses                  controllers.expenses.ExpensesInterruptPageController.submit(taxYear: Int)
 
 #############################       Student Loans      #############################
 
