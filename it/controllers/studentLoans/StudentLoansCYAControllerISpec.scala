@@ -661,7 +661,10 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             )
           }
 
-          result.headers("Location").headOption shouldBe Some(checkYourExpensesUrl(taxYearEOY))
+          result.headers("Location").headOption shouldBe
+            Some(
+              if(scenarioData.commonExpectedResults.hasPrior) claimEmploymentExpensesUrl(taxYearEOY) else checkYourExpensesUrl(taxYearEOY)
+            )
         }
 
       }

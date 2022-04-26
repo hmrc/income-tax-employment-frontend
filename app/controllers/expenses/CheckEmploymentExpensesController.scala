@@ -37,16 +37,16 @@ import views.html.expenses.CheckEmploymentExpensesView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: AuthorisedAction,
-                                                  checkEmploymentExpensesView: CheckEmploymentExpensesView,
+class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   createOrAmendExpensesService: CreateOrAmendExpensesService,
                                                   employmentSessionService: EmploymentSessionService,
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
                                                   inYearAction: InYearUtil,
-                                                  errorHandler: ErrorHandler,
-                                                  implicit val appConfig: AppConfig,
-                                                  implicit val mcc: MessagesControllerComponents,
-                                                  implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                                  errorHandler: ErrorHandler
+                                                 )(implicit val appConfig: AppConfig,
+                                                   authorisedAction: AuthorisedAction,
+                                                   mcc: MessagesControllerComponents,
+                                                   ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   //scalastyle:off
   def show(taxYear: Int): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
@@ -77,7 +77,6 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                     employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn),
                       taxYear, isPriorSubmission = true, hasPriorExpenses = true, request.user)(errorHandler.internalServerError()) {
                       if (employmentIdExists(allEmploymentData, getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))) {
-                        //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
                         Redirect(EmploymentExpensesController.show(taxYear))
                       } else {
                         performAuditAndRenderView(
@@ -98,7 +97,6 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                         isUsingCustomerData = true))
                     }
                 }
-              //TODO redirect to receive any expenses page
               case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear = false, isUsingCustomerData = true))
             }
         }

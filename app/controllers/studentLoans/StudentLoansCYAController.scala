@@ -18,9 +18,9 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import common.{EmploymentSection, SessionValues}
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmployerInformationController
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes._
 import models.AuthorisationRequest
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
 import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
@@ -33,8 +33,8 @@ import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansCYAView
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
@@ -42,7 +42,8 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
                                           service: StudentLoansCYAService,
                                           employmentSessionService: EmploymentSessionService,
                                           authAction: AuthorisedAction,
-                                          inYearAction: InYearUtil)
+                                          inYearAction: InYearUtil,
+                                          errorHandler: ErrorHandler)
                                          (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with Logging {
 
@@ -70,11 +71,20 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
             getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
               case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
                 logger.info(s"$log Update to student loans was made. Continuing to expenses as it's a new employment.")
-                val result = Redirect(CheckEmploymentExpensesController.show(taxYear))
+                val result = employmentSessionService.getPriorData(request.user, taxYear).map {
+                  case Left(error) => errorHandler.handleError(error.status)
+                  case Right(data) =>
+                    if (data.employment.flatMap(_.latestEOYExpenses).nonEmpty) {
+                      Redirect(ExpensesInterruptPageController.show(taxYear))
+                    } else {
+                      Redirect(EmploymentExpensesController.show(taxYear))
+                    }
+                }
+
                 if (appConfig.mimicEmploymentAPICalls) {
-                  service.createOrUpdateSessionData(employmentId, cya, taxYear, request.user)(result)
+                  result.flatMap(service.createOrUpdateSessionData(employmentId, cya, taxYear, request.user)(_))
                 } else {
-                  Future.successful(result)
+                  result
                 }
               case _ => logger.info(s"$log Update was made to existing employment returning to employer information page.")
                 Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))

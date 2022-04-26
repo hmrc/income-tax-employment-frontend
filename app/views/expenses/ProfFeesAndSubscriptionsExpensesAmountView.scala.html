@@ -42,6 +42,11 @@
     }
 }
 
+@hintHtml = {
+    <p class="govuk-body govuk-!-margin-bottom-0">@messages("common.expenses.totalForAllEmployers")</p>
+    @messages("common.currency.hint")
+}
+
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
@@ -55,7 +60,7 @@
             headingClasses = "govuk-!-margin-bottom-2",
             subheading = Some(messages("expenses.caption", (taxYear - 1).toString, taxYear.toString)),
             content = Some(contentHtml),
-            hint = Some(Html(messages("common.currency.hint"))),
+            hint = Some(hintHtml),
             isPageHeading = false,
             currency = true
         )

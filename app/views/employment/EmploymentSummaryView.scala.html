@@ -25,6 +25,7 @@
 @import controllers.employment.routes.RemoveEmploymentController
 @import controllers.expenses.routes.CheckEmploymentExpensesController
 @import controllers.expenses.routes.EmploymentExpensesController
+@import controllers.expenses.routes.ExpensesInterruptPageController
 @import controllers.expenses.routes.RemoveExpensesController
 
 @this(
@@ -111,7 +112,7 @@
 
             val expensesRow = summaryListRow(
                 key = HtmlContent(messages("employment.expenses.label")),
-                value = HtmlContent(s"""<a class="govuk-link" href="${CheckEmploymentExpensesController.show(taxYear)}"><span aria-hidden="true">${message}</span><span class="govuk-visually-hidden">${message} ${messages("employment.expenses.label")}</span></a>"""),
+                value = HtmlContent(s"""<a class="govuk-link" href="${ExpensesInterruptPageController.show(taxYear)}"><span aria-hidden="true">${message}</span><span class="govuk-visually-hidden">${message} ${messages("employment.expenses.label")}</span></a>"""),
                 keyClasses = "govuk-!-width-two-thirds govuk-!-font-weight-regular",
                 valueClasses = "govuk-!-width-one-third right-align",
                 actions = actions
