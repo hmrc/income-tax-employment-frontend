@@ -18,28 +18,25 @@ package controllers.expenses
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import models.mongo.ExpensesCYAModel
-import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
-import services.ExpensesRedirectService.{jobExpensesRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.ExpensesInterruptPageView
+
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-import scala.concurrent.Future
-
-class ExpensesInterruptPageController @Inject()(implicit val cc: MessagesControllerComponents,
+class ExpensesInterruptPageController @Inject()(employmentSessionService: EmploymentSessionService,
+                                                expensesInterruptPageView: ExpensesInterruptPageView,
                                                 authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
-                                                employmentSessionService: EmploymentSessionService,
-                                                expensesInterruptPageView: ExpensesInterruptPageView,
+                                                errorHandler: ErrorHandler)
+                                               (implicit val cc: MessagesControllerComponents,
                                                 appConfig: AppConfig,
-                                                errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  implicit val ec = cc.executionContext
+                                                ec: ExecutionContext
+                                                ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     if(!inYearAction.inYear(taxYear)) {

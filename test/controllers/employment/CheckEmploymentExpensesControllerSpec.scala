@@ -40,15 +40,16 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
 
   private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
 
-  private lazy val controller = new CheckEmploymentExpensesController()(
-    authorisedAction,
+  private lazy val controller = new CheckEmploymentExpensesController(
     view,
     createOrAmendExpensesService,
     mockEmploymentSessionService,
     mockCheckEmploymentExpensesService,
     inYearAction,
-    mockErrorHandler,
+    mockErrorHandler
+  )(
     mockAppConfig,
+    authorisedAction,
     mockMessagesControllerComponents,
     ec
   )

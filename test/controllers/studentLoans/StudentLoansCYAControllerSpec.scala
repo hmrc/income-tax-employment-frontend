@@ -250,6 +250,22 @@ class StudentLoansCYAControllerSpec extends UnitTestWithApp
 
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
+
+      "prior data can't be retrieved" in new TestWithAuth {
+
+        val result: Future[Result] = {
+
+          mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
+          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
+          mockGetPriorLeft(taxYear)
+          mockHandleError(INTERNAL_SERVER_ERROR, InternalServerError)
+
+          controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
+        }
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
     }
 
     "redirect to the overview page" when {
