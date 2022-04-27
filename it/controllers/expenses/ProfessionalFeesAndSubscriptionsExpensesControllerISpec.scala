@@ -38,9 +38,9 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
-    def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"
+    def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
 
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
@@ -308,12 +308,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(index = 1))
+          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(index = 2))
           linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
+          radioButtonCheck(yesText, radioNumber = 1, checked = false)
+          radioButtonCheck(noText, radioNumber = 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)

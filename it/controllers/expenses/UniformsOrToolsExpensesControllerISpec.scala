@@ -37,11 +37,10 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val canClaimParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(2)"
-    val canClaimExample1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(1)"
-    val canClaimExample2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(2)"
-    val flatRateExpenseParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(4)"
+    val canClaimParagraphSelector: String = "#can-claim-text"
+    val canClaimExample1Selector: String = "#main-content > div > div > ul > li:nth-child(1)"
+    val canClaimExample2Selector: String = "#main-content > div > div > ul > li:nth-child(2)"
+    val flatRateExpenseParagraphSelector: String = "#flat-rate-expense-text"
     val uniformsAndToolsLinkSelector: String = "#uniforms-and-tools-link"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
@@ -155,7 +154,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
@@ -190,7 +189,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
@@ -223,7 +222,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
@@ -304,14 +303,14 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(expectedCanClaim, canClaimParagraphSelector)
             textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
             textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
             linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
+            radioButtonCheck(yesText, radioNumber = 1, checked = false)
+            radioButtonCheck(noText, radioNumber = 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(uniformsWorkClothesToolsExpensesUrl(taxYearEOY), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)

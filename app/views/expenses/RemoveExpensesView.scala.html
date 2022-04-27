@@ -37,7 +37,7 @@
     @formWithCsrf(action = controllers.expenses.routes.RemoveExpensesController.submit(taxYear)) {
         @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
-            <p class="govuk-body">@messages("expenses.removeExpenses.remove-paragraph")</p>
+        <p class="govuk-body">@messages("expenses.removeExpenses.remove-paragraph")</p>
 
         <div class="govuk-button-group">
             @govUkButton(Button(

@@ -37,16 +37,15 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
   object Selectors {
-    val canClaimParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
-    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
-    val thisIncludesExample1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(1)"
-    val thisIncludesExample2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(2)"
-    val thisIncludesExample3Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(3)"
+    val thisIncludesExample1Selector: String = "#main-content > div > div > ul > li:nth-child(1)"
+    val thisIncludesExample2Selector: String = "#main-content > div > div > ul > li:nth-child(2)"
+    val thisIncludesExample3Selector: String = "#main-content > div > div > ul > li:nth-child(3)"
     val expensesLinkSelector: String = "#expenses-link"
-    val findOutMoreParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(5)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
+
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
   }
 
   trait SpecificExpectedResults {
@@ -166,12 +165,12 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
-          textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, paragraphSelector(index = 2))
+          textOnPageCheck(expectedThisIncludes, paragraphSelector(index = 3))
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
-          textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
+          textOnPageCheck(expectedFindOutMore, paragraphSelector(index = 5))
           linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -204,12 +203,12 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
-          textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, paragraphSelector(index = 2))
+          textOnPageCheck(expectedThisIncludes, paragraphSelector(index = 3))
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
-          textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
+          textOnPageCheck(expectedFindOutMore, paragraphSelector(index = 5))
           linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -244,12 +243,12 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
-          textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, paragraphSelector(index = 2))
+          textOnPageCheck(expectedThisIncludes, paragraphSelector(index = 3))
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
-          textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
+          textOnPageCheck(expectedFindOutMore, paragraphSelector(index = 5))
           linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -319,15 +318,15 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
-            textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
+            textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, paragraphSelector(index = 3))
+            textOnPageCheck(expectedThisIncludes, paragraphSelector(index = 4))
             textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
             textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
             textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
-            textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
+            textOnPageCheck(expectedFindOutMore, paragraphSelector(index = 6))
             linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
+            radioButtonCheck(yesText, radioNumber = 1, checked = false)
+            radioButtonCheck(noText, radioNumber = 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(claimEmploymentExpensesUrl(taxYearEOY), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)

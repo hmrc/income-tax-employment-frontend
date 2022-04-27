@@ -51,11 +51,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     val formSelector: String = "#main-content > div > div > form"
     val amountSelector = "#amount"
 
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
   }
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
+    val totalAmountText: String
     val hintText: String
     val buttonText: String
   }
@@ -73,13 +74,15 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hintText = "Total amount for all employers For example, £193.52"
+    val totalAmountText = "Total amount for all employers"
+    val hintText = "For example, £193.52"
     val buttonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hintText = "Total amount for all employers Er enghraifft, £193.52"
+    val totalAmountText = "Total amount for all employers"
+    val hintText = "Er enghraifft, £193.52"
     val buttonText = "Yn eich blaen"
   }
 
@@ -169,7 +172,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 2))
+          textOnPageCheck(totalAmountText, paragraphSelector(index = 3))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
           buttonCheck(buttonText, continueButtonSelector)
@@ -198,8 +202,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(index = 2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
+          textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, newAmount.toString)
           buttonCheck(buttonText, continueButtonSelector)
@@ -282,7 +287,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
+          textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "badThings")
           buttonCheck(buttonText, continueButtonSelector)
@@ -315,7 +322,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
+          textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
           buttonCheck(buttonText, continueButtonSelector)
@@ -348,7 +357,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
+          textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "100000000000")
           buttonCheck(buttonText, continueButtonSelector)

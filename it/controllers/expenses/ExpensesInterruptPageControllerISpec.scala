@@ -26,7 +26,7 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, removeExpensesUrl, startEmploymentExpensesUrl}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, startEmploymentExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -100,7 +100,6 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   ".show" should {
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render expenses interrupt page page with the correct content" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
@@ -188,10 +187,8 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           buttonCheck(buttonText, continueButtonSelector)
           welshToggleCheck(user.isWelsh)
         }
-
       }
     }
-
 
     "redirect to check employment expenses page with it's not EOY" which {
       implicit lazy val result: WSResponse = {
@@ -222,63 +219,61 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   ".submit" should {
-      "redirect to the correct page" when {
-          "it is not end of year" which {
-            lazy val result: WSResponse = {
-              dropExpensesDB()
-              authoriseAgentOrIndividual(isAgent = true)
-              urlPost(fullUrl(startEmploymentExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header("location").contains(checkYourExpensesUrl(taxYear)) shouldBe true
-            }
-          }
-
-        "it is end of year, and nothing in DB" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(isAgent = true)
-            urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          s"has a INTERNAL_SERVER_ERROR ($INTERNAL_SERVER_ERROR) status" in {
-            result.status shouldBe INTERNAL_SERVER_ERROR
-          }
+    "redirect to the correct page" when {
+      "it is not end of year" which {
+        lazy val result: WSResponse = {
+          dropExpensesDB()
+          authoriseAgentOrIndividual(isAgent = true)
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
-        "it is end of year, and there is prior expenses" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(isAgent = true)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-            urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location").contains(checkYourExpensesUrl(taxYear)) shouldBe true
+        }
+      }
 
-          s"has a SEE_OTHER ($SEE_OTHER) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
-          }
+      "it is end of year, and nothing in DB" which {
+        lazy val result: WSResponse = {
+          dropExpensesDB()
+          authoriseAgentOrIndividual(isAgent = true)
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
-        "it is end of year, and there is no prior expenses" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(isAgent = true)
-            userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYearEOY)
-            urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+        s"has a INTERNAL_SERVER_ERROR ($INTERNAL_SERVER_ERROR) status" in {
+          result.status shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
 
-          s"has a SEE_OTHER ($SEE_OTHER) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(businessTravelExpensesUrl(taxYearEOY)) shouldBe true
+      "it is end of year, and there is prior expenses" which {
+        lazy val result: WSResponse = {
+          dropExpensesDB()
+          authoriseAgentOrIndividual(isAgent = true)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        }
 
-          }
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
+        }
+      }
+
+      "it is end of year, and there is no prior expenses" which {
+        lazy val result: WSResponse = {
+          dropExpensesDB()
+          authoriseAgentOrIndividual(isAgent = true)
+          userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYearEOY)
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        }
+
+        s"has a SEE_OTHER ($SEE_OTHER) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location").contains(businessTravelExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }
-
+  }
 }
 
