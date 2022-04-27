@@ -37,7 +37,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
+    val paragraphSelector: String = "#main-content > div > div > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"

@@ -36,7 +36,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val onlyNeedLinkSelector: String = "#exempt-link"
     val continueButtonSelector: String = "#continue"
@@ -320,10 +320,10 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-          textOnPageCheck(expectedWeOnly, paragraphSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(3))
+          textOnPageCheck(expectedWeOnly, paragraphSelector(4))
           linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
+          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(5))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)

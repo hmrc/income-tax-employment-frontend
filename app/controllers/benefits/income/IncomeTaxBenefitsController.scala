@@ -36,16 +36,16 @@ import views.html.benefits.income.IncomeTaxBenefitsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncomeTaxBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
+class IncomeTaxBenefitsController @Inject()(authAction: AuthorisedAction,
                                             inYearAction: InYearUtil,
                                             incomeTaxBenefitsView: IncomeTaxBenefitsView,
-                                            appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
                                             incomeService: IncomeService,
-                                            errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                            errorHandler: ErrorHandler)
+                                           (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  private implicit val ec: ExecutionContext = cc.executionContext
+  private implicit val ec: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

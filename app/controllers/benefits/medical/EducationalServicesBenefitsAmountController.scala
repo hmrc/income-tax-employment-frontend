@@ -37,16 +37,14 @@ import views.html.benefits.medical.EducationalServicesBenefitsAmountView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EducationalServicesBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                            authAction: AuthorisedAction,
+class EducationalServicesBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                             inYearAction: InYearUtil,
-                                                            appConfig: AppConfig,
                                                             pageView: EducationalServicesBenefitsAmountView,
-                                                            val employmentSessionService: EmploymentSessionService,
+                                                            employmentSessionService: EmploymentSessionService,
                                                             medicalService: MedicalService,
-                                                            errorHandler: ErrorHandler,
-                                                            ec: ExecutionContext
-                                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                            errorHandler: ErrorHandler)
+                                                           (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
