@@ -16,23 +16,22 @@
 
 package support.builders.models.employment
 
-import models.employment.EmploymentSource
-import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
-import utils.TaxYearHelper
+import models.employment.EmploymentDetailsViewModel
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.taxYearEOY
+import support.builders.models.employment.PayBuilder.aPay
 
-object EmploymentSourceBuilder extends TaxYearHelper {
+object EmploymentDetailsViewModelBuilder {
 
-  val anEmploymentSource: EmploymentSource = EmploymentSource(
-    employmentId = "employmentId",
+  val anEmploymentDetailsViewModel: EmploymentDetailsViewModel = EmploymentDetailsViewModel(
     employerName = "maggie",
     employerRef = Some("223/AB12399"),
     payrollId = Some("12345678"),
+    employmentId = "employmentId",
     startDate = Some("2019-04-21"),
+    didYouLeaveQuestion = Some(true),
     cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
-    dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
-    employmentData = Some(anEmploymentData),
-    employmentBenefits = Some(anEmploymentBenefits)
+    taxablePayToDate = aPay.taxablePayToDate,
+    totalTaxToDate = aPay.totalTaxToDate,
+    isUsingCustomerData = false
   )
 }

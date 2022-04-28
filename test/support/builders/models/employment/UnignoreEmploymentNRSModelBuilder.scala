@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models.employment
+package support.builders.models.employment
 
-import models.benefits.Benefits
-import play.api.libs.json.{Json, OWrites}
+import models.employment.UnignoreEmploymentNRSModel
+import support.builders.models.benefits.BenefitsBuilder.aBenefits
+import support.builders.models.employment.DeductionsBuilder.aDeductions
+import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEmploymentDetailsViewModel
 
-case class UnignoreEmploymentNRSModel(employmentData: EmploymentDetailsViewModel,
-                                      benefits: Option[Benefits],
-                                      deductions: Option[Deductions])
+object UnignoreEmploymentNRSModelBuilder {
 
-object UnignoreEmploymentNRSModel {
-  implicit def writes: OWrites[UnignoreEmploymentNRSModel] = Json.writes[UnignoreEmploymentNRSModel]
+  val anUnignoreEmploymentNRSModel: UnignoreEmploymentNRSModel = UnignoreEmploymentNRSModel(
+    employmentData = anEmploymentDetailsViewModel,
+    benefits = Some(aBenefits),
+    deductions = Some(aDeductions)
+  )
 }

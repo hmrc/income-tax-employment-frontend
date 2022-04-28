@@ -1766,9 +1766,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
       val cyaModel: EmploymentCYAModel = EmploymentCYAModel(
-          EmploymentDetails("employerName", currentDataIsHmrcHeld = true),
-          Some(aBenefitsViewModel.copy(utilitiesAndServicesModel = None, isBenefitsReceived = true)),
-        )
+        EmploymentDetails("employerName", currentDataIsHmrcHeld = true),
+        Some(aBenefitsViewModel.copy(utilitiesAndServicesModel = None, isBenefitsReceived = true)),
+      )
 
       lazy val result: WSResponse = {
         dropEmploymentDB()

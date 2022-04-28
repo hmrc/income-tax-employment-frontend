@@ -48,8 +48,9 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
-    def studentLoansLinkSelector(welshLang: Boolean): String = if(welshLang){ "#benthyciadau-myfyrwyr_link" }else{ "#student-loans_link" }
     val formSelector = "#main-content > div > div > form"
+
+    def studentLoansLinkSelector(welshLang: Boolean): String = if (welshLang) "#benthyciadau-myfyrwyr_link" else "#student-loans_link"
 
     def summaryListKeySelector(i: Int): String = {
       s"#main-content > div > div > dl:nth-child(3) > div:nth-child($i) > dt"

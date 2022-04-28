@@ -55,11 +55,11 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
     customerExpenses.fold(default)(customerExpenses => Some(LatestExpensesOrigin(customerExpenses, isCustomerData = true)))
   }
 
-  def ignoredEmployments: Seq[EmploymentSource] ={
+  def ignoredEmployments: Seq[EmploymentSource] = {
     hmrcEmploymentData.filter(_.dateIgnored.isDefined).map(_.toEmploymentSource)
   }
 
-  def inYearEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = hmrcEmploymentData
+  def hmrcEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = hmrcEmploymentData
     .find(source => source.employmentId.equals(employmentId))
     .map(hmrcSource => EmploymentSourceOrigin(hmrcSource.toEmploymentSource, isCustomerData = false))
 

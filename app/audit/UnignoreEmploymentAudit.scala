@@ -16,13 +16,17 @@
 
 package audit
 
+import models.benefits.Benefits
+import models.employment.{Deductions, EmploymentDetailsViewModel}
 import play.api.libs.json.{Json, OWrites}
 
 case class UnignoreEmploymentAudit(taxYear: Int,
                                    userType: String,
                                    nino: String,
                                    mtditid: String,
-                                   employmentId: String) {
+                                   employmentData: EmploymentDetailsViewModel,
+                                   benefits: Option[Benefits],
+                                   deductions: Option[Deductions]) {
 
   private def name = "UnignoreEmployment"
 

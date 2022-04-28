@@ -51,7 +51,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { employmentData =>
-        employmentData.inYearEmploymentSourceWith(employmentId) match {
+        employmentData.hmrcEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
