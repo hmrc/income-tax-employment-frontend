@@ -39,7 +39,8 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphSelector = "#main-content > div > div > p"
+    def paragraphSelector2(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
@@ -160,7 +161,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(enterTotalText, paragraphSelector(2))
+          textOnPageCheck(enterTotalText, paragraphSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           elementsNotOnPageCheck(ifItWasNotTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -191,7 +192,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-          textOnPageCheck(enterTotalText, paragraphSelector(3))
+          textOnPageCheck(enterTotalText, paragraphSelector2(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -219,8 +220,8 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
-          textOnPageCheck(enterTotalText, paragraphSelector(3))
+          textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
+          textOnPageCheck(enterTotalText, paragraphSelector2(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -337,7 +338,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(enterTotalText, paragraphSelector2(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -372,8 +373,8 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
+            textOnPageCheck(enterTotalText, paragraphSelector2(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
@@ -408,7 +409,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             captionCheck(expectedCaption)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(enterTotalText, paragraphSelector2(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)

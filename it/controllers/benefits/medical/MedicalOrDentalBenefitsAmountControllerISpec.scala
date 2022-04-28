@@ -40,7 +40,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   private val amountInputName = "amount"
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"
@@ -352,8 +352,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)
@@ -386,8 +386,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)
@@ -420,8 +420,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)

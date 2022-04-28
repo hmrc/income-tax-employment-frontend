@@ -15,15 +15,16 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.Layout
+@import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Link
-@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.InputRadioAlt
 
 @this(
     layout: Layout,
-    inputRadio: InputRadio,
+    heading: Heading,
+    inputRadio: InputRadioAlt,
     formWithCsrf: FormWithCSRF,
     errorSummary: ErrorSummary,
     button: Button,
@@ -47,16 +48,22 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
-@errorSummary(form.errors.distinct)
+    @errorSummary(form.errors.distinct)
+
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
+    <p class="govuk-body">@{messages(s"benefits.childcare.theseAre.${if(request.user.isAgent) "agent" else "individual"}")}</p>
+    <p class="govuk-body">
+        @messages("benefits.childcare.onlyNeed") @link("https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt","benefits.childcare.onlyNeedLink",Some("exempt-link"),true,fullStop=true)
+    </p>
+    <p class="govuk-body">@{messages(s"common.checkWithEmployer.${if(request.user.isAgent) "agent" else "individual"}")}</p>
 
     @formWithCsrf(action = controllers.benefits.medical.routes.ChildcareBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
-            heading = headingForUse,
-            content = Some(contentHtml),
-            classes = "govuk-!-margin-bottom-4",
-            inline = true,
-            subheading = Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString))
+            legendHeading = Some(Html(headingForUse)),
+            legendHidden = true,
+            inline = true
         )
         @button()
     }

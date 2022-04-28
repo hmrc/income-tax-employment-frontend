@@ -38,8 +38,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val paragraphTextSelector = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val paragraphTextSelector2 = "#main-content > div > div > form > div > label > p:nth-child(3)"
+    val paragraphTextSelector: Int => String = (i: Int) => s"#main-content > div > div > p:nth-child($i)"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"
@@ -162,8 +161,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amount), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amount), paragraphTextSelector(2))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -194,8 +193,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector)
-            elementsNotOnPageCheck(paragraphTextSelector2)
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(2))
+            elementsNotOnPageCheck(paragraphTextSelector(3))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -227,8 +226,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector(2))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
@@ -258,8 +257,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector(2))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
@@ -328,8 +327,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector(3))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -360,8 +359,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector(3))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
@@ -392,8 +391,8 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
-            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
+            textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector(3))
+            textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
             textOnPageCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)

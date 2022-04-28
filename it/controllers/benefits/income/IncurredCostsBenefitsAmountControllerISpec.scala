@@ -45,7 +45,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
 
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector2 = "#main-content > div > div > p"
   }
 
   trait CommonExpectedResults {
@@ -160,7 +161,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(enterTotalText, paragraphSelector(2))
+          textOnPageCheck(enterTotalText, paragraphSelector2)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
@@ -334,8 +335,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(3))
+            textOnPageCheck(enterTotalText, paragraphSelector(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -369,8 +370,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(3))
+            textOnPageCheck(enterTotalText, paragraphSelector(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
@@ -404,8 +405,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
-            textOnPageCheck(enterTotalText, paragraphSelector(3))
+            textOnPageCheck(optionalParagraphText(amount), paragraphSelector(3))
+            textOnPageCheck(enterTotalText, paragraphSelector(4))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)

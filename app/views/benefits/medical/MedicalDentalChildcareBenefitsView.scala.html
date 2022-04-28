@@ -15,15 +15,17 @@
  *@
 
 @import views.html.templates.Layout
+@import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
-@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.InputRadioAlt
 
 @this(
         layout: Layout,
-        inputRadio: InputRadio,
-        formWithCsrf: FormWithCSRF,
+        heading: Heading,
         errorSummary: ErrorSummary,
+        inputRadio: InputRadioAlt,
+        formWithCsrf: FormWithCSRF,
         button: Button
 )
 
@@ -38,14 +40,14 @@
 
     @errorSummary(form.errors.distinct)
 
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
     @formWithCsrf(action = controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
-            heading = headingForUse,
-            content = None,
-            classes = "govuk-!-margin-bottom-4",
-            inline = true,
-            subheading = Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString))
+            legendHeading = Some(Html(headingForUse)),
+            legendHidden = true,
+            inline = true
         )
         @button()
     }

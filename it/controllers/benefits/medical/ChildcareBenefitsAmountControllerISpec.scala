@@ -38,7 +38,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    val optionalParagraphTextSelector = "#main-content > div > div > form > div > label > p"
+    val optionalParagraphTextSelector = "#main-content > div > div > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"
