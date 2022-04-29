@@ -17,6 +17,7 @@
 package controllers.expenses
 
 import common.SessionValues
+import controllers.expenses.routes.TravelAndOvernightAmountController
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
@@ -26,7 +27,6 @@ import models.requests.CreateUpdateExpensesRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
-import play.api.{Environment, Mode}
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -35,6 +35,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import play.api.{Environment, Mode}
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -51,7 +52,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import scala.concurrent.Future
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
-
 
   object Selectors {
     val contentSelector = "#main-content > div > div > p"
@@ -250,6 +250,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     aHmrcEmploymentSource.copy(employmentId = "002")
   ))
   private val partExpenses: Expenses = Expenses(Some(1), Some(2))
+
+  private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
+    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
   ".show" when {
     import Selectors._
@@ -526,7 +529,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", otherEquipmentExpensesUrl(taxYearEOY))
         }
 
-        "show an empty view when there is no prior data at the end of the year" which  {
+        "show an empty view when there is no prior data at the end of the year" which {
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -567,6 +570,20 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
     }
 
+    "redirect to page with not finished data when Cya exists and not finished" in {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(jobExpenses = None))))
+        urlGet(fullUrl(checkYourExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(TravelAndOvernightAmountController.show(taxYearEOY).url)
+    }
+
     "redirect to overview page when theres no expenses" in {
       lazy val result: WSResponse = {
         dropExpensesDB()
@@ -581,7 +598,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     "redirect to employment expenses page when no expenses has been added yet (making a new employment journey)" in {
       val customerData = anEmploymentSource
-
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -592,7 +608,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       result.status shouldBe SEE_OTHER
       result.header("location").contains(claimEmploymentExpensesUrl(taxYearEOY)) shouldBe true
-
     }
 
     "redirect to 'do you need to add any additional new expenses?' page when there's prior expenses (making a new employment journey)" in {
@@ -609,7 +624,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       result.status shouldBe SEE_OTHER
       //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
       result.header("location").contains(claimEmploymentExpensesUrl(taxYearEOY)) shouldBe true
-
     }
 
     "returns an action when auth call fails" which {
@@ -625,8 +639,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" when {
-    def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-      ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
     "return a redirect when in year" which {
       implicit lazy val result: WSResponse = {

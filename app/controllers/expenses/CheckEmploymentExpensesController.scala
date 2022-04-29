@@ -62,13 +62,16 @@ class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: C
     } else {
       employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
-          case Some(cya: ExpensesUserData) =>
-            Future(performAuditAndRenderView(
-              cya.expensesCya.expenses.toExpenses,
-              taxYear,
-              isInYear = false,
-              isUsingCustomerData = cya.expensesCya.expenses.isUsingCustomerData,
-              Some(cya.expensesCya.expenses)))
+          case Some(cya: ExpensesUserData) => cya.expensesCya.expenses.expensesIsFinished(taxYear) match {
+            case Some(unfinishedRedirect) => Future.successful(Redirect(unfinishedRedirect))
+            case _ =>
+              Future(performAuditAndRenderView(
+                cya.expensesCya.expenses.toExpenses,
+                taxYear,
+                isInYear = false,
+                isUsingCustomerData = cya.expensesCya.expenses.isUsingCustomerData,
+                Some(cya.expensesCya.expenses)))
+          }
           case None =>
             prior match {
               case Some(allEmploymentData) =>
