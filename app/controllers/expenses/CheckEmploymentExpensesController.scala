@@ -43,7 +43,7 @@ class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: C
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
                                                   inYearAction: InYearUtil,
                                                   errorHandler: ErrorHandler
-                                                 )(implicit val appConfig: AppConfig,
+                                                 )(implicit appConfig: AppConfig,
                                                    authorisedAction: AuthorisedAction,
                                                    mcc: MessagesControllerComponents,
                                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
@@ -106,7 +106,7 @@ class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: C
   //scalastyle:on
 
   def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit request =>
-    if(!inYearAction.inYear(taxYear) && appConfig.employmentEOYEnabled) {
+    if (!inYearAction.inYear(taxYear) && appConfig.employmentEOYEnabled) {
       employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
           case Some(cya) => cya.expensesCya.expenses.expensesIsFinished(taxYear) match {

@@ -41,9 +41,9 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
-    def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"
+    def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
 
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
@@ -260,7 +260,6 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
         "return an error when form is submitted with no entry" which {
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
@@ -279,11 +278,11 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(expectedExample1, bulletListSelector(1))
-          textOnPageCheck(expectedExample2, bulletListSelector(2))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
+          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 3))
+          textOnPageCheck(expectedExample1, bulletListSelector(index = 1))
+          textOnPageCheck(expectedExample2, bulletListSelector(index = 2))
+          radioButtonCheck(yesText, radioNumber = 1, checked = false)
+          radioButtonCheck(noText, radioNumber = 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(otherEquipmentExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)

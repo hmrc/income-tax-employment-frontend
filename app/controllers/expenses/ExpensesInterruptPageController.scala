@@ -33,13 +33,11 @@ class ExpensesInterruptPageController @Inject()(employmentSessionService: Employ
                                                 authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
                                                 errorHandler: ErrorHandler)
-                                               (implicit val cc: MessagesControllerComponents,
-                                                appConfig: AppConfig,
-                                                ec: ExecutionContext
-                                                ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
-    if(!inYearAction.inYear(taxYear)) {
+    if (!inYearAction.inYear(taxYear)) {
       Future.successful(Ok(expensesInterruptPageView(taxYear)))
     } else {
       Future.successful(Redirect(controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYear)))
@@ -47,11 +45,11 @@ class ExpensesInterruptPageController @Inject()(employmentSessionService: Employ
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
-    if(!inYearAction.inYear(taxYear)) {
-      employmentSessionService.getPriorData(request.user,taxYear).map {
+    if (!inYearAction.inYear(taxYear)) {
+      employmentSessionService.getPriorData(request.user, taxYear).map {
         case Left(error) => errorHandler.handleError(error.status)
         case Right(data) =>
-          if(data.employment.flatMap(_.latestEOYExpenses).nonEmpty){
+          if (data.employment.flatMap(_.latestEOYExpenses).nonEmpty) {
             Redirect(controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYear))
           } else {
             Redirect(controllers.expenses.routes.BusinessTravelOvernightExpensesController.show(taxYear))

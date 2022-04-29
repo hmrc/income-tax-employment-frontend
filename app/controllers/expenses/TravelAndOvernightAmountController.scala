@@ -36,15 +36,14 @@ import views.html.expenses.TravelAndOvernightAmountView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                   authAction: AuthorisedAction,
+class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
                                                    inYearAction: InYearUtil,
                                                    travelAndOvernightAmountView: TravelAndOvernightAmountView,
-                                                   appConfig: AppConfig,
-                                                   val employmentSessionService: EmploymentSessionService,
+                                                   employmentSessionService: EmploymentSessionService,
                                                    expensesService: ExpensesService,
-                                                   errorHandler: ErrorHandler,
-                                                   ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                   errorHandler: ErrorHandler)
+                                                  (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -66,9 +65,8 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
-
           amountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, None))),
+            formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, data.expensesCya.expenses.jobExpenses))),
             amount => handleSuccessForm(taxYear, data, amount)
           )
         }

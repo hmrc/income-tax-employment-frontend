@@ -51,7 +51,8 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   object Selectors {
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
-    val replayTextSelector = "#main-content > div > div > form > div > label > p"
+    val replayTextSelector: String = "#previous-amount-text"
+    val totalAmountTextSelector: String = "#total-amount-text"
     val hintTextSelector = "#amount-hint"
     val amountFieldSelector = "#amount"
     val poundPrefixSelector = ".govuk-input__prefix"
@@ -59,6 +60,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
+    val expectedTotalAmountParagraph: String
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -77,14 +79,16 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedHintText = "Total amount for all employers For example, £193.52"
+    val expectedTotalAmountParagraph = "Total amount for all employers"
+    val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedHintText = "Total amount for all employers Er enghraifft, £193.52"
+    val expectedTotalAmountParagraph = "Total amount for all employers"
+    val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
   }
@@ -169,6 +173,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           elementsNotOnPageCheck(replayTextSelector)
+          textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -200,6 +205,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(newAmount), replayTextSelector)
+          textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, newAmount.toString())
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -230,6 +236,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
+          textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -317,6 +324,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
+            textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
@@ -349,6 +357,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
+            textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "abc")
             buttonCheck(continueButtonText, continueButtonSelector)
@@ -381,6 +390,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
+            textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, maxLimit)
             buttonCheck(continueButtonText, continueButtonSelector)

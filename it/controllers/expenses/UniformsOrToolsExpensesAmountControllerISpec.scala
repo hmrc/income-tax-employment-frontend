@@ -34,11 +34,11 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val poundPrefixText = "£"
-  val newAmount: BigDecimal = 250
-  val maxLimit: String = "100000000000"
-  val amountField = "#amount"
-  val amountFieldName = "amount"
+  private val poundPrefixText = "£"
+  private val newAmount: BigDecimal = 250
+  private val maxLimit: String = "100000000000"
+  private val amountField = "#amount"
+  private val amountFieldName = "amount"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
@@ -47,13 +47,13 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
     val formSelector = "#main-content > div > div > form"
     val wantToClaimSelector: String = "#previous-amount"
     val cannotClaimParagraphSelector: String = "#cannot-claim"
+    val totalAmountParagraphSelector: String = "#total-amount-text"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val continueButtonSelector: String = "#continue"
   }
 
   trait SpecificExpectedResults {
-
     val expectedTitle: String
     val expectedHeading: String
 
@@ -68,6 +68,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   trait CommonExpectedResults {
     val expectedCaption: String
     val continueButtonText: String
+    val totalAmountText: String
     val hintText: String
     val expectedCannotClaim: String
   }
@@ -123,23 +124,25 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "Total amount for all employers For example, £193.52"
+    val totalAmountText = "Total amount for all employers"
+    val hintText = "For example, £193.52"
     val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
-    val hintText = "Total amount for all employers Er enghraifft, £193.52"
+    val totalAmountText = "Total amount for all employers"
+    val hintText = "Er enghraifft, £193.52"
     val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
 
@@ -178,6 +181,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           elementsNotOnPageCheck(wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -212,6 +216,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
@@ -245,6 +250,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -345,6 +351,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "abc")
@@ -380,6 +387,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -415,6 +423,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
+          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, maxLimit)

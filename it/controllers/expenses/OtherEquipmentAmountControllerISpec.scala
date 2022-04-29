@@ -47,6 +47,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object Selectors {
     val formSelector = "#main-content > div > div > form"
     val wantToClaimSelector: String = "#previous-amount"
+    val totalAmountParagraphSelector: String = "#total-amount-paragraph"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val continueButtonSelector: String = "#continue"
@@ -68,6 +69,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   trait CommonExpectedResults {
     val expectedCaption: String
     val continueButtonText: String
+    val totalAmountParagraph: String
     val hintText: String
   }
 
@@ -122,13 +124,15 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "Total amount for all employers For example, £193.52"
+    val totalAmountParagraph = "Total amount for all employers"
+    val hintText = "For example, £193.52"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
-    val hintText = "Total amount for all employers Er enghraifft, £193.52"
+    val totalAmountParagraph = "Total amount for all employers"
+    val hintText = "Er enghraifft, £193.52"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -172,6 +176,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           elementsNotOnPageCheck(wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -203,6 +208,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
@@ -233,6 +239,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -330,6 +337,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "abc")
@@ -361,6 +369,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
@@ -392,6 +401,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, maxLimit)
