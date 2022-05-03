@@ -16,9 +16,9 @@
 
 package support.builders.models.employment
 
+import EmploymentBenefitsBuilder.anEmploymentBenefits
+import EmploymentDataBuilder.anEmploymentData
 import models.employment.EmploymentSource
-import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import utils.TaxYearHelper
 
 object EmploymentSourceBuilder extends TaxYearHelper {
@@ -29,9 +29,9 @@ object EmploymentSourceBuilder extends TaxYearHelper {
     employerRef = Some("223/AB12399"),
     payrollId = Some("12345678"),
     startDate = Some("2019-04-21"),
-    cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
+    cessationDate = Some(s"${taxYearEOY-1}-03-11"),
     dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
+    submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
     employmentData = Some(anEmploymentData),
     employmentBenefits = Some(anEmploymentBenefits)
   )

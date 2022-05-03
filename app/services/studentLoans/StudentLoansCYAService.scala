@@ -63,7 +63,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
       val studentLoansCya: Option[StudentLoansCYAModel] = employmentData.flatMap(_.employment.studentLoans)
       val customerHeld = optionalAllEmploymentData.exists { allEmploymentData =>
         Seq(
-          allEmploymentData.hmrcEmploymentSourceWith(employmentId).map(_.isCustomerData),
+          allEmploymentData.inYearEmploymentSourceWith(employmentId).map(_.isCustomerData),
           allEmploymentData.eoyEmploymentSourceWith(employmentId).map(_.isCustomerData)
         ).flatten.forall(isCustomer => isCustomer)
       }

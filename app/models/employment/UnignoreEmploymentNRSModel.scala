@@ -16,12 +16,9 @@
 
 package models.employment
 
-import models.benefits.Benefits
 import play.api.libs.json.{Json, OWrites}
 
-case class UnignoreEmploymentNRSModel(employmentData: EmploymentDetailsViewModel,
-                                      benefits: Option[Benefits],
-                                      deductions: Option[Deductions])
+case class UnignoreEmploymentNRSModel(employmentIdToUnignore: String)
 
 object UnignoreEmploymentNRSModel {
   implicit def writes: OWrites[UnignoreEmploymentNRSModel] = Json.writes[UnignoreEmploymentNRSModel]

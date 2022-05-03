@@ -17,14 +17,10 @@
 package services
 
 import audit.UnignoreEmploymentAudit
+import models.employment._
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import support.builders.models.UserBuilder.aUser
-import support.builders.models.benefits.BenefitsBuilder.aBenefits
-import support.builders.models.employment.DeductionsBuilder.aDeductions
-import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEmploymentDetailsViewModel
-import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.builders.models.employment.UnignoreEmploymentNRSModelBuilder.anUnignoreEmploymentNRSModel
 import support.mocks._
 import utils.UnitTest
 
@@ -42,21 +38,23 @@ class UnignoreEmploymentServiceSpec extends UnitTest
 
   ".unignoreEmployment" should {
     "return a successful result" in {
-      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", nino, mtditid, anEmploymentDetailsViewModel, Some(aBenefits), Some(aDeductions))
+
+      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", nino, mtditid, "employmentId")
 
       mockAuditSendEvent(unignoreEmploymentAudit.toAuditModel)
-      mockUnignoreEmployment(nino, taxYear, anEmploymentSource.employmentId, Right(()))
-      verifySubmitEvent(anUnignoreEmploymentNRSModel)
+      verifySubmitEvent(UnignoreEmploymentNRSModel("employmentId"))
 
-      await(service.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Right()
+      mockUnignoreEmployment(nino, taxYear, "employmentId", Right(()))
+
+      await(service.unignoreEmployment(aUser, taxYear, "employmentId")) shouldBe Right()
     }
 
     "return a error result" in {
+
       val error = APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)
+      mockUnignoreEmployment(nino, taxYear, "employmentId", Left(error))
 
-      mockUnignoreEmployment(nino, taxYear, anEmploymentSource.employmentId, Left(error))
-
-      await(service.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Left(error)
+      await(service.unignoreEmployment(aUser, taxYear, "employmentId")) shouldBe Left(error)
     }
   }
 }

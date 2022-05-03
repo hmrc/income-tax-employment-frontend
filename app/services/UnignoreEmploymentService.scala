@@ -19,12 +19,13 @@ package services
 import audit.{AuditService, UnignoreEmploymentAudit}
 import connectors.UnignoreEmploymentConnector
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import models.employment.{EmploymentSource, UnignoreEmploymentNRSModel}
-import models.{APIErrorModel, User}
+import javax.inject.Inject
+import models.employment.UnignoreEmploymentNRSModel
+import models.{APIErrorModel, CommonAuthorisationRequest, User}
 import play.api.Logging
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreEmploymentConnector,
@@ -32,44 +33,35 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
                                           nrsService: NrsService,
                                           implicit val executionContext: ExecutionContext) extends Logging {
 
-  def unignoreEmployment(user: User, taxYear: Int, hmrcEmploymentSource: EmploymentSource)
+  def unignoreEmployment(user: User, taxYear: Int, employmentId: String)
                         (implicit hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
-    unignoreEmploymentConnector.unignoreEmployment(user.nino, taxYear, hmrcEmploymentSource.employmentId)(
+
+    unignoreEmploymentConnector.unignoreEmployment(user.nino, taxYear, employmentId)(
       hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
       case Left(error) => Left(error)
       case _ =>
-        sendAuditEvent(user, taxYear, hmrcEmploymentSource)
-        performSubmitNrsPayload(user, hmrcEmploymentSource)
+        sendAuditEvent(user, taxYear, employmentId)
+        performSubmitNrsPayload(user, employmentId)
         Right()
     }
   }
 
-  private def sendAuditEvent(user: User, taxYear: Int, hmrcEmploymentSource: EmploymentSource)
+  private def sendAuditEvent(user: User, taxYear: Int, employmentId: String)
                             (implicit hc: HeaderCarrier): Unit = {
-    val employmentDetailsViewModel = hmrcEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
-    val benefits = hmrcEmploymentSource.employmentBenefits.flatMap(_.benefits)
-    val deductions = hmrcEmploymentSource.employmentData.flatMap(_.deductions)
 
     val auditModel = UnignoreEmploymentAudit(
       taxYear,
       user.affinityGroup.toLowerCase,
       user.nino,
       user.mtditid,
-      employmentDetailsViewModel,
-      benefits,
-      deductions
+      employmentId
     )
 
     auditService.sendAudit[UnignoreEmploymentAudit](auditModel.toAuditModel)
   }
 
-  private def performSubmitNrsPayload(user: User, hmrcEmploymentSource: EmploymentSource)
+  private def performSubmitNrsPayload(user: User, employmentId: String)
                                      (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
-    val employmentData = hmrcEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
-    val benefits = hmrcEmploymentSource.employmentBenefits.flatMap(_.benefits)
-    val deductions = hmrcEmploymentSource.employmentData.flatMap(_.deductions)
-    val nrsPayload = UnignoreEmploymentNRSModel(employmentData, benefits, deductions)
-
-    nrsService.submit(user.nino, nrsPayload, user.mtditid, user.trueUserAgent)
+    nrsService.submit(user.nino, UnignoreEmploymentNRSModel(employmentId), user.mtditid, user.trueUserAgent)
   }
 }

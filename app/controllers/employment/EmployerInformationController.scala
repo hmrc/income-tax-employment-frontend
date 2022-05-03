@@ -44,7 +44,7 @@ class EmployerInformationController @Inject()(implicit val cc: MessagesControlle
     } else {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
         val isInYear = inYearAction.inYear(taxYear)
-        val source = if (isInYear) allEmploymentData.hmrcEmploymentSourceWith(employmentId) else allEmploymentData.eoyEmploymentSourceWith(employmentId)
+        val source = if (isInYear) allEmploymentData.inYearEmploymentSourceWith(employmentId) else allEmploymentData.eoyEmploymentSourceWith(employmentId)
 
         source match {
           case Some(EmploymentSourceOrigin(source, _)) =>

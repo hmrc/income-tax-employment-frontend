@@ -60,7 +60,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData: AllEmploymentData =>
         val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        allEmploymentData.hmrcEmploymentSourceWith(employmentId) match {
+        allEmploymentData.inYearEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             source.employmentBenefits.flatMap(_.benefits) match {
               case None => redirect
