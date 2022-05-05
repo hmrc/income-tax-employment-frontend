@@ -36,15 +36,14 @@ import views.html.benefits.ReceiveAnyBenefitsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                             authAction: AuthorisedAction,
+class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
                                              inYearAction: InYearUtil,
                                              receiveAnyBenefitsView: ReceiveAnyBenefitsView,
-                                             appConfig: AppConfig,
                                              employmentSessionService: EmploymentSessionService,
                                              benefitsService: BenefitsService,
-                                             errorHandler: ErrorHandler,
-                                             ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                             errorHandler: ErrorHandler)
+                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

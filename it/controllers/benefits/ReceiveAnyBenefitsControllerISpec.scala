@@ -33,7 +33,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object Selectors {
     val expectedErrorHref = "#value"
-    val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val paragraphSelector = "#main-content > div > div > p"
     val formSelector = "#main-content > div > div > form"
   }
 

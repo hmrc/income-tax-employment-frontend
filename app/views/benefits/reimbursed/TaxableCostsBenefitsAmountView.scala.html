@@ -15,13 +15,13 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.InputText
+@import views.html.templates.helpers.InputTextAlt
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.ErrorSummary
 @import utils.ViewUtils._
 
-@this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
+@this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputTextAlt, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
 @(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -29,28 +29,25 @@
     messages(s"benefits.taxableCostsBenefitsAmount.title.${if(request.user.isAgent) "agent" else "individual"}")
 }
 
-@contentHtml = {
+@layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+
+    @errorSummary(form.errors)
+
+    @heading(titleText, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
     @if(preAmount.isDefined){
         <p class="govuk-body" id="previous-amount-text">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
     }
     <p class="govuk-body" id="enter-total-text">@messages("common.enterTheTotal")</p>
-}
-
-@layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
-
-    @errorSummary(form.errors)
 
     @formWithCsrf(action = controllers.benefits.reimbursed.routes.TaxableCostsBenefitsAmountController.submit(taxYear, empId)) {
         @inputText(
             form,
             id = "amount",
             name = "amount",
-            heading = titleText,
-            headingClasses = "govuk-!-margin-bottom-2",
-            subheading = Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)),
-            content = Some(contentHtml),
-            hint = Some(Html(messages("common.currency.hint"))),
-            isPageHeading = false,
+            label = titleText,
+            labelHidden = true,
+            hint = Some(messages("common.currency.hint")),
             currency = true
         )
         @button()

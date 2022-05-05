@@ -36,7 +36,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val youCanUseTextSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val youCanUseTextSelector = "#main-content > div > div > p"
     val yesSelector = "#value"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
