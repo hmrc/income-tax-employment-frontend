@@ -30,7 +30,6 @@ object EmploymentDataBuilder extends TaxYearHelper {
     companyDirector = Some(true),
     closeCompany = Some(false),
     directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
-    occPen = Some(false),
     disguisedRemuneration = Some(false),
     pay = Some(aPay),
     deductions = Some(aDeductions)
@@ -42,7 +41,6 @@ object EmploymentDataBuilder extends TaxYearHelper {
     companyDirector = Some(true),
     closeCompany = Some(false),
     directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
-    occPen = Some(false),
     disguisedRemuneration = Some(false),
     pay = Some(aPay.copy(
       taxablePayToDate = aPay.taxablePayToDate.map(_ + 1000),

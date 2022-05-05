@@ -348,7 +348,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             employmentId,
             "Falador Knights",
             None, None, Some(paymentDate), None, None, None, Some(EmploymentData(
-              startDate, None, None, None, None, None, None,
+              startDate, None, None, None, None, None,
               Some(Pay(Some(100.00), Some(12), Some("WEEKLY"), Some(startDate), Some(3), Some(3))),
               Some(Deductions(Some(StudentLoans(Some(6300.00), Some(91.0)))))
             )), None
