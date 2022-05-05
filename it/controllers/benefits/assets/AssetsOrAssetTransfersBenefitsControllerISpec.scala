@@ -37,10 +37,9 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val descriptionParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(2)"
-    val includesParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(3)"
-    val bullet1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(1)"
-    val bullet2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(2)"
+    val paragraphSelector: Int => String = (index: Int) => s"#main-content > div > div > p.govuk-body:nth-child($index)"
+    val bullet1Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(1)"
+    val bullet2Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(2)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
@@ -151,8 +150,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
+          textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(3))
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedBullet2, bullet2Selector)
           radioButtonCheck(yesText, 1, checked = false)
@@ -183,8 +182,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
+          textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(3))
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedBullet2, bullet2Selector)
           radioButtonCheck(yesText, 1, checked = true)
@@ -215,8 +214,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
+          textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(3))
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedBullet2, bullet2Selector)
           radioButtonCheck(yesText, 1, checked = false)
@@ -318,8 +317,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             captionCheck(expectedCaption)
-            textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
-            textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
+            textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(3))
+            textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(4))
             textOnPageCheck(expectedBullet1, bullet1Selector)
             textOnPageCheck(user.specificExpectedResults.get.expectedBullet2, bullet2Selector)
             radioButtonCheck(yesText, 1, checked = false)

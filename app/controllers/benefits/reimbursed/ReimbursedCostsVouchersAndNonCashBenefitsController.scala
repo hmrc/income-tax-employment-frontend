@@ -38,15 +38,14 @@ import views.html.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsV
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                                    authAction: AuthorisedAction,
+class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: AuthorisedAction,
                                                                     inYearAction: InYearUtil,
                                                                     pageView: ReimbursedCostsVouchersAndNonCashBenefitsView,
-                                                                    appConfig: AppConfig,
                                                                     employmentSessionService: EmploymentSessionService,
                                                                     reimbursedService: ReimbursedService,
-                                                                    errorHandler: ErrorHandler,
-                                                                    ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                                    errorHandler: ErrorHandler)
+                                                                    (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

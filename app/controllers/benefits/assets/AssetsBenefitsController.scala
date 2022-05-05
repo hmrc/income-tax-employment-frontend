@@ -37,15 +37,13 @@ import views.html.benefits.assets.AssetsBenefitsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AssetsBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                         authAction: AuthorisedAction,
+class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
                                          inYearAction: InYearUtil,
                                          assetsBenefitsView: AssetsBenefitsView,
-                                         appConfig: AppConfig,
                                          employmentSessionService: EmploymentSessionService,
                                          assetsService: AssetsService,
-                                         errorHandler: ErrorHandler,
-                                         ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                         errorHandler: ErrorHandler)
+(implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

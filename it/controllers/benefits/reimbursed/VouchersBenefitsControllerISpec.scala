@@ -41,9 +41,9 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
-    val bullet1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(1)"
-    val bullet2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(2)"
+    val paragraphSelector: String = "#main-content > div > div > p"
+    val bullet1Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(1)"
+    val bullet2Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(2)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
