@@ -22,16 +22,19 @@ This service runs on port: `localhost:9317`
 
 | Feature | Environments Enabled In |
 | --- | --- |
-| Encryption | QA, Staging, Production |
-| Welsh Toggle | Local, QA |
+| Encryption | QA, Staging, Production, ET |
+| Welsh Toggle | Local, QA, ET |
 | NRS | Local |
 | Tax Year Error | Production |
+| Student loans | Local, QA, Staging, ET |
+| End of year employment | Local, QA, Staging, ET |
 
 ### Employment Journeys:
 - View employment data
 - Add new employment data (end-of-year)
 - Update existing employment data (end-of-year)
 - Delete employment data (end-of-year)
+- Reinstate previously removed hmrc employments (end-of-year)
 
 ### Employment Sources (HMRC-Held and Customer Data)
 Employment data can come from different sources: HMRC-Held and Customer. HMRC-Held data is employment data that HMRC have for the user within the tax year, prior to any updates made by the user. The employment data displayed in-year is HMRC-Held.
@@ -231,6 +234,8 @@ Customer data is provided by the user. At the end of the tax year, users can vie
 | AA133742A | Single employment - Employment details and benefits | HMRC-Held, Customer|
 | BB444444A | Multiple employments - Employment details, benefits and expenses | HMRC-Held, Customer |
 | AA370773A | Multiple employments - `occPen` set to true | HMRC-Held, Customer |
+| AA455555A | User with ignored hmrc data (Employments can be reinstated) | HMRC-Held |
+| AA333444A | User with only expenses data | HMRC-Held |
 
 ### License
 
