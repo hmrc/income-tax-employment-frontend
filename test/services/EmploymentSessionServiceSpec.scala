@@ -117,7 +117,6 @@ class EmploymentSessionServiceSpec extends UnitTest
             companyDirector = None,
             closeCompany = None,
             directorshipCeasedDate = None,
-            occPen = None,
             disguisedRemuneration = None,
             pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
             Some(Deductions(
@@ -530,7 +529,7 @@ class EmploymentSessionServiceSpec extends UnitTest
           employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
           hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
             Some(EmploymentData(
-              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
               Some(Pay(
                 employmentDataFull.employment.employmentDetails.taxablePayToDate,
                 employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -563,7 +562,7 @@ class EmploymentSessionServiceSpec extends UnitTest
           employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
           hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
             Some(EmploymentData(
-              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+              employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
               Some(Pay(
                 employmentDataFull.employment.employmentDetails.taxablePayToDate,
                 employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -601,7 +600,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
                   Some(EmploymentData(
-                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                     Some(Pay(
                       employmentDataFull.employment.employmentDetails.taxablePayToDate,
                       employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -647,7 +646,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -684,7 +683,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -731,7 +730,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -781,7 +780,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     None, None, None, None, None, None
                   )), None
@@ -852,7 +851,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
                   Some(EmploymentData(
-                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                     Some(Pay(
                       employmentDataFull.employment.employmentDetails.taxablePayToDate,
                       employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -892,7 +891,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -930,7 +929,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -982,7 +981,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -1026,7 +1025,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     None, None, None, None, None, None
                   )), None
@@ -1061,7 +1060,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
                   Some(EmploymentData(
-                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                     Some(Pay(
                       employmentDataFull.employment.employmentDetails.taxablePayToDate,
                       employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -1154,7 +1153,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -1194,7 +1193,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
                   Some(Pay(
                     Some(3455545.55),
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,

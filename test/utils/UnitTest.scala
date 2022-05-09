@@ -122,7 +122,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
         companyDirector = Some(true),
         closeCompany = Some(false),
         directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
-        occPen = Some(false),
         disguisedRemuneration = Some(false),
         pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
         Some(Deductions(

@@ -16,7 +16,6 @@
 
 package connectors.parsers
 
-import models.IncomeTaxUserData.excludePensionIncome
 import models.{APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -34,7 +33,7 @@ object IncomeTaxUserDataHttpParser extends APIParser {
       response.status match {
         case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
           _ => badSuccessJsonFromAPI,
-          parsedModel => Right(excludePensionIncome(parsedModel))
+          parsedModel => Right(parsedModel)
         )
         case NO_CONTENT => Right(IncomeTaxUserData())
         case INTERNAL_SERVER_ERROR =>
