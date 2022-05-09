@@ -57,7 +57,7 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
       case (None, None) =>
         logger.info(s"[DeleteOrIgnoreExpensesService][deleteOrIgnoreExpenses]" +
           s" No expenses data found for user and employmentId. SessionId: ${user.sessionId}")
-        Future(Right())
+        Future(Right(()))
     }
 
     eventualResult.flatMap {
@@ -65,7 +65,7 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
       case Right(_) =>
         incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
           case Left(error) => Left(error)
-          case _ => Right()
+          case _ => Right(())
         }
     }
   }
@@ -100,7 +100,7 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
                                  (implicit hc: HeaderCarrier): Future[Either[APIErrorModel, Unit]] = {
     deleteOverrideExpensesConnector.deleteOrIgnoreExpenses(user.nino, taxYear, toRemove)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
       case Left(error) => Left(error)
-      case Right(_) => Right()
+      case Right(_) => Right(())
     }
   }
 }

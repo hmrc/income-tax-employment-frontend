@@ -42,7 +42,8 @@ class EducationalServicesBenefitsController @Inject()(authAction: AuthorisedActi
                                                       employmentSessionService: EmploymentSessionService,
                                                       medicalService: MedicalService,
                                                       errorHandler: ErrorHandler)
-                                                     (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                                     (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

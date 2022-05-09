@@ -41,18 +41,13 @@ class SelectEmployerControllerSpec extends UnitTestWithApp
 
   private lazy val view: SelectEmployerView = app.injector.instanceOf[SelectEmployerView]
 
-  private lazy val controller = new SelectEmployerController()(
-    mockMessagesControllerComponents,
+  private lazy val controller = new SelectEmployerController(
     mockActionsProvider,
-    inYearAction,
     view,
-    mockAppConfig,
     mockUnignoreEmploymentService,
     mockEmploymentSessionService,
     mockErrorHandler,
-    ec,
-    new SelectEmployerForm
-  )
+    new SelectEmployerForm)(mockMessagesControllerComponents, mockAppConfig, ec)
 
   ".show" should {
     "return a result" which {

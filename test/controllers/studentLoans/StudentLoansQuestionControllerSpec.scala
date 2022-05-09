@@ -40,7 +40,7 @@ class StudentLoansQuestionControllerSpec extends UnitTestWithApp
     authorisedAction,
     inYearAction,
     mockErrorHandler)(appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
-    taxYearErrorEnabled = taxYearErrorFeature), ec)
+    taxYearErrorEnabled = taxYearErrorFeature))
 
   ".show" should {
     "redirect to the overview page" when {

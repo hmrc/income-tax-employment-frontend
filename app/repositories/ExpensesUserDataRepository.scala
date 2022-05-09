@@ -73,7 +73,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
         Try {
           encryptedData.map(encryptionService.decryptExpenses)
         }.toEither match {
-          case Left(exception: Exception) => handleEncryptionDecryptionException(exception, start)
+          case Left(t: Throwable) => handleEncryptionDecryptionException(t.asInstanceOf[Exception], start)
           case Right(decryptedData) => Right(decryptedData)
         }
     }
@@ -85,7 +85,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     Try {
       encryptionService.encryptExpenses(expensesUserData)
     }.toEither match {
-      case Left(exception: Exception) => Future.successful(handleEncryptionDecryptionException(exception, start))
+      case Left(t: Throwable) => Future.successful(handleEncryptionDecryptionException(t.asInstanceOf[Exception], start))
       case Right(encryptedData) =>
 
         val queryFilter = filterExpenses(encryptedData.sessionId, encryptedData.mtdItId, encryptedData.nino, encryptedData.taxYear)
@@ -93,7 +93,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
         val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
 
         collection.findOneAndReplace(queryFilter, replacement, options).toFutureOption().map {
-          case Some(_) => Right()
+          case Some(_) => Right(())
           case None =>
             pagerDutyLog(FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, s"$start Failed to update user data.")
             Left(DataNotUpdated)

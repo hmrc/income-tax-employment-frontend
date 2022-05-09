@@ -93,7 +93,7 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
     }
   }
 
-  private def employmentPriorDataAction(taxYear: Int, overrideRedirect: Option[Result] = None)
+  private def employmentPriorDataAction(taxYear: Int, overrideRedirect: Option[Result])
                                        (implicit ec: ExecutionContext): ActionRefiner[AuthorisationRequest, UserPriorDataRequest] = {
     new ActionRefiner[AuthorisationRequest, UserPriorDataRequest] {
       override protected def executionContext: ExecutionContext = ec

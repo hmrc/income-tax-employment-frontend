@@ -170,38 +170,38 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     )
   }
 
+  //scalastyle:off
   def toAmendDecodedBenefitsPayloadModel(priorData: EmploymentSource): DecodedAmendBenefitsPayload = {
-    DecodedAmendBenefitsPayload(
-      priorEmploymentBenefitsData = Benefits(
-        accommodation = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation)),
-        assets = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assets)),
-        assetTransfer = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assetTransfer)),
-        beneficialLoan = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.beneficialLoan)),
-        car = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.car)),
-        carFuel = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.carFuel)),
-        educationalServices = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.educationalServices)),
-        entertaining = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.entertaining)),
-        expenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.expenses)),
-        medicalInsurance = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.medicalInsurance)),
-        telephone = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.telephone)),
-        service = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.service)),
-        taxableExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.taxableExpenses)),
-        van = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.van)),
-        vanFuel = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.vanFuel)),
-        mileage = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage)),
-        nonQualifyingRelocationExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nonQualifyingRelocationExpenses)),
-        nurseryPlaces = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nurseryPlaces)),
-        otherItems = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.otherItems)),
-        paymentsOnEmployeesBehalf = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.paymentsOnEmployeesBehalf)),
-        personalIncidentalExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses)),
-        qualifyingRelocationExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.qualifyingRelocationExpenses)),
-        employerProvidedProfessionalSubscriptions = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedProfessionalSubscriptions)),
-        employerProvidedServices = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedServices)),
-        incomeTaxPaidByDirector = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.incomeTaxPaidByDirector)),
-        travelAndSubsistence = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.travelAndSubsistence)),
-        vouchersAndCreditCards = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.vouchersAndCreditCards)),
-        nonCash = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nonCash))
-      ),
+    DecodedAmendBenefitsPayload(priorEmploymentBenefitsData = Benefits(
+      accommodation = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation)),
+      assets = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assets)),
+      assetTransfer = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assetTransfer)),
+      beneficialLoan = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.beneficialLoan)),
+      car = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.car)),
+      carFuel = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.carFuel)),
+      educationalServices = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.educationalServices)),
+      entertaining = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.entertaining)),
+      expenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.expenses)),
+      medicalInsurance = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.medicalInsurance)),
+      telephone = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.telephone)),
+      service = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.service)),
+      taxableExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.taxableExpenses)),
+      van = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.van)),
+      vanFuel = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.vanFuel)),
+      mileage = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage)),
+      nonQualifyingRelocationExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nonQualifyingRelocationExpenses)),
+      nurseryPlaces = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nurseryPlaces)),
+      otherItems = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.otherItems)),
+      paymentsOnEmployeesBehalf = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.paymentsOnEmployeesBehalf)),
+      personalIncidentalExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses)),
+      qualifyingRelocationExpenses = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.qualifyingRelocationExpenses)),
+      employerProvidedProfessionalSubscriptions = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedProfessionalSubscriptions)),
+      employerProvidedServices = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedServices)),
+      incomeTaxPaidByDirector = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.incomeTaxPaidByDirector)),
+      travelAndSubsistence = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.travelAndSubsistence)),
+      vouchersAndCreditCards = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.vouchersAndCreditCards)),
+      nonCash = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nonCash))
+    ),
       employmentBenefitsData = Benefits(
         accommodation = employmentData.flatMap(_.benefitsInKind.flatMap(_.accommodation)),
         assets = employmentData.flatMap(_.benefitsInKind.flatMap(_.assets)),
@@ -234,6 +234,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       )
     )
   }
+  //scalastyle:on
 
   def toCreateDecodedStudentLoansPayloadModel: DecodedCreateNewStudentLoansPayload = {
     DecodedCreateNewStudentLoansPayload(
@@ -255,11 +256,11 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       )
       )),
       Deductions(
-      studentLoans = Some(StudentLoans(
-        uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
-        pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
-      )
-      )))
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
+          pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
+        )
+        )))
   }
 
   def toCreateStudentLoansAuditModel(user: User, taxYear: Int): CreateNewStudentLoansDeductionsAudit = {
@@ -273,7 +274,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
           uglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount))),
           pglDeductionAmount = employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.pglDeductionAmount)))
         )
-      ))
+        ))
     )
   }
 

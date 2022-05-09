@@ -22,7 +22,7 @@ import utils.EncryptedValue
 case class StudentLoansCYAModel(uglDeduction: Boolean,
                                 uglDeductionAmount: Option[BigDecimal] = None,
                                 pglDeduction: Boolean,
-                                pglDeductionAmount: Option[BigDecimal] = None){
+                                pglDeductionAmount: Option[BigDecimal] = None) {
 
   def toDeductions: Option[Deductions] = {
     if (uglDeductionAmount.isDefined || pglDeductionAmount.isDefined) {
