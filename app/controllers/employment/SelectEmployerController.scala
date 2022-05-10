@@ -19,32 +19,29 @@ package controllers.employment
 import actions.ActionsProvider
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{EmployerNameController, SelectEmployerController}
+import controllers.employment.routes.EmployerNameController
 import forms.employment.SelectEmployerForm
 import models.UserPriorDataRequest
-import models.employment.{EmploymentSource, EmploymentSourceOrigin}
+import models.employment.EmploymentSource
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{EmploymentSessionService, UnignoreEmploymentService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.employment.SelectEmployerView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SelectEmployerController @Inject()(implicit val cc: MessagesControllerComponents,
-                                         actionsProvider: ActionsProvider,
-                                         inYearAction: InYearUtil,
+class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
                                          selectEmployerView: SelectEmployerView,
-                                         appConfig: AppConfig,
                                          unignoreEmploymentService: UnignoreEmploymentService,
                                          employmentSessionService: EmploymentSessionService,
                                          errorHandler: ErrorHandler,
-                                         ec: ExecutionContext,
-                                         selectEmployerForm: SelectEmployerForm
-                                        ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                         selectEmployerForm: SelectEmployerForm)
+                                        (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = actionsProvider.notInYearWithPriorData(taxYear) { implicit request =>
     val ignoredEmployments = request.employmentPriorData.ignoredEmployments

@@ -43,7 +43,8 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
                                                 employmentSessionService: EmploymentSessionService,
                                                 medicalService: MedicalService,
                                                 errorHandler: ErrorHandler)
-                                               (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
+                                               (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {

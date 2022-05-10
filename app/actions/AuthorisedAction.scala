@@ -29,9 +29,9 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, allEnrolment
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import javax.inject.Inject
 import utils.RequestUtils.getTrueUserAgent
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(appConfig: AppConfig)
@@ -55,6 +55,8 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     authService.authorised.retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)
       case Some(affinityGroup) => individualAuthentication(block, affinityGroup)(request, headerCarrier)
+      case _ => logger.info(s"[AuthorisedAction][invokeBlock] - User failed to authenticate")
+        throw AuthorisationException.fromString("[AuthorisedAction][invokeBlock] - User failed to authenticate")
     } recover {
       case _: NoActiveSession =>
         logger.info(s"[AuthorisedAction][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
@@ -145,7 +147,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
           case _: NoActiveSession =>
             logger.info(s"[AuthorisedAction][agentAuthentication] - No active session. Redirecting to ${appConfig.signInUrl}")
             Redirect(appConfig.signInUrl)
-          case ex: AuthorisationException =>
+          case _: AuthorisationException =>
             logger.info(s"[AuthorisedAction][agentAuthentication] - Agent does not have delegated authority for Client.")
             Redirect(controllers.errors.routes.AgentAuthErrorController.show)
         }

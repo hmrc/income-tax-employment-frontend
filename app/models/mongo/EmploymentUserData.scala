@@ -44,7 +44,6 @@ object EmploymentUserData extends MongoJodaFormats {
     override def firstPage: Call = CheckEmploymentDetailsController.show(taxYear, employmentId)
 
     override def questions(m: EmploymentUserData): Set[Question] = {
-      val model = m.employment.employmentDetails
       Set(
       )
     }

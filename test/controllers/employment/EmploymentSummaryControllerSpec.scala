@@ -110,16 +110,13 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
   private val employmentSummaryView = app.injector.instanceOf[EmploymentSummaryView]
 
-  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController()(
-    mockMessagesControllerComponents,
-    authorisedAction,
-    new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled),
+  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController(
     employmentSummaryView,
     mockEmploymentSessionService,
     inYearAction,
     mockErrorHandler,
     mockActionsProvider
-  )
+  )(mockMessagesControllerComponents, new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   ".addNewEmployment" should {
     "redirect to add employment page when there is no session data and no prior employments" which {

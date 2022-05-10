@@ -56,14 +56,14 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
       case (None, None) =>
         logger.info(s"[RemoveEmploymentService][deleteOrIgnoreEmployment]" +
           s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")
-        Future(Right())
+        Future(Right(()))
     }
 
     eventualResult.flatMap {
       case Left(error) => Future(Left(error))
       case Right(_) => incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
         case Left(error) => Left(error)
-        case _ => Right()
+        case _ => Right(())
       }
     }
   }
@@ -106,7 +106,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
       case Right(_) => if(isLastEmployment) {
           deleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(user, allEmploymentData, taxYear)
       } else {
-        Future(Right())
+        Future(Right(()))
       }
     }
   }

@@ -40,7 +40,7 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
       case _ =>
         sendAuditEvent(user, taxYear, hmrcEmploymentSource)
         performSubmitNrsPayload(user, hmrcEmploymentSource)
-        Right()
+        Right(())
     }
   }
 

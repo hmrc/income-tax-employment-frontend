@@ -35,10 +35,10 @@ import scala.concurrent.Future
 
 class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val employmentId: String = "1234567890-0987654321"
-  val startDate = s"$taxYear-04-01"
+  private val employmentId: String = "1234567890-0987654321"
+  private val startDate = s"$taxYear-04-01"
 
-  def url(taxYearUnique: Int): String = fullUrl(studentLoansQuestionPage(taxYearUnique, employmentId))
+  private def url(taxYearUnique: Int): String = fullUrl(studentLoansQuestionPage(taxYearUnique, employmentId))
 
   trait CommonExpectedResults {
     val title: String

@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import actions.{ActionsProvider, AuthorisedAction}
+import actions.ActionsProvider
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.{EmployerNameController, SelectEmployerController}
@@ -31,26 +31,22 @@ import views.html.employment.EmploymentSummaryView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
-                                            implicit val appConfig: AppConfig,
-                                            employmentSummaryView: EmploymentSummaryView,
+class EmploymentSummaryController @Inject()(employmentSummaryView: EmploymentSummaryView,
                                             employmentSessionService: EmploymentSessionService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
-                                            actionsProvider: ActionsProvider
-                                           ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                            actionsProvider: ActionsProvider)
+                                           (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
-
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
     if (!isInYear && !appConfig.employmentEOYEnabled) {
       Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     } else {
-
       val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
       val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
@@ -65,7 +61,6 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
   }
 
   def addNewEmployment(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear).async { implicit request =>
-
     lazy val hasIgnoredEmployments = request.employmentPriorData.map(_.ignoredEmployments).getOrElse(Seq()).nonEmpty
 
     val result = Redirect(if (hasIgnoredEmployments) SelectEmployerController.show(taxYear) else EmployerNameController.show(taxYear, UUID.randomUUID))
@@ -75,5 +70,4 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
       case Right(_) => Future.successful(result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
     })
   }
-
 }

@@ -16,13 +16,10 @@
 
 package services
 
-import java.util.NoSuchElementException
-
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
-import javax.inject.{Inject, Singleton}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
@@ -38,6 +35,7 @@ import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{Clock, InYearUtil}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -46,13 +44,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          expensesUserDataRepository: ExpensesUserDataRepository,
                                          incomeTaxUserDataConnector: IncomeTaxUserDataConnector,
                                          incomeSourceConnector: IncomeSourceConnector,
-                                         implicit private val appConfig: AppConfig,
-                                         val messagesApi: MessagesApi,
+                                         messagesApi: MessagesApi,
                                          errorHandler: ErrorHandler,
                                          createUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector,
                                          clock: Clock,
-                                         inYearUtil: InYearUtil,
-                                         implicit val ec: ExecutionContext) extends Logging {
+                                         inYearUtil: InYearUtil)
+                                        (implicit appConfig: AppConfig, ec: ExecutionContext) extends Logging {
 
   def findPreviousEmploymentUserData(user: User, taxYear: Int, overrideRedirect: Option[Result] = None)
                                     (result: AllEmploymentData => Result)
@@ -82,7 +79,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def findEmploymentUserData(taxYear: Int, employmentId: String, user: User): Future[Either[Unit, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId, user).map {
-      case Left(_) => Left()
+      case Left(_) => Left(())
       case Right(data) => Right(data)
     }
   }
@@ -162,7 +159,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     employmentUserDataRepository.createOrUpdate(employmentUserData).map {
       case Right(_) => Right(employmentUserData)
-      case Left(_) => Left()
+      case Left(_) => Left(())
     }
   }
 
@@ -207,14 +204,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     expensesUserDataRepository.createOrUpdate(expensesUserData).map {
       case Right(_) => Right(expensesUserData)
-      case Left(_) => Left()
+      case Left(_) => Left(())
     }
   }
 
   def createModelOrReturnError(user: User,
-                                cya: EmploymentUserData,
-                                prior: Option[AllEmploymentData],
-                                section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
+                               cya: EmploymentUserData,
+                               prior: Option[AllEmploymentData],
+                               section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
     cyaAndPriorToCreateUpdateEmploymentRequest(user, cya, prior, section) match {
       case Left(NothingToUpdate) =>
@@ -233,7 +230,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     val hmrcEmploymentId: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
     val customerEmploymentId: Option[String] = {
 
-      if(appConfig.mimicEmploymentAPICalls && section != EmploymentSection.EMPLOYMENT_DETAILS){
+      if (appConfig.mimicEmploymentAPICalls && section != EmploymentSection.EMPLOYMENT_DETAILS) {
         Some(cya.employmentId)
       } else {
         prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
@@ -301,7 +298,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       if (section == EmploymentSection.EMPLOYMENT_DETAILS) {
         cyaCreateUpdateEmployment
       } else {
-        if(appConfig.mimicEmploymentAPICalls){
+        if (appConfig.mimicEmploymentAPICalls) {
           cyaCreateUpdateEmployment
         } else {
           priorEmployment.fold {
@@ -357,7 +354,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
         case common.EmploymentSection.EMPLOYMENT_BENEFITS =>
 
-          if(appConfig.mimicEmploymentAPICalls){
+          if (appConfig.mimicEmploymentAPICalls) {
             CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
           } else {
             CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans)
@@ -365,7 +362,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
         case common.EmploymentSection.STUDENT_LOANS =>
 
-          if(appConfig.mimicEmploymentAPICalls){
+          if (appConfig.mimicEmploymentAPICalls) {
             CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
           } else {
             CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.toDeductions))
@@ -428,7 +425,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getOptionalCYAAndPrior(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)
-                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result,OptionalCyaAndPrior]] = {
+                            (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
 
     val result = for {
       optionalCya <- getSessionData(taxYear, employmentId)
@@ -454,24 +451,24 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getCYAAndPriorForEndOfYear(taxYear: Int, employmentId: String)
-                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, CyaAndPrior]] = {
+                                (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, CyaAndPrior]] = {
 
     val overviewRedirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
 
-    if(!inYearUtil.inYear(taxYear)){
-      getCYAAndPrior(taxYear,employmentId)
+    if (!inYearUtil.inYear(taxYear)) {
+      getCYAAndPrior(taxYear, employmentId)
     } else {
       Future.successful(Left(overviewRedirect))
     }
   }
 
   def getOptionalCYAAndPriorForEndOfYear(taxYear: Int, employmentId: String)
-                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
+                                        (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
 
     val overviewRedirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
 
-    if(!inYearUtil.inYear(taxYear)){
-      getOptionalCYAAndPrior(taxYear,employmentId)
+    if (!inYearUtil.inYear(taxYear)) {
+      getOptionalCYAAndPrior(taxYear, employmentId)
     } else {
       Future.successful(Left(overviewRedirect))
     }
@@ -494,18 +491,18 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def submitAndClear(taxYear: Int, employmentId: String, model: CreateUpdateEmploymentRequest, cya: EmploymentUserData,
                      prior: Option[AllEmploymentData],
-                     auditFunction: Option[(String, Int, CreateUpdateEmploymentRequest, Option[AllEmploymentData], AuthorisationRequest[_])=> Unit] = None)
-                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, (Option[String], EmploymentUserData)]] ={
+                     auditFunction: Option[(String, Int, CreateUpdateEmploymentRequest, Option[AllEmploymentData], AuthorisationRequest[_]) => Unit] = None)
+                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, (Option[String], EmploymentUserData)]] = {
 
     createOrUpdateEmploymentResult(taxYear, model).flatMap {
       case Left(result) => Future.successful(Left(result))
       case Right(returnedEmploymentId) =>
 
-        auditFunction.foreach(function => function(employmentId,taxYear,model,prior,request))
+        auditFunction.foreach(function => function(employmentId, taxYear, model, prior, request))
 
         clear(request.user, taxYear, employmentId).map {
           case Left(_) => Left(errorHandler.internalServerError())
-          case Right(_) => Right((returnedEmploymentId,cya))
+          case Right(_) => Right((returnedEmploymentId, cya))
         }
     }
   }
@@ -542,15 +539,15 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def clear(user: User, taxYear: Int, employmentId: String, clearCYA: Boolean = true)
            (implicit hc: HeaderCarrier, request: CommonAuthorisationRequest): Future[Either[Unit, Unit]] = {
     incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
-      case Left(_) => Future.successful(Left())
+      case Left(_) => Future.successful(Left(()))
       case _ =>
-        if(clearCYA) {
+        if (clearCYA) {
           employmentUserDataRepository.clear(taxYear, employmentId, user).map {
-            case true => Right()
-            case false => Left()
+            case true => Right(())
+            case false => Left(())
           }
         } else {
-          Future.successful(Right())
+          Future.successful(Right(()))
         }
     }
   }

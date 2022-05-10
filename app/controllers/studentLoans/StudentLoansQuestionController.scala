@@ -29,15 +29,15 @@ import utils.InYearUtil
 import views.html.studentLoans.StudentLoansQuestionView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents,
-                                                view: StudentLoansQuestionView,
-                                                employmentSessionService: EmploymentSessionService,
-                                                authAction: AuthorisedAction,
-                                                inYearAction: InYearUtil,
-                                                errorHandler: ErrorHandler)
-                                              (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                               view: StudentLoansQuestionView,
+                                               employmentSessionService: EmploymentSessionService,
+                                               authAction: AuthorisedAction,
+                                               inYearAction: InYearUtil,
+                                               errorHandler: ErrorHandler)
+                                              (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 

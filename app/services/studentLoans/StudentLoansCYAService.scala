@@ -55,7 +55,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
     }
   }
 
-  //noinspection ScalaStyle
+  //scalastyle:off
   def retrieveCyaDataAndIsCustomerHeld(taxYear: Int, employmentId: String)(block: (StudentLoansCYAModel, Boolean, Boolean) => Result)
                                       (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
 
@@ -69,15 +69,18 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
       }
 
       (studentLoansCya, optionalAllEmploymentData, customerHeld) match {
-        case (_, Some(allEmploymentData), isCustomerHeld) if allEmploymentData.eoyEmploymentSourceWith(employmentId).exists(!_.employmentSource.employmentDetailsSubmittable) =>
+        case (_, Some(allEmploymentData), isCustomerHeld)
+          if allEmploymentData.eoyEmploymentSourceWith(employmentId).exists(!_.employmentSource.employmentDetailsSubmittable) =>
           val cya = extractEmploymentInformation(allEmploymentData, employmentId, isCustomerHeld)
             .map(source => EmploymentCYAModel(source, isCustomerHeld))
-          Future.successful(block(cya.flatMap(_.studentLoans).getOrElse(StudentLoansCYAModel(uglDeduction = false, pglDeduction = false)), isCustomerHeld, true))
+          Future.successful(block(cya.flatMap(_.studentLoans)
+            .getOrElse(StudentLoansCYAModel(uglDeduction = false, pglDeduction = false)), isCustomerHeld, true))
         case (Some(cya), _, isCustomerHeld) =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] Student Loans CYA data found. Performing block action.")
           Future.successful(block(cya, isCustomerHeld, false))
         case (None, _, _) if employmentData.isDefined =>
-          logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No Student Loans CYA data exist, but employment CYA does. Redirecting to start of SL journey.")
+          logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No Student Loans CYA data exist, " +
+            "but employment CYA does. Redirecting to start of SL journey.")
           Future.successful(Redirect(controllers.studentLoans.routes.StudentLoansQuestionController.show(taxYear, employmentId)))
         case (_, Some(alLEmploymentData), isCustomerHeld) =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA data. Constructing CYA from prior data.")
@@ -85,13 +88,16 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
             .map(source => (EmploymentCYAModel(source, isCustomerHeld), source.hasPriorBenefits, source.hasPriorStudentLoans)) match {
 
             case None =>
-              logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No employment CYA data extracted from prior data. Redirecting back to overview.")
+              logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No employment CYA data extracted from prior data. " +
+                "Redirecting back to overview.")
               Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
             case Some((employmentCya, hasPriorBenefits, hasPriorStudentLoans)) =>
-              employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, employmentCya, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, hasPriorStudentLoans = hasPriorStudentLoans)(errorHandler.internalServerError())({
+              employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, employmentCya, isPriorSubmission = true,
+                hasPriorBenefits = hasPriorBenefits, hasPriorStudentLoans = hasPriorStudentLoans)(errorHandler.internalServerError())({
                 employmentCya.studentLoans match {
                   case None =>
-                    logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No SL CYA data exist, but there is prior data. Redirecting to the start of the SL journey.")
+                    logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No SL CYA data exist, but there is prior data. " +
+                      "Redirecting to the start of the SL journey.")
                     Redirect(controllers.studentLoans.routes.StudentLoansQuestionController.show(taxYear, employmentId))
                   case Some(slCya) =>
                     logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] CYA data exist. Performing block action.")
@@ -105,6 +111,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
       }
     }
   }
+  //scalastyle:on
 
   //test only for when mimicEmploymentAPICalls is true
   def createOrUpdateSessionData(employmentId: String,
@@ -113,7 +120,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                                 user: User)(onSuccess: Result)(implicit request: AuthorisationRequest[_]): Future[Result] = {
 
     employmentSessionService.createOrUpdateSessionData(
-      user, taxYear, employmentId, cya.employment, true, true, true
+      user, taxYear, employmentId, cya.employment, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true
     )(errorHandler.internalServerError())(onSuccess)
   }
 
