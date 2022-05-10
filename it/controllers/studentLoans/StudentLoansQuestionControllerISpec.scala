@@ -61,7 +61,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsEnglish extends CommonExpectedResults {
     override val title: String = "Did you repay any student loan?"
     override val heading: String = "Did you repay any student loan while employed by Whiterun Guards?"
-    override val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
+    override val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary."
     override val paragraphText_2: String = "The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions."
     override val checkboxHint: String = "Select all that apply."
@@ -78,7 +78,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
     override val title: String = "Did your client repay any student loan?"
     override val heading: String = "Did your client repay any student loan while employed by Whiterun Guards?"
-    override val caption: String = s"Student loans for 6 April ${taxYear - 1} to 5 April $taxYear"
+    override val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary."
     override val paragraphText_2: String = "The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions."
     override val checkboxHint: String = "Select all that apply."
@@ -95,7 +95,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsWelsh extends CommonExpectedResults {
     override val title: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?"
     override val heading: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr tra’ch bod wedi’ch cyflogi gan Whiterun Guards?"
-    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog."
     override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi am hyn. Gwiriwch eich slipiau cyflog neu P60 am ddidyniadau benthyciad myfyrwyr."
     override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
@@ -112,7 +112,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsWelshAgent extends CommonExpectedResults {
     override val title: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?"
     override val heading: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr tra ei fod wedi’i gyflogi gan Whiterun Guards?"
-    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog."
     override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient am hyn. Gwiriwch slipiau cyflog neu P60 eich cleient am ddidyniadau benthyciadau myfyrwyr."
     override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
@@ -157,8 +157,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     "immediately redirect the user to the overview page" when {
 
       "the student loans feature switch is off" in {
-
-        val request = FakeRequest("GET", studentLoansQuestionPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        val request = FakeRequest("GET", studentLoansQuestionPage(taxYearEOY, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
 
         val result: Future[Result] = {
           dropEmploymentDB()
@@ -167,20 +166,34 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         }
 
         status(result) shouldBe SEE_OTHER
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+      }
+      
+      "a user is accessing the page in year" in {
+        val request = FakeRequest("GET", studentLoansQuestionPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+
+        val result: Future[Result] = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          route(app, request, "{}").get
+        }
+
+        status(result) shouldBe SEE_OTHER
         await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
+      
       "a user has no cyadata" in {
 
         val result = {
           dropEmploymentDB()
           authoriseIndividual()
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
 
@@ -195,7 +208,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               sessionId,
               mtditid,
               nino,
-              taxYear,
+              taxYearEOY,
               employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
@@ -212,10 +225,10 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                 ))
               )
             ))
-            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
 
-            urlGet(url(taxYear), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -248,7 +261,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               sessionId,
               mtditid,
               nino,
-              taxYear,
+              taxYearEOY,
               employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
@@ -263,7 +276,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               )
             ))
 
-            urlGet(url(taxYear), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit val document: () => Document = () => Jsoup.parse(result.body)
@@ -280,10 +293,10 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     "immediately redirect the user to the overview page" when {
 
       "The user is taken to the overview page when the student loans feature switch is off" in {
-        val headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+        val headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), "Csrf-Token" -> "nocheck")
 
 
-        val request = FakeRequest("POST", studentLoansQuestionPage(taxYear, employmentId)).withHeaders(headers: _*)
+        val request = FakeRequest("POST", studentLoansQuestionPage(taxYearEOY, employmentId)).withHeaders(headers: _*)
 
         val result: Future[Result] = {
           dropEmploymentDB()
@@ -292,7 +305,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         }
 
         status(result) shouldBe SEE_OTHER
-        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
 
       }
       "there is no cya data in session and the form is valid" in {
@@ -302,13 +315,13 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
 
       }
 
@@ -324,7 +337,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             sessionId,
             mtditid,
             nino,
-            taxYear,
+            taxYearEOY,
             employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
             EmploymentCYAModel(
               EmploymentDetails(
@@ -341,15 +354,15 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               ))
             )
           ))
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYear, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYearEOY, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, Some(1000.22), pglDeduction = false, None)
 
@@ -363,7 +376,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             sessionId,
             mtditid,
             nino,
-            taxYear,
+            taxYearEOY,
             employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
             EmploymentCYAModel(
               EmploymentDetails(
@@ -377,15 +390,15 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               )
             )
           ))
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYear, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYearEOY, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, None, pglDeduction = false, None)
 
@@ -400,7 +413,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             sessionId,
             mtditid,
             nino,
-            taxYear,
+            taxYearEOY,
             employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
             EmploymentCYAModel(
               EmploymentDetails(
@@ -414,14 +427,14 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               )
             )
           ))
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(pglAmountUrl(taxYear, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).contains(pglAmountUrl(taxYearEOY, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = true, None)
 
@@ -436,7 +449,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             sessionId,
             mtditid,
             nino,
-            taxYear,
+            taxYearEOY,
             employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
             EmploymentCYAModel(
               EmploymentDetails(
@@ -450,15 +463,15 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               )
             )
           ))
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYear, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYearEOY, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = false, None)
 
@@ -472,7 +485,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             sessionId,
             mtditid,
             nino,
-            taxYear,
+            taxYearEOY,
             employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
             EmploymentCYAModel(
               EmploymentDetails(
@@ -486,16 +499,16 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               )
             )
           ))
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
+          userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
 
-          urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYear, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYearEOY, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, None, pglDeduction = true, None)
 
@@ -514,7 +527,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               sessionId,
               mtditid,
               nino,
-              taxYear,
+              taxYearEOY,
               employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
@@ -528,8 +541,8 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                 )
               )
             ))
-            userDataStub(IncomeTaxUserData(), nino, taxYear)
-            urlPost(url(taxYear), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
+            urlPost(url(taxYearEOY), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "returns the correct status" in {
@@ -552,7 +565,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
               sessionId,
               mtditid,
               nino,
-              taxYear,
+              taxYearEOY,
               employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
@@ -566,9 +579,9 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
                 )
               )
             ))
-            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-            urlPost(url(taxYear), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlPost(url(taxYearEOY), form, welsh = scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "returns the correct status" in {
