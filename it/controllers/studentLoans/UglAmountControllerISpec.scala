@@ -43,13 +43,13 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   val paymentDate = s"$taxYear-01-01"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
+    val captionSelector: String = "#main-content > div > div > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val inputSelector = "#amount"
     val hintTextSelector = "#amount-hint"
-    val paragraphCheckSelector = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val headingSelector = "#main-content > div > div > form > div > label > header > h1"
+    val paragraphCheckSelector = "#main-content > div > div > p"
+    val headingSelector = "#main-content > div > div > header > h1"
     val errorSummarySelector = "#main-content > div > div > div.govuk-error-summary > div > ul > li > a"
     val errorMessageSelector = "#amount-error"
   }
