@@ -40,6 +40,7 @@ class UglAmountControllerSpec extends UnitTestWithApp
     mockEmploymentSessionService,
     mockStudentLoansService,
     view,
+    inYearAction,
     mockErrorHandler)(appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
     taxYearErrorEnabled = taxYearErrorFeature), ec)
 

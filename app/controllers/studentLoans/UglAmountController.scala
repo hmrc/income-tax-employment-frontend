@@ -18,7 +18,6 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import controllers.studentLoans.routes.StudentLoansCYAController
 import forms.{AmountForm, FormUtils}
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
@@ -28,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.studentLoans.StudentLoansService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.UglAmountView
 
 import javax.inject.Inject
@@ -39,13 +38,13 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     employmentSessionService: EmploymentSessionService,
                                     studentLoansService: StudentLoansService,
                                     view: UglAmountView,
+                                    inYearAction: InYearUtil,
                                     errorHandler: ErrorHandler)
                                    (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-
-    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
@@ -75,9 +74,10 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-
-    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
-      val redirectUrl = StudentLoansCYAController.show(taxYear, employmentId).url
+    val studentLoansCyaControllerRoute = controllers.studentLoans.routes.StudentLoansCYAController
+    
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
+      val redirectUrl = studentLoansCyaControllerRoute.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         amountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
           formWithErrors => {

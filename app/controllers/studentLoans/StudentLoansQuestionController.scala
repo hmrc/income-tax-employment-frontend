@@ -40,19 +40,17 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
                                               (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-
-    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
-      val inYear: Boolean = inYearAction.inYear(taxYear)
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(employmentData) =>
           employmentData.employment.studentLoans
             .fold(
               Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
-                inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent))))
+                StudentLoanQuestionForm.studentLoanForm(request.user.isAgent))))
             )(
               studentLoans =>
                 Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
-                  inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
+                  StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
             )
         case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
@@ -63,13 +61,12 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
-      val inYear: Boolean = inYearAction.inYear(taxYear)
+    if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       StudentLoanQuestionForm.studentLoanForm(request.user.isAgent).bindFromRequest().fold(
         formWithErrors => {
           employmentSessionService.getSessionDataResult(taxYear, employmentId) {
             case Some(employmentData) =>
-              Future.successful(BadRequest(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName, inYear, formWithErrors)))
+              Future.successful(BadRequest(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName, formWithErrors)))
             case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
         },
