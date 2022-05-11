@@ -76,7 +76,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
+    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"

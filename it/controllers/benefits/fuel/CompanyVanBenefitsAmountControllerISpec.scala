@@ -67,14 +67,14 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     override val amountHint: String = "For example, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount. "
+    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount. "
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -184,7 +184,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent + get.expectedContent, contentSelector)
+          textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "300")

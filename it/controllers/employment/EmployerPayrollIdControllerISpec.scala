@@ -89,8 +89,8 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedCaption: String = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "For example, 123456"
-    val bullet1: String = "upper and lower case letters (a to z)"
-    val bullet2: String = "numbers"
+    val bullet1: String = "llythrennau mawr a bach (a i z)"
+    val bullet2: String = "rhifau"
     val bullet3: String = "the special characters: .,-()/=!\"%&*;<>'+:\\?"
     val previousParagraph: String = "If the payroll ID is not 123456, tell us the correct ID."
   }

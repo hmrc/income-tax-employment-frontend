@@ -45,10 +45,10 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "You cannot view this page"
-    val youNeedText = "You need to"
-    val createAnAgentText = "create an agent services account"
-    val beforeYouCanText = "before you can view this page."
+    val h1Expected = "Ni allwch fwrw golwg dros y dudalen hon"
+    val youNeedText = "Mae angen"
+    val createAnAgentText = "creu cyfrif gwasanaethau asiant"
+    val beforeYouCanText = "cyn i chi allu bwrw golwg dros y dudalen hon."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {

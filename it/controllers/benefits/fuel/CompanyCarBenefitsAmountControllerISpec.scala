@@ -101,7 +101,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
     val hintText = "Er enghraifft, £193.52"
     val continueButtonText = "Yn eich blaen"
-    val optionalText = s"If it was not £$carAmount, tell us the correct amount."
+    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £$carAmount."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

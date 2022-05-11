@@ -83,9 +83,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def ifItWasNotText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"

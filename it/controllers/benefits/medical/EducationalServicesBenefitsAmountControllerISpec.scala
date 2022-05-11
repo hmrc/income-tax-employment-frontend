@@ -74,7 +74,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

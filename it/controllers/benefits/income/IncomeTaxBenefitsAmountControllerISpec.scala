@@ -84,12 +84,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

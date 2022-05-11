@@ -80,7 +80,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
+    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
     val expectedExample1 = "the cost of buying small items - like electrical drills and protective clothing"
     val expectedExample2 = "capital allowances for larger items - like machinery and computers"
     val yesText = "Iawn"

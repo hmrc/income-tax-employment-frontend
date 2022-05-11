@@ -86,7 +86,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
     val expectedTitle: String = "What is the total value of vouchers and credit card payments?"
     val expectedHeading: String = "What is the total value of vouchers and credit card payments?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"

@@ -52,6 +52,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   trait CommonExpectedResults {
     def expectedCaption(taxYear: Int): String
 
+    def expectedPreAmountParagraph(amount: BigDecimal): String
+
     val continueButtonText: String
     val hintText: String
   }
@@ -59,9 +61,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedHeading: String
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String
-
     val expectedParagraph: String
     val expectedParagraphForForm: String
     val expectedErrorTitle: String
@@ -73,6 +72,8 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val hintText = "For example, £193.52"
     val continueButtonText = "Continue"
   }
@@ -80,6 +81,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
     val hintText = "Er enghraifft, £193.52"
     val continueButtonText = "Yn eich blaen"
   }
@@ -87,9 +89,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "How much was your medical or dental benefit in total?"
     val expectedHeading = "How much was your medical or dental benefit in total?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
     val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
@@ -101,9 +100,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much was your medical or dental benefit in total?"
     val expectedHeading = "How much was your medical or dental benefit in total?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
     val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
@@ -115,9 +111,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "How much was your client’s medical or dental benefit in total?"
     val expectedHeading = "How much was your client’s medical or dental benefit in total?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
     val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
@@ -129,9 +122,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much was your client’s medical or dental benefit in total?"
     val expectedHeading = "How much was your client’s medical or dental benefit in total?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
     val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
@@ -204,7 +194,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
+          textOnPageCheck(user.commonExpectedResults.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           textOnPageCheck(hintText, hintTextSelector)
@@ -235,7 +225,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
+          textOnPageCheck(user.commonExpectedResults.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           textOnPageCheck(hintText, hintTextSelector)

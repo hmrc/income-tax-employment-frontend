@@ -79,7 +79,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £500, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £500."
     val maxAmountErrorText: String = "The amount for other benefits must be less than £100,000,000,000"
   }
 

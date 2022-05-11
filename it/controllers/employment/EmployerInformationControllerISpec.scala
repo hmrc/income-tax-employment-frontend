@@ -46,7 +46,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val buttonSelector = "#returnToEmploymentSummaryBtn"
-    val employmentDetailsLinkSelector = "#employment-details_link"
+    val employmentDetailsLinkSelector: Boolean => String = (welshLang: Boolean) => if(welshLang) "#manylion-cyflogaeth_link" else "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
     val formSelector = "#main-content > div > div > form"
 
@@ -105,12 +105,12 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
     val bannerParagraph: String = "You must add missing employment details."
     val bannerLinkText: String = "add missing employment details."
-    val fieldNames = Seq("Employment details", "Employment benefits", "Benthyciadau Myfyrwyr")
+    val fieldNames = Seq("Manylion cyflogaeth", "Employment benefits", "Benthyciadau Myfyrwyr")
     val buttonText = "Return to PAYE employment"
-    val updated = "Updated"
+    val updated = "Wedi diweddaru"
     val toDo: String = "To do"
-    val cannotUpdate = "Cannot update"
-    val notStarted = "Not started"
+    val cannotUpdate = "Ddim yn gallu diweddaru"
+    val notStarted = "Heb ddechrau"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -177,7 +177,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.toDo, summaryListStatusTagsSelector(1))
           }
 
@@ -217,7 +217,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
           }
 
@@ -256,7 +256,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
           }
 
@@ -297,7 +297,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
           }
 
@@ -334,7 +334,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
           }
 
@@ -372,7 +372,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(1))
           }
 
@@ -408,7 +408,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(1))
           }
 
@@ -451,7 +451,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
           }
 
@@ -492,7 +492,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector(user.isWelsh), checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(1))
           }
 

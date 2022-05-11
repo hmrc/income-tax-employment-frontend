@@ -93,7 +93,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedParagraphText: String = "Your employer may have covered fees you must pay to be able to do your job. " +
       "This includes annual subscriptions to approved professional bodies that are relevant to your work."
-    val checkWithEmployerText = "Check with your employer if you are unsure."
+    val checkWithEmployerText = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
     val expectedErrorMessage = "Select yes if your employer covered costs for any professional fees or subscriptions"
   }
 
@@ -113,7 +113,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedParagraphText: String = "Your client’s employer may have covered fees they must pay to be able to do their job. " +
       "This includes annual subscriptions to approved professional bodies that are relevant to their work."
-    val checkWithEmployerText = "Check with your client’s employer if you are unsure."
+    val checkWithEmployerText = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
     val expectedErrorMessage = "Select yes if your client’s employer covered costs for any professional fees or subscriptions"
   }
 

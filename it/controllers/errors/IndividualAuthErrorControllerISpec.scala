@@ -43,9 +43,9 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val validTitle: String = "You cannot view this page"
-    val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-    val linkContent: String = "sign up for Making Tax Digital for Income Tax"
+    val validTitle: String = "Ni allwch fwrw golwg dros y dudalen hon"
+    val pageContent: String = "Mae angen cofrestru ar gyfer y cynllun Troi Treth yn Ddigidol ar gyfer Treth Incwm cyn i chi allu bwrw golwg dros y dudalen hon."
+    val linkContent: String = "cofrestru ar gyfer y cynllun Troi Treth yn Ddigidol ar gyfer Treth Incwm"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {

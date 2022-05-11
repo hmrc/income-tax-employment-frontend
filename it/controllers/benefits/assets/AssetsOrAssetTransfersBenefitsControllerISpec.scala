@@ -111,7 +111,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedDescriptionParagraph = "Assets are things like computers, televisions or bicycles."
-    val expectedBullet1 = "use"
+    val expectedBullet1 = "defnyddio"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

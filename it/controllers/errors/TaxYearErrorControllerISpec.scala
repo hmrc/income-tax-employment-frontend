@@ -58,9 +58,9 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val p1Expected = s"Dim ond gwybodaeth ar gyfer y blynyddoedd treth ${validTaxYearList.min} i ${validTaxYearList.max} y gallwch ei nodi."
     val p1ExpectedSingle = "Dim ond gwybodaeth ar gyfer blwyddyn dreth ddilys y gallwch ei nodi."
     val p2Expected = "Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir."
-    val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
-      "general enquiries (yn agor tab newydd) to speak to someone about your income tax."
-    val p3ExpectedLinkText = "Self Assessment: general enquiries (yn agor tab newydd)"
+    val p3Expected: String = "Os ywír cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
+      "ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm."
+    val p3ExpectedLinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {

@@ -50,13 +50,13 @@ class ServiceUnavailableTemplateSpec extends ViewTest {
   object expectedResultsCY {
     val h1Expected = "Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael"
     val p1Expected = "Byddwch yn gallu defnyddio’r gwasanaeth hwn nes ymlaen."
-    val p2Expected = "You can also:"
-    val bulletPoint1Expected = "go to the Income Tax home page (yn agor tab newydd) for more information"
+    val p2Expected = "Gallwch hefyd wneud y canlynol:"
+    val bulletPoint1Expected = "mynd iír hafan Treth Incwm (yn agor tab newydd) am ragor o wybodaeth"
     val bulletPoint1Link = "https://www.gov.uk/income-tax"
-    val bulletPoint1LinkText = "Income Tax home page (yn agor tab newydd)"
-    val bulletPoint2Expected = "use Self Assessment: general enquiries (yn agor tab newydd) to speak to someone about your income tax"
+    val bulletPoint1LinkText = "hafan Treth Incwm (yn agor tab newydd)"
+    val bulletPoint2Expected = "defnyddio Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm"
     val bulletPoint2Link = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
-    val bulletPoint2LinkText = "Self Assessment: general enquiries (yn agor tab newydd)"
+    val bulletPoint2LinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }
 
   lazy val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]

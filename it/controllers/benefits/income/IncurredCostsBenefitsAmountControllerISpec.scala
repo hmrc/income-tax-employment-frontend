@@ -46,7 +46,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val formSelector = "#main-content > div > div > form"
 
     def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-    def paragraphSelector2 = "#main-content > div > div > p"
+    def paragraphSelector2: String = "#main-content > div > div > p"
   }
 
   trait CommonExpectedResults {
@@ -83,12 +83,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

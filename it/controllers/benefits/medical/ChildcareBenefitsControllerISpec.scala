@@ -77,7 +77,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if you got a childcare benefit"
     val expectedTheseAre = "These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs."
-    val expectedCheckWith = "Check with your employer if you are unsure."
+    val expectedCheckWith = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -95,7 +95,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Select yes if your client got a childcare benefit"
     val expectedTheseAre = "These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs."
-    val expectedCheckWith = "Check with your client’s employer if you are unsure."
+    val expectedCheckWith = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

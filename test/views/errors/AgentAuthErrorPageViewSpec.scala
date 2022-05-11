@@ -44,7 +44,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
   }
 
   object ExpectedResultsCY {
-    val h1Expected = "There’s a problem"
+    val h1Expected = "Mae problem wedi codi"
     val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
     val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
     val beforeYouCanTryText = "cyn y gallwch fewngofnodi i’r gwasanaeth hwn."

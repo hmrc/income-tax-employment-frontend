@@ -47,10 +47,10 @@ class NotFoundTemplateSpec extends ViewTest {
     val h1Expected = "Heb ddod o hyd i’r dudalen"
     val p1Expected = "Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir."
     val p2Expected = "Os gwnaethoch ddefnyddio ‘copïo a gludo’ i nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn."
-    val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
-      "general enquiries (yn agor tab newydd) to speak to someone about your income tax."
+    val p3Expected: String = "Os ywír cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
+      "ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm."
     val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
-    val p3ExpectedLinkText = "Self Assessment: general enquiries (yn agor tab newydd)"
+    val p3ExpectedLinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }
 
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]

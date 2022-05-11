@@ -96,7 +96,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -118,7 +118,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }

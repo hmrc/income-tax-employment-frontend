@@ -85,7 +85,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
-    val optionalText = s"If it was not £$carFuelAmount, tell us the correct amount."
+    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £$carFuelAmount."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

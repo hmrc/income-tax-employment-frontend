@@ -180,11 +180,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val addExpenses: String = "Add expenses"
     val employer: String = "Employer"
     val employers: String = "Employers"
-    val returnToOverview: String = "Return to overview"
-    val employmentDetails: String = "Employment details"
-    val benefits: String = "Benefits"
+    val returnToOverview: String = "Yn Ùl iír trosolwg"
+    val employmentDetails: String = "Manylion Cyflogaeth"
+    val benefits: String = "Buddiannau"
     val view: String = "View"
-    val cannotUpdate: String = "Cannot update"
+    val cannotUpdate: String = "Ddim yn gallu diweddaru"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

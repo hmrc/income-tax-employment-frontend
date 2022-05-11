@@ -29,7 +29,8 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
+  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -78,7 +79,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
-    val optionalText = s"If it was not £${livingAccommodationBenefitAmount.get}, tell us the correct amount."
+    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £${livingAccommodationBenefitAmount.get}."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
