@@ -16,6 +16,7 @@
 
 package forms.employment
 
+import filters.InputFilters
 import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
@@ -23,7 +24,7 @@ import play.api.data.Form
 import play.api.data.validation.Constraint
 import play.api.data.validation.Constraints.nonEmpty
 
-object PayeForm {
+object PayeForm extends InputFilters{
 
   val payeRef: String = "payeRef"
   val charRegex ="^\\d{3}\\/[A-Za-z0-9 ]{1,10}$"
@@ -35,7 +36,7 @@ object PayeForm {
   val validateFormat: Constraint[String] = validateChar(charRegex)("payeRef.errors.wrongFormat")
 
   def payeRefForm(isAgent: Boolean): Form[String] = Form(
-    payeRef -> trimmedText.verifying(
+    payeRef -> trimmedText.transform[String](filter, identity).verifying(
       notEmpty(isAgent) andThen validateFormat
     )
   )

@@ -16,6 +16,7 @@
 
 package forms.employment
 
+import filters.InputFilters
 import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
@@ -23,7 +24,7 @@ import play.api.data.Form
 import play.api.data.validation.Constraint
 import play.api.data.validation.Constraints.nonEmpty
 
-object EmployerPayrollIdForm {
+object EmployerPayrollIdForm extends InputFilters{
 
   val payrollId: String = "payrollId"
   val charLimit: Int = 38
@@ -39,7 +40,7 @@ object EmployerPayrollIdForm {
     validateChar(regex)(if(isAgent) "employment.payrollId.error.incorrect.agent" else "employment.payrollId.error.incorrect.individual")
 
   def employerPayrollIdForm(isAgent: Boolean): Form[String] = Form(
-    payrollId -> trimmedText.verifying(
+    payrollId -> trimmedText.transform[String](filter, identity).verifying(
       notEmpty(isAgent) andThen notCharLimit(isAgent) andThen validateFormat(isAgent)
     )
   )
