@@ -16,17 +16,18 @@
 
 package forms.employment
 
+import filters.InputFilters
 import forms.validation.mappings.MappingUtil.trimmedText
 import models.employment.EmploymentDate
 import play.api.data.Forms.mapping
 import play.api.data.{Form, FormError}
-import java.time.LocalDate
 
+import java.time.LocalDate
 import utils.ViewUtils
 
 import scala.util.Try
 
-object EmploymentDateForm {
+object EmploymentDateForm extends InputFilters {
 
   val startDate = "employmentStartDate"
   val leaveDate = "employmentLeaveDate"
@@ -38,9 +39,9 @@ object EmploymentDateForm {
   def employmentStartDateForm: Form[EmploymentDate] =
     Form(
       mapping(
-        day -> trimmedText,
-        month -> trimmedText,
-        year -> trimmedText
+        day -> trimmedText.transform[String](filter, identity),
+        month -> trimmedText.transform[String](filter, identity),
+        year -> trimmedText.transform[String](filter, identity)
       )(EmploymentDate.apply)(EmploymentDate.unapply)
     )
 
