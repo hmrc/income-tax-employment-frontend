@@ -20,8 +20,8 @@
 @this(layout: Layout, heading: Heading, govUkButton: GovukButton, link: Link)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-@layout(messages("error.agent.title")) {
-@heading(messages("error.agent.title"), None, extraClasses = "govuk-!-margin-bottom-5", size = "xl")
+@layout(messages("error.summary.title")) {
+@heading(messages("error.summary.title"), None, extraClasses = "govuk-!-margin-bottom-5", size = "xl")
 
 <p class="govuk-body">
     @messages("error.agent.paragraph1") @link("https://www.gov.uk/guidance/client-authorisation-an-overview","error.agent.paragraph2",Some("client_auth_link"),true) @messages("error.agent.paragraph3")

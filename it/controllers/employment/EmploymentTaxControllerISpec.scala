@@ -43,7 +43,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedCaption: Int => String
     val hint: String
     val continue: String
-    val amount: String
+    val expectedPTextWithData: String
     val expectedErrorInvalidFormat: String
     val expectedErrorMaxLimit: String
   }
@@ -54,14 +54,13 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedErrorTitle: String
     val expectedErrorNoEntry: String
     val expectedPTextNoData: String
-    val expectedPTextWithData: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hint: String = "For example, £193.52"
     val continue: String = "Continue"
-    val amount: String = "amount"
+    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
     val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
     val expectedErrorMaxLimit = "The amount of UK tax must be less than £100,000,000,000"
   }
@@ -70,9 +69,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hint: String = "Er enghraifft, £193.52"
     val continue: String = "Yn eich blaen"
-    val amount: String = "amount"
-    val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
-    val expectedErrorMaxLimit = "The amount of UK tax must be less than £100,000,000,000"
+    val expectedPTextWithData: String = s"Os na chafodd £200 ei thynnu fel treth y DU, rhowch wybod i ni beth ywír swm cywir."
+    val expectedErrorInvalidFormat = "Nodwch y swm o dreth y DU yn y fformat cywir"
+    val expectedErrorMaxLimit = "Maeín rhaid iír swm o dreth y DU fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -81,7 +80,6 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of UK tax taken from your earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
-    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -90,25 +88,22 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of UK tax taken from your client’s earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
-    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
-    val expectedTitle: String = s"How much UK tax was taken from your earnings?"
+    val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu oích enillion maggie?"
+    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu oích enillion?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your earnings"
-    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
-    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
+    val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd oích enillion"
+    val expectedPTextNoData: String = "Fel arfer, maeír swm hwn iíw weld yn adran ëManylion Cyflog a Threth Incwmí eich P60."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
-    val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
+    val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu o enillion maggie eich cleient?"
+    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu o enillion eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your client’s earnings"
-    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
-    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
+    val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd o enillion eich cleient"
+    val expectedPTextNoData: String = "Fel arfer, maeír swm hwn iíw weld yn yr adran ëManylion Cyflog a Threth Incwmí ar P60 eich cleient."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -164,7 +159,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+          textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
           inputFieldValueCheck(amountInputName, inputAmountField, "")
@@ -333,13 +328,13 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
             buttonCheck(user.commonExpectedResults.continue, continueButton)
             textOnPageCheck(user.commonExpectedResults.hint, hintText)
             inputFieldValueCheck(amountInputName, inputAmountField, "")
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputAmountField)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amount))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
 
           }
 
@@ -367,13 +362,13 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
             buttonCheck(user.commonExpectedResults.continue, continueButton)
             textOnPageCheck(user.commonExpectedResults.hint, hintText)
             inputFieldValueCheck(amountInputName, inputAmountField, "abc123")
 
             errorSummaryCheck(expectedErrorInvalidFormat, inputAmountField)
-            errorAboveElementCheck(expectedErrorInvalidFormat, Some(amount))
+            errorAboveElementCheck(expectedErrorInvalidFormat, Some(amountInputName))
 
           }
 
@@ -401,13 +396,13 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
             buttonCheck(user.commonExpectedResults.continue, continueButton)
             textOnPageCheck(user.commonExpectedResults.hint, hintText)
             inputFieldValueCheck(amountInputName, inputAmountField, "9999999999999999999999999999")
 
             errorSummaryCheck(expectedErrorMaxLimit, inputAmountField)
-            errorAboveElementCheck(expectedErrorMaxLimit, Some(amount))
+            errorAboveElementCheck(expectedErrorMaxLimit, Some(amountInputName))
 
           }
         }

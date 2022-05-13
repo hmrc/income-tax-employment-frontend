@@ -55,6 +55,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   trait CommonExpectedResults {
+    val expectedTitle: String
+    val expectedErrorTitle: String
+    def expectedHeading(employerName: String): String
     val expectedCaption: String
     val expectedRemoveAccountText: String
     val expectedLastAccountText: String
@@ -64,8 +67,11 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
+    val expectedTitle = "Are you sure you want to remove this employment?"
+    val expectedErrorTitle = s"Error: $expectedTitle"
+    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
     val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
+    val expectedRemoveAccountText: String = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
       " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
@@ -74,8 +80,11 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
+    val expectedTitle = "A ydych yn si?r eich bod am dynnuír gyflogaeth hon?"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
+    def expectedHeading(employerName: String): String = s"A ydych yn si?r eich bod am dynnu $employerName?"
     val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
+    val expectedRemoveAccountText: String = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
       " You must remove any expenses from the separate expenses section."
     val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
     val expectedRemoveEmployerButton = "Remove employer"
@@ -83,46 +92,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     val expectedCancelLink = "Cancel"
   }
 
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedErrorTitle: String
-    def expectedHeading(employerName: String): String
-    val expectedErrorNoEntry: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
-    val expectedErrorNoEntry = "Select yes if you want to remove this employment"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
-    val expectedErrorNoEntry = "Select yes if you want to remove this employment"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
-    val expectedErrorNoEntry = "Select yes if you want to remove this employment"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
-    val expectedErrorNoEntry = "Select yes if you want to remove this employment"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY)
   )
 
   ".show" should {
@@ -132,7 +104,6 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     userScenarios.foreach { user =>
 
       val common = user.commonExpectedResults
-      val specific = user.specificExpectedResults.get
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "render the remove employment page for when it isn't the last employment" which {
@@ -153,8 +124,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedHeading(employerName))
+          titleCheck(common.expectedTitle, user.isWelsh)
+          h1Check(common.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
           buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
@@ -179,8 +150,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedHeading("apple"))
+          titleCheck(common.expectedTitle, user.isWelsh)
+          h1Check(common.expectedHeading("apple"))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
           textOnPageCheck(common.infoWeHold, insetTextSelector)
@@ -207,8 +178,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
           welshToggleCheck(user.isWelsh)
 
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedHeading(employerName))
+          titleCheck(common.expectedTitle, user.isWelsh)
+          h1Check(common.expectedHeading(employerName))
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
           buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)

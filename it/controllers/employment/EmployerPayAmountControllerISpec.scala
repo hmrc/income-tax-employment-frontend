@@ -82,8 +82,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
-    val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
-    val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a dalwyd yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalwyd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -105,21 +105,21 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay you?"
-    val expectedTitle: String = "How much did your employer pay you?"
+    val expectedH1: String = "Faint y gwnaeth maggie ei dalu i chi?"
+    val expectedTitle: String = "Faint y gwnaeth eich cyflogwr ei dalu i chi?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = s"If you were not paid £$amount, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
-    val emptyErrorText: String = "Enter the amount you were paid"
+    val expectedContent: String = s"Os na chafodd £$amount ei dalu i chi, rhowch wybod i ni beth ywír swm cywir."
+    val expectedContentNewAccount: String = "Nodwch y swm gros. Mae hwn iíw weld fel arfer ar eich P60."
+    val emptyErrorText: String = "Nodwch swm a dalwyd i chi"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay your client?"
-    val expectedTitle: String = "How much did your client’s employer pay them?"
+    val expectedH1: String = "Faint y gwnaeth maggie ei dalu iích cleient?"
+    val expectedTitle: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu iddo?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £100, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
-    val emptyErrorText: String = "Enter the amount your client was paid"
+    val expectedContent: String = "Os na chafodd £100 ei dalu iích cleient, rhowch wybod i ni beth ywír swm cywir."
+    val expectedContentNewAccount: String = "Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient."
+    val emptyErrorText: String = "Nodwch y swm a dalwyd iích cleient"
   }
 
   def cya(payToDate: Option[BigDecimal] = Some(100), isPriorSubmission: Boolean = true): EmploymentUserData =

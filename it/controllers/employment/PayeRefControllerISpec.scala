@@ -82,13 +82,12 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedH1: String = "What’s the PAYE reference of maggie?"
+    val expectedH1: String = "Beth yw cyfeirnod TWE maggie?"
     val continueButtonText = "Yn eich blaen"
-    val hintText = "For example, 123/AB456"
-    val expectedContent: String = "If the PAYE reference is not 123/AA12345, tell us the correct reference."
-    val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
-    val emptyErrorText: String = "Enter a PAYE reference"
-    val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
+    val hintText = "Er enghraifft, 123/AB456"
+    val expectedContent: String = "Rhowch wybod i ni beth ywír cyfeirnod TWE cywir os yw 123/AA12345 yn anghywir."
+    val emptyErrorText: String = "Nodwch gyfeirnod TWE"
+    val wrongFormatErrorText: String = "Nodwch gyfeirnod TWE yn y fformat cywir"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -104,15 +103,17 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "What’s the PAYE reference of your employer?"
+    val expectedTitle: String = "Beth yw cyfeirnod TWE eich cyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
+    val expectedContentNewAccount: String = "Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. " +
+      "Maeín bosibl y cyfeirir ato fel ëCyfeirnod TWE y Cyflogwrí neu fel ëCyfeirnod TWEí."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "What’s the PAYE reference of your client’s employer?"
+    val expectedTitle: String = "Beth yw cyfeirnod TWE cyflogwr eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
+    val expectedContentNewAccount: String = "Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. " +
+      "Maeín bosibl y cyfeirir ato fel ëCyfeirnod TWE y Cyflogwrí neu fel ëCyfeirnod TWEí."
   }
 
   private def cya(paye: Option[String] = Some(payeRef), isPriorSubmission: Boolean = true): EmploymentUserData = anEmploymentUserDataWithDetails(

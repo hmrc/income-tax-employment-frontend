@@ -67,9 +67,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedErrorTitle: String
     val startEmptyDayError: String
     val startEmptyMonthError: String
     val startEmptyYearError: String
@@ -96,18 +93,15 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   trait CommonExpectedResults {
+    val expectedTitle: String
+    val expectedH1: String
+    val expectedErrorTitle: String
     val expectedCaption: Int => String
     val expectedButtonText: String
-    val day: String
-    val month: String
-    val year: String
     val forExample: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Employment dates"
-    val expectedH1 = "Employment dates"
-    val expectedErrorTitle = s"Error: $expectedTitle"
     val startEmptyDayError = "The date you started employment must include a day"
     val startEmptyMonthError = "The date you started employment must include a month"
     val startEmptyYearError = "The date you started employment must include a year"
@@ -134,38 +128,32 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Employment dates"
-    val expectedH1 = "Employment dates"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val startEmptyDayError = "The date you started employment must include a day"
-    val startEmptyMonthError = "The date you started employment must include a month"
-    val startEmptyYearError = "The date you started employment must include a year"
-    val startEmptyDayYearError = "The date you started employment must include a day and year"
-    val startEmptyMonthYearError = "The date you started employment must include a month and year"
-    val startEmptyDayMonthError = "The date you started employment must include a day and month"
-    val startEmptyAllError = "Enter the date your employment started"
-    val invalidStartDateError = "The date you started employment must be a real date"
-    val startTooLongAgoDateError = "The date you started your employment must be after 1 January 1900"
-    val startTooRecentDateError = s"The date you started employment must be before 6 April $taxYearEOY"
-    val startFutureDateError = "The date you started employment must be in the past"
-    val leaveBeforeStartDate = s"The date you left your employment cannot be before 4 April $taxYearEOY"
-    val leaveEmptyDayError = "The date you left your employment must include a day"
-    val leaveEmptyMonthError = "The date you left your employment must include a month"
-    val leaveEmptyYearError = "The date you left your employment must include a year"
-    val leaveEmptyDayYearError = "The date you left your employment must include a day and year"
-    val leaveEmptyMonthYearError = "The date you left your employment must include a month and year"
-    val leaveEmptyDayMonthError = "The date you left your employment must include a day and month"
-    val leaveEmptyAllError = "Enter the date you left your employment"
-    val invalidLeaveDateError = "The date you left your employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
-    val leaveTooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
-    val leaveFutureDateError = "The date you left your employment must be in the past"
+    val startEmptyDayError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod"
+    val startEmptyMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis"
+    val startEmptyYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn"
+    val startEmptyDayYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn"
+    val startEmptyMonthYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn"
+    val startEmptyDayMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis"
+    val startEmptyAllError = "Nodwch y dyddiad y dechreuodd eich cyflogaeth"
+    val invalidStartDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn"
+    val startTooLongAgoDateError = "Maeín rhaid i ddyddiad y gwnaethoch ddechrauích cyflogaeth fod ar Ùl 1 Ionawr 1900"
+    val startTooRecentDateError = s"Maeín rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val startFutureDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol"
+    val leaveBeforeStartDate = s"Does dim modd i’r dyddiad y gwnaethoch adael eich cyflogaeth fod cyn 4 April $taxYearEOY"
+    val leaveEmptyDayError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod"
+    val leaveEmptyMonthError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys mis"
+    val leaveEmptyYearError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys blwyddyn"
+    val leaveEmptyDayYearError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod a blwyddyn"
+    val leaveEmptyMonthYearError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys mis a blwyddyn"
+    val leaveEmptyDayMonthError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod a mis"
+    val leaveEmptyAllError = "Nodwch y dyddiad y gwnaethoch chi adael eich cyflogaeth"
+    val invalidLeaveDateError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth fod yn ddyddiad go iawn"
+    val leaveTooLongAgoDateError = s"Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth fod ar Ùl 5 Ebrill ${taxYearEOY - 1}"
+    val leaveTooRecentDateError = s"Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val leaveFutureDateError = "Maeín rhaid iír dyddiad y gwnaethoch adael eich cyflogaeth fod yn y gorffennol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Employment dates"
-    val expectedH1 = "Employment dates"
-    val expectedErrorTitle = s"Error: $expectedTitle"
     val startEmptyDayError = "The date your client started their employment must include a day"
     val startEmptyMonthError = "The date your client started their employment must include a month"
     val startEmptyYearError = "The date your client started their employment must include a year"
@@ -192,50 +180,47 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Employment dates"
-    val expectedH1 = "Employment dates"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val startEmptyDayError = "The date your client started their employment must include a day"
     val startEmptyMonthError = "The date your client started their employment must include a month"
     val startEmptyYearError = "The date your client started their employment must include a year"
     val startEmptyDayYearError = "The date your client started their employment must include a day and year"
     val startEmptyMonthYearError = "The date your client started their employment must include a month and year"
     val startEmptyDayMonthError = "The date your client started their employment must include a day and month"
-    val startEmptyAllError = "Enter the date your client’s employment started"
+    val startEmptyAllError = "Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient"
     val invalidStartDateError = "The date your client started their employment must be a real date"
     val startTooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
     val startTooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
     val startFutureDateError = "The date your client started their employment must be in the past"
-    val leaveBeforeStartDate = s"The date your client left their employment cannot be before 4 April $taxYearEOY"
-    val leaveEmptyDayError = "The date your client left their employment must include a day"
-    val leaveEmptyMonthError = "The date your client left their employment must include a month"
-    val leaveEmptyYearError = "The date your client left their employment must include a year"
-    val leaveEmptyDayYearError = "The date your client left their employment must include a day and year"
-    val leaveEmptyMonthYearError = "The date your client left their employment must include a month and year"
-    val leaveEmptyDayMonthError = "The date your client left their employment must include a day and month"
-    val leaveEmptyAllError = "Enter the date your client left their employment"
-    val invalidLeaveDateError = "The date your client left their employment must be a real date"
-    val leaveTooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
-    val leaveTooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
-    val leaveFutureDateError = "The date your client left their employment must be in the past"
+    val leaveBeforeStartDate = s"Does dim modd iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn 4 April $taxYearEOY"
+    val leaveEmptyDayError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod"
+    val leaveEmptyMonthError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys mis"
+    val leaveEmptyYearError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys blwyddyn"
+    val leaveEmptyDayYearError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod a blwyddyn"
+    val leaveEmptyMonthYearError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys mis a blwyddyn"
+    val leaveEmptyDayMonthError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod a mis"
+    val leaveEmptyAllError = "Nodwch y dyddiad y gwnaeth eich cleient adael ei gyflogaeth"
+    val invalidLeaveDateError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod yn ddyddiad go iawn"
+    val leaveTooLongAgoDateError = s"Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod ar neu ar Ùl 5 Ebrill ${taxYearEOY - 1}"
+    val leaveTooRecentDateError = s"Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val leaveFutureDateError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod yn y gorffennol"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
+    val expectedTitle = "Employment dates"
+    val expectedH1 = "Employment dates"
+    val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
-    val day = "day"
-    val month = "month"
-    val year = "year"
     val forExample = "For example, 12 11 2007"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
+    val expectedTitle = "Dyddiadau cyflogaeth"
+    val expectedH1 = "Dyddiadau cyflogaeth"
+    val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val day = "day"
-    val month = "month"
-    val year = "year"
-    val forExample = "For example, 12 11 2007"
+    val forExample = "Er enghraifft, 12 11 2007"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -278,8 +263,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
+          titleCheck(expectedTitle, user.isWelsh)
+          h1Check(expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, startForExampleSelector, "forStart")
           inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "11")
@@ -315,8 +300,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             result.status shouldBe OK
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
+          titleCheck(expectedTitle, user.isWelsh)
+          h1Check(expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, startForExampleSelector, "forStart")
           inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
@@ -379,8 +364,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
@@ -423,8 +408,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -467,8 +452,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -511,8 +496,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
@@ -555,8 +540,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
@@ -599,8 +584,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -643,8 +628,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
@@ -687,8 +672,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "abc")
@@ -731,8 +716,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -775,8 +760,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -819,8 +804,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -863,8 +848,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -907,8 +892,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "06")
@@ -955,8 +940,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, nowDatePlusOne.getDayOfMonth.toString)
@@ -1001,8 +986,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector, "forStart")
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "04")
@@ -1048,8 +1033,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1092,8 +1077,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1136,8 +1121,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1180,8 +1165,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1224,8 +1209,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1268,8 +1253,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1312,8 +1297,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1356,8 +1341,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1400,8 +1385,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1444,8 +1429,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1488,8 +1473,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1532,8 +1517,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
@@ -1576,8 +1561,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "05")
@@ -1621,8 +1606,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             import Selectors._
             import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            titleCheck(expectedErrorTitle, user.isWelsh)
+            h1Check(expectedH1)
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "06")

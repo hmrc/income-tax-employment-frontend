@@ -131,14 +131,14 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employer information"
 
-    def expectedContent(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
+    def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employer information"
 
-    def expectedContent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
+    def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

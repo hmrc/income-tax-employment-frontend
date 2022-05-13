@@ -46,12 +46,19 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "this.section.is",
     "radios.yesnoitems.yes",
     "radios.yesnoitems.no",
+    "employment.employmentDetails.insetText.individual",
+    "employment.employmentDetails.insetText.agent",
+    "employment.employmentInfo.p1.individual",
+    "employment.employmentInfo.p1.agent",
+    "payeRef.paragraphNew.individual",
+    "payeRef.paragraphNew.agent"
+
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
 
-  val defaults = allLanguages("default")
-  val welsh = allLanguages("cy")
+  val defaults: Map[String, String] = allLanguages("default")
+  val welsh: Map[String, String] = allLanguages("cy")
 
 
   "the messages file must have welsh translations" should {

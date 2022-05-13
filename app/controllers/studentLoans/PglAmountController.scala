@@ -75,7 +75,7 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     val studentLoansCyaControllerRoute = controllers.studentLoans.routes.StudentLoansCYAController
-    
+
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       val redirectUrl = studentLoansCyaControllerRoute.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
