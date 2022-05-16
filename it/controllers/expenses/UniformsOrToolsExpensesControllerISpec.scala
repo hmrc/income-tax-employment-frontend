@@ -76,12 +76,12 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
-    val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
-    val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (yn agor tab newydd)."
+    val expectedTitle = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
+    val expectedHeading = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
+    val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen arnoch i wneud eich gwaith"
+    val expectedUniformsAndToolsLink = "Gwiriwch i weld a allwch hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
+    val expectedErrorText = "Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -94,12 +94,12 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
-    val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
-    val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (yn agor tab newydd)."
+    val expectedTitle = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
+    val expectedHeading = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
+    val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen ar eich cleient i wneud ei waith"
+    val expectedUniformsAndToolsLink = "Gwiriwch i weld a all eich cleient hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
+    val expectedErrorText = "Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -114,9 +114,9 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedCanClaim = "You might be able to claim for the cost of:"
-    val expectedCanClaimExample2 = "cleaning, repairing or replacing uniforms or specialist work clothes"
-    val flatRateExpense = "These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’)."
+    val expectedCanClaim = "Maeín bosibl y gallwch hawlio ar gyfer costau:"
+    val expectedCanClaimExample2 = "glanhau, atgyweirio neu ddisodli gwisgoedd unffurf neu ddillad gwaith arbenigol"
+    val flatRateExpense = "Maeír treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (ëtraul cyfradd unffurfí neu ëdidyniad sefydlogí)."
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

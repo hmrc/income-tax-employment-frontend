@@ -1237,6 +1237,7 @@ expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to
 expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
 expenses.businessTravelAndOvernightAmount.title.agent = How much do you want to claim for your client’s business travel and overnight stays?
 expenses.businessTravelAndOvernightAmount.title.individual = How much do you want to claim for business travel and overnight stays?
+
 expenses.businessTravelOvernightExpenses.details.1.agent = add up the mileage for each vehicle type your client used for work
 expenses.businessTravelOvernightExpenses.details.1.individual = add up the mileage for each vehicle type you’ve used for work
 expenses.businessTravelOvernightExpenses.details.2 = multiply the mileage by the approved mileage allowance
@@ -1280,17 +1281,18 @@ expenses.uniformsWorkClothesTools.error.noEntry.individual = Select yes to claim
 expenses.uniformsWorkClothesTools.flatRateExpense = These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’).
 expenses.uniformsWorkClothesTools.title.agent = Do you want to claim for uniforms, work clothes, or tools for your client?
 expenses.uniformsWorkClothesTools.title.individual = Do you want to claim for uniforms, work clothes, or tools?
+
 expenses.uniformsWorkClothesToolsAmount.cannotClaim = You cannot claim for the initial cost of buying small tools or clothing for work.
 expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format
 expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.individual = Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format
 expenses.uniformsWorkClothesToolsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools
 expenses.uniformsWorkClothesToolsAmount.error.noEntry.individual = Enter the amount you want to claim for uniforms, work clothes, or tools
-expenses.uniformsWorkClothesToolsAmount.error.overMaximum.agent = The amount  you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000
-expenses.uniformsWorkClothesToolsAmount.error.overMaximum.individual = The amount  you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.agent = The amount you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.individual = The amount you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000
 expenses.uniformsWorkClothesToolsAmount.title.agent = How much do you want to claim for uniforms, work clothes, or tools for your client?
 expenses.uniformsWorkClothesToolsAmount.title.individual = How much do you want to claim for uniforms, work clothes, or tools?
-expenses.uniformsWorkClothesToolsAmount.wantToClaim.agent =  You told us you want to claim {0} for your client’s uniform, work clothes, or tools. Tell us if this has changed.
-expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual =  You told us you want to claim {0} for uniform, work clothes, or tools. Tell us if this has changed.
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.agent = You told us you want to claim {0} for your client’s uniform, work clothes, or tools. Tell us if this has changed.
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual = You told us you want to claim {0} for uniform, work clothes, or tools. Tell us if this has changed.
 
 #################       Professional fees expenses messages        ########################################
 
@@ -1304,6 +1306,7 @@ expenses.professionalFeesAndSubscriptions.thisIncludes.example2.agent = yearly s
 expenses.professionalFeesAndSubscriptions.thisIncludes.example2.individual = yearly subscriptions to approved professional bodies or learned societies relevant to your job
 expenses.professionalFeesAndSubscriptions.title.agent = Do you want to claim for professional fees and subscriptions for your client?
 expenses.professionalFeesAndSubscriptions.title.individual = Do you want to claim for professional fees and subscriptions?
+
 expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format
 expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual = Enter the amount you want to claim for professional fees and subscriptions in the correct format
 expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions
@@ -1323,6 +1326,7 @@ expenses.otherEquipment.thisIncludes.example1 = the cost of buying small items -
 expenses.otherEquipment.thisIncludes.example2 = capital allowances for larger items - like machinery and computers
 expenses.otherEquipment.title.agent = Do you want to claim for buying other equipment for your client?
 expenses.otherEquipment.title.individual = Do you want to claim for buying other equipment?
+
 expenses.otherEquipmentAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client buying other equipment in the correct format
 expenses.otherEquipmentAmount.error.invalidFormat.individual = Enter the amount you want to claim for buying other equipment in the correct format
 expenses.otherEquipmentAmount.error.noEntry.agent = Enter the amount you want to claim for your client buying other equipment
@@ -1333,6 +1337,13 @@ expenses.otherEquipmentAmount.title.agent = How much do you want to claim for bu
 expenses.otherEquipmentAmount.title.individual = How much do you want to claim for buying other equipment?
 expenses.otherEquipmentAmount.wantToClaim.agent =  You told us you want to claim {0} for buying other equipment for your client. Tell us if this has changed.
 expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to claim {0} for buying other equipment. Tell us if this has changed.
+
+#################       Remove Expenses messages        ########################################
+
+expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
+expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
+expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
+expenses.removeExpenses.button = Remove expenses
 
 #####################    Student Loans Question messages    #####################
 
@@ -1389,10 +1400,3 @@ studentLoans.inset.agent = You cannot update your client’s student loan detail
 
 studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
 studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
-
-#################       Remove Expenses messages        ########################################
-
-expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
-expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
-expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
-expenses.removeExpenses.button = Remove expenses

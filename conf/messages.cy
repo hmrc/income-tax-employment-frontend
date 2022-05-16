@@ -380,40 +380,40 @@ otherPaymentsAmount.maximum = Maeín rhaid i swm y taliadau fod yn fwy na £100,
 
 #################       Check employment expenses messages        ########################################
 
-checkYourExpenses.employmentExpenses.hiddenText.agent = Change if you want to claim employment expenses for your client
-checkYourExpenses.employmentExpenses.hiddenText.individual = Change if you want to claim employment expenses
-checkYourExpenses.employmentExpenses = Employment expenses
-checkYourExpenses.flatRateJobExpensesAmount.hiddenText.agent = Change the amount you want to claim for your client’s uniforms, work clothes, or tools
-checkYourExpenses.flatRateJobExpensesAmount.hiddenText.individual = Change the amount you want to claim for uniforms, work clothes, or tools
-checkYourExpenses.flatRateJobExpensesAmount = Amount for uniforms, work clothes, or tools
-checkYourExpenses.flatRateJobExpensesQuestion.hiddenText.agent = Change if you want to claim uniforms, work clothes, or tools for your client
-checkYourExpenses.flatRateJobExpensesQuestion.hiddenText.individual = Change if you want to claim uniforms, work clothes, or tools
-checkYourExpenses.flatRateJobExpensesQuestion = Uniforms, work clothes, or tools
-checkYourExpenses.heading.agent = Check your client’s employment expenses
-checkYourExpenses.heading.individual = Check your employment expenses
-checkYourExpenses.inYearInfo.agent = You cannot update your client’s employment expenses until 6 April {0}.
-checkYourExpenses.inYearInfo.individual = You cannot update your employment expenses until 6 April {0}.
-checkYourExpenses.jobExpensesAmount.hiddenText.agent = Change the amount you want to claim for your client’s business travel and overnight stays
-checkYourExpenses.jobExpensesAmount.hiddenText.individual = Change the amount you want to claim for business travel and overnight stays
-checkYourExpenses.jobExpensesAmount = Amount for business travel and overnight stays
-checkYourExpenses.jobExpensesQuestion.hiddenText.agent = Change if you want to claim business travel and overnight stays for your client
-checkYourExpenses.jobExpensesQuestion.hiddenText.individual = Change if you want to claim business travel and overnight stays
-checkYourExpenses.jobExpensesQuestion = Business travel and overnight stays
-checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.agent = Change the amount you want to claim for your client’s other equipment
-checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.individual = Change the amount you want to claim for other equipment
-checkYourExpenses.otherAndCapitalAllowancesAmount = Amount for other equipment
-checkYourExpenses.otherAndCapitalAllowancesQuestion.hiddenText.agent = Change if you want to claim for other equipment for your client
-checkYourExpenses.otherAndCapitalAllowancesQuestion.hiddenText.individual = Change if you want to claim for other equipment
-checkYourExpenses.otherAndCapitalAllowancesQuestion = Other equipment
-checkYourExpenses.otherAndCapitalAllowancesQuestionInYear = Other expenses
-checkYourExpenses.professionalSubscriptionsAmount.hiddenText.agent = Change the amount you want to claim for your client’s professional fees and subscriptions
-checkYourExpenses.professionalSubscriptionsAmount.hiddenText.individual = Change the amount you want to claim for professional fees and subscriptions
-checkYourExpenses.professionalSubscriptionsAmount = Amount for professional fees and subscriptions
-checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.agent = Change if you want to claim professional fees and subscriptions for your client
-checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.individual = Change if you want to claim professional fees and subscriptions
-checkYourExpenses.professionalSubscriptionsQuestion = Professional fees and subscriptions
-checkYourExpenses.sub-heading.agent = Your client’s employment expenses are based on the information we already hold about them.
-checkYourExpenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you.
+checkYourExpenses.employmentExpenses.hiddenText.agent = Newidiwch os ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient
+checkYourExpenses.employmentExpenses.hiddenText.individual = Newidiwch os ydych am hawlio treuliau cyflogaeth
+checkYourExpenses.employmentExpenses = Treuliau cyflogaeth
+checkYourExpenses.flatRateJobExpensesAmount.hiddenText.agent = Newidiwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient
+checkYourExpenses.flatRateJobExpensesAmount.hiddenText.individual = Newidiwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+checkYourExpenses.flatRateJobExpensesAmount = Swm ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+checkYourExpenses.flatRateJobExpensesQuestion.hiddenText.agent = Newidiwch os ydych am hawlio gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient
+checkYourExpenses.flatRateJobExpensesQuestion.hiddenText.individual = Newidiwch os ydych am hawlio gwisgoedd unffurf, dillad gwaith neu offer
+checkYourExpenses.flatRateJobExpensesQuestion = Gwisgoedd unffurf, dillad gwaith, neu offer
+checkYourExpenses.heading.agent = Gwiriwch dreuliau cyflogaeth eich cleient
+checkYourExpenses.heading.individual = Gwiriwch eich treuliau cyflogaeth
+checkYourExpenses.inYearInfo.agent = Does dim modd i chi ddiweddaru treuliau cyflogaeth eich cleient tan 6 Ebrill {0}.
+checkYourExpenses.inYearInfo.individual = Does dim modd i chi ddiweddaruích treuliau cyflogaeth tan 6 Ebrill {0}.
+checkYourExpenses.jobExpensesAmount.hiddenText.agent = Newidiwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient
+checkYourExpenses.jobExpensesAmount.hiddenText.individual = Newidiwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos
+checkYourExpenses.jobExpensesAmount = Swm ar gyfer costau teithio busnes ac aros dros nos
+checkYourExpenses.jobExpensesQuestion.hiddenText.agent = Newidiwch os ydych am hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient
+checkYourExpenses.jobExpensesQuestion.hiddenText.individual = Newidiwch os ydych am hawlio ar gyfer costau teithio busnes ac aros dros nos
+checkYourExpenses.jobExpensesQuestion = Costau teithio busnes ac aros dros nos
+checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.agent = Newidiwch y swm rydych am ei hawlio ar gyfer offer eraill eich cleient
+checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.individual = Newidiwch y swm rydych am ei hawlio am offer eraill
+checkYourExpenses.otherAndCapitalAllowancesAmount = Swm ar gyfer offer eraill
+checkYourExpenses.otherAndCapitalAllowancesQuestion.hiddenText.agent = Newidiwch os ydych am hawlio ar gyfer offer eraill ar gyfer eich cleient
+checkYourExpenses.otherAndCapitalAllowancesQuestion.hiddenText.individual = Newidiwch y swm rydych am ei hawlio ar gyfer offer eraill
+checkYourExpenses.otherAndCapitalAllowancesQuestion = Offer eraill
+checkYourExpenses.otherAndCapitalAllowancesQuestionInYear = Treuliau eraill
+checkYourExpenses.professionalSubscriptionsAmount.hiddenText.agent = Newidiwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient
+checkYourExpenses.professionalSubscriptionsAmount.hiddenText.individual = Newidiwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+checkYourExpenses.professionalSubscriptionsAmount = Swm ar gyfer ffioedd a thanysgrifiadau proffesiynol
+checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.agent = Newidiwch os ydych am hawlio ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient
+checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.individual = Newidiwch os ydych am hawlio ffioedd a thanysgrifiadau proffesiynol
+checkYourExpenses.professionalSubscriptionsQuestion = Ffioedd a thanysgrifiadau proffesiynol
+checkYourExpenses.sub-heading.agent = Mae treuliau cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano.
+checkYourExpenses.sub-heading.individual = Bydd eich treuliau cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
 
 #################       Check employment benefits messages        ########################################
 
@@ -1202,137 +1202,148 @@ benefits.assetTransfersAmount.error.overMaximum.agent = The total amount for ass
 
 #################       Expenses  messages        ########################################
 
-expenses.claimEmploymentExpenses.canClaim.agent = You can claim employment expenses your client did not claim through their employer.
-expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
-expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses
-expenses.claimEmploymentExpenses.error.noEntry.individual = Select yes if you want to claim employment expenses
-expenses.claimEmploymentExpenses.findOutMore = Find out more about
-expenses.claimEmploymentExpenses.findOutMoreLink = claiming employment expenses
-expenses.claimEmploymentExpenses.thisIncludes.example1 = business travel and hotels and meals
-expenses.claimEmploymentExpenses.thisIncludes.example2 = professional fees and subscriptions
-expenses.claimEmploymentExpenses.thisIncludes.example3 = uniforms, work clothes and tools
-expenses.claimEmploymentExpenses.thisIncludes = Employment expenses include things like:
-expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
-expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
+expenses.claimEmploymentExpenses.canClaim.agent = Gallwch hawlio treuliau cyflogaeth na wnaeth eich cleient eu hawlio drwy ei gyflogwr.
+expenses.claimEmploymentExpenses.canClaim.individual = Gallwch hawlio treuliau cyflogaeth na wnaethoch eu hawlio drwy eich cyflogwr.
+expenses.claimEmploymentExpenses.error.noEntry.agent = Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth eich cleient
+expenses.claimEmploymentExpenses.error.noEntry.individual = Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth
+expenses.claimEmploymentExpenses.findOutMore = Dysgwch Ragor o wybodaeth ynghylch
+expenses.claimEmploymentExpenses.findOutMoreLink = hawlio treuliau cyflogaeth
+expenses.claimEmploymentExpenses.thisIncludes.example1 = teithiau busnes a gwestai a phrydau bwyd
+expenses.claimEmploymentExpenses.thisIncludes.example2 = ffioedd a thanysgrifiadau proffesiynol
+expenses.claimEmploymentExpenses.thisIncludes.example3 = gwisgoedd unffurf, dillad gwaith ac offer
+expenses.claimEmploymentExpenses.thisIncludes = Mae treuliau cyflogaeth yn cynnwys pethau fel:
+expenses.claimEmploymentExpenses.title.agent = A ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient?
+expenses.claimEmploymentExpenses.title.individual = A ydych am hawlio treuliau cyflogaeth?
 
 #################       Expenses  Interrupt Messages        ########################################
 
-expenses.startEmploymentExpenses.details1.individual = Use this section to update your employment expenses.
-expenses.startEmploymentExpenses.details1.agent = Use this section to update your client’s employment expenses.
+expenses.startEmploymentExpenses.details1.individual = Defnyddiwch yr adran hon i ddiweddaru eich treuliau cyflogaeth.
+expenses.startEmploymentExpenses.details1.agent = Defnyddiwch yr adran hon i ddiweddaru treuliau cyflogaeth eich cleient.
 expenses.startEmploymentExpenses.details2 = You must add expenses as a total for all employment.
 expenses.startEmploymentExpenses.details3.individual = Tell us about expenses you did not claim through your employers.
 expenses.startEmploymentExpenses.details3.agent = Tell us about expenses your client did not claim through their employers.
 
 #################       Business travel messages        ########################################
 
-expenses.businessTravelAndOvernightAmount.doNotClaim.agent = Do not claim any amount your client’s employer has paid them for.
-expenses.businessTravelAndOvernightAmount.doNotClaim.individual = Do not claim any amount your employer has paid you for.
-expenses.businessTravelAndOvernightAmount.error.incorrectFormat.agent = Enter the amount you want to claim for business travel and overnight stays for your client in the correct format
-expenses.businessTravelAndOvernightAmount.error.incorrectFormat.individual = Enter the amount you want to claim for business travel and overnight stays in the correct format
-expenses.businessTravelAndOvernightAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s business travel and overnight stays
-expenses.businessTravelAndOvernightAmount.error.noEntry.individual = Enter the amount you want to claim for business travel and overnight stays
-expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000
-expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = The amount you want to claim for business travel and overnight stays must be less than £100,000,000,000
-expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to claim {0} for your client’s other business travel and overnight stays. Tell us if this has changed.
-expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
-expenses.businessTravelAndOvernightAmount.title.agent = How much do you want to claim for your client’s business travel and overnight stays?
-expenses.businessTravelAndOvernightAmount.title.individual = How much do you want to claim for business travel and overnight stays?
-expenses.businessTravelOvernightExpenses.details.1.agent = add up the mileage for each vehicle type your client used for work
-expenses.businessTravelOvernightExpenses.details.1.individual = add up the mileage for each vehicle type you’ve used for work
-expenses.businessTravelOvernightExpenses.details.2 = multiply the mileage by the approved mileage allowance
-expenses.businessTravelOvernightExpenses.details.3.agent = take away any amount your client’s employer paid them towards their costs
-expenses.businessTravelOvernightExpenses.details.3.individual = take away any amount your employer paid you towards your costs
-expenses.businessTravelOvernightExpenses.details.approvedMileage = Approved mileage allowance
-expenses.businessTravelOvernightExpenses.details.bicycle.heading = Bicycle
-expenses.businessTravelOvernightExpenses.details.bicycle.text = 20p a mile
-expenses.businessTravelOvernightExpenses.details.carVan.heading = Car and vans
-expenses.businessTravelOvernightExpenses.details.carVan.text1 = 45p for the first 10,000 miles
-expenses.businessTravelOvernightExpenses.details.carVan.text2 = 25p for every mile over 10,000
-expenses.businessTravelOvernightExpenses.details.info.agent = To work out how much your client can claim for the tax year, you’ll need to:
-expenses.businessTravelOvernightExpenses.details.info.individual = To work out how much you can claim for the tax year, you’ll need to:
-expenses.businessTravelOvernightExpenses.details.motorcycle.heading = Motorcycle
-expenses.businessTravelOvernightExpenses.details.motorcycle.text = 24p a mile
-expenses.businessTravelOvernightExpenses.details.title = Using your own vehicle for business travel
-expenses.businessTravelOvernightExpenses.doNotInclude.agent = Do not include your client’s usual travel to work costs.
-expenses.businessTravelOvernightExpenses.doNotInclude.individual = Do not include your usual travel to work costs.
-expenses.businessTravelOvernightExpenses.error.agent = Select yes to claim for your client’s travel and overnight stays
-expenses.businessTravelOvernightExpenses.error.individual = Select yes to claim travel and overnight stays
-expenses.businessTravelOvernightExpenses.example1 = public transport costs
-expenses.businessTravelOvernightExpenses.example2 = using a vehicle for business travel
-expenses.businessTravelOvernightExpenses.example3 = hotel accommodation if you have to stay overnight
-expenses.businessTravelOvernightExpenses.example4 = food and drink
-expenses.businessTravelOvernightExpenses.example5 = congestion charges, tolls and parking fees
-expenses.businessTravelOvernightExpenses.example6 = business phone calls and printing costs
-expenses.businessTravelOvernightExpenses.paragraph = These expenses are things like:
-expenses.businessTravelOvernightExpenses.title.agent = Do you want to claim your client’s business travel and overnight expenses?
-expenses.businessTravelOvernightExpenses.title.individual = Do you want to claim business travel and overnight expenses?
+expenses.businessTravelAndOvernightAmount.doNotClaim.agent = Peidiwch ‚ hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo.
+expenses.businessTravelAndOvernightAmount.doNotClaim.individual = Peidiwch ‚ hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi.
+expenses.businessTravelAndOvernightAmount.error.incorrectFormat.agent = Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient yn y fformat cywir
+expenses.businessTravelAndOvernightAmount.error.incorrectFormat.individual = Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos yn y fformat cywir
+expenses.businessTravelAndOvernightAmount.error.noEntry.agent = Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient
+expenses.businessTravelAndOvernightAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos
+expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000
+expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000
+expenses.businessTravelAndOvernightAmount.replay.agent = Dywedoch wrthym eich bod am hawlio {0} ar gyfer costau teithio busnes ac aros dros nos eich cleient . Rhowch wybod i ni os yw hyn wedi newid.
+expenses.businessTravelAndOvernightAmount.replay.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer costau teithio busnes ac aros dros nos. Rhowch wybod i ni os yw hyn wedi newid.
+expenses.businessTravelAndOvernightAmount.title.agent = Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?
+expenses.businessTravelAndOvernightAmount.title.individual = Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?
+
+expenses.businessTravelOvernightExpenses.details.1.agent = adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd y maeích cleient yn ei ddefnyddio ar gyfer gwaith
+expenses.businessTravelOvernightExpenses.details.1.individual = adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd rydych wedi ei ddefnyddio ar gyfer gwaith
+expenses.businessTravelOvernightExpenses.details.2 = lluoswch y milltiroedd ‚ír lwfans milltiroedd cymeradwy
+expenses.businessTravelOvernightExpenses.details.3.agent = tynnwch unrhyw swm a dalodd cyflogwr eich cleient tuag at ei gostau
+expenses.businessTravelOvernightExpenses.details.3.individual = tynnwch unrhyw swm a dalodd eich cyflogwr tuag at eich costau
+expenses.businessTravelOvernightExpenses.details.approvedMileage = Lwfans milltiroedd cymeradwy
+expenses.businessTravelOvernightExpenses.details.bicycle.heading = Beic
+expenses.businessTravelOvernightExpenses.details.bicycle.text = 20c y filltir
+expenses.businessTravelOvernightExpenses.details.carVan.heading = Ceir a faniau
+expenses.businessTravelOvernightExpenses.details.carVan.text1 = 45c am y 10,000 milltir gyntaf
+expenses.businessTravelOvernightExpenses.details.carVan.text2 = 25c am bob milltir dros 10,000
+expenses.businessTravelOvernightExpenses.details.info.agent = Er mwyn cyfrifo faint y gall eich cleient ei hawlio ar gyfer pob blwyddyn dreth, bydd angen i chi wneud y canlynol:
+expenses.businessTravelOvernightExpenses.details.info.individual = Er mwyn cyfrifo faint y gallwch ei hawlio ar gyfer y flwyddyn dreth, bydd angen i chi wneud y canlynol:
+expenses.businessTravelOvernightExpenses.details.motorcycle.heading = Beic modur
+expenses.businessTravelOvernightExpenses.details.motorcycle.text = 24c y filltir
+expenses.businessTravelOvernightExpenses.details.title = Os ydych yn defnyddioích cerbyd eich hun ar gyfer teithiau busnes
+expenses.businessTravelOvernightExpenses.doNotInclude.agent = Peidiwch ‚ chynnwys costau teithio iír gwaith arferol eich cleient.
+expenses.businessTravelOvernightExpenses.doNotInclude.individual = Peidiwch ‚ chynnwys eich costau teithio iír gwaith arferol.
+expenses.businessTravelOvernightExpenses.error.agent = Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos eich cleient
+expenses.businessTravelOvernightExpenses.error.individual = Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos
+expenses.businessTravelOvernightExpenses.example1 = costau trafnidiaeth cyhoeddus
+expenses.businessTravelOvernightExpenses.example2 = defnyddio cerbyd ar gyfer teithiau busnes
+expenses.businessTravelOvernightExpenses.example3 = llety mewn gwesty os oes rhaid i chi aros dros nos
+expenses.businessTravelOvernightExpenses.example4 = bwyd a diod
+expenses.businessTravelOvernightExpenses.example5 = taliadau atal tagfeydd, tollau a ffioedd parcio
+expenses.businessTravelOvernightExpenses.example6 = galwadau ffÙn a chostau argraffuír busnes
+expenses.businessTravelOvernightExpenses.paragraph = Maeír treuliau hyn yn bethau fel:
+expenses.businessTravelOvernightExpenses.title.agent = A ydych am hawlio ar gyfer treuliau teithio busnes ac aros dros nos eich cleient?
+expenses.businessTravelOvernightExpenses.title.individual = A ydych am hawlio unrhyw dreuliau teithio busness ac aros dros nos?
 
 #################       Uniforms or tools messages        ########################################
 
-expenses.uniformsWorkClothesTools.canClaim.example1.agent = repairing or replacing small tools your client needs to do their job
-expenses.uniformsWorkClothesTools.canClaim.example1.individual = repairing or replacing small tools you need to do your job
-expenses.uniformsWorkClothesTools.canClaim.example2 = cleaning, repairing or replacing uniforms or specialist work clothes
-expenses.uniformsWorkClothesTools.canClaim = You might be able to claim for the cost of:
-expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.agent = Check if your client can claim flat rate expenses for uniforms, work clothes, or tools
-expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.individual = Check if you can claim flat rate expenses for uniforms, work clothes, or tools
-expenses.uniformsWorkClothesTools.error.noEntry.agent = Select yes to claim for your client’s uniforms, work clothes, or tools
-expenses.uniformsWorkClothesTools.error.noEntry.individual = Select yes to claim for uniforms, work clothes, or tools
-expenses.uniformsWorkClothesTools.flatRateExpense = These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’).
-expenses.uniformsWorkClothesTools.title.agent = Do you want to claim for uniforms, work clothes, or tools for your client?
-expenses.uniformsWorkClothesTools.title.individual = Do you want to claim for uniforms, work clothes, or tools?
-expenses.uniformsWorkClothesToolsAmount.cannotClaim = You cannot claim for the initial cost of buying small tools or clothing for work.
-expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format
-expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.individual = Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format
-expenses.uniformsWorkClothesToolsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools
-expenses.uniformsWorkClothesToolsAmount.error.noEntry.individual = Enter the amount you want to claim for uniforms, work clothes, or tools
-expenses.uniformsWorkClothesToolsAmount.error.overMaximum.agent = The amount  you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000
-expenses.uniformsWorkClothesToolsAmount.error.overMaximum.individual = The amount  you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000
-expenses.uniformsWorkClothesToolsAmount.title.agent = How much do you want to claim for uniforms, work clothes, or tools for your client?
-expenses.uniformsWorkClothesToolsAmount.title.individual = How much do you want to claim for uniforms, work clothes, or tools?
-expenses.uniformsWorkClothesToolsAmount.wantToClaim.agent =  You told us you want to claim {0} for your client’s uniform, work clothes, or tools. Tell us if this has changed.
-expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual =  You told us you want to claim {0} for uniform, work clothes, or tools. Tell us if this has changed.
+expenses.uniformsWorkClothesTools.canClaim.example1.agent = atgyweirio neu ddisodli m‚n offer sydd eu hangen ar eich cleient i wneud ei waith
+expenses.uniformsWorkClothesTools.canClaim.example1.individual = atgyweirio neu ddisodli m‚n offer sydd eu hangen arnoch i wneud eich gwaith
+expenses.uniformsWorkClothesTools.canClaim.example2 = glanhau, atgyweirio neu ddisodli gwisgoedd unffurf neu ddillad gwaith arbenigol
+expenses.uniformsWorkClothesTools.canClaim = Maeín bosibl y gallwch hawlio ar gyfer costau:
+expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.agent = Gwiriwch i weld a all eich cleient hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.individual = Gwiriwch i weld a allwch hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+expenses.uniformsWorkClothesTools.error.noEntry.agent = Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient
+expenses.uniformsWorkClothesTools.error.noEntry.individual = Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+expenses.uniformsWorkClothesTools.flatRateExpense = Maeír treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (ëtraul cyfradd unffurfí neu ëdidyniad sefydlogí).
+expenses.uniformsWorkClothesTools.title.agent = A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?
+expenses.uniformsWorkClothesTools.title.individual = A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?
+
+expenses.uniformsWorkClothesToolsAmount.cannotClaim = Ni allwch hawlio ar gyfer y gost gychwynnol o brynu m‚n offer neu ddillad ar gyfer gwaith.
+expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.agent = Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient yn y fformat cywir
+expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.individual = Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer yn y format cywir
+expenses.uniformsWorkClothesToolsAmount.error.noEntry.agent = Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient
+expenses.uniformsWorkClothesToolsAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer eich cleient fod yn llai na £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer fod yn llai na £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.title.agent = Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?
+expenses.uniformsWorkClothesToolsAmount.title.individual = Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.agent = Dywedoch wrthym eich bod am hawlio {0} ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient. Rhowch wybod i ni os yw hyn wedi newid.
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual = Dywedoch eich bod am hawlio {0} ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer. Rhowch wybod i ni os yw hyn wedi newid.
 
 #################       Professional fees expenses messages        ########################################
 
-expenses.professionalFeesAndSubscriptions.checkLink.agent = Check if your client can claim for professional fees and subscriptions
-expenses.professionalFeesAndSubscriptions.checkLink.individual = Check if you can claim for professional fees and subscriptions
-expenses.professionalFeesAndSubscriptions.error.agent = Select yes to claim for your client’s professional fees and subscriptions
-expenses.professionalFeesAndSubscriptions.error.individual = Select yes to claim for professional fees and subscriptions
-expenses.professionalFeesAndSubscriptions.thisIncludes.example1.agent = professional membership fees, if your client has to pay the fees to do their job
-expenses.professionalFeesAndSubscriptions.thisIncludes.example1.individual = professional membership fees, if you have to pay the fees to do your job
-expenses.professionalFeesAndSubscriptions.thisIncludes.example2.agent = yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job
-expenses.professionalFeesAndSubscriptions.thisIncludes.example2.individual = yearly subscriptions to approved professional bodies or learned societies relevant to your job
-expenses.professionalFeesAndSubscriptions.title.agent = Do you want to claim for professional fees and subscriptions for your client?
-expenses.professionalFeesAndSubscriptions.title.individual = Do you want to claim for professional fees and subscriptions?
-expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format
-expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual = Enter the amount you want to claim for professional fees and subscriptions in the correct format
-expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions
-expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.individual = Enter the amount you want to claim for professional fees and subscriptions
-expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.agent = The amount you want to claim for your client’s professional fees and subscriptions must be less than £100,000,000,000
-expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.individual = The amount you want to claim for professional fees and subscriptions must be less than £100,000,000,000
-expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = You told us you want to claim {0} for your client’s professional fees and subscriptions. Tell us if this has changed.
-expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = You told us you want to claim {0} for professional fees and subscriptions. Tell us if this has changed.
-expenses.professionalFeesAndSubscriptionsAmount.title.agent = How much do you want to claim for professional fees and subscriptions for your client?
-expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do you want to claim for professional fees and subscriptions?
+expenses.professionalFeesAndSubscriptions.checkLink.agent = Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+expenses.professionalFeesAndSubscriptions.checkLink.individual = Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+expenses.professionalFeesAndSubscriptions.error.agent = Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient
+expenses.professionalFeesAndSubscriptions.error.individual = Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+expenses.professionalFeesAndSubscriptions.thisIncludes.example1.agent = ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith
+expenses.professionalFeesAndSubscriptions.thisIncludes.example1.individual = ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith
+expenses.professionalFeesAndSubscriptions.thisIncludes.example2.agent = tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient
+expenses.professionalFeesAndSubscriptions.thisIncludes.example2.individual = tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i’ch swydd
+expenses.professionalFeesAndSubscriptions.title.agent = A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?
+expenses.professionalFeesAndSubscriptions.title.individual = A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?
+
+expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient yn y fformat cywir
+expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual = Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol yn y fformat cywir
+expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.agent = Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient
+expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient fod yn llai na £100,000,000,000
+expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol fod yn llai na £100,000,000,000
+expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = Dywedoch wrthym eich bod chi am hawlio {0} ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient. Rhowch wybod i ni os yw hyn wedi newid.
+expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer ffioedd a thanysgrifiadau proffesiynol. Rhowch wybod i ni os yw hyn wedi newid.
+expenses.professionalFeesAndSubscriptionsAmount.title.agent = Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?
+expenses.professionalFeesAndSubscriptionsAmount.title.individual = Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?
 
 #################       Other equipment messages        ########################################
 
-expenses.otherEquipment.error.agent = Select yes to claim for your client buying other equipment
-expenses.otherEquipment.error.individual = Select yes to claim for buying other equipment
-expenses.otherEquipment.thisIncludes.example1 = the cost of buying small items - like electrical drills and protective clothing
-expenses.otherEquipment.thisIncludes.example2 = capital allowances for larger items - like machinery and computers
-expenses.otherEquipment.title.agent = Do you want to claim for buying other equipment for your client?
-expenses.otherEquipment.title.individual = Do you want to claim for buying other equipment?
-expenses.otherEquipmentAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client buying other equipment in the correct format
-expenses.otherEquipmentAmount.error.invalidFormat.individual = Enter the amount you want to claim for buying other equipment in the correct format
-expenses.otherEquipmentAmount.error.noEntry.agent = Enter the amount you want to claim for your client buying other equipment
-expenses.otherEquipmentAmount.error.noEntry.individual = Enter the amount you want to claim for buying other equipment
-expenses.otherEquipmentAmount.error.overMaximum.agent = The amount you want to claim for your client buying other equipment must be less than £100,000,000,000
-expenses.otherEquipmentAmount.error.overMaximum.individual = The amount you want to claim for buying other equipment must be less than £100,000,000,000
-expenses.otherEquipmentAmount.title.agent = How much do you want to claim for buying other equipment for your client?
-expenses.otherEquipmentAmount.title.individual = How much do you want to claim for buying other equipment?
-expenses.otherEquipmentAmount.wantToClaim.agent =  You told us you want to claim {0} for buying other equipment for your client. Tell us if this has changed.
-expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to claim {0} for buying other equipment. Tell us if this has changed.
+expenses.otherEquipment.error.agent = Dewiswch ëIawní i hawlio ar gyfer offer eraill a brynwyd gan eich cleient
+expenses.otherEquipment.error.individual = Dewiswch ëIawní i hawlio ar gyfer prynu offer eraill
+expenses.otherEquipment.thisIncludes.example1 = cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol
+expenses.otherEquipment.thisIncludes.example2 = lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron
+expenses.otherEquipment.title.agent = A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?
+expenses.otherEquipment.title.individual = A ydych am hawlio ar gyfer prynu offer eraill?
+
+expenses.otherEquipmentAmount.error.invalidFormat.agent = Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient yn y fformat cywir
+expenses.otherEquipmentAmount.error.invalidFormat.individual = Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill yn y fformat cywir
+expenses.otherEquipmentAmount.error.noEntry.agent = Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient
+expenses.otherEquipmentAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill
+expenses.otherEquipmentAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient fod yn llai na £100,000,000,000
+expenses.otherEquipmentAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer prynu offer eraill fod yn llai na £100,000,000,000
+expenses.otherEquipmentAmount.title.agent = Faint rydych am ei hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?
+expenses.otherEquipmentAmount.title.individual = Faint rydych am ei hawlio ar gyfer prynu offer eraill?
+expenses.otherEquipmentAmount.wantToClaim.agent = Dywedoch wrthym eich bod am hawlio {0} ar gyfer prynu offer eraill ar gyfer eich cleient. Rhowch wybod i ni os yw hyn wedi newid.
+expenses.otherEquipmentAmount.wantToClaim.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer prynu offer eraill. Rhowch wybod i ni os yw hyn wedi newid.
+
+#################       Remove Expenses messages        ########################################
+
+expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
+expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
+expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
+expenses.removeExpenses.button = Remove expenses
 
 #####################    Student Loans Question messages    #####################
 
@@ -1389,10 +1400,3 @@ studentLoans.inset.agent = Ni allwch ddiweddaru manylion benthyciad myfyriwr eic
 
 studentLoans.common.checkWith.individual = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60.
 studentLoans.common.checkWith.agent = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, slipiau cyflog neu P60 eich cleient.
-
-#################       Remove Expenses messages        ########################################
-
-expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
-expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
-expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
-expenses.removeExpenses.button = Remove expenses

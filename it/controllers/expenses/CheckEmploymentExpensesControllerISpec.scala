@@ -93,7 +93,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val flatRateJobExpensesAmount: String
     val professionalSubscriptionsQuestion: String
     val professionalSubscriptionsAmount: String
-    val otherAndCapitalAllowancesQuestionInYear: String
     val otherAndCapitalAllowancesQuestion: String
     val otherAndCapitalAllowancesAmount: String
     val fieldNames: Seq[String]
@@ -114,7 +113,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val flatRateJobExpensesAmount = "Amount for uniforms, work clothes, or tools"
     val professionalSubscriptionsQuestion = "Professional fees and subscriptions"
     val professionalSubscriptionsAmount = "Amount for professional fees and subscriptions"
-    val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
     val continueButtonText = "Save and continue"
@@ -138,29 +136,28 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedCY extends CommonExpectedResults {
     val changeText: String = "Newid"
-    val employmentExpenses = "Employment expenses"
-    val jobExpensesQuestion = "Business travel and overnight stays"
-    val jobExpensesAmount = "Amount for business travel and overnight stays"
-    val flatRateJobExpensesQuestion = "Uniforms, work clothes, or tools"
-    val flatRateJobExpensesAmount = "Amount for uniforms, work clothes, or tools"
-    val professionalSubscriptionsQuestion = "Professional fees and subscriptions"
-    val professionalSubscriptionsAmount = "Amount for professional fees and subscriptions"
-    val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
-    val otherAndCapitalAllowancesQuestion = "Other equipment"
-    val otherAndCapitalAllowancesAmount = "Amount for other equipment"
+    val employmentExpenses = "Treuliau cyflogaeth"
+    val jobExpensesQuestion = "Costau teithio busnes ac aros dros nos"
+    val jobExpensesAmount = "Swm ar gyfer costau teithio busnes ac aros dros nos"
+    val flatRateJobExpensesQuestion = "Gwisgoedd unffurf, dillad gwaith, neu offer"
+    val flatRateJobExpensesAmount = "Swm ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
+    val professionalSubscriptionsQuestion = "Ffioedd a thanysgrifiadau proffesiynol"
+    val professionalSubscriptionsAmount = "Swm ar gyfer ffioedd a thanysgrifiadau proffesiynol"
+    val otherAndCapitalAllowancesQuestion = "Offer eraill"
+    val otherAndCapitalAllowancesAmount = "Swm ar gyfer offer eraill"
     val continueButtonText = "Cadw ac yn eich blaen"
     val returnToEmploymentSummaryText: String = "Return to PAYE employment"
 
     val fieldNames = Seq(
-      "Employment expenses",
-      "Business travel and overnight stays",
-      "Amount for business travel and overnight stays",
-      "Uniforms, work clothes, or tools",
-      "Amount for uniforms, work clothes, or tools",
-      "Professional fees and subscriptions",
-      "Amount for professional fees and subscriptions",
-      "Other equipment",
-      "Amount for other equipment",
+      "Treuliau cyflogaeth",
+      "Costau teithio busnes ac aros dros nos",
+      "Swm ar gyfer costau teithio busnes ac aros dros nos",
+      "Gwisgoedd unffurf, dillad gwaith, neu offer",
+      "Swm ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer",
+      "Ffioedd a thanysgrifiadau proffesiynol",
+      "Swm ar gyfer ffioedd a thanysgrifiadau proffesiynol",
+      "Offer eraill",
+      "Swm ar gyfer offer eraill",
     )
     val yes: String = "Iawn"
     val no: String = "Na"
@@ -203,38 +200,37 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1 = "Check your employment expenses"
-    val expectedTitle = "Check your employment expenses"
-    val expectedContent = "Your employment expenses are based on the information we already hold about you."
-    val expectedSubHeadingContent: String = "Your employment expenses are based on the information we already hold about you."
-    val expensesHiddenText = "Change if you want to claim employment expenses"
-    val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays"
-    val jobExpensesAmountHiddenText = "Change the amount you want to claim for business travel and overnight stays"
-    val flatRateHiddenText = "Change if you want to claim uniforms, work clothes, or tools"
-    val flatRateAmountHiddenText = "Change the amount you want to claim for uniforms, work clothes, or tools"
-    val profSubscriptionsHiddenText = "Change if you want to claim professional fees and subscriptions"
-    val profSubscriptionsAmountHiddenText = "Change the amount you want to claim for professional fees and subscriptions"
-    val otherEquipmentHiddenText = "Change if you want to claim for other equipment"
-    val otherEquipmentAmountHiddenText = "Change the amount you want to claim for other equipment"
+    val expectedH1 = "Gwiriwch eich treuliau cyflogaeth"
+    val expectedTitle = "Gwiriwch eich treuliau cyflogaeth"
+    val expectedContent = "Bydd eich treuliau cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+    val expensesHiddenText = "Newidiwch os ydych am hawlio treuliau cyflogaeth"
+    val jobExpensesHiddenText = "Newidiwch os ydych am hawlio ar gyfer costau teithio busnes ac aros dros nos"
+    val jobExpensesAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos"
+    val flatRateHiddenText = "Newidiwch os ydych am hawlio gwisgoedd unffurf, dillad gwaith neu offer"
+    val flatRateAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
+    val profSubscriptionsHiddenText = "Newidiwch os ydych am hawlio ffioedd a thanysgrifiadau proffesiynol"
+    val profSubscriptionsAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
+    val otherEquipmentHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer offer eraill"
+    val otherEquipmentAmountHiddenText = "Newidiwch y swm rydych am ei hawlio am offer eraill"
 
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear: Int = taxYear): String = s"Does dim modd i chi ddiweddaruích treuliau cyflogaeth tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1 = "Check your client’s employment expenses"
-    val expectedTitle = "Check your client’s employment expenses"
-    val expectedContent = "Your client’s employment expenses are based on the information we already hold about them."
-    val expensesHiddenText = "Change if you want to claim employment expenses for your client"
-    val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays for your client"
-    val jobExpensesAmountHiddenText = "Change the amount you want to claim for your client’s business travel and overnight stays"
-    val flatRateHiddenText = "Change if you want to claim uniforms, work clothes, or tools for your client"
-    val flatRateAmountHiddenText = "Change the amount you want to claim for your client’s uniforms, work clothes, or tools"
-    val profSubscriptionsHiddenText = "Change if you want to claim professional fees and subscriptions for your client"
-    val profSubscriptionsAmountHiddenText = "Change the amount you want to claim for your client’s professional fees and subscriptions"
-    val otherEquipmentHiddenText = "Change if you want to claim for other equipment for your client"
-    val otherEquipmentAmountHiddenText = "Change the amount you want to claim for your client’s other equipment"
+    val expectedH1 = "Gwiriwch dreuliau cyflogaeth eich cleient"
+    val expectedTitle = "Gwiriwch dreuliau cyflogaeth eich cleient"
+    val expectedContent = "Mae treuliau cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
+    val expensesHiddenText = "Newidiwch os ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient"
+    val jobExpensesHiddenText = "Newidiwch os ydych am hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient"
+    val jobExpensesAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient"
+    val flatRateHiddenText = "Newidiwch os ydych am hawlio gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient"
+    val flatRateAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
+    val profSubscriptionsHiddenText = "Newidiwch os ydych am hawlio ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient"
+    val profSubscriptionsAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
+    val otherEquipmentHiddenText = "Newidiwch os ydych am hawlio ar gyfer offer eraill ar gyfer eich cleient"
+    val otherEquipmentAmountHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer offer eraill eich cleient"
 
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear: Int = taxYear): String = s"Does dim modd i chi ddiweddaru treuliau cyflogaeth eich cleient tan 6 Ebrill $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

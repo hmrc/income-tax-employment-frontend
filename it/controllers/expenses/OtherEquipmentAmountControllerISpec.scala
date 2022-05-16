@@ -86,15 +86,15 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for buying other equipment?"
-    val expectedHeading = "How much do you want to claim for buying other equipment?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer prynu offer eraill?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer prynu offer eraill?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment. Tell us if this has changed."
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer prynu offer eraill. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for buying other equipment"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for buying other equipment in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for buying other equipment must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill"
+    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer prynu offer eraill fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -110,15 +110,16 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for buying other equipment for your client?"
-    val expectedHeading = "How much do you want to claim for buying other equipment for your client?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment for your client. Tell us if this has changed."
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer prynu " +
+      "offer eraill ar gyfer eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client buying other equipment"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client buying other equipment in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for your client buying other equipment must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
+    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient fod yn llai na £100,000,000,000"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

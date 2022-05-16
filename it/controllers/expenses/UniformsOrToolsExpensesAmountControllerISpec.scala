@@ -86,15 +86,15 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools?"
-    val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for uniform, work clothes, or tools. Tell us if this has changed."
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
+    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer yn y format cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -110,15 +110,15 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
-    val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s uniform, work clothes, or tools. Tell us if this has changed."
+    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
+    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer eich cleient fod yn llai na £100,000,000,000"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -134,7 +134,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
     val continueButtonText = "Yn eich blaen"
     val totalAmountText = "Total amount for all employers"
     val hintText = "Er enghraifft, £193.52"
-    val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
+    val expectedCannotClaim = "Ni allwch hawlio ar gyfer y gost gychwynnol o brynu m‚n offer neu ddillad ar gyfer gwaith."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

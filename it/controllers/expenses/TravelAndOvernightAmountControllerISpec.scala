@@ -99,16 +99,16 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for business travel and overnight stays?"
-    val expectedHeading = "How much do you want to claim for business travel and overnight stays?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim travel and overnight stays"
-    val expectedDoNotClaim = "Do not claim any amount your employer has paid you for."
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos"
+    val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi."
     val expectedReplay: Int => String = amount =>
-      s"You told us you want to claim £$amount for other business travel and overnight stays. Tell us if this has changed."
-    val expectedNoEntryError = "Enter the amount you want to claim for business travel and overnight stays"
-    val expectedFormatError = "Enter the amount you want to claim for business travel and overnight stays in the correct format"
-    val expectedOverMaxError = "The amount you want to claim for business travel and overnight stays must be less than £100,000,000,000"
+      s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos. Rhowch wybod i ni os yw hyn wedi newid."
+    val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos"
+    val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos yn y fformat cywir"
+    val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -125,16 +125,16 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for your client’s business travel and overnight stays?"
-    val expectedHeading = "How much do you want to claim for your client’s business travel and overnight stays?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client’s travel and overnight stays"
-    val expectedDoNotClaim = "Do not claim any amount your client’s employer has paid them for."
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
+    val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo."
     val expectedReplay: Int => String = amount =>
-      s"You told us you want to claim £$amount for your client’s other business travel and overnight stays. Tell us if this has changed."
-    val expectedNoEntryError = "Enter the amount you want to claim for your client’s business travel and overnight stays"
-    val expectedFormatError = "Enter the amount you want to claim for business travel and overnight stays for your client in the correct format"
-    val expectedOverMaxError = "The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000"
+      s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos eich cleient . Rhowch wybod i ni os yw hyn wedi newid."
+    val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient"
+    val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient yn y fformat cywir"
+    val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
