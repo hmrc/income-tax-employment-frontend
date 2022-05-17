@@ -21,17 +21,18 @@ import controllers.employment.routes._
 import models.employment._
 import models.employment.createUpdate._
 import play.api.http.Status._
+import play.api.i18n.Messages
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.CheckEmploymentDetailsView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
+class CheckEmploymentDetailsControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockAuditService
   with MockCheckEmploymentDetailsService
@@ -39,6 +40,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   with MockErrorHandler {
 
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   private def controller(mimic: Boolean = false, isEmploymentEOYEnabled: Boolean = true) = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
@@ -76,6 +78,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   ".show" should {
     "return a result when GetEmploymentDataModel is in Session" which {
       s"has an OK($OK) status" in new TestWithAuth {
+        implicit lazy val messages: Messages = defaultMessages
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(
             EmploymentDetailsViewModel(

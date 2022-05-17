@@ -29,6 +29,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
@@ -79,6 +80,12 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
     new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString), fakeRequest)
+
+  protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+  protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+
+  protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 
   val inYearAction = new InYearUtil
 

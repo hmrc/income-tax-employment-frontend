@@ -22,12 +22,12 @@ import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.{AnyContent, Result}
 import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.EmploymentSummaryView
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockActionsProvider {
+class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessionService with MockActionsProvider {
 
   object FullModel {
 

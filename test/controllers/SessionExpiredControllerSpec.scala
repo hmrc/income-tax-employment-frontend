@@ -19,10 +19,10 @@ package controllers
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.test.Helpers.{charset, contentType}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.templates.TimeoutPage
 
-class SessionExpiredControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout {
+class SessionExpiredControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
   lazy val controller = new SessionExpiredController(mockMessagesControllerComponents, mockAppConfig, app.injector.instanceOf[TimeoutPage])
 
@@ -32,8 +32,8 @@ class SessionExpiredControllerSpec extends UnitTestWithApp with DefaultAwaitTime
       val result = controller.keepAlive()(request)
 
       status(result) shouldBe NO_CONTENT
-      }
     }
+  }
 
   ".timeout" should {
     "return OK with HTML" in {

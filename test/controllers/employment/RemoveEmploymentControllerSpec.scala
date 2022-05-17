@@ -19,15 +19,16 @@ package controllers.employment
 import common.SessionValues
 import controllers.employment.routes.EmploymentSummaryController
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.i18n.Messages
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
 import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockRemoveEmploymentService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.RemoveEmploymentView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveEmploymentControllerSpec extends UnitTestWithApp
+class RemoveEmploymentControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockRemoveEmploymentService
   with MockErrorHandler {
@@ -36,6 +37,8 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   private val employerName = "maggie"
 
   private lazy val view: RemoveEmploymentView = app.injector.instanceOf[RemoveEmploymentView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private lazy val controller = new RemoveEmploymentController()(
     mockMessagesControllerComponents,

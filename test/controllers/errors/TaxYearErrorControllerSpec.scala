@@ -19,10 +19,10 @@ package controllers.errors
 import play.api.http.Status.OK
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.templates.TaxYearErrorTemplate
 
-class TaxYearErrorControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout {
+class TaxYearErrorControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
   lazy val taxYearErrorTemplate: TaxYearErrorTemplate = app.injector.instanceOf[TaxYearErrorTemplate]
   lazy val controller = new TaxYearErrorController(mockMessagesControllerComponents, mockAppConfig, taxYearErrorTemplate)

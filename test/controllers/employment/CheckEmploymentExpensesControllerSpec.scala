@@ -20,18 +20,19 @@ import common.SessionValues
 import controllers.expenses.CheckEmploymentExpensesController
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.i18n.Messages
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import support.mocks.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.expenses.CheckEmploymentExpensesView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
+class CheckEmploymentExpensesControllerSpec extends UnitTest
   with DefaultAwaitTimeout
   with MockEmploymentSessionService
   with MockCheckEmploymentExpensesService
@@ -39,6 +40,8 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
   with MockErrorHandler {
 
   private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private lazy val controller = new CheckEmploymentExpensesController(
     view,

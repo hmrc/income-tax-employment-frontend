@@ -18,16 +18,16 @@ package audit
 
 import models.employment.EmploymentDetailsViewModel
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class ViewEmploymentDetailsSpec extends UnitTestWithApp{
+class ViewEmploymentDetailsSpec extends UnitTest {
 
   "writes" when {
     "passed a ViewEmploymentDetailsModel" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |	"taxYear": ${taxYearEOY-1},
+             |	"taxYear": ${taxYearEOY - 1},
              |	"userType": "individual",
              |	"nino": "AA12343AA",
              |	"mtditid": "mtditid",
@@ -36,9 +36,9 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |		"employerRef": "reference",
              |		"payrollId": "12345678",
              |		"employmentId": "id",
-             |		"startDate": "${taxYearEOY-1}-02-12",
+             |		"startDate": "${taxYearEOY - 1}-02-12",
              |		"didYouLeaveQuestion": true,
-             |		"cessationDate": "${taxYearEOY-1}-02-12",
+             |		"cessationDate": "${taxYearEOY - 1}-02-12",
              |		"taxablePayToDate": 34234.15,
              |		"totalTaxToDate": 6782.92,
              |		"isUsingCustomerData": false
@@ -46,16 +46,16 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |}""".stripMargin)
 
         //scalastyle:off
-        val auditModel = ViewEmploymentDetailsAudit(taxYearEOY-1, "individual", "AA12343AA",
+        val auditModel = ViewEmploymentDetailsAudit(taxYearEOY - 1, "individual", "AA12343AA",
           "mtditid",
           EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             payrollId = Some("12345678"),
             employmentId = "id",
-            startDate = Some(s"${taxYearEOY-1}-02-12"),
+            startDate = Some(s"${taxYearEOY - 1}-02-12"),
             didYouLeaveQuestion = Some(true),
-            cessationDate = Some(s"${taxYearEOY-1}-02-12"),
+            cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
             isUsingCustomerData = false

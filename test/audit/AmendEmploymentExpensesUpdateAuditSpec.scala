@@ -17,16 +17,16 @@
 package audit
 
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class AmendEmploymentExpensesUpdateAuditSpec extends UnitTestWithApp{
+class AmendEmploymentExpensesUpdateAuditSpec extends UnitTest {
 
   "writes" when {
     "passed a Amend an EmploymentExpenses model" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             | "taxYear": ${taxYearEOY-1},
+             | "taxYear": ${taxYearEOY - 1},
              | "userType": "individual",
              | "nino": "AA12343AA",
              | "mtditid": "mtditid",
@@ -45,7 +45,7 @@ class AmendEmploymentExpensesUpdateAuditSpec extends UnitTestWithApp{
              |}""".stripMargin)
 
         //scalastyle:off
-        val auditModel = AmendEmploymentExpensesUpdateAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
+        val auditModel = AmendEmploymentExpensesUpdateAudit(taxYearEOY - 1, "individual", "AA12343AA", "mtditid",
           priorEmploymentExpensesData = AuditEmploymentExpensesData(
             jobExpenses = Some(150.00),
             flatRateJobExpenses = Some(200.00),
