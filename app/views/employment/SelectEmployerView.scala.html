@@ -14,16 +14,18 @@
  * limitations under the License.
  *@
 
-@import controllers.employment.routes.SelectEmployerController
-@import views.html.templates.Layout
-@import models.employment.Employer
+@import java.time.LocalDate
+
 @import common.SessionValues
-@import utils.ViewUtils.dateFormatter
+@import controllers.employment.routes.SelectEmployerController
+@import models.employment.Employer
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.InputRadioAlt
 @import views.html.templates.helpers.Link
+@import utils.ViewUtils.translatedDateFormatter
 
 @this(
     layout: Layout,
@@ -48,6 +50,8 @@
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
+    <p class="govuk-body">@messages(s"employment.unignoreEmployment.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+
     @formWithCsrf(action = SelectEmployerController.submit(taxYear)) {
 
         @inputRadio(
@@ -56,17 +60,14 @@
             form = form,
             inline = false,
             items = employers.map { employer =>
+                val hintMessage = if (employer.startDate.isEmpty) messages("common.started.date.missing")
+                                  else if (LocalDate.parse(employer.startDate.get).isAfter(LocalDate.parse((taxYear - 1).toString + "-04-05"))) messages("common.started.date", translatedDateFormatter(LocalDate.parse(employer.startDate.get)))
+                                  else messages("common.started.before", (taxYear - 1).toString)
                 RadioItem(
                     content = Text(employer.name),
                     value = Some(employer.employmentId),
                     checked = form("value").value.contains(employer.employmentId),
-                    hint = if(employer.startDate.isDefined && employer.leaveDate.isDefined && dateFormatter(employer.startDate.get).isDefined && dateFormatter(employer.leaveDate.get).isDefined){ Some(Hint(
-                        content = Text(messages("common.dateRange", dateFormatter(employer.startDate.get).get, dateFormatter(employer.leaveDate.get).get))
-                    )) } else if(employer.startDate.isDefined && dateFormatter(employer.startDate.get).isDefined){
-                        Some(Hint(content = Text(messages("common.dateFrom", dateFormatter(employer.startDate.get).get))))
-                    } else {
-                        None
-                    }
+                    hint = Some(Hint(content = Text(hintMessage), classes = "govuk-!-font-size-16"))
                 )
             } ++ Seq(
                 RadioItem(divider = Some(messages("common.or"))),

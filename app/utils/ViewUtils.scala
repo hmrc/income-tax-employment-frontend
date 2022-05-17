@@ -37,6 +37,7 @@ object ViewUtils {
     }
   }
 
+  // TODO: This is a wired implementation. Do we really want to hide a problem when there?
   def dateFormatter(date: String): Option[String] = {
     try {
       Some(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK))
@@ -51,6 +52,12 @@ object ViewUtils {
     date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK))
   }
 
+  def translatedDateFormatter(date: LocalDate)(implicit messages: Messages): String = {
+    val translatedMonth = messages("common." + date.getMonth.toString.toLowerCase)
+    date.getDayOfMonth + " " + translatedMonth + " " + date.getYear
+  }
+
+  // TODO: This method should not return Option value as we always have returned value of Some
   def employmentDatesFormatter(startDate: Option[String], endDate: Option[String])(implicit messages: Messages): Option[String] = {
     Some(messages("common.dateRange", (startDate).getOrElse(""), endDate.getOrElse("")))
   }

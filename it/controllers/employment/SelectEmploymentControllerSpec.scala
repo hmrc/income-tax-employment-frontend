@@ -38,7 +38,7 @@ class SelectEmploymentControllerSpec extends IntegrationTest with ViewHelpers {
       }
 
       result.status shouldBe OK
-      result.body should include("Which employer do you want to add?")
+      result.body should include("Which period of employment do you want to add?")
     }
   }
 

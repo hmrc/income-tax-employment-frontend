@@ -20,6 +20,8 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import utils.ViewUtils.ariaVisuallyHiddenText
 
+import java.time.LocalDate
+
 class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
 
   "calling method convertBoolToYesNo" should {
@@ -53,6 +55,13 @@ class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
   "bigDecimalCurrency" should {
     "Place comma in appropriate place when given amount over 999" in {
       ViewUtils.bigDecimalCurrency("45000.10") shouldBe "£45,000.10"
+    }
+  }
+
+  "translatedDateFormatter" should {
+    "return date in Welsh or English" in {
+      ViewUtils.translatedDateFormatter(LocalDate.parse("2021-04-01"))(getMessages(isWelsh = true)) shouldBe "1 Ebrill 2021"
+      ViewUtils.translatedDateFormatter(LocalDate.parse("2021-04-01"))(getMessages(isWelsh = false)) shouldBe "1 April 2021"
     }
   }
 }

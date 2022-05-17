@@ -24,19 +24,21 @@ import config.AppConfig
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData
-import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.NO_CONTENT
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers.OK
 import play.api.{Application, Environment, Mode}
 import services.AuthService
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
@@ -159,7 +161,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   lazy val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
-  val defaultAcceptedConfidenceLevels = Seq(
+  private val fakeRequest = FakeRequest().withHeaders("X-Session-ID" -> aUser.sessionId)
+  protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+  protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+
+  protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
+
+  val defaultAcceptedConfidenceLevels: Seq[ConfidenceLevel] = Seq(
     ConfidenceLevel.L200,
     ConfidenceLevel.L500
   )

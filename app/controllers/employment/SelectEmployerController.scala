@@ -46,7 +46,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
   def show(taxYear: Int): Action[AnyContent] = actionsProvider.notInYearWithPriorData(taxYear) { implicit request =>
     val ignoredEmployments = request.employmentPriorData.ignoredEmployments
     val prefilledForm: Form[String] = {
-      val form = selectEmployerForm.employerListForm(request.user.isAgent, ignoredEmployments.map(_.employmentId))
+      val form = selectEmployerForm.employerListForm(ignoredEmployments.map(_.employmentId))
       idInSession.fold(form)(_ => form.fill(SessionValues.ADD_A_NEW_EMPLOYER))
     }
 
@@ -74,7 +74,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
     if (ignoredEmployments.isEmpty) {
       Future.successful(employerNameRedirect(taxYear))
     } else {
-      val form = selectEmployerForm.employerListForm(request.user.isAgent, ignoredEmployments.map(_.employmentId))
+      val form = selectEmployerForm.employerListForm(ignoredEmployments.map(_.employmentId))
       handleForm(form, taxYear, ignoredEmployments)
     }
   }

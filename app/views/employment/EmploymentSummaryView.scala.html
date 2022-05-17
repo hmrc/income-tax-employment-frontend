@@ -14,11 +14,12 @@
  * limitations under the License.
  *@
 
+@import java.time.LocalDate
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.NotificationBanner
-@import utils.ViewUtils.summaryListRow
 @import models.employment.EmploymentSource
 @import controllers.employment.routes.EmployerInformationController
 @import controllers.employment.routes.EmploymentSummaryController
@@ -26,6 +27,8 @@
 @import controllers.expenses.routes.EmploymentExpensesController
 @import controllers.expenses.routes.ExpensesInterruptPageController
 @import controllers.expenses.routes.RemoveExpensesController
+@import utils.ViewUtils.translatedDateFormatter
+@import utils.ViewUtils.summaryListRow
 
 @this(
     layout: Layout,
@@ -76,11 +79,15 @@
 
     @{
         def mapToSummaryListRow(employmentSource: EmploymentSource, isInYear: Boolean): SummaryListRow = {
+            val startedDateString = if (employmentSource.startDate.isEmpty) messages("common.started.date.missing")
+                                    else if (LocalDate.parse(employmentSource.startDate.get).isAfter(LocalDate.parse((taxYear - 1).toString + "-04-05"))) messages("common.started.date", translatedDateFormatter(LocalDate.parse(employmentSource.startDate.get)))
+                                    else messages("common.started.before", (taxYear - 1).toString)
+            val employerDetails = employmentSource.employerName + """<br/>""" + s"""<span class="govuk-hint govuk-!-font-size-16">${startedDateString}</span>"""
             val message = if (isInYear) messages("common.view") else messages("common.change")
             val actions = if (isInYear) Seq() else Seq((RemoveEmploymentController.show(taxYear, employmentSource.employmentId), messages("common.remove"), Some(messages("common.remove") + s" ${employmentSource.employerName}")))
 
             summaryListRow(
-                key = HtmlContent(employmentSource.employerName),
+                key = HtmlContent(employerDetails),
                 value = HtmlContent(s"""<a class="govuk-link" href="${EmployerInformationController.show(taxYear, employmentSource.employmentId)}"><span aria-hidden="true">${message}</span><span class="govuk-visually-hidden">${message} ${employmentSource.employerName}</span></a>"""),
                 keyClasses = "govuk-!-width-two-thirds govuk-!-font-weight-regular",
                 valueClasses = "govuk-!-width-one-third right-align",

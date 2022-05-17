@@ -18,22 +18,21 @@ package forms.employment
 
 import common.SessionValues
 import filters.InputFilters
-import javax.inject.Singleton
 import play.api.data.Forms.single
-import play.api.data.{Form, FormError, Forms}
 import play.api.data.format.Formatter
+import play.api.data.{Form, FormError, Forms}
+
+import javax.inject.Singleton
 
 @Singleton
 class SelectEmployerForm extends InputFilters {
 
   private val employer = "value"
 
-  private def missingInputError(isAgent: Boolean) = s"employment.unignoreEmployment.${if(isAgent) "agent" else "individual"}"
+  private val missingInputError = "employment.unignoreEmployment.error"
 
-  def employerListForm(isAgent: Boolean, ignoredEmployments: Seq[String]): Form[String] = Form(
-    single(
-      employer -> Forms.of(formatter(missingInputError(isAgent), ignoredEmployments)).transform[String](filter, x => x)
-    )
+  def employerListForm(ignoredEmployments: Seq[String]): Form[String] = Form(
+    single(employer -> Forms.of(formatter(missingInputError, ignoredEmployments)).transform[String](filter, identity))
   )
 
   private def formatter(missingInputError: String, ignoredEmployments: Seq[String]): Formatter[String] = new Formatter[String] {

@@ -27,14 +27,16 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import utils.ViewUtils
 import views.html.employment.SelectEmployerView
 
+import java.time.LocalDate
+
 class SelectEmployerViewSpec extends ViewUnitTest {
 
   object Selectors {
+    val paragraphTextSelector: String = "#main-content > div > div > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val formSelector = "#value"
@@ -44,7 +46,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   }
 
   trait SpecificExpectedResults {
-    val expectedError: String
+    val expectedParagraphText: String
   }
 
   trait CommonExpectedResults {
@@ -54,6 +56,10 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     val orText: String
     val expectedTitle: String
     val expectedH1: String
+    val startedDateString: LocalDate => String
+    val startedDateMissingString: String
+    val startedDateBeforeString: Int => String
+    val expectedError: String
 
     def fromText(date: String): String
 
@@ -65,10 +71,14 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
-    val addNewEmployerText: String = "Add a new employer"
+    val addNewEmployerText: String = "Add a new period of employment"
     val orText: String = "or"
-    val expectedTitle: String = "Which employer do you want to add?"
-    val expectedH1: String = "Which employer do you want to add?"
+    val expectedTitle: String = "Which period of employment do you want to add?"
+    val expectedH1: String = "Which period of employment do you want to add?"
+    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Started " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = false))
+    val startedDateMissingString: String = "Start date missing"
+    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Started before 6 April $taxYear"
+    val expectedError = "Select a period of employment or add a new one"
 
     def fromText(date: String): String = s"From ${ViewUtils.dateFormatter(date).get}"
 
@@ -80,10 +90,14 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val addNewEmployerText: String = "Add a new employer"
+    val addNewEmployerText: String = "Add a new period of employment"
     val orText: String = "neu"
-    val expectedTitle: String = "Which employer do you want to add?"
-    val expectedH1: String = "Which employer do you want to add?"
+    val expectedTitle: String = "Which period of employment do you want to add?"
+    val expectedH1: String = "Which period of employment do you want to add?"
+    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Started " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = true))
+    val startedDateMissingString: String = "Start date missing"
+    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Started before 6 April $taxYear"
+    val expectedError = "Select a period of employment or add a new one"
 
     def fromText(date: String): String = s"From ${ViewUtils.dateFormatter(date).get}"
 
@@ -93,18 +107,21 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedError = "Select your employer or add a new employer"
+    val expectedParagraphText = "The information we hold about you does not include changes you made."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
+    val expectedParagraphText = "The information we hold about you does not include changes you made."
     val expectedError = "Select your employer or add a new employer"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
+    val expectedParagraphText = "The information we hold about your client does not include changes you made."
     val expectedError = "Select your client’s employer or add a new employer"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
+    val expectedParagraphText = "The information we hold about your client does not include changes you made."
     val expectedError = "Select your client’s employer or add a new employer"
   }
 
@@ -115,15 +132,11 @@ class SelectEmployerViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  implicit val request: UserPriorDataRequest[AnyContent] = UserPriorDataRequest(
-    anAllEmploymentData, aUser, individualUserRequest
-  )
+  private val form: Form[String] = new SelectEmployerForm().employerListForm(Seq("id"))
 
-  private def form(isAgent: Boolean): Form[String] = new SelectEmployerForm().employerListForm(isAgent, Seq("id"))
-
-  val employers = Seq(
-    Employer("id", "Emp 1", Some(s"${taxYearEOY-1}-11-11"), Some(s"${taxYearEOY-1}-11-11")),
-    Employer("id2", "Emp 2", Some(s"${taxYearEOY-1}-11-11"), None),
+  private val employers = Seq(
+    Employer("id", "Emp 1", Some(s"${taxYearEOY - 1}-11-11"), Some(s"${taxYearEOY - 1}-11-11")),
+    Employer("id2", "Emp 2", Some(s"${taxYearEOY - 1}-04-05"), None),
     Employer("id3", "Emp 3", None, None)
   )
 
@@ -132,10 +145,11 @@ class SelectEmployerViewSpec extends ViewUnitTest {
   userScenarios.foreach { userScenario =>
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
       "Render the select employer page with no pre-filled data" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val request: UserPriorDataRequest[AnyContent] = UserPriorDataRequest(anAllEmploymentData, authRequest.user, authRequest)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, employers, form(userScenario.isAgent))
+        val htmlFormat = underTest(taxYearEOY, employers, form)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -145,6 +159,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         titleCheck(userScenario.commonExpectedResults.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
         radioButtonCheck(employers(1).name, radioNumber = 2, checked = false)
         radioButtonCheck(employers(2).name, radioNumber = 3, checked = false)
@@ -152,16 +167,18 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
         textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateString(LocalDate.parse(employers.head.startDate.get)), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateBeforeString(taxYearEOY - 1), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateMissingString, hintSelector("-3"))
         welshToggleCheck(userScenario.isWelsh)
       }
 
       "Render the select employer page with 'Add a new employer' as pre-filled data" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val authRequest = getAuthRequest(userScenario.isAgent)
+        implicit val request: UserPriorDataRequest[AnyContent] = UserPriorDataRequest(anAllEmploymentData, authRequest.user, authRequest)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, employers, form(userScenario.isAgent).fill(SessionValues.ADD_A_NEW_EMPLOYER))
+        val htmlFormat = underTest(taxYearEOY, employers, form.fill(SessionValues.ADD_A_NEW_EMPLOYER))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -171,6 +188,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         titleCheck(userScenario.commonExpectedResults.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
         radioButtonCheck(employers(1).name, radioNumber = 2, checked = false)
         radioButtonCheck(employers(2).name, radioNumber = 3, checked = false)
@@ -178,16 +196,18 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         buttonCheck(expectedButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateString(LocalDate.parse(employers.head.startDate.get)), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateBeforeString(taxYearEOY - 1), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateMissingString, hintSelector("-3"))
         welshToggleCheck(userScenario.isWelsh)
       }
 
       "Render with empty form validation error" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val authRequest = getAuthRequest(userScenario.isAgent)
+        implicit val request: UserPriorDataRequest[AnyContent] = UserPriorDataRequest(anAllEmploymentData, authRequest.user, authRequest)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, employers, form(userScenario.isAgent).bind(Map("value" -> "")))
+        val htmlFormat = underTest(taxYearEOY, employers, form.bind(Map("value" -> "")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -197,6 +217,7 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         titleCheck(userScenario.commonExpectedResults.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.commonExpectedResults.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
         radioButtonCheck(employers.head.name, radioNumber = 1, checked = false)
         radioButtonCheck(employers(1).name, radioNumber = 2, checked = false)
         radioButtonCheck(employers(2).name, radioNumber = 3, checked = false)
@@ -204,11 +225,12 @@ class SelectEmployerViewSpec extends ViewUnitTest {
         buttonCheck(expectedButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.orText, orSelector)
         formPostLinkCheck(SelectEmployerController.submit(taxYearEOY).url, continueButtonFormSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.datesText(employers.head.startDate.get, employers.head.leaveDate.get), hintSelector())
-        textOnPageCheck(userScenario.commonExpectedResults.fromText(employers(1).startDate.get), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateString(LocalDate.parse(employers.head.startDate.get)), hintSelector())
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateBeforeString(taxYearEOY - 1), hintSelector("-2"))
+        textOnPageCheck(userScenario.commonExpectedResults.startedDateMissingString, hintSelector("-3"))
         welshToggleCheck(userScenario.isWelsh)
-        errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.formSelector)
-        errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))
+        errorSummaryCheck(userScenario.commonExpectedResults.expectedError, Selectors.formSelector)
+        errorAboveElementCheck(userScenario.commonExpectedResults.expectedError, Some("value"))
       }
     }
   }
