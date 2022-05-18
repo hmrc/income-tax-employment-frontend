@@ -95,12 +95,12 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your total childcare benefit?"
-    val expectedHeading = "How much was your total childcare benefit?"
+    val expectedTitle = "Faint oedd cyfanswm eich buddiant gofal plant?"
+    val expectedHeading = "Faint oedd cyfanswm eich buddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter your childcare benefit amount"
-    val expectedErrorIncorrectFormat = "Enter your childcare benefit amount in the correct format"
-    val expectedErrorOverMaximum = "Your childcare benefit must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm eich buddiant gofal plant"
+    val expectedErrorIncorrectFormat = "Nodwch swm eich buddiant gofal plant yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iích buddiant gofal plant fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,12 +113,12 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your client’s total childcare benefit?"
-    val expectedHeading = "How much was your client’s total childcare benefit?"
+    val expectedTitle = "Faint oedd cyfanswm buddiant gofal plant eich cleient?"
+    val expectedHeading = "Faint oedd cyfanswm buddiant gofal plant eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter your client’s childcare benefit amount"
-    val expectedErrorIncorrectFormat = "Enter your client’s childcare benefit amount in the correct format"
-    val expectedErrorOverMaximum = "Your client’s childcare benefit must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm buddiant gofal plant eich cleient"
+    val expectedErrorIncorrectFormat = "Nodwch fuddiant gofal plant eich cleient yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i fuddiant gofal plant eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

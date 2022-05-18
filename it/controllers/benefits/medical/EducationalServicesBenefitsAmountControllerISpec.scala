@@ -87,12 +87,12 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for educational services?"
-    val expectedHeading: String = "How much did you get in total for educational services?"
+    val expectedTitle: String = "Faint y cawsoch i gydaddysg ar gyfer gwasanaethau addysg?"
+    val expectedHeading: String = "Faint y cawsoch i gydaddysg ar gyfer gwasanaethau addysg?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount you got for educational services"
-    val invalidFormatErrorText: String = "Enter the amount you got for educational services in the correct format"
-    val maxAmountErrorText: String = "Your educational services benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau addysg"
+    val invalidFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau addysg yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant ar gyfer gwasanaethau addysg fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -105,12 +105,12 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for educational services?"
-    val expectedHeading: String = "How much did your client get in total for educational services?"
+    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau addysg?"
+    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau addysg?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount your client got for educational services"
-    val invalidFormatErrorText: String = "Enter the amount your client got for educational services in the correct format"
-    val maxAmountErrorText: String = "Your client’s educational services benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau addysg"
+    val invalidFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau addysg yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant eich cleient ar gyfer gwasanaethau addysg fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

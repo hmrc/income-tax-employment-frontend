@@ -72,11 +72,11 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a childcare benefit?"
-    val expectedH1 = "Did you get a childcare benefit?"
+    val expectedTitle = "A gawsoch fuddiant gofal plant?"
+    val expectedH1 = "A gawsoch fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got a childcare benefit"
-    val expectedTheseAre = "These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs."
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant gofal plant"
+    val expectedTheseAre = "Costau gofal plant y talodd eich cyflogwr amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
     val expectedCheckWith = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
   }
 
@@ -90,11 +90,11 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a childcare benefit?"
-    val expectedH1 = "Did your client get a childcare benefit?"
+    val expectedTitle = "A gafodd eich cleient fuddiant gofal plant?"
+    val expectedH1 = "A gafodd eich cleient fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got a childcare benefit"
-    val expectedTheseAre = "These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs."
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant gofal plant"
+    val expectedTheseAre = "Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
     val expectedCheckWith = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
   }
 
@@ -112,8 +112,8 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (yn agor tab newydd)."
-    val expectedWeOnlyLink = "exempt limit (yn agor tab newydd)."
+    val expectedWeOnly = "Dim ond costau gofal plant syín uwch na throthwyír eithriad y mae angen i ni wybod amdanynt (yn agor tab newydd)."
+    val expectedWeOnlyLink = "y mae angen i ni wybod amdanynt (yn agor tab newydd)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

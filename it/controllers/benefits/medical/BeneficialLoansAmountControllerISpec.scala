@@ -97,13 +97,13 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were your beneficial loans in total?"
-    val expectedHeading = "How much were your beneficial loans in total?"
+    val expectedTitle = "Faint oedd eich benthyciadau buddiannol i gyd?"
+    val expectedHeading = "Faint oedd eich benthyciadau buddiannol i gyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val youCanFindText = "You can find this information on your P11D form in section H, box 15."
-    val expectedNoEntryErrorMessage = "Enter your beneficial loans amount"
-    val expectedIncorrectFormatErrorMessage = "Enter your beneficial loans amount in the correct format"
-    val expectedOverMaximumErrorMessage = "Your beneficial loans must be less than £100,000,000,000"
+    val youCanFindText = "Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar eich ffurflen P11D."
+    val expectedNoEntryErrorMessage = "Nodwch swm eich benthyciadau buddiannol"
+    val expectedIncorrectFormatErrorMessage = "Nodwch swm eich benthyciadau buddiannol yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iích benthyciadau buddiannol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -117,13 +117,13 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were your client’s beneficial loans in total?"
-    val expectedHeading = "How much were your client’s beneficial loans in total?"
+    val expectedTitle = "Faint oedd benthyciadau buddiannol eich cleient i gyd?"
+    val expectedHeading = "Faint oedd benthyciadau buddiannol eich cleient i gyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val youCanFindText = "You can find this information on your client’s P11D form in section H, box 15."
-    val expectedNoEntryErrorMessage = "Enter your client’s beneficial loans amount"
-    val expectedIncorrectFormatErrorMessage = "Enter your client’s beneficial loans amount in the correct format"
-    val expectedOverMaximumErrorMessage = "Your client’s beneficial loans must be less than £100,000,000,000"
+    val youCanFindText = "Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar ffurflen P11D eich cleient."
+    val expectedNoEntryErrorMessage = "Nodwch swm benthyciadau buddiannol eich cleient"
+    val expectedIncorrectFormatErrorMessage = "Nodwch swm benthyciadau buddiannol eich cleient yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid i fenthyciadau buddiannol eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

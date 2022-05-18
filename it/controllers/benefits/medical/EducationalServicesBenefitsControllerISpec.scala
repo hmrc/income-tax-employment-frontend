@@ -66,11 +66,11 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any benefits for educational services?"
-    val expectedHeading = "Did you get any benefits for educational services?"
-    val expectedParagraph = "These are scholarships or school fees paid for by your employer."
+    val expectedTitle = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
+    val expectedHeading = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
+    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt ywír rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got benefits for educational services"
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau addysg"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -82,11 +82,11 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any benefits for educational services?"
-    val expectedHeading = "Did your client get any benefits for educational services?"
-    val expectedParagraph = "These are scholarships or school fees paid for by their employer."
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
+    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt ywír rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got benefits for educational services"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

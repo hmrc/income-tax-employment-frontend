@@ -57,7 +57,6 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
     val noText: String
   }
 
-
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "Did you get a medical or dental benefit?"
     val expectedHeading = "Did you get a medical or dental benefit?"
@@ -67,11 +66,11 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a medical or dental benefit?"
-    val expectedHeading = "Did you get a medical or dental benefit?"
+    val expectedTitle = "A gawsoch fuddiant meddygol neu ddeintyddol?"
+    val expectedHeading = "A gawsoch fuddiant meddygol neu ddeintyddol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got a medical or dental benefit"
-    val expectedParagraphText = "This is medical or dental treatment or insurance provided by your employer."
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiant meddygol neu ddeintyddol"
+    val expectedParagraphText = "Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan eich cyflogwr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,11 +82,11 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a medical or dental benefit?"
-    val expectedHeading = "Did your client get a medical or dental benefit?"
+    val expectedTitle = "A gafodd eich cleient fuddiant meddygol neu ddeintyddol?"
+    val expectedHeading = "A gafodd eich cleient fuddiant meddygol neu ddeintyddol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got a medical or dental benefit"
-    val expectedParagraphText: String = "This is medical or dental treatment or insurance provided by their employer."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiant meddygol neu ddeintyddol"
+    val expectedParagraphText: String = "Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan ei gyflogwr."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

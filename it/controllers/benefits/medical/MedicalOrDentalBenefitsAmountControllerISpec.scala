@@ -98,14 +98,14 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your medical or dental benefit in total?"
-    val expectedHeading = "How much was your medical or dental benefit in total?"
-    val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
-    val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
+    val expectedTitle = "Faint oedd cyfanswm eich buddiant meddygol neu ddeintyddol?"
+    val expectedHeading = "Faint oedd cyfanswm eich buddiant meddygol neu ddeintyddol?"
+    val expectedParagraph = "Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd eich cyflogwr amdano."
+    val expectedParagraphForForm = "Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar eich ffurflen P11D."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter your medical or dental benefit amount"
-    val expectedWrongFormatErrorMessage = "Enter your medical or dental benefit amount in the correct format"
-    val expectedMaxErrorMessage = "Your medical or dental benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch"
+    val expectedWrongFormatErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch yn y fformat cywir"
+    val expectedMaxErrorMessage = "Maeín rhaid iích buddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -120,14 +120,14 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your client’s medical or dental benefit in total?"
-    val expectedHeading = "How much was your client’s medical or dental benefit in total?"
-    val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
-    val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
+    val expectedTitle = "Faint oedd cyfanswm buddiant meddygol neu ddeintyddol eich cleient?"
+    val expectedHeading = "Faint oedd cyfanswm buddiant meddygol neu ddeintyddol eich cleient?"
+    val expectedParagraph = "Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd cyflogwr eich cleient amdano."
+    val expectedParagraphForForm = "Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar ffurflen P11D eich cleient."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter your client’s medical or dental benefit amount"
-    val expectedWrongFormatErrorMessage = "Enter your client’s medical or dental benefit amount in the correct format"
-    val expectedMaxErrorMessage = "Your client’s medical or dental benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient"
+    val expectedWrongFormatErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient yn y fformat cywir"
+    val expectedMaxErrorMessage = "Maeín rhaid i fuddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

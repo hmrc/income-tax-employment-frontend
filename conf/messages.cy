@@ -943,126 +943,126 @@ benefits.otherServicesBenefitsAmount.title.individual = Faint y cawsoch i gyd ar
 
 #################       Medical dental childcare messages        ########################################
 
-benefits.medicalDentalChildcare.error.noEntry.agent = Select yes if your client got medical, dental, childcare, education benefits or loans
-benefits.medicalDentalChildcare.error.noEntry.individual = Select yes if you got medical, dental, childcare, education benefits or loans
-benefits.medicalDentalChildcare.title.agent = Did your client get any medical, dental, childcare, education benefits or loans from this company?
-benefits.medicalDentalChildcare.title.individual = Did you get any medical, dental, childcare, education benefits or loans from this company?
+benefits.medicalDentalChildcare.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
+benefits.medicalDentalChildcare.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
+benefits.medicalDentalChildcare.title.agent = A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?
+benefits.medicalDentalChildcare.title.individual = A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?
 
 #################       Medical dental messages        ########################################
 
-benefits.medicalDentalBenefits.content.agent = This is medical or dental treatment or insurance provided by their employer.
-benefits.medicalDentalBenefits.content.individual = This is medical or dental treatment or insurance provided by your employer.
-benefits.medicalDentalBenefits.error.noEntry.agent = Select yes if your client got a medical or dental benefit
-benefits.medicalDentalBenefits.error.noEntry.individual = Select yes if you got a medical or dental benefit
-benefits.medicalDentalBenefits.title.agent = Did your client get a medical or dental benefit?
-benefits.medicalDentalBenefits.title.individual = Did you get a medical or dental benefit?
-benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.agent = Enter your client’s medical or dental benefit amount in the correct format
-benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.individual = Enter your medical or dental benefit amount in the correct format
-benefits.medicalOrDentalBenefitsAmount.error.noEntry.agent = Enter your client’s medical or dental benefit amount
-benefits.medicalOrDentalBenefitsAmount.error.noEntry.individual = Enter your medical or dental benefit amount
-benefits.medicalOrDentalBenefitsAmount.error.overMaximum.agent = Your client’s medical or dental benefit must be less than £100,000,000,000
-benefits.medicalOrDentalBenefitsAmount.error.overMaximum.individual = Your medical or dental benefit must be less than £100,000,000,000
-benefits.medicalOrDentalBenefitsAmount.formInformationText.agent = You can find this information on your client’s P11D form in section I, box 11.
-benefits.medicalOrDentalBenefitsAmount.formInformationText.individual = You can find this information on your P11D form in section I, box 11.
-benefits.medicalOrDentalBenefitsAmount.informationText.agent = This is the total sum of medical or dental insurance your client’s employer paid for.
-benefits.medicalOrDentalBenefitsAmount.informationText.individual = This is the total sum of medical or dental insurance your employer paid for.
-benefits.medicalOrDentalBenefitsAmount.title.agent = How much was your client’s medical or dental benefit in total?
-benefits.medicalOrDentalBenefitsAmount.title.individual = How much was your medical or dental benefit in total?
+benefits.medicalDentalBenefits.content.agent = Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan ei gyflogwr.
+benefits.medicalDentalBenefits.content.individual = Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan eich cyflogwr.
+benefits.medicalDentalBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant meddygol neu ddeintyddol
+benefits.medicalDentalBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiant meddygol neu ddeintyddol
+benefits.medicalDentalBenefits.title.agent = A gafodd eich cleient fuddiant meddygol neu ddeintyddol?
+benefits.medicalDentalBenefits.title.individual = A gawsoch fuddiant meddygol neu ddeintyddol?
+benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.agent = Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient yn y fformat cywir
+benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.individual = Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch yn y fformat cywir
+benefits.medicalOrDentalBenefitsAmount.error.noEntry.agent = Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient
+benefits.medicalOrDentalBenefitsAmount.error.noEntry.individual = Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch
+benefits.medicalOrDentalBenefitsAmount.error.overMaximum.agent = Maeín rhaid i fuddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000
+benefits.medicalOrDentalBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích buddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000
+benefits.medicalOrDentalBenefitsAmount.formInformationText.agent = Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar ffurflen P11D eich cleient.
+benefits.medicalOrDentalBenefitsAmount.formInformationText.individual = Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar eich ffurflen P11D.
+benefits.medicalOrDentalBenefitsAmount.informationText.agent = Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd cyflogwr eich cleient amdano.
+benefits.medicalOrDentalBenefitsAmount.informationText.individual = Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd eich cyflogwr amdano.
+benefits.medicalOrDentalBenefitsAmount.title.agent = Faint oedd cyfanswm buddiant meddygol neu ddeintyddol eich cleient?
+benefits.medicalOrDentalBenefitsAmount.title.individual = Faint oedd cyfanswm eich buddiant meddygol neu ddeintyddol?
 
 #################       Childcare messages        ########################################
 
-benefits.childcare.error.agent = Select yes if your client got a childcare benefit
-benefits.childcare.error.individual = Select yes if you got a childcare benefit
-benefits.childcare.onlyNeed = We only need to know about childcare costs above the
-benefits.childcare.onlyNeedLink = exempt limit
-benefits.childcare.theseAre.agent = These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs.
-benefits.childcare.theseAre.individual = These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs.
-benefits.childcare.title.agent = Did your client get a childcare benefit?
-benefits.childcare.title.individual = Did you get a childcare benefit?
-benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Enter your client’s childcare benefit amount in the correct format
-benefits.childcareBenefitsAmount.error.incorrectFormat.individual = Enter your childcare benefit amount in the correct format
-benefits.childcareBenefitsAmount.error.noEntry.agent = Enter your client’s childcare benefit amount
-benefits.childcareBenefitsAmount.error.noEntry.individual = Enter your childcare benefit amount
-benefits.childcareBenefitsAmount.error.overMaximum.agent = Your client’s childcare benefit must be less than £100,000,000,000
-benefits.childcareBenefitsAmount.error.overMaximum.individual = Your childcare benefit must be less than £100,000,000,000
-benefits.childcareBenefitsAmount.title.agent = How much was your client’s total childcare benefit?
-benefits.childcareBenefitsAmount.title.individual = How much was your total childcare benefit?
+benefits.childcare.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant gofal plant
+benefits.childcare.error.individual = Dewiswch ëIawní os cawsoch fuddiant gofal plant
+benefits.childcare.onlyNeed = Dim ond costau gofal plant syín uwch na throthwyír eithriad
+benefits.childcare.onlyNeedLink = y mae angen i ni wybod amdanynt
+benefits.childcare.theseAre.agent = Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol.
+benefits.childcare.theseAre.individual = Costau gofal plant y talodd eich cyflogwr amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol.
+benefits.childcare.title.agent = A gafodd eich cleient fuddiant gofal plant?
+benefits.childcare.title.individual = A gawsoch fuddiant gofal plant?
+benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Nodwch fuddiant gofal plant eich cleient yn y fformat cywir
+benefits.childcareBenefitsAmount.error.incorrectFormat.individual = Nodwch swm eich buddiant gofal plant yn y fformat cywir
+benefits.childcareBenefitsAmount.error.noEntry.agent = Nodwch swm buddiant gofal plant eich cleient
+benefits.childcareBenefitsAmount.error.noEntry.individual = Nodwch swm eich buddiant gofal plant
+benefits.childcareBenefitsAmount.error.overMaximum.agent = Maeín rhaid i fuddiant gofal plant eich cleient fod yn llai na £100,000,000,000
+benefits.childcareBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích buddiant gofal plant fod yn llai na £100,000,000,000
+benefits.childcareBenefitsAmount.title.agent = Faint oedd cyfanswm buddiant gofal plant eich cleient?
+benefits.childcareBenefitsAmount.title.individual = Faint oedd cyfanswm eich buddiant gofal plant?
 
 #################       Educational services messages        ########################################
 
-benefits.educationalServices.error.agent = Select yes if your client got benefits for educational services
-benefits.educationalServices.error.individual = Select yes if you got benefits for educational services
-benefits.educationalServices.theseAre.agent = These are scholarships or school fees paid for by their employer.
-benefits.educationalServices.theseAre.individual = These are scholarships or school fees paid for by your employer.
-benefits.educationalServices.title.agent = Did your client get any benefits for educational services?
-benefits.educationalServices.title.individual = Did you get any benefits for educational services?
-benefits.educationalServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for educational services in the correct format
-benefits.educationalServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for educational services in the correct format
-benefits.educationalServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for educational services
-benefits.educationalServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for educational services
-benefits.educationalServicesBenefitsAmount.error.overMaximum.agent = Your client’s educational services benefit must be less than £100,000,000,000
-benefits.educationalServicesBenefitsAmount.error.overMaximum.individual = Your educational services benefit must be less than £100,000,000,000
-benefits.educationalServicesBenefitsAmount.title.agent = How much did your client get in total for educational services?
-benefits.educationalServicesBenefitsAmount.title.individual = How much did you get in total for educational services?
+benefits.educationalServices.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg
+benefits.educationalServices.error.individual = Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau addysg
+benefits.educationalServices.theseAre.agent = Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt ywír rhain.
+benefits.educationalServices.theseAre.individual = Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt ywír rhain.
+benefits.educationalServices.title.agent = A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?
+benefits.educationalServices.title.individual = A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?
+benefits.educationalServicesBenefitsAmount.error.invalidFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau addysg yn y fformat cywir
+benefits.educationalServicesBenefitsAmount.error.invalidFormat.individual = Nodwch y swm a gawsoch ar gyfer gwasanaethau addysg yn y fformat cywir
+benefits.educationalServicesBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau addysg
+benefits.educationalServicesBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer gwasanaethau addysg
+benefits.educationalServicesBenefitsAmount.error.overMaximum.agent = Maeín rhaid i fuddiant eich cleient ar gyfer gwasanaethau addysg fod yn llai na £100,000,000,000
+benefits.educationalServicesBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích buddiant ar gyfer gwasanaethau addysg fod yn llai na £100,000,000,000
+benefits.educationalServicesBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau addysg?
+benefits.educationalServicesBenefitsAmount.title.individual = Faint y cawsoch i gydaddysg ar gyfer gwasanaethau addysg?
 
 #################       Beneficial loans messages        ########################################
 
-benefits.beneficialLoans.error.noEntry.agent = Select yes if your client got beneficial loans
-benefits.beneficialLoans.error.noEntry.individual = Select yes if you got beneficial loans
-benefits.beneficialLoans.theseAre.agent = These are any interest free or low interest loans their employer has given them.
-benefits.beneficialLoans.theseAre.individual = These are interest free or low interest loans from your employer.
-benefits.beneficialLoans.title.agent = Did your client get any beneficial loans?
-benefits.beneficialLoans.title.individual = Did you get any beneficial loans?
-benefits.beneficialLoansAmount.error.incorrectFormat.agent = Enter your client’s beneficial loans amount in the correct format
-benefits.beneficialLoansAmount.error.incorrectFormat.individual = Enter your beneficial loans amount in the correct format
-benefits.beneficialLoansAmount.error.noEntry.agent = Enter your client’s beneficial loans amount
-benefits.beneficialLoansAmount.error.noEntry.individual = Enter your beneficial loans amount
-benefits.beneficialLoansAmount.error.overMaximum.agent = Your client’s beneficial loans must be less than £100,000,000,000
-benefits.beneficialLoansAmount.error.overMaximum.individual = Your beneficial loans must be less than £100,000,000,000
-benefits.beneficialLoansAmount.title.agent = How much were your client’s beneficial loans in total?
-benefits.beneficialLoansAmount.title.individual = How much were your beneficial loans in total?
-benefits.beneficialLoansAmount.youCanFind.agent = You can find this information on your client’s P11D form in section H, box 15.
-benefits.beneficialLoansAmount.youCanFind.individual = You can find this information on your P11D form in section H, box 15.
+benefits.beneficialLoans.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fenthyciadau buddiannol
+benefits.beneficialLoans.error.noEntry.individual = Dewiswch ëIawní os cawsoch fenthyciadau buddiannol
+benefits.beneficialLoans.theseAre.agent = Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo.
+benefits.beneficialLoans.theseAre.individual = Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr.
+benefits.beneficialLoans.title.agent = A gafodd eich cleient unrhyw fenthyciadau buddiannol?
+benefits.beneficialLoans.title.individual = A gawsoch unrhyw fenthyciadau buddiannol?
+benefits.beneficialLoansAmount.error.incorrectFormat.agent = Nodwch swm benthyciadau buddiannol eich cleient yn y fformat cywir
+benefits.beneficialLoansAmount.error.incorrectFormat.individual = Nodwch swm eich benthyciadau buddiannol yn y fformat cywir
+benefits.beneficialLoansAmount.error.noEntry.agent = Nodwch swm benthyciadau buddiannol eich cleient
+benefits.beneficialLoansAmount.error.noEntry.individual = Nodwch swm eich benthyciadau buddiannol
+benefits.beneficialLoansAmount.error.overMaximum.agent = Maeín rhaid i fenthyciadau buddiannol eich cleient fod yn llai na £100,000,000,000
+benefits.beneficialLoansAmount.error.overMaximum.individual = Maeín rhaid iích benthyciadau buddiannol fod yn llai na £100,000,000,000
+benefits.beneficialLoansAmount.title.agent = Faint oedd benthyciadau buddiannol eich cleient i gyd?
+benefits.beneficialLoansAmount.title.individual = Faint oedd eich benthyciadau buddiannol i gyd?
+benefits.beneficialLoansAmount.youCanFind.agent = Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar ffurflen P11D eich cleient.
+benefits.beneficialLoansAmount.youCanFind.individual = Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar eich ffurflen P11D.
 
 #################       Income tax and incurred costs messages        ########################################
 
-benefits.incomeTaxOrIncurredCosts.error.agent = Select yes if your client’s employer paid any of their Income Tax or incurred costs
-benefits.incomeTaxOrIncurredCosts.error.individual = Select yes if your employer paid any of your Income Tax or incurred costs
-benefits.incomeTaxOrIncurredCosts.title.agent = Did your client’s employer pay any of their Income Tax or incurred costs?
-benefits.incomeTaxOrIncurredCosts.title.individual = Did your employer pay any of your Income Tax or incurred costs?
+benefits.incomeTaxOrIncurredCosts.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTaxOrIncurredCosts.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTaxOrIncurredCosts.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?
+benefits.incomeTaxOrIncurredCosts.title.individual = A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?
 
 #################       Income tax messages        ########################################
 
-benefits.incomeTax.error.agent = Select yes if your client’s employer paid any of their Income Tax
-benefits.incomeTax.error.individual = Select yes if your employer paid any of your Income Tax
-benefits.incomeTax.ifYou.agent = If your client has not paid PAYE tax, we can recover this from their employer.
-benefits.incomeTax.ifYou.individual = If you have not paid PAYE tax, we can recover this from your employer.
-benefits.incomeTax.title.agent = Did your client’s employer pay any of their Income Tax?
-benefits.incomeTax.title.individual = Did your employer pay any of your Income Tax?
-benefits.incomeTaxBenefitsAmount.error.incorrectFormat.agent = Enter the amount of Income Tax paid by your client’s employer in the correct format
-benefits.incomeTaxBenefitsAmount.error.incorrectFormat.individual = Enter the amount of Income Tax paid by your employer in the correct format
-benefits.incomeTaxBenefitsAmount.error.noEntry.agent = Enter the amount of Income Tax paid by your client’s employer
-benefits.incomeTaxBenefitsAmount.error.noEntry.individual = Enter the amount of Income Tax paid by your employer
-benefits.incomeTaxBenefitsAmount.error.overMaximum.agent = The Income Tax paid by your client’s employer must be less than £100,000,000,000
-benefits.incomeTaxBenefitsAmount.error.overMaximum.individual = The Income Tax paid by your employer must be less than £100,000,000,000
-benefits.incomeTaxBenefitsAmount.title.agent = How much of your client’s Income Tax did their employer pay?
-benefits.incomeTaxBenefitsAmount.title.individual = How much of your Income Tax did your employer pay?
+benefits.incomeTax.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm
+benefits.incomeTax.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTax.ifYou.agent = Os nad yw eich cleient wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan ei gyflogwr.
+benefits.incomeTax.ifYou.individual = Os nad ydych wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan eich cyflogwr.
+benefits.incomeTax.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?
+benefits.incomeTax.title.individual = A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm?
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.agent = Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient yn y fformat cywir
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.individual = Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr yn y fformat cywir
+benefits.incomeTaxBenefitsAmount.error.noEntry.agent = Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient
+benefits.incomeTaxBenefitsAmount.error.noEntry.individual = Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr
+benefits.incomeTaxBenefitsAmount.error.overMaximum.agent = Maeín rhaid iír Dreth Incwm a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000
+benefits.incomeTaxBenefitsAmount.error.overMaximum.individual = Maeín rhaid iír Dreth Incwm a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000
+benefits.incomeTaxBenefitsAmount.title.agent = Faint o Dreth Incwm eich cleient a dalodd ei gyflogwr?
+benefits.incomeTaxBenefitsAmount.title.individual = Faint oích Treth Incwm a dalodd eich cyflogwr?
 
 #################       Incurred costs messages        ########################################
 
-benefits.incurredCosts.error.agent = Select yes if your client’s employer paid any of their incurred costs
-benefits.incurredCosts.error.individual = Select yes if your employer paid any of your incurred costs
-benefits.incurredCosts.forExample = For example, a speeding ticket or childcare.
-benefits.incurredCosts.title.agent = Did your client’s employer pay any of their incurred costs?
-benefits.incurredCosts.title.individual = Did your employer pay any of your incurred costs?
-benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
-benefits.incurredCostsAmount.error.incorrectFormat.individual = Enter the amount of incurred costs paid by your employer in the correct format
-benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred costs paid by your client’s employer
-benefits.incurredCostsAmount.error.noEntry.individual = Enter the amount of incurred costs paid by your employer
-benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
-benefits.incurredCostsAmount.error.overMaximum.individual = The incurred costs paid by your employer must be less than £100,000,000,000
-benefits.incurredCostsAmount.title.agent = How much of your client’s incurred costs did their employer pay?
-benefits.incurredCostsAmount.title.individual = How much of your incurred costs did your employer pay?
+benefits.incurredCosts.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oír costau yr ysgwyddwyd arno
+benefits.incurredCosts.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oír costau yr ysgwyddwyd arnoch
+benefits.incurredCosts.forExample = Er enghraifft, tocyn goryrru neu ofal plant.
+benefits.incurredCosts.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?
+benefits.incurredCosts.title.individual = A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?
+benefits.incurredCostsAmount.error.incorrectFormat.agent = Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient yn y fformat cywir
+benefits.incurredCostsAmount.error.incorrectFormat.individual = Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr yn y fformat cywir
+benefits.incurredCostsAmount.error.noEntry.agent = Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient
+benefits.incurredCostsAmount.error.noEntry.individual = Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr
+benefits.incurredCostsAmount.error.overMaximum.agent = Maeín rhaid iír costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000
+benefits.incurredCostsAmount.error.overMaximum.individual = Maeín rhaid iír costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000
+benefits.incurredCostsAmount.title.agent = Faint oír costau yr ysgwyddwyd ar eich cleient a dalodd ei gyflogwr?
+benefits.incurredCostsAmount.title.individual = Faint oír costau yr ysgwyddwyd arnoch a dalodd eich cyflogwr?
 
 #################       Reimbursed costs and vouchers messages        ########################################
 
