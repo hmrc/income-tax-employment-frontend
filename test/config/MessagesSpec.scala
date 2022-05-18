@@ -22,7 +22,7 @@ import utils.ViewTest
 
 class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
 
-  val exclusionKeys = Set(
+  val exclusionKeys: Set[String] = Set(
     "global.error.badRequest400.title",
     "global.error.badRequest400.heading",
     "global.error.badRequest400.message",
@@ -55,7 +55,8 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "checkYourBenefits.reimbursedHeader",
     "checkYourBenefits.reimbursedSubheading",
     "checkYourBenefits.medicalHeader",
-    "checkYourBenefits.medicalSubheading"
+    "checkYourBenefits.medicalSubheading",
+    "benefits.entertainingBenefits.error.agent"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages

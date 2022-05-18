@@ -85,11 +85,11 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any entertainment benefits?"
-    val expectedH1 = "Did you get any entertainment benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau gwesteia?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got any entertainment benefits"
-    val expectedContent = "These are entertainment costs that your employer has paid for, or reimbursed you for. For example, eating, drinking and other hospitality."
+    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia"
+    val expectedContent = "Costau gwesteia ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -101,11 +101,11 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any entertainment benefits?"
-    val expectedH1 = "Did your client get any entertainment benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau gwesteia?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got any entertainment benefits"
-    val expectedContent = "These are entertainment costs that their employer has paid for, or reimbursed them for. For example, eating, drinking and other hospitality."
+    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia"
+    val expectedContent = "Costau gwesteia ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

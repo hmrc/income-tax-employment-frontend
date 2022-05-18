@@ -64,10 +64,10 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any utility or general service benefits from this company?"
-    val expectedH1 = "Did you get any utility or general service benefits from this company?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got utility or general service benefits"
+    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -78,10 +78,10 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any utility or general service benefits from this company?"
-    val expectedH1 = "Did your client get any utility or general service benefits from this company?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got utility or general service benefits"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -97,7 +97,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "This includes benefits such as telephone, employer provided services and professional fees or subscriptions."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel costau ffÙn, gwasanaethau a ddarperir gan y cyflogwr a ffioedd neu danysgrifiadau proffesiynol."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

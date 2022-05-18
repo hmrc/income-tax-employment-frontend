@@ -88,13 +88,13 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer cover costs for any professional fees or subscriptions?"
-    val expectedHeading = "Did your employer cover costs for any professional fees or subscriptions?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
+    val expectedHeading = "A wnaeth eich cyflogwr dalu costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedParagraphText: String = "Your employer may have covered fees you must pay to be able to do your job. " +
-      "This includes annual subscriptions to approved professional bodies that are relevant to your work."
+    val expectedParagraphText: String = "Maeín bosibl bod eich cyflogwr wedi taluír ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd. " +
+      "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iích gwaith."
     val checkWithEmployerText = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
-    val expectedErrorMessage = "Select yes if your employer covered costs for any professional fees or subscriptions"
+    val expectedErrorMessage = "Dewiswch ëIawní os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,13 +108,13 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer cover costs for any professional fees or subscriptions?"
-    val expectedHeading = "Did your client’s employer cover costs for any professional fees or subscriptions?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
+    val expectedHeading = "A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedParagraphText: String = "Your client’s employer may have covered fees they must pay to be able to do their job. " +
-      "This includes annual subscriptions to approved professional bodies that are relevant to their work."
+    val expectedParagraphText: String = "Maeín bosibl bod cyflogwr eich cleient wedi talu ffioedd y maeín rhaid iddo eu talu er mwyn gallu gwneud ei waith. " +
+      "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iíw waith."
     val checkWithEmployerText = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
-    val expectedErrorMessage = "Select yes if your client’s employer covered costs for any professional fees or subscriptions"
+    val expectedErrorMessage = "Dewiswch ëIawní os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

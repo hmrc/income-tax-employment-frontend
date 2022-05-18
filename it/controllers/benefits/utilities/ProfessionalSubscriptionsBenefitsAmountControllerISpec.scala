@@ -90,12 +90,12 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your employer pay to cover professional fees or subscriptions?"
-    val expectedHeading: String = "How much did your employer pay to cover professional fees or subscriptions?"
+    val expectedTitle: String = "Faint y gwnaeth eich cyflogwr ei dalu am danysgrifiadau neu ffioedd proffesiynol?"
+    val expectedHeading: String = "Faint y gwnaeth eich cyflogwr ei dalu am danysgrifiadau neu ffioedd proffesiynol?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions in the correct format"
-    val emptyErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions"
-    val maxAmountErrorText: String = "The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,12 +108,12 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
-    val expectedHeading: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
+    val expectedTitle: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu am ffioedd neu danysgrifiadau proffesiynol?"
+    val expectedHeading: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu am ffioedd neu danysgrifiadau proffesiynol?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format"
-    val emptyErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions"
-    val maxAmountErrorText: String = "The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalodd cyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

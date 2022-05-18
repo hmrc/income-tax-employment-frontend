@@ -845,7 +845,7 @@ benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes
 benefits.incidentalOvernightCostEmploymentBenefits.title.agent = Did your client get any incidental overnight costs?
 benefits.incidentalOvernightCostEmploymentBenefits.title.individual = Did you get any incidental overnight costs?
 
-#################       Incidental costs messages        ########################################
+#################       Entertainment messages        ########################################
 
 benefits.entertainingBenefits.error.agent = Select yes if your client got any entertainment benefits
 benefits.entertainingBenefits.error.individual = Select yes if you got any entertainment benefits

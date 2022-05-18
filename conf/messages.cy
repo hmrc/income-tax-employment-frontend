@@ -803,143 +803,143 @@ benefits.nonQualifyingRelocationQuestion.title.individual = A gawsoch unrhyw fud
 
 #################       Travel or entertainment messages        ########################################
 
-benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits
-benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
-benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.
-benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
-benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
+benefits.travelOrEntertainment.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio neu westeia
+benefits.travelOrEntertainment.error.individual = Dewiswch ëIawní os cawsoch fuddiannau teithio neu westeia
+benefits.travelOrEntertainment.thisIncludes = Mae hyn yn cynnwys buddiannau fel treuliau teithio, m‚n dreuliau dros nos a gwesteia.
+benefits.travelOrEntertainment.title.agent = A gafodd eich cleient unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?
+benefits.travelOrEntertainment.title.individual = A gawsoch unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?
 
 #################       Travel and subsistence messages        ########################################
 
-benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
-benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
-benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and subsistence that is paid for by their employer and is not exempt from tax. This includes hotels and meals.
-benefits.travelAndSubsistence.thisIs.individual = This is the cost of any travel and subsistence that is paid for by your employer and is not exempt from tax. This includes hotels and meals.
-benefits.travelAndSubsistence.title.agent = Did your client get any travel and subsistence benefits?
-benefits.travelAndSubsistence.title.individual = Did you get any travel and subsistence benefits?
-benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.agent = Enter the amount your client got for travel and subsistence
-benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.individual = Enter the amount you got for travel and subsistence
-benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
-benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your travel and subsistence benefit must be less than £100,000,000,000
-benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
-benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
-benefits.travelOrSubsistenceBenefitsAmount.informationText.agent = You can find this information in section N of your client’s P11D form.
-benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = You can find this information in section N of your P11D form.
-benefits.travelOrSubsistenceBenefitsAmount.title.agent = How much did your client get in total for travel and subsistence?
-benefits.travelOrSubsistenceBenefitsAmount.title.individual = How much did you get in total for travel and subsistence?
+benefits.travelAndSubsistence.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio a chynhaliaeth
+benefits.travelAndSubsistence.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau teithio a chynhaliaeth
+benefits.travelAndSubsistence.thisIs.agent = Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan ei gyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd.
+benefits.travelAndSubsistence.thisIs.individual = Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan eich cyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd.
+benefits.travelAndSubsistence.title.agent = A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?
+benefits.travelAndSubsistence.title.individual = A gawsoch unrhyw fuddiannau teithio a chynhaliaeth?
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer teithio a chynhaliaeth
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer teithio a chynhaliaeth
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Maeín rhaid i fuddiant teithio a chynhaliaeth eich cleient fod yn llai na £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích buddiant teithio a chynhaliaeth fod yn llai na £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer teithio a chynhaliaeth yn y fformat cywir
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Nodwch y swm a gawsoch ar gyfer teithio a chynhaliaeth yn y fformat cywir
+benefits.travelOrSubsistenceBenefitsAmount.informationText.agent = Maeír wybodaeth hon ar gael yn adran N ar ffurflen P11D eich cleient.
+benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = Maeír wybodaeth hon ar gael yn adran N ar eich ffurflen P11D.
+benefits.travelOrSubsistenceBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer teithio a chynhaliaeth?
+benefits.travelOrSubsistenceBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer teithio a chynhaliaeth?
 
 #################       Incidental costs messages        ########################################
 
-benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for incidental overnight costs in the correct format
-benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for incidental overnight costs in the correct format
-benefits.incidentalCostsBenefitsAmount.error.noEntry.agent = Enter the amount your client got for incidental overnight costs
-benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Enter the amount you got for incidental overnight costs
-benefits.incidentalCostsBenefitsAmount.error.overMaximum.agent = Your client’s incidental overnight costs must be less than £100,000,000,000
-benefits.incidentalCostsBenefitsAmount.error.overMaximum.individual = Your incidental overnight costs must be less than £100,000,000,000
-benefits.incidentalCostsBenefitsAmount.title.agent = How much did your client get in total for incidental overnight costs?
-benefits.incidentalCostsBenefitsAmount.title.individual = How much did you get in total for incidental overnight costs?
-benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance.
-benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = These are personal costs they incurred while travelling overnight on business.
-benefits.incidentalOvernightCostEmploymentBenefits.costInformation.individual = These are personal costs you incurred while travelling overnight on business.
-benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs
-benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
-benefits.incidentalOvernightCostEmploymentBenefits.title.agent = Did your client get any incidental overnight costs?
-benefits.incidentalOvernightCostEmploymentBenefits.title.individual = Did you get any incidental overnight costs?
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos yn y fformat cywir
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.individual = Nodwch y swm a gawsoch chi ar gyfer m‚n gostau dros nos yn y fformat cywir
+benefits.incidentalCostsBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos
+benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer m‚n gostau dros nos
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.agent = Maeín rhaid i f‚n gostau dros nos eich cleient fod yn llai na £100,000,000,000
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích m‚n gostau dros nos fod yn llai na £100,000,000,000
+benefits.incidentalCostsBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?
+benefits.incidentalCostsBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?
+benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan iír DU. Dim ond costau syín uwch naír lwfans y mae angen i ni wybod amdanynt.
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes.
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.individual = Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes.
+benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient m‚n gostau dros nos
+benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Dewiswch ëIawní os cawsoch chi m‚n gostau dros nos
+benefits.incidentalOvernightCostEmploymentBenefits.title.agent = A gafodd eich cleient unrhyw m‚n gostau dros nos?
+benefits.incidentalOvernightCostEmploymentBenefits.title.individual = A gawsoch unrhyw m‚n gostau dros nos?
 
-#################       Incidental costs messages        ########################################
+#################       Entertainment messages        ########################################
 
-benefits.entertainingBenefits.error.agent = Select yes if your client got any entertainment benefits
-benefits.entertainingBenefits.error.individual = Select yes if you got any entertainment benefits
-benefits.entertainingBenefits.paragraph.agent = These are entertainment costs that their employer has paid for, or reimbursed them for. For example, eating, drinking and other hospitality.
-benefits.entertainingBenefits.paragraph.individual = These are entertainment costs that your employer has paid for, or reimbursed you for. For example, eating, drinking and other hospitality.
-benefits.entertainingBenefits.title.agent = Did your client get any entertainment benefits?
-benefits.entertainingBenefits.title.individual = Did you get any entertainment benefits?
-benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount your client got for entertainment in the correct format
-benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Enter the amount you got for entertainment in the correct format
-benefits.entertainmentBenefitAmount.error.noEntry.agent = Enter the amount your client got for entertainment
-benefits.entertainmentBenefitAmount.error.noEntry.individual = Enter the amount you got for entertainment
-benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s entertainment benefit must be less than £100,000,000,000
-benefits.entertainmentBenefitAmount.error.overMaximum.individual = Your entertainment benefit must be less than £100,000,000,000
-benefits.entertainmentBenefitAmount.informationText.agent = You can find this figure under section N of your client’s P11D form, in the ‘entertainment’ box 16.
-benefits.entertainmentBenefitAmount.informationText.individual = You can find this figure under section N of your P11D form, in the ‘entertainment’ box 16.
-benefits.entertainmentBenefitAmount.title.agent = How much did your client get in total for entertainment?
-benefits.entertainmentBenefitAmount.title.individual = How much did you get in total for entertainment?
+benefits.entertainingBenefits.error.agent = Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia
+benefits.entertainingBenefits.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia
+benefits.entertainingBenefits.paragraph.agent = Costau gwesteia ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch.
+benefits.entertainingBenefits.paragraph.individual = Costau gwesteia ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch.
+benefits.entertainingBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau gwesteia?
+benefits.entertainingBenefits.title.individual = A gawsoch unrhyw fuddiannau gwesteia?
+benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwesteia yn y fformat cywir
+benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Nodwch y swm a gawsoch ar gyfer gwesteia yn y fformat cywir
+benefits.entertainmentBenefitAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwesteia
+benefits.entertainmentBenefitAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer gwesteia
+benefits.entertainmentBenefitAmount.error.overMaximum.agent = Maeín rhaid i fuddiant gwesteia eich cleient fod yn llai na £100,000,000,000
+benefits.entertainmentBenefitAmount.error.overMaximum.individual = Maeín rhaid iích buddiant gwesteia fod yn llai na £100,000,000,000
+benefits.entertainmentBenefitAmount.informationText.agent = Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N o ffurflen P11D eich cleient.
+benefits.entertainmentBenefitAmount.informationText.individual = Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N oích ffurflen P11D.
+benefits.entertainmentBenefitAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer gwesteia?
+benefits.entertainmentBenefitAmount.title.individual = Faint y cawsoch i gyd ar gyfer gwesteia?
 
 #################       Utilities messages        ########################################
 
-benefits.utilitiesOrGeneralServices.error.agent = Select yes if your client got utility or general service benefits
-benefits.utilitiesOrGeneralServices.error.individual = Select yes if you got utility or general service benefits
-benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
-benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utility or general service benefits from this company?
-benefits.utilitiesOrGeneralServices.title.individual = Did you get any utility or general service benefits from this company?
+benefits.utilitiesOrGeneralServices.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol
+benefits.utilitiesOrGeneralServices.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol
+benefits.utilitiesOrGeneralServices.thisIncludes = Mae hyn yn cynnwys buddiannau fel costau ffÙn, gwasanaethau a ddarperir gan y cyflogwr a ffioedd neu danysgrifiadau proffesiynol.
+benefits.utilitiesOrGeneralServices.title.agent = A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?
+benefits.utilitiesOrGeneralServices.title.individual = A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?
 
 #################       Telephone messages        ########################################
 
-benefits.telephoneBenefits.costDetail.agent = These are telephone costs paid by their employer that are not exempt from tax.
-benefits.telephoneBenefits.costDetail.individual = These are telephone costs paid by your employer that are not exempt from tax.
-benefits.telephoneBenefits.error.noEntry.agent = Select yes if your client got a benefit for using a telephone
-benefits.telephoneBenefits.error.noEntry.individual = Select yes if you got a benefit for using a telephone
-benefits.telephoneBenefits.title.agent = Did your client get a benefit for using a telephone?
-benefits.telephoneBenefits.title.individual = Did you get a benefit for using a telephone?
-benefits.telephoneEmploymentBenefitsAmount.error.noEntry.agent = Enter the amount your client got for telephone benefits
-benefits.telephoneEmploymentBenefitsAmount.error.noEntry.individual = Enter the amount you got for telephone benefits
-benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.agent = Your client’s telephone benefits must be less than £100,000,000,000
-benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.individual = Your telephone benefits must be less than £100,000,000,000
-benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for telephone benefits in the correct format
-benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for telephone benefits in the correct format
-benefits.telephoneEmploymentBenefitsAmount.title.agent = How much did your client get in total for telephone benefits?
-benefits.telephoneEmploymentBenefitsAmount.title.individual = How much did you get in total for telephone benefits?
+benefits.telephoneBenefits.costDetail.agent = Costau ffÙn ywír rhain syín cael eu talu gan ei gyflogwr ac sydd ddim wediíu heithrio rhag treth.
+benefits.telephoneBenefits.costDetail.individual = Costau ffÙn ywír rhain syín cael eu talu gan eich cyflogwr ac sydd ddim wediíu heithrio rhag treth.
+benefits.telephoneBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant ar gyfer defnyddio ffÙn
+benefits.telephoneBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiant ar gyfer defnyddio ffÙn
+benefits.telephoneBenefits.title.agent = A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?
+benefits.telephoneBenefits.title.individual = A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.agent = Maeín rhaid i fuddiannau ffÙn eich cleient fod yn llai na £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.individual = Maeín rhaid iích buddiannau ffÙn fod yn llai na £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn yn y fformat cywir
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.individual = Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn yn y fformat cywir
+benefits.telephoneEmploymentBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer buddiannau ffÙn?
+benefits.telephoneEmploymentBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer buddiannau ffÙn?
 
 #################       Employer provided services messages        ########################################
 
-benefits.employerProvidedServices.error.no-entry.agent = Select yes if your client got a benefit for services provided by their employer
-benefits.employerProvidedServices.error.no-entry.individual = Select yes if you got a benefit for services provided by your employer
-benefits.employerProvidedServices.paragraph.agent = These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services.
-benefits.employerProvidedServices.paragraph.individual = These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services.
-benefits.employerProvidedServices.title.agent = Did your client get a benefit for services provided by their employer?
-benefits.employerProvidedServices.title.individual = Did you get a benefit for services provided by your employer?
-benefits.employerProvidedServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for services provided by their employer
-benefits.employerProvidedServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for services provided by your employer
-benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.agent = The amount your client got for services provided by their employer must be less than £100,000,000,000
-benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.individual = The amount you got for services provided by your employer must be less than £100,000,000,000
-benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for services provided by their employer in the correct format
-benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for services provided by your employer in the correct format
-benefits.employerProvidedServicesBenefitsAmount.title.agent = How much did your client get in total for services provided by their employer?
-benefits.employerProvidedServicesBenefitsAmount.title.individual = How much did you get in total for services provided by your employer?
+benefits.employerProvidedServices.error.no-entry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr
+benefits.employerProvidedServices.error.no-entry.individual = Dewiswch ëIawní os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr
+benefits.employerProvidedServices.paragraph.agent = Maeír rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig ‚íi swydd. Ei gyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad.
+benefits.employerProvidedServices.paragraph.individual = Maeír rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig ‚ích swydd. Eich cyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad.
+benefits.employerProvidedServices.title.agent = A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?
+benefits.employerProvidedServices.title.individual = A gawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr?
+benefits.employerProvidedServicesBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr
+benefits.employerProvidedServicesBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr
+benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.agent = Maeín rhaid iír swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr fod yn llai na £100,000,000,000
+benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.individual = Maeín rhaid iír swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr fod yn llai na £100,000,000,000
+benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.agent = Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr yn y fformat cywir
+benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.individual = Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr yn y fformat cywir
+benefits.employerProvidedServicesBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau a ddarperir gan ei gyflogwr?
+benefits.employerProvidedServicesBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer gwasanaethau a ddarperir gan eich cyflogwr?
 
 #################       Professional subscriptions messages        ########################################
 
-benefits.professionalSubscriptions.error.agent = Select yes if your client’s employer covered costs for any professional fees or subscriptions
-benefits.professionalSubscriptions.error.individual = Select yes if your employer covered costs for any professional fees or subscriptions
-benefits.professionalSubscriptions.paragraphText.agent = Your client’s employer may have covered fees they must pay to be able to do their job. This includes annual subscriptions to approved professional bodies that are relevant to their work.
-benefits.professionalSubscriptions.paragraphText.individual = Your employer may have covered fees you must pay to be able to do your job. This includes annual subscriptions to approved professional bodies that are relevant to your work.
-benefits.professionalSubscriptions.title.agent = Did your client’s employer cover costs for any professional fees or subscriptions?
-benefits.professionalSubscriptions.title.individual = Did your employer cover costs for any professional fees or subscriptions?
-benefits.professionalSubscriptionsAmount.error.noEntry.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions
-benefits.professionalSubscriptionsAmount.error.noEntry.individual = Enter the amount your employer paid to cover professional fees or subscriptions
-benefits.professionalSubscriptionsAmount.error.overMaximum.agent = The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
-benefits.professionalSubscriptionsAmount.error.overMaximum.individual = The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
-benefits.professionalSubscriptionsAmount.error.wrongFormat.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format
-benefits.professionalSubscriptionsAmount.error.wrongFormat.individual = Enter the amount your employer paid to cover professional fees or subscriptions in the correct format
-benefits.professionalSubscriptionsAmount.title.agent = How much did your client’s employer pay to cover professional fees or subscriptions?
-benefits.professionalSubscriptionsAmount.title.individual = How much did your employer pay to cover professional fees or subscriptions?
+benefits.professionalSubscriptions.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptions.error.individual = Dewiswch ëIawní os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptions.paragraphText.agent = Maeín bosibl bod cyflogwr eich cleient wedi talu ffioedd y maeín rhaid iddo eu talu er mwyn gallu gwneud ei waith. Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iíw waith.
+benefits.professionalSubscriptions.paragraphText.individual = Maeín bosibl bod eich cyflogwr wedi taluír ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd. Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iích gwaith.
+benefits.professionalSubscriptions.title.agent = A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?
+benefits.professionalSubscriptions.title.individual = A wnaeth eich cyflogwr dalu costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?
+benefits.professionalSubscriptionsAmount.error.noEntry.agent = Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptionsAmount.error.noEntry.individual = Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptionsAmount.error.overMaximum.agent = Maeín rhaid iír swm a dalodd cyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.overMaximum.individual = Maeín rhaid iír swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.wrongFormat.agent = Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir
+benefits.professionalSubscriptionsAmount.error.wrongFormat.individual = Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir
+benefits.professionalSubscriptionsAmount.title.agent = Faint y gwnaeth cyflogwr eich cleient ei dalu am ffioedd neu danysgrifiadau proffesiynol?
+benefits.professionalSubscriptionsAmount.title.individual = Faint y gwnaeth eich cyflogwr ei dalu am danysgrifiadau neu ffioedd proffesiynol?
 
 #################       Other services messages        ########################################
 
-benefits.otherServicesBenefits.error.agent = Select yes if your client got benefits for other services
-benefits.otherServicesBenefits.error.individual = Select yes if you got benefits for other services
-benefits.otherServicesBenefits.theseAre.agent = These are any other services they have used that are required for their job. Their employer pays for them.
-benefits.otherServicesBenefits.theseAre.individual = These are any other services you have used that are required for your job. Your employer pays for them.
-benefits.otherServicesBenefits.title.agent = Did your client get any benefits for other services?
-benefits.otherServicesBenefits.title.individual = Did you get any benefits for other services?
-benefits.otherServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for other services in the correct format
-benefits.otherServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for other services in the correct format
-benefits.otherServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other services
-benefits.otherServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for other services
-benefits.otherServicesBenefitsAmount.error.overMaximum.agent = The amount your client got for other services must be less than £100,000,000,000
-benefits.otherServicesBenefitsAmount.error.overMaximum.individual = The amount you got for other services must be less than £100,000,000,000
-benefits.otherServicesBenefitsAmount.title.agent = How much did your client get in total for other services?
-benefits.otherServicesBenefitsAmount.title.individual = How much did you get in total for other services?
+benefits.otherServicesBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefits.theseAre.agent = Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt.
+benefits.otherServicesBenefits.theseAre.individual = Maeír rhain yn unrhyw wasanaethau eraill rydych wediíu defnyddio syín ofynnol ar gyfer eich swydd. Eich cyflogwr syín talu amdanynt.
+benefits.otherServicesBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?
+benefits.otherServicesBenefits.title.individual = A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?
+benefits.otherServicesBenefitsAmount.error.invalidFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill yn y fformat cywir
+benefits.otherServicesBenefitsAmount.error.invalidFormat.individual = Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill yn y fformat cywir
+benefits.otherServicesBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefitsAmount.error.overMaximum.agent = Maeín rhaid iír swm a gafodd eich cleient ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000
+benefits.otherServicesBenefitsAmount.error.overMaximum.individual = Maeín rhaid iír swm a gawsoch ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000
+benefits.otherServicesBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau eraill?
+benefits.otherServicesBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer gwasanaethau eraill?
 
 #################       Medical dental childcare messages        ########################################
 

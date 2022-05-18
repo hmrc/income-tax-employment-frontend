@@ -70,11 +70,11 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a benefit for using a telephone?"
-    val expectedHeading = "Did you get a benefit for using a telephone?"
+    val expectedTitle = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
+    val expectedHeading = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got a benefit for using a telephone"
-    val expectedParagraphText: String = "These are telephone costs paid by your employer that are not exempt from tax."
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiant ar gyfer defnyddio ffÙn"
+    val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan eich cyflogwr ac sydd ddim wediíu heithrio rhag treth."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -86,11 +86,11 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a benefit for using a telephone?"
-    val expectedHeading = "Did your client get a benefit for using a telephone?"
+    val expectedTitle = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
+    val expectedHeading = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got a benefit for using a telephone"
-    val expectedParagraphText: String = "These are telephone costs paid by their employer that are not exempt from tax."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiant ar gyfer defnyddio ffÙn"
+    val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan ei gyflogwr ac sydd ddim wediíu heithrio rhag treth."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
