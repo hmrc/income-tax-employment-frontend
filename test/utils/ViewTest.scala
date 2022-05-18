@@ -27,9 +27,7 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
 
   val testBackUrl = "/test-back-url"
   val testCall: Call = Call("POST", "/test-url")
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
-  lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
   val serviceName = "Update and submit an Income Tax Return"
   val serviceNameWelsh = "Diweddaru a chyflwyno Ffurflen Dreth Incwm"

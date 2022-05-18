@@ -18,16 +18,16 @@ package audit
 
 import models.benefits.Benefits
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class ViewEmploymentBenefitsSpec extends UnitTestWithApp{
+class ViewEmploymentBenefitsSpec extends UnitTest {
 
   "writes" when {
     "passed a ViewEmploymentBenefitsModel" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |"taxYear": ${taxYearEOY-1},
+             |"taxYear": ${taxYearEOY - 1},
              |"userType": "individual",
              |"nino":"AA12343AA",
              |"mtditid":"mtditid",
@@ -63,7 +63,7 @@ class ViewEmploymentBenefitsSpec extends UnitTestWithApp{
              |}
              |}""".stripMargin)
 
-        val auditModel = ViewEmploymentBenefitsAudit(taxYearEOY-1, "individual", "AA12343AA",
+        val auditModel = ViewEmploymentBenefitsAudit(taxYearEOY - 1, "individual", "AA12343AA",
           "mtditid",
           Benefits(
             accommodation = Some(100),

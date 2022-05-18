@@ -18,18 +18,21 @@ package controllers.employment
 
 import common.SessionValues
 import play.api.http.Status._
+import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockAppConfig, MockEmploymentSessionService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.EmployerInformationView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
+class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSessionService {
 
   private lazy val view = app.injector.instanceOf[EmployerInformationView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController()(
     mockMessagesControllerComponents,

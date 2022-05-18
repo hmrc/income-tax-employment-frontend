@@ -18,26 +18,26 @@ package audit
 
 import models.expenses.Expenses
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
+class DeleteEmploymentExpensesAuditSpec extends UnitTest {
 
   val fullJson: JsValue = Json.parse(
     s"""{
-      |    "taxYear": $taxYearEOY,
-      |    "userType": "individual",
-      |    "nino": "AA12343AA",
-      |    "mtditid": "mtditid",
-      |    "expenses": {
-      |      "jobExpenses": 100.01,
-      |      "flatRateJobExpenses": 200.01,
-      |      "professionalSubscriptions": 300.03,
-      |      "otherAndCapitalAllowances": 400.04
-      |    }
-      |}""".stripMargin
+       |    "taxYear": $taxYearEOY,
+       |    "userType": "individual",
+       |    "nino": "AA12343AA",
+       |    "mtditid": "mtditid",
+       |    "expenses": {
+       |      "jobExpenses": 100.01,
+       |      "flatRateJobExpenses": 200.01,
+       |      "professionalSubscriptions": 300.03,
+       |      "otherAndCapitalAllowances": 400.04
+       |    }
+       |}""".stripMargin
   )
 
-  val fullAuditModel = DeleteEmploymentExpensesAudit(
+  val fullAuditModel: DeleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(
     taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       businessTravelCosts = None,
@@ -51,7 +51,7 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
     )
   )
 
-  val fullAuditModelWithExtraFields = DeleteEmploymentExpensesAudit(
+  val fullAuditModelWithExtraFields: DeleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(
     taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       businessTravelCosts = Some(400),
@@ -67,17 +67,17 @@ class DeleteEmploymentExpensesAuditSpec extends UnitTestWithApp {
 
   val jsonWithSomeFieldsUndefined: JsValue = Json.parse(
     s"""{
-      |    "taxYear": $taxYearEOY,
-      |    "userType": "individual",
-      |    "nino": "AA12343AA",
-      |    "mtditid": "mtditid",
-      |    "expenses": {
-      |      "otherAndCapitalAllowances": 400.04
-      |    }
-      |}""".stripMargin
+       |    "taxYear": $taxYearEOY,
+       |    "userType": "individual",
+       |    "nino": "AA12343AA",
+       |    "mtditid": "mtditid",
+       |    "expenses": {
+       |      "otherAndCapitalAllowances": 400.04
+       |    }
+       |}""".stripMargin
   )
 
-  val auditModelWithSomeFieldsUndefined = DeleteEmploymentExpensesAudit(
+  val auditModelWithSomeFieldsUndefined: DeleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(
     taxYearEOY, "individual", "AA12343AA", "mtditid",
     Expenses(
       otherAndCapitalAllowances = Some(400.04)

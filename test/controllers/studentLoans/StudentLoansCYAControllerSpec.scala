@@ -30,18 +30,19 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.studentLoans.StudentLoansCYAView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class StudentLoansCYAControllerSpec extends UnitTestWithApp
+class StudentLoansCYAControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockStudentLoansCYAService
   with MockAuditService
-  with MockErrorHandler{
+  with MockErrorHandler {
 
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansCYAController(
     mockMessagesControllerComponents,

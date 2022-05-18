@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER, UNAUTHORIZED}
+import play.api.i18n.Messages
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -32,8 +33,9 @@ import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEm
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import utils.PageUrls._
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers, ViewUtils}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -69,15 +71,22 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
 
     val expensesHeadingSelector = "#expenses-h2"
-    def expensesLineSelector(expensesOnly : Boolean = false) = s"#main-content > div > div > ${if(expensesOnly) "dl" else "dl:nth-child(8)"} > div > dt"
+
+    def expensesLineSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dt"
+
     val thisIsATotalSelector = s"#total-of-expenses"
     val noEmployersSelector = "#main-content > div > div > p:nth-child(4)"
     val viewExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd > a"
     val addAnotherSelector = "#main-content > div > div > p:nth-child(5) > a"
-    def changeExpensesSelector(expensesOnly : Boolean = false) = s"#main-content > div > div > ${if(expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__value > a"
-    def removeExpensesSelector(expensesOnly : Boolean = false) = s"#main-content > div > div > ${if(expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > a"
+
+    def changeExpensesSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__value > a"
+
+    def removeExpensesSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > a"
+
     val addExpensesSelector = s"#add-expenses"
-    def addEmployerSelector(n: Int = 3) = s"#main-content > div > div > p:nth-child($n) > a"
+
+    def addEmployerSelector(n: Int = 3): String = s"#main-content > div > div > p:nth-child($n) > a"
+
     val addSelector = "#main-content > div > div > dl:nth-child(7) > div > dd > a"
     val cannotAddSelector = "#main-content > div > div > p:nth-child(7)"
     val cannotUpdateSelector = "#main-content > div > div > dl:nth-child(5) > div:nth-child(2) > dd"
@@ -99,6 +108,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val notificationTitle: String
     val notificationContent: String
     val name: String
+    val startedDateString: LocalDate => String
+    val startedDateMissingString: String
+    val startedDateBeforeString: Int => String
     val noEmployers: String
     val change: String
     val remove: String
@@ -125,6 +137,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val notificationTitle: String = "Important"
     val notificationContent: String = "You cannot have expenses without an employer. Add an employer or remove expenses."
     val name: String = "maggie"
+    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Started " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = false))
+    val startedDateMissingString: String = "Start date missing"
+    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Started before 6 April $taxYear"
     val noEmployers: String = "No employers"
     val change: String = s"Change"
     val remove: String = s"Remove"
@@ -152,6 +167,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val notificationContent: String = "You cannot have expenses without an employer. Add an employer or remove expenses."
     val noEmployers: String = "No employers"
     val name: String = "maggie"
+    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Started " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = true))
+    val startedDateMissingString: String = "Start date missing"
+    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Started before 6 April $taxYear"
     val add: String = "Add"
     val change: String = s"Newid"
     val remove: String = s"Tynnu"
@@ -217,7 +235,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "there is only one employment and its the EOY with expenses" which {
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              val hmrcEmploymentSource = aHmrcEmploymentSource.copy(startDate = None)
+              userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource)))), nino, taxYearEOY)
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -235,7 +254,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employer, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
-            textOnPageCheck(name, employerNameSelector)
+            textOnPageCheck(name + " " + startedDateMissingString, employerNameSelector)
             linkCheck(s"$change$change $name", changeEmployerSelector(1), employerInformationUrl(taxYearEOY, employmentId))
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
@@ -267,7 +286,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
-            notificationBannerCheck(notificationTitle,notificationContent)
+            notificationBannerCheck(notificationTitle, notificationContent)
             linkCheck(addEmployer, addEmployerSelector(4), summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(expenses, expensesLineSelector(true), "as a line item")
@@ -279,6 +298,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "there is only one employment and its the EOY without expenses" which {
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
+              val hmrcEmploymentSource = aHmrcEmploymentSource.copy(startDate = Some((taxYearEOY - 1).toString + "-04-05"))
+              userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource), hmrcExpenses = None))), nino, taxYearEOY)
               userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYearEOY)
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -297,7 +318,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employer, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
-            textOnPageCheck(name, employerNameSelector)
+            textOnPageCheck(name + " " + s"Started before 6 April ${taxYearEOY - 1}", employerNameSelector)
             linkCheck(s"$change$change $name", changeEmployerSelector(1), employerInformationUrl(taxYearEOY, employmentId))
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
@@ -335,10 +356,12 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(expenses, expensesLineSelector(true), "as a line item")
             buttonCheck(returnToOverview)
           }
+
           "there is only one employment and its in year with expenses" which {
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(anIncomeTaxUserData, nino, taxYear)
+              val hmrcEmploymentSource = aHmrcEmploymentSource.copy(startDate = Some(taxYear + "-04-05"))
+              userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(hmrcEmploymentSource)))), nino, taxYear)
               urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
@@ -357,7 +380,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
             textOnPageCheck(employer, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
-            textOnPageCheck(name, employerNameInYearSelector)
+            textOnPageCheck(name + " " + startedDateString(LocalDate.parse(taxYear + "-04-05")), employerNameInYearSelector)
             linkCheck(s"$view$view $name", viewEmployerSelector(1), employerInformationUrl(taxYear, employmentId))
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
@@ -388,7 +411,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
             textOnPageCheck(employer, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
-            textOnPageCheck(name, employerNameInYearSelector)
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameInYearSelector)
             linkCheck(s"$view$view $name", viewEmployerSelector(1), employerInformationUrl(taxYear, employmentId))
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(specific.cannotAdd, cannotAddSelector)
@@ -449,9 +472,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
             textOnPageCheck(employers, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
-            textOnPageCheck(name, employerNameSelector(1))
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
             linkCheck(s"$view$view $name", viewEmployerSelector(1), employerInformationUrl(taxYear, employmentId))
-            textOnPageCheck(employerName2, employerNameSelector(2))
+            textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
             linkCheck(s"$view$view $employerName2", viewEmployerSelector(2), employerInformationUrl(taxYear, employmentId2))
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
@@ -482,9 +505,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
             textOnPageCheck(employers, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
-            textOnPageCheck(name, employerNameSelector(1))
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
             linkCheck(s"$view$view $name", viewEmployerSelector(1), employerInformationUrl(taxYear, employmentId))
-            textOnPageCheck(employerName2, employerNameSelector(2))
+            textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
             linkCheck(s"$view$view $employerName2", viewEmployerSelector(2), employerInformationUrl(taxYear, employmentId2))
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(specific.cannotAdd, cannotAddSelector)
@@ -514,10 +537,10 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
-            textOnPageCheck(name, employerNameEOYSelector(1))
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
             linkCheck(s"$change$change $name", changeEmployerSelector(1), employerInformationUrl(taxYearEOY, employmentId))
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
-            textOnPageCheck(employerName2, employerNameEOYSelector(2))
+            textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 2))
             linkCheck(s"$change$change $employerName2", changeEmployerSelector(2), employerInformationUrl(taxYearEOY, employmentId2))
             linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), removeEmploymentUrl(taxYearEOY, employmentId2))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)
@@ -550,10 +573,10 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employers, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
-            textOnPageCheck(name, employerNameEOYSelector(1))
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
             linkCheck(s"$change$change $name", changeEmployerSelector(1), employerInformationUrl(taxYearEOY, employmentId))
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
-            textOnPageCheck(employerName2, employerNameEOYSelector(2))
+            textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 2))
             linkCheck(s"$change$change $employerName2", changeEmployerSelector(2), employerInformationUrl(taxYearEOY, employmentId2))
             linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), removeEmploymentUrl(taxYearEOY, employmentId2))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)

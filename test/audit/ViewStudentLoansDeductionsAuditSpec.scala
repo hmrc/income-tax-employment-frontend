@@ -18,16 +18,16 @@ package audit
 
 import models.employment.{Deductions, StudentLoans}
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class ViewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
+class ViewStudentLoansDeductionsAuditSpec extends UnitTest {
 
   "writes" when {
     "passed a ViewStudentLoansDeductionsAudit model" should {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |  "taxYear": ${taxYearEOY-1},
+             |  "taxYear": ${taxYearEOY - 1},
              |  "userType": "individual",
              |  "nino": "PW106933A",
              |  "mtditid": "1234567890",
@@ -39,7 +39,7 @@ class ViewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
              |  }
              |}""".stripMargin)
 
-        val auditModel = ViewStudentLoansDeductionsAudit(taxYearEOY-1, "individual", "PW106933A", "1234567890",
+        val auditModel = ViewStudentLoansDeductionsAudit(taxYearEOY - 1, "individual", "PW106933A", "1234567890",
           Some(
             Deductions(
               Some(

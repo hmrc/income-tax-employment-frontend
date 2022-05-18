@@ -18,26 +18,26 @@ package audit
 
 import models.expenses.Expenses
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class ViewEmploymentExpensesSpec extends UnitTestWithApp {
+class ViewEmploymentExpensesSpec extends UnitTest {
 
   "writes" when {
     "passed a ViewEmploymentExpensesModel" should {
       "produce a valid json" in {
         val auditJson: JsValue = Json.parse(
           s"""{
-            | "taxYear": $taxYear,
-            | "userType": "individual",
-            | "nino": "AA12343AA",
-            | "mtditid": "mtditid",
-            | "expenses": {
-            |   "jobExpenses": 150,
-            |   "flatRateJobExpenses": 200,
-            |   "professionalSubscriptions": 250,
-            |   "otherAndCapitalAllowances": 350
-            | }
-            |}""".stripMargin)
+             | "taxYear": $taxYear,
+             | "userType": "individual",
+             | "nino": "AA12343AA",
+             | "mtditid": "mtditid",
+             | "expenses": {
+             |   "jobExpenses": 150,
+             |   "flatRateJobExpenses": 200,
+             |   "professionalSubscriptions": 250,
+             |   "otherAndCapitalAllowances": 350
+             | }
+             |}""".stripMargin)
 
         val auditModel: ViewEmploymentExpensesAudit = ViewEmploymentExpensesAudit(
           taxYear,

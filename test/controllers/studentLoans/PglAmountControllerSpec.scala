@@ -20,17 +20,18 @@ import common.SessionValues
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.Result
 import support.mocks.{MockAppConfig, MockEmploymentSessionService, MockErrorHandler, MockStudentLoansService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.studentLoans.PglAmountView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PglAmountControllerSpec extends UnitTestWithApp
+class PglAmountControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockStudentLoansService
   with MockErrorHandler {
 
   private lazy val view: PglAmountView = app.injector.instanceOf[PglAmountView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   private val employmentId = "1234567890"
 

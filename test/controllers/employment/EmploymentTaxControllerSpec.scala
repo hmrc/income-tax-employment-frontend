@@ -22,15 +22,16 @@ import forms.AmountForm
 import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import support.mocks.{MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.EmploymentTaxView
 
 import scala.concurrent.Future
 
-class EmploymentTaxControllerSpec extends UnitTestWithApp
+class EmploymentTaxControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockEmploymentService
   with MockErrorHandler {
@@ -44,12 +45,14 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
       currentDataIsHmrcHeld = true
     )
     val employmentCyaModel: EmploymentCYAModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
+    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false,
+      hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
   }
 
   private val employmentId = "223/AB12399"
 
   private lazy val view = app.injector.instanceOf[EmploymentTaxView]
+  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private lazy val controller = new EmploymentTaxController()(
     mockMessagesControllerComponents,

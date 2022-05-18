@@ -28,18 +28,19 @@ import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockActionsProvider, MockEmploymentSessionService, MockErrorHandler, MockUnignoreEmploymentService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.SelectEmployerView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SelectEmployerControllerSpec extends UnitTestWithApp
+class SelectEmployerControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockUnignoreEmploymentService
   with MockErrorHandler
   with MockActionsProvider {
 
   private lazy val view: SelectEmployerView = app.injector.instanceOf[SelectEmployerView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   private lazy val controller = new SelectEmployerController(
     mockActionsProvider,

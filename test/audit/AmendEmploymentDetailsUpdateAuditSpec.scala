@@ -19,9 +19,9 @@ package audit
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import play.api.libs.json.Json
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
+class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest {
 
   "toAmendAuditModel" should {
     "create the audit model when only updating employment data" in {
@@ -53,17 +53,17 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = None,
-        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
         employmentData = Some(EmploymentData(
-          submittedOn = s"${taxYearEOY-1}-02-12",
+          submittedOn = s"${taxYearEOY - 1}-02-12",
           employmentSequenceNumber = Some("123456789999"),
           companyDirector = Some(true),
           closeCompany = Some(false),
-          directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+          directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
           disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
           Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(100.00),
@@ -75,8 +75,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
       )
 
       model.toAmendAuditModel(authorisationRequest.user, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
-        taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some(s"${taxYearEOY-1}-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
-        AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some(s"${taxYearEOY-1}-03-11"), Some(4354), Some(564), Some("123456789999")))
+        taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some(s"${taxYearEOY - 1}-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
+        AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999")))
     }
   }
 
@@ -85,7 +85,7 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |	"taxYear": ${taxYearEOY-1},
+             |	"taxYear": ${taxYearEOY - 1},
              |	"userType": "individual",
              |	"nino": "AA12343AA",
              |	"mtditid": "mtditid",
@@ -112,7 +112,7 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTestWithApp {
              |}""".stripMargin)
 
         //scalastyle:off
-        val auditModel = AmendEmploymentDetailsUpdateAudit(taxYearEOY-1, "individual", "AA12343AA", "mtditid",
+        val auditModel = AmendEmploymentDetailsUpdateAudit(taxYearEOY - 1, "individual", "AA12343AA", "mtditid",
           priorEmploymentData = AuditEmploymentData(
             employerName = "Name",
             employerRef = Some("123/12345"),

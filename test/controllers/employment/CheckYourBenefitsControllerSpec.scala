@@ -24,6 +24,7 @@ import models.benefits.Benefits
 import models.employment.OptionalCyaAndPrior
 import models.employment.createUpdate._
 import play.api.http.Status._
+import play.api.i18n.Messages
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
@@ -31,18 +32,20 @@ import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewMo
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.employment.CheckYourBenefitsView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourBenefitsControllerSpec extends UnitTestWithApp
+class CheckYourBenefitsControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockCheckYourBenefitsService
   with MockAuditService
   with MockErrorHandler {
 
   private lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
+  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true) = new CheckYourBenefitsController()(
     new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled),

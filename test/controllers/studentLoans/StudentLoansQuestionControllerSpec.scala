@@ -20,12 +20,12 @@ import common.SessionValues
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.Result
 import support.mocks.{MockAppConfig, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.studentLoans.StudentLoansQuestionView
 
 import scala.concurrent.Future
 
-class StudentLoansQuestionControllerSpec extends UnitTestWithApp
+class StudentLoansQuestionControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockErrorHandler {
 

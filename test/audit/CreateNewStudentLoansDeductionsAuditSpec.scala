@@ -18,9 +18,9 @@ package audit
 
 import models.employment.{Deductions, StudentLoans}
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
+class CreateNewStudentLoansDeductionsAuditSpec extends UnitTest {
 
   "writes" when {
     "passed a CreateNewStudentLoansDeductions model" should {
@@ -41,17 +41,17 @@ class CreateNewStudentLoansDeductionsAuditSpec extends UnitTestWithApp {
 
         val validJson: JsValue = Json.parse(
           s"""{
-            |"taxYear": $taxYearEOY,
-            |"userType": "individual",
-            |"nino": "AA123456A",
-            |"mtditid": "1234567890",
-            |"deductions": {
-            |   "studentLoans": {
-            |       "undergraduateLoanDeductionAmount": 12345.67,
-            |       "postgraduateLoanDeductionAmount": 12345.67
-            |     }
-            |   }
-            |}""".stripMargin
+             |"taxYear": $taxYearEOY,
+             |"userType": "individual",
+             |"nino": "AA123456A",
+             |"mtditid": "1234567890",
+             |"deductions": {
+             |   "studentLoans": {
+             |       "undergraduateLoanDeductionAmount": 12345.67,
+             |       "postgraduateLoanDeductionAmount": 12345.67
+             |     }
+             |   }
+             |}""".stripMargin
         )
 
         Json.toJson(auditModel) shouldBe validJson

@@ -22,11 +22,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import utils.UnitTestWithApp
+import utils.UnitTest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuditServiceSpec extends UnitTestWithApp {
+class AuditServiceSpec extends UnitTest {
 
   private trait Test {
     val mockedAppName = "some-app-name"
@@ -52,10 +52,9 @@ class AuditServiceSpec extends UnitTestWithApp {
           .expects(*, *, *)
           .returns(expected)
 
-        val event = AuditModel(auditType, transactionName, eventDetails)
+        val event: AuditModel[String] = AuditModel(auditType, transactionName, eventDetails)
         target.sendAudit(event) shouldBe expected
       }
-
 
 
       "generates an event with the correct auditSource" in new Test {
@@ -68,7 +67,7 @@ class AuditServiceSpec extends UnitTestWithApp {
           )
           .returns(expected)
 
-        val event = AuditModel(auditType, transactionName, eventDetails)
+        val event: AuditModel[String] = AuditModel(auditType, transactionName, eventDetails)
 
         target.sendAudit(event)
       }
@@ -83,7 +82,7 @@ class AuditServiceSpec extends UnitTestWithApp {
           )
           .returns(expected)
 
-        val event = AuditModel(auditType, transactionName, eventDetails)
+        val event: AuditModel[String] = AuditModel(auditType, transactionName, eventDetails)
 
         target.sendAudit(event)
       }
@@ -98,7 +97,7 @@ class AuditServiceSpec extends UnitTestWithApp {
           )
           .returns(expected)
 
-        val event = AuditModel(auditType, transactionName, eventDetails)
+        val event: AuditModel[String] = AuditModel(auditType, transactionName, eventDetails)
 
         target.sendAudit(event)
       }
@@ -113,7 +112,7 @@ class AuditServiceSpec extends UnitTestWithApp {
           )
           .returns(expected)
 
-        val event = AuditModel(auditType, transactionName, eventDetails)
+        val event: AuditModel[String] = AuditModel(auditType, transactionName, eventDetails)
 
         target.sendAudit(event)
       }

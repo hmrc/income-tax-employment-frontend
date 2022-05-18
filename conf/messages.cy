@@ -42,6 +42,9 @@ common.returnToEmployer = Dychwelyd i‘r cyflogwr
 common.returnToPayeEmployment = Return to PAYE employment
 common.saveAndContinue = Cadw ac yn eich blaen
 common.status.cannotUpdate = Cannot update
+common.started.date.missing = Start date missing
+common.started.before = Started before 6 April {0}
+common.started.date = Started {0}
 common.status.notStarted = Not started
 common.status.updated = Updated
 common.status.toDo = To do
@@ -59,6 +62,18 @@ common.or = neu
 common.dateRange = {0} i {1}
 common.dateFrom = From {0}
 common.expenses.totalForAllEmployers = Total amount for all employers
+common.january = Ionawr
+common.february = Chwefror
+common.march = Mawrth
+common.april = Ebrill
+common.may = Mai
+common.june = Mehefin
+common.july = Gorffennaf
+common.august = Awst
+common.september = Medi
+common.october = Hydref
+common.november = Tachwedd
+common.december = Rhagfyr
 
 #################   Subheadings/Captions    ##################################
 
@@ -153,10 +168,11 @@ employment.removeEmployment.button = Remove employer
 
 #################       Select employer messages        ########################################
 
-employment.unignoreEmployment.title = Which employer do you want to add?
-employment.unignoreEmployment.addANewEmployer = Add a new employer
-employment.unignoreEmployment.individual = Select your employer or add a new employer
-employment.unignoreEmployment.agent = Select your client’s employer or add a new employer
+employment.unignoreEmployment.title = Which period of employment do you want to add?
+employment.unignoreEmployment.p1.agent = The information we hold about your client does not include changes you made.
+employment.unignoreEmployment.p1.individual = The information we hold about you does not include changes you made.
+employment.unignoreEmployment.addANewEmployer = Add a new period of employment
+employment.unignoreEmployment.error = Select a period of employment or add a new one
 
 #################       Check Employment details messages        ########################################
 

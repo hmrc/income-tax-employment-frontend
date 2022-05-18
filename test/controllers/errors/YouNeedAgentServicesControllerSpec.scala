@@ -19,10 +19,10 @@ package controllers.errors
 import play.api.http.Status.UNAUTHORIZED
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.templates.YouNeedAgentServicesView
 
-class YouNeedAgentServicesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout {
+class YouNeedAgentServicesControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
   lazy val controller = new YouNeedAgentServicesController(mockMessagesControllerComponents, app.injector.instanceOf[YouNeedAgentServicesView], mockAppConfig)
 

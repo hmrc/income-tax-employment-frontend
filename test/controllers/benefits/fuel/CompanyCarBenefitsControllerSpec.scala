@@ -24,12 +24,12 @@ import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockFuelService}
-import utils.UnitTestWithApp
+import utils.UnitTest
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
-class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
+class CompanyCarBenefitsControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockFuelService
   with MockErrorHandler {

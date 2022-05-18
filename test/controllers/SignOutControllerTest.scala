@@ -20,9 +20,9 @@ import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.SEE_OTHER
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTestWithApp
+import utils.UnitTest
 
-class SignOutControllerTest extends UnitTestWithApp with DefaultAwaitTimeout {
+class SignOutControllerTest extends UnitTest with DefaultAwaitTimeout {
 
   val controller = new SignOutController(mockMessagesControllerComponents, mockAppConfig)
 
