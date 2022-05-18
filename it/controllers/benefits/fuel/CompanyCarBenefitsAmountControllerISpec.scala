@@ -39,8 +39,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   private val maxLimit: String = "100,000,000,000"
   private val amountInputName = "amount"
 
-  private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
   private val benefitsWithNoBenefitsReceived = BenefitsViewModel(isUsingCustomerData = true)
 
   private val benefitsWithFalseCarVanFuelQuestion = BenefitsViewModel(isBenefitsReceived = true,
@@ -115,13 +113,13 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your total company car benefit?"
-    val expectedHeading = "How much was your total company car benefit?"
-    val expectedParagraphText = "You can find this information on your P11D form in section F, box 9."
+    val expectedTitle = "Faint oedd cyfanswm eich buddiant car cwmni?"
+    val expectedHeading = "Faint oedd cyfanswm eich buddiant car cwmni?"
+    val expectedParagraphText = "Maeír wybodaeth hon ar gael yn adran F, blwch 9 ar eich ffurflen P11D."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter your company car benefit amount"
-    val expectedInvalidFormatErrorMessage = "Enter your company car benefit amount in the correct format"
-    val expectedMaxLengthErrorMessage = "Your company car benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm eich buddiant car cwmni"
+    val expectedInvalidFormatErrorMessage = "Nodwch swm eich buddiant car cwmni yn y fformat cywir"
+    val expectedMaxLengthErrorMessage = "Maeín rhaid i’ch buddiant car cwmni fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -135,13 +133,13 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your client’s total company car benefit?"
-    val expectedHeading = "How much was your client’s total company car benefit?"
-    val expectedParagraphText = "You can find this information on your client’s P11D form in section F, box 9."
+    val expectedTitle = "Faint oedd cyfanswm buddiant car cwmni eich cleient?"
+    val expectedHeading = "Faint oedd cyfanswm buddiant car cwmni eich cleient?"
+    val expectedParagraphText = "Maeír wybodaeth hon ar gael yn adran F, blwch 9 ar ffurflen P11D eich cleient."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter your client’s company car benefit amount"
-    val expectedInvalidFormatErrorMessage = "Enter your client’s company car benefit amount in the correct format"
-    val expectedMaxLengthErrorMessage = "Your client’s company car benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm buddiant car cwmni eich cleient"
+    val expectedInvalidFormatErrorMessage = "Nodwch swm buddiant car cwmniích cleient yn y fformat cywir"
+    val expectedMaxLengthErrorMessage = "Maeín rhaid i fuddiant car cwmni eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

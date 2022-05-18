@@ -335,6 +335,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputAmountField)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
+            welshToggleCheck(user.isWelsh)
 
           }
 
@@ -369,6 +370,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
             errorSummaryCheck(expectedErrorInvalidFormat, inputAmountField)
             errorAboveElementCheck(expectedErrorInvalidFormat, Some(amountInputName))
+            welshToggleCheck(user.isWelsh)
 
           }
 
@@ -403,6 +405,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
             errorSummaryCheck(expectedErrorMaxLimit, inputAmountField)
             errorAboveElementCheck(expectedErrorMaxLimit, Some(amountInputName))
+            welshToggleCheck(user.isWelsh)
 
           }
         }

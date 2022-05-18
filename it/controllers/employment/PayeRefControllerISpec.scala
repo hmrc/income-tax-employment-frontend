@@ -332,6 +332,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(emptyErrorText, expectedErrorHref)
+          welshToggleCheck(user.isWelsh)
         }
 
         "should render What's the PAYE reference of xxx? page with wrong format text when input is in incorrect format" which {
@@ -357,6 +358,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           titleCheck(get.expectedErrorTitle, user.isWelsh)
           inputFieldValueCheck(amountInputName, inputSelector, invalidPaye)
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
+          welshToggleCheck(user.isWelsh)
         }
 
       }

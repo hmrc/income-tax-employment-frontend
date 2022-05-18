@@ -86,12 +86,12 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for non-qualifying relocation benefits?"
-    val expectedHeading: String = "How much did you get in total for non-qualifying relocation benefits?"
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiant adleoli anghymwys?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiant adleoli anghymwys?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter your non-qualifying relocation benefit amount"
-    val invalidFormatErrorText: String = "Enter your non-qualifying relocation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your non-qualifying relocation benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys"
+    val invalidFormatErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant adleoli anghymwys fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -104,12 +104,12 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for non-qualifying relocation benefits?"
-    val expectedHeading: String = "How much did your client get in total for non-qualifying relocation benefits?"
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiannau adleoli anghymwys?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiannau adleoli anghymwys?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter your client’s non-qualifying relocation benefit amount"
-    val invalidFormatErrorText: String = "Enter your client’s non-qualifying relocation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s non-qualifying relocation benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient"
+    val invalidFormatErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant adleoli anghymwys eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

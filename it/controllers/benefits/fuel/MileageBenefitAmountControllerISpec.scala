@@ -91,14 +91,14 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much mileage benefit did you get in total for using your own car?"
-    val expectedHeading = "How much mileage benefit did you get in total for using your own car?"
+    val expectedTitle = "Faint o fuddiant milltiroedd a gawsoch i gyd am ddefnyddio eich car eich hun?"
+    val expectedHeading = "Faint o fuddiant milltiroedd a gawsoch i gyd am ddefnyddio eich car eich hun?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
-    val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. You can find this information on your P11D form in section E, box 12."
-    val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
-    val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gawsoch am ddefnyddio eich car eich hun"
+    val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
+    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
+    val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gawsoch chi yn y fformat cywir"
+    val expectedMaxErrorMessage: String = "Maeín rhaid iích buddiant milltiroedd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,14 +113,14 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much mileage benefit did your client get in total for using their own car?"
-    val expectedHeading = "How much mileage benefit did your client get in total for using their own car?"
+    val expectedTitle = "Faint o fuddiant milltiroedd a gafodd eich cleient i gyd am ddefnyddio ei gar ei hun?"
+    val expectedHeading = "Faint o fuddiant milltiroedd a gafodd eich cleient i gyd am ddefnyddio ei gar ei hun?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
-    val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. You can find this information on your client’s P11D form in section E, box 12."
-    val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
-    val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient am ddefnyddio ei gar ei hun"
+    val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
+    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500.0. Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
+    val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient yn y fformat cywir"
+    val expectedMaxErrorMessage: String = "Maeín rhaid i fuddiant milltiroedd eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

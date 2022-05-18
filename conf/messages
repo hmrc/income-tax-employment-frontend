@@ -432,7 +432,7 @@ checkYourBenefits.assets.hiddenText.individual = Change if you got assets to use
 checkYourBenefits.assets = Assets to use
 checkYourBenefits.assetsAmount.hiddenText.agent = Change the amount your client got for assets to use as an employment benefit from this company
 checkYourBenefits.assetsAmount.hiddenText.individual = Change the amount you got for assets to use as an employment benefit from this company
-checkYourBenefits.assetsAmount =Amount for assets to use
+checkYourBenefits.assetsAmount = Amount for assets to use
 checkYourBenefits.assetsSubheading.hiddenText.agent = Change if your client got assets as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.individual = Change if you got assets as an employment benefit from this company
 checkYourBenefits.assetsSubheading = Assets
@@ -779,7 +779,7 @@ benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.individual = Enter
 benefits.qualifyingRelocationBenefitsAmount.title.agent = How much was your client’s total qualifying relocation benefit?
 benefits.qualifyingRelocationBenefitsAmount.title.individual = How much did you get in total for qualifying relocation benefits?
 
-#################       Qualifying relocation messages        ########################################
+#################       Non-qualifying relocation messages        ########################################
 
 benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.agent = Enter your client’s non-qualifying relocation benefit amount in the correct format
 benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.individual = Enter your non-qualifying relocation benefit amount in the correct format

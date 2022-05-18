@@ -68,11 +68,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val p1 = "#main-content > div > div > p.govuk-body"
     val p2 = "#main-content > div > div > div.govuk-inset-text"
-    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
     val returnToEmployerSelector = "#returnToEmployerBtn"
     val changeLinkCssSelector = ".govuk-summary-list__actions"
-
-    val firstFieldNameSelector = "#main-content > div > div > dl:nth-child(3) > div > dt"
 
     def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
@@ -239,7 +236,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived: String
     val saveAndContinue: String
     val returnToEmployerText: String
-    val returnToEmploymentSummaryText: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -326,7 +322,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -336,84 +331,83 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val bannerLinkText: String = "add missing employment details."
     val employerName: String = "maggie"
     val changeText: String = "Newid"
-    val vehicleHeader = "Vehicles, fuel and mileage"
-    val companyCar = "Company car"
-    val fuelForCompanyCar = "Fuel for company car"
-    val companyVan = "Company van"
-    val fuelForCompanyVan = "Fuel for company van"
-    val mileageBenefit = "Mileage benefit"
-    val accommodationHeader = "Accommodation and relocation"
-    val accommodation = "Living accommodation"
-    val qualifyingRelocationCosts = "Qualifying relocation"
-    val nonQualifyingRelocationCosts = "Non-qualifying relocation"
-    val travelHeader = "Travel and entertainment"
-    val travelAndSubsistence = "Travel and subsistence"
-    val personalCosts = "Incidental overnight costs"
-    val entertainment = "Entertainment"
-    val utilitiesHeader = "Utilities and general services"
-    val telephone = "Telephone"
-    val servicesProvided = "Services provided by employer"
-    val profSubscriptions = "Professional fees or subscriptions"
-    val otherServices = "Other services"
-    val medicalHeader = "Medical, dental, childcare, education benefits and loans"
-    val medicalIns = "Medical or dental insurance"
-    val nursery = "Childcare"
-    val beneficialLoans = "Beneficial loans"
-    val educational = "Educational services"
-    val incomeTaxHeader = "Income Tax and incurred costs"
-    val incomeTaxPaid = "Income Tax paid by employer"
-    val incurredCostsPaid = "Incurred costs paid by employer"
-    val reimbursedHeader = "Reimbursed costs, vouchers and non-cash benefits"
-    val nonTaxable = "Non-taxable costs reimbursed by employer"
-    val taxableCosts = "Taxable costs reimbursed by employer"
-    val vouchers = "Vouchers or credit cards"
-    val nonCash = "Non-cash benefits"
-    val otherBenefits = "Other benefits"
-    val assetsHeader = "Assets"
-    val assets = "Assets to use"
-    val assetTransfers = "Assets to keep"
-    val companyCarAmount = "Amount for company car"
-    val fuelForCompanyCarAmount = "Amount of company car fuel"
-    val companyVanAmount = "Amount for company van"
-    val fuelForCompanyVanAmount = "Amount for company van fuel"
-    val mileageBenefitAmount = "Amount for mileage benefit"
-    val accommodationAmount = "Amount for living accommodation"
-    val qualifyingRelocationCostsAmount = "Amount for qualifying relocation"
-    val nonQualifyingRelocationCostsAmount = "Amount for non-qualifying relocation"
-    val travelAndSubsistenceAmount = "Amount for travel and subsistence"
-    val personalCostsAmount = "Amount for incidental overnight costs"
-    val entertainmentAmount = "Amount for entertainment"
-    val telephoneAmount = "Amount for telephone"
-    val servicesProvidedAmount = "Amount for services provided by employer"
-    val profSubscriptionsAmount = "Amount for professional fees or subscriptions"
-    val otherServicesAmount = "Amount for other services"
-    val medicalInsAmount = "Amount for medical or dental insurance"
-    val nurseryAmount = "Amount for childcare"
-    val beneficialLoansAmount = "Amount for beneficial loans"
-    val educationalAmount = "Amount for educational services"
-    val incomeTaxPaidAmount = "Amount of Income Tax paid by employer"
-    val incurredCostsPaidAmount = "Amount of incurred costs paid by employer"
-    val nonTaxableAmount = "Amount of non-taxable costs reimbursed by employer"
-    val taxableCostsAmount = "Amount of taxable costs reimbursed by employer"
-    val vouchersAmount = "Amount for vouchers or credit cards"
-    val nonCashAmount = "Amount for non-cash benefits"
-    val otherBenefitsAmount = "Amount for other benefits"
-    val assetsAmount = "Amount for assets to use"
-    val assetTransfersAmount = "Amount for assets to keep"
-    val carSubheading: String = "Car, van or fuel"
-    val accommodationSubheading: String = "Accommodation or relocation"
-    val travelSubheading: String = "Travel or entertainment"
-    val utilitiesSubheading: String = "Utilities or general services"
-    val medicalSubheading: String = "Medical, dental, childcare, education benefits or loans"
-    val incomeTaxSubheading: String = "Income Tax or incurred costs"
-    val reimbursedSubheading: String = "Reimbursed costs, vouchers or non-cash benefits"
-    val assetsSubheading: String = "Assets"
+    val vehicleHeader = "Cerbydau, tanwydd a chostau milltiroedd"
+    val companyCar = "Car cwmni"
+    val fuelForCompanyCar = "Tanwydd ar gyfer ceir cwmni"
+    val companyVan = "Fan cwmni"
+    val fuelForCompanyVan = "Tanwydd ar gyfer faniau cwmni"
+    val mileageBenefit = "Buddiant milltiroedd"
+    val accommodationHeader = "Llety ac adleoli"
+    val accommodation = "Llety byw"
+    val qualifyingRelocationCosts = "Costau adleoli cymwys"
+    val nonQualifyingRelocationCosts = "Costau adleoli anghymwys"
+    val travelHeader = "Teithio a gwesteia"
+    val travelAndSubsistence = "Teithio a chynhaliaeth"
+    val personalCosts = "M‚n gostau dros nos"
+    val entertainment = "Gwesteia"
+    val utilitiesHeader = "Cyfleustodau a gwasanaethau cyffredinol"
+    val telephone = "FfÙn"
+    val servicesProvided = "Gwasanaethau a ddarparwyd gan y cyflogwr"
+    val profSubscriptions = "Ffioedd neu danysgrifiadau proffesiynol"
+    val otherServices = "Gwasanaethau eraill"
+    val medicalHeader = "Buddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
+    val medicalIns = "Yswiriant meddygol neu ddeintyddol"
+    val nursery = "Gofal Plant"
+    val beneficialLoans = "Benthyciad buddiannol"
+    val educational = "Gwasanaethau addysg"
+    val incomeTaxHeader = "Treth Incwm a chostau a ysgwyddwyd"
+    val incomeTaxPaid = "Treth Incwm a dalwyd gan y cyflogwr"
+    val incurredCostsPaid = "Costau a ysgwyddwyd sydd wediíu talu gan y cyflogwr"
+    val reimbursedHeader = "Costau a ad-dalwyd, talebau a buddiannau sydd ddim yn arian parod"
+    val nonTaxable = "Costau anhrethadwy a ad-dalwyd gan y cyflogwr"
+    val taxableCosts = "Costau trethadwy a ad-dalwyd gan y cyflogwr"
+    val vouchers = "Talebau neu gardiau credyd"
+    val nonCash = "Buddiannau sydd ddim yn arian parod"
+    val otherBenefits = "Buddiannau eraill"
+    val assetsHeader = "Asedion"
+    val assets = "Asedion iíw defnyddio"
+    val assetTransfers = "Asedion iíw cadw"
+    val companyCarAmount = "Swm ar gyfer car cwmni"
+    val fuelForCompanyCarAmount = "Swm y tanwydd car cwmni"
+    val companyVanAmount = "Swm ar gyfer fan cwmni"
+    val fuelForCompanyVanAmount = "Swm ar gyfer tanwydd fan cwmni"
+    val mileageBenefitAmount = "Swm ar gyfer buddiant milltiroedd"
+    val accommodationAmount = "Swm ar gyfer llety byw"
+    val qualifyingRelocationCostsAmount = "Swm ar gyfer adleoli cymwys"
+    val nonQualifyingRelocationCostsAmount = "Swm ar gyfer costau adleoli anghymwys"
+    val travelAndSubsistenceAmount = "Swm ar gyfer costau teithio a chynhaliaeth"
+    val personalCostsAmount = "Swm ar gyfer m‚n gostau dros nos"
+    val entertainmentAmount = "Swm ar gyfer gwesteia"
+    val telephoneAmount = "Swm ar gyfer y ffÙn"
+    val servicesProvidedAmount = "Swm ar gyfer y gwasanaethau a ddarparwyd gan y cyflogwr"
+    val profSubscriptionsAmount = "Swm ar gyfer ffioedd neu danysgrifiadau proffesiynol"
+    val otherServicesAmount = "Swm ar gyfer gwasanaethau eraill"
+    val medicalInsAmount = "Swm ar gyfer yswiriant meddygol neu ddeintyddol"
+    val nurseryAmount = "Swm ar gyfer gofal plant"
+    val beneficialLoansAmount = "Swm ar gyfer benthyciadau buddiannol"
+    val educationalAmount = "Swm ar gyfer gwasanaethau addysgol"
+    val incomeTaxPaidAmount = "Swm y Dreth Incwm a dalwyd gan y cyflogwr"
+    val incurredCostsPaidAmount = "Y swm y cafodd ei dalu gan y cyflogwr am gostau a ysgwyddwyd"
+    val nonTaxableAmount = "Swm y costau anhrethadwy a ad-dalwyd gan y cyflogwr"
+    val taxableCostsAmount = "Swm y costau trethadwy a ad-dalwyd gan y cyflogwr"
+    val vouchersAmount = "Swm ar gyfer talebau neu gardiau credyd"
+    val nonCashAmount = "Swm ar gyfer buddiannau sydd ddim yn arian parod"
+    val otherBenefitsAmount = "Swm ar gyfer buddiannau eraill"
+    val assetsAmount = "Swm ar gyfer asedion iíw defnyddio"
+    val assetTransfersAmount = "Swm ar gyfer asedion iíw cadw"
+    val carSubheading: String = "Car, fan neu danwydd"
+    val accommodationSubheading: String = "Llety neu adleoli"
+    val travelSubheading: String = "Teithio neu westeia"
+    val utilitiesSubheading: String = "Cyfleustodau neu wasanaethau cyffredinol"
+    val medicalSubheading: String = "Buddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
+    val incomeTaxSubheading: String = "Treth Incwm neu gostau a ysgwyddwyd"
+    val reimbursedSubheading: String = "Costau a ad-dalwyd, talebau a buddiannau sydd ddim yn arian parod"
+    val assetsSubheading: String = "Asedion"
     val yes: String = "Iawn"
     val no: String = "Na"
-    val benefitsReceived = "Benefits received"
+    val benefitsReceived = "Buddiannau a gafwyd"
     val saveAndContinue: String = "Cadw ac yn eich blaen"
     val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -563,149 +557,149 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    def expectedP2(year: Int = taxYear): String = s"You cannot update your employment benefits until 6 April $year."
+    def expectedP2(year: Int = taxYear): String = s"Does dim modd i chi ddiweddaru’ch buddiannau cyflogaeth tan 6 Ebrill $year."
 
-    val expectedH1: String = "Check your employment benefits"
-    val expectedTitle: String = "Check your employment benefits"
-    val expectedP1: String = "Your employment benefits are based on the information we already hold about you."
-    val companyCarHiddenText: String = "Change if you got a company car as an employment benefit from this company"
-    val fuelForCompanyCarHiddenText: String = "Change if you got a company car fuel as an employment benefit from this company"
-    val companyVanHiddenText: String = "Change if you got a company van as an employment benefit from this company"
-    val fuelForCompanyVanHiddenText: String = "Change if you got a company van fuel as an employment benefit from this company"
-    val mileageBenefitHiddenText: String = "Change if you got mileage as an employment benefit for using your own car"
-    val accommodationHiddenText: String = "Change if you got living accommodation as an employment benefit from this company"
-    val qualifyingRelocationCostsHiddenText: String = "Change if you got qualifying relocation as an employment benefit from this company"
-    val nonQualifyingRelocationCostsHiddenText: String = "Change if you got non-qualifying relocation as an employment benefit from this company"
-    val travelAndSubsistenceHiddenText: String = "Change if you got travel and overnight stays as an employment benefit from this company"
-    val personalCostsHiddenText: String = "Change if you got incidental overnight costs as an employment benefit from this company"
-    val entertainmentHiddenText: String = "Change if you got entertainment as an employment benefit from this company"
-    val telephoneHiddenText: String = "Change if you got a telephone as an employment benefit from this company"
-    val servicesProvidedHiddenText: String = "Change if you got services provided by your employer as an employment benefit from this company"
-    val profSubscriptionsHiddenText: String = "Change if you got professional fees or subscriptions as an employment benefit from this company"
-    val otherServicesHiddenText: String = "Change if you got other services as an employment benefit from this company"
-    val medicalInsHiddenText: String = "Change if you got medical or dental insurance as an employment benefit from this company"
-    val nurseryHiddenText: String = "Change if you got childcare as an employment benefit from this company"
-    val beneficialLoansHiddenText: String = "Change if you got beneficial loans as an employment benefit from this company"
-    val educationalHiddenText: String = "Change if you got educational services as an employment benefit from this company"
-    val incomeTaxPaidHiddenText: String = "Change if you got Income Tax paid as an employment benefit from this company"
-    val incurredCostsPaidHiddenText: String = "Change if you got incurred costs paid as an employment benefit from this company"
-    val nonTaxableHiddenText: String = "Change if you got non-taxable costs reimbursed as an employment benefit from this company"
-    val taxableCostsHiddenText: String = "Change if you got taxable costs reimbursed as an employment benefit from this company"
-    val vouchersHiddenText: String = "Change if you got vouchers or credit cards as an employment benefit from this company"
-    val nonCashHiddenText: String = "Change if you got non-cash employment benefit from this company"
-    val otherBenefitsHiddenText: String = "Change if you got other employment benefit from this company"
-    val assetsHiddenText: String = "Change if you got assets to use as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if you got assets to keep as an employment benefit from this company"
-    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit you got"
-    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit you got from this company"
-    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit you got"
-    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit you got from this company"
-    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit you got for using your own car"
-    val accommodationAmountHiddenText: String = "Change the amount for living accommodation as an employment benefit you got from this company"
-    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation as an employment benefit you got from this company"
-    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation as an employment benefit you got from this company"
-    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit you got from this company"
-    val personalCostsAmountHiddenText: String = "Change the amount for incidental overnight costs as an employment benefit you got from this company"
-    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit you got from this company"
-    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit you got from this company"
-    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your employer as an employment benefit you got from this company"
-    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional fees or subscriptions as an employment benefit you got from this company"
-    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit you got from this company"
-    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit you got from this company"
-    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit you got from this company"
-    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit you got from this company"
-    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit you got from this company"
-    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit you got from this company"
-    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit you got from this company"
-    val nonTaxableAmountHiddenText: String = "Change the amount you got for non-taxable costs reimbursed as an employment benefit from this company"
-    val taxableCostsAmountHiddenText: String = "Change the amount you got for taxable costs reimbursed as an employment benefit from this company"
-    val vouchersAmountHiddenText: String = "Change the amount you got for vouchers or credit cards as an employment benefit from this company"
-    val nonCashAmountHiddenText: String = "Change the amount you got for non-cash employment benefit from this company"
-    val otherBenefitsAmountHiddenText: String = "Change the amount you got for other employment benefit from this company"
-    val assetsAmountHiddenText: String = "Change the amount you got for assets to use as an employment benefit from this company"
-    val assetTransfersAmountHiddenText: String = "Change the amount you got for assets to keep as an employment benefit from this company"
-    val carSubheadingHiddenText: String = "Change if you got a car, van or fuel as an employment benefit from this company"
-    val accommodationSubheadingHiddenText: String = "Change if you got accommodation or relocation as an employment benefit from this company"
-    val travelSubheadingHiddenText: String = "Change if you got travel or entertainment as an employment benefit from this company"
-    val utilitiesSubheadingHiddenText: String = "Change if you got utilities or general services as an employment benefit from this company"
-    val medicalSubheadingHiddenText: String = "Change if you got medical, dental, childcare, education benefits or loans from this company"
-    val incomeTaxSubheadingHiddenText: String = "Change if you got Income Tax or incurred costs paid as an employment benefit from this company"
-    val reimbursedSubheadingHiddenText: String = "Change if you got reimbursed costs, vouchers or non-cash benefits as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if you got assets as an employment benefit from this company"
-    val benefitsReceivedHiddenText: String = "Change if you got employment benefits from this company"
+    val expectedH1: String = "Gwiriwch eich buddiannau cyflogaeth"
+    val expectedTitle: String = "Gwiriwch eich buddiannau cyflogaeth"
+    val expectedP1: String = "Bydd eich buddiannau cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+    val companyCarHiddenText: String = "Newidiwch os cawsoch gar cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val fuelForCompanyCarHiddenText: String = "Newidiwch os cawsoch danwydd ar gyfer car cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyVanHiddenText: String = "Newidiwch os cawsoch fan cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val fuelForCompanyVanHiddenText: String = "Newidiwch os cawsoch danwydd fan cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val mileageBenefitHiddenText: String = "Newidiwch os cawsoch gostau milltiroedd fel buddiant cyflogaeth am ddefnyddio eich car eich hun"
+    val accommodationHiddenText: String = "Newidiwch os cawsoch lety byw fel buddiant cyflogaeth gan y cwmni hwn"
+    val qualifyingRelocationCostsHiddenText: String = "Newidiwch os cawsoch gostau adleoli cymwys fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonQualifyingRelocationCostsHiddenText: String = "Newidiwch os cawsoch gostau adleoli anghymwys fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelAndSubsistenceHiddenText: String = "Newidiwch os cawsoch gostau teithio ac aros dros nos fel buddiant cyflogaeth gan y cwmni hwn"
+    val personalCostsHiddenText: String = "Newidiwch os cawsoch f‚n gostau dros nos fel buddiant cyflogaeth gan y cwmni hwn"
+    val entertainmentHiddenText: String = "Newidiwch os cawsoch chi westeia fel buddiant cyflogaeth gan y cwmni hwn"
+    val telephoneHiddenText: String = "Newidiwch os cawsoch ffÙn fel buddiant cyflogaeth gan y cwmni hwn"
+    val servicesProvidedHiddenText: String = "Newidiwch os darparwyd gwasanaethau gan eich cyflogwr i chi fel buddiant cyflogaeth gan y cwmni hwn"
+    val profSubscriptionsHiddenText: String = "Newidiwch os cawsoch ffioedd neu danysgrifiadau proffesiynol fel buddiant cyflogaeth gan y cwmni hwn"
+    val otherServicesHiddenText: String = "Newidiwch os cawsoch wasanaethau eraill fel buddiant cyflogaeth gan y cwmni hwn"
+    val medicalInsHiddenText: String = "Newidiwch os cawsoch yswiriant meddygol neu ddeintyddol fel buddiant cyflogaeth gan y cwmni hwn"
+    val nurseryHiddenText: String = "Newidiwch os cawsoch ofal plant fel buddiant cyflogaeth gan y cwmni hwn"
+    val beneficialLoansHiddenText: String = "Newidiwch os cawsoch fenthyciadau buddiannol fel buddiant cyflogaeth gan y cwmni hwn"
+    val educationalHiddenText: String = "Newidiwch os cawsoch wasanaethau addysg fel buddiant cyflogaeth gan y cwmni hwn"
+    val incomeTaxPaidHiddenText: String = "Newidiwch os cawsoch eich Treth Incwm ei thalu fel buddiant cyflogaeth gan y cwmni hwn"
+    val incurredCostsPaidHiddenText: String = "Newidiwch os cawsoch gostau a ysgwyddwyd eu talu fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonTaxableHiddenText: String = "Newidiwch os ad-dalwyd eich costau anhrethadwy fel buddiant cyflogaeth gan y cwmni hwn"
+    val taxableCostsHiddenText: String = "Newidiwch os ad-dalwyd costau trethadwy i chi fel buddiant cyflogaeth gan y cwmni hwn"
+    val vouchersHiddenText: String = "Newidiwch os cawsoch dalebau neu gardiau credyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonCashHiddenText: String = "Newidiwch os cawsoch fuddiant cyflogaeth sydd ddim ynn arian parod gan y cwmni hwn"
+    val otherBenefitsHiddenText: String = "Newidiwch os cawsoch fuddiannau cyflogaeth eraill gan y cwmni hwn"
+    val assetsHiddenText: String = "Newidiwch os cawsoch asedion iíw defnyddio fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetTransfersHiddenText: String = "Newidiwch os cawsoch asedion iíw cadw fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyCarAmountHiddenText: String = "Newidiwch y swm ar gyfer car cwmni fel buddiant cyflogaeth a gawsoch"
+    val fuelForCompanyCarAmountHiddenText: String = "Newidiwch y swm ar gyfer tanwydd ar gyfer car cwmni a gawsoch chi fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyVanAmountHiddenText: String = "Newidiwch y swm ar gyfer fan cwmni a gawsoch fel buddiant cyflogaeth"
+    val fuelForCompanyVanAmountHiddenText: String = "Newidiwch y swm ar gyfer tanwydd fan cwmni a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val mileageBenefitAmountHiddenText: String = "Newidiwch y swm a gawsoch mewn costau milltiroedd fel buddiant cyflogaeth am ddefnyddio eich car eich hun"
+    val accommodationAmountHiddenText: String = "Newidiwch y swm ar gyfer llety byw a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer costau adleoli cymwys a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer costau adleoli anghymwys a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelAndSubsistenceAmountHiddenText: String = "Newidiwch y swm ar gyfer costau teithio neu aros dros nos a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val personalCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer m‚n gostau dros nos a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val entertainmentAmountHiddenText: String = "Newidiwch y swm ar gyfer gwesteia a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val telephoneAmountHiddenText: String = "Newidiwch y swm ar gyfer y ffÙn a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val servicesProvidedAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau a ddarparwyd gan eich cyflogwr fel buddiant cyflogaeth gan y cwmni hwn"
+    val profSubscriptionsAmountHiddenText: String = "Newidiwch y swm ar gyfer ffioedd neu danysgrifiadau proffesiynol a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val otherServicesAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau eraill fel buddiant cyflogaeth a gawsoch gan y cwmni hwn"
+    val medicalInsAmountHiddenText: String = "Newidiwch y swm ar gyfer yswiriant meddygol neu ddeintyddol a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val nurseryAmountHiddenText: String = "Newidiwch y swm ar gyfer buddiant gofal plant a gawsoch gan y cwmni hwn"
+    val beneficialLoansAmountHiddenText: String = "Newidiwch y swm ar gyfer benthyciadau buddiannol a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val educationalAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau addysg a gawsoch fel buddiant cyflogaeth gan y cwmni hwn"
+    val incomeTaxPaidAmountHiddenText: String = "Newidiwch y swm ar gyfer eich Treth Incwm a dalwyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val incurredCostsPaidAmountHiddenText: String = "Newidiwch y swm y cawsoch ei dalu ar gyfer costau a ysgwyddwyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonTaxableAmountHiddenText: String = "Newidiwch swm y costau anhrethadwy a ad-dalwyd i chi fel buddiant cyflogaeth gan y cwmni hwn"
+    val taxableCostsAmountHiddenText: String = "Newidiwch swm y costau trethadwy a ad-dalwyd i chi fel buddiant cyflogaeth gan y cwmni hwn"
+    val vouchersAmountHiddenText: String = "Newidiwch y swm a gawsoch ar gyfer talebau neu gardiau credyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonCashAmountHiddenText: String = "Newidiwch y swm a gawsoch fel buddiant cyflogaeth sydd ddim yn arian parod gan y cwmni hwn"
+    val otherBenefitsAmountHiddenText: String = "Newidiwch y swm a gawsoch ar gyfer buddiannau cyflogaeth eraill gan y cwmni hwn"
+    val assetsAmountHiddenText: String = "Newidiwch y swm a gawsoch ar gyfer asedion iíw defnyddio fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetTransfersAmountHiddenText: String = "Newidiwch y swm a gawsoch ar gyfer asedion iíw cadw fel buddiant cyflogaeth gan y cwmni hwn"
+    val carSubheadingHiddenText: String = "Newidiwch os cawsoch gar, fan neu danwydd fel buddiant cyflogaeth gan y cwmni hwn"
+    val accommodationSubheadingHiddenText: String = "Newidiwch os cawsoch lety neu eich adleoli fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelSubheadingHiddenText: String = "Newidiwch os cawsoch gostau teithio neu westeia fel buddiant cyflogaeth gan y cwmni hwn"
+    val utilitiesSubheadingHiddenText: String = "Newidiwch os cawsoch gyfleustodau neu wasanaethau cyffredinol fel buddiannau cyflogaeth gan y cwmni hwn"
+    val medicalSubheadingHiddenText: String = "Newidiwch os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn"
+    val incomeTaxSubheadingHiddenText: String = "Newidiwch os cawsoch eich Treth Incwm ei thalu neu gostau a ysgwyddwyd eu talu fel buddiant cyflogaeth gan y cwmni hwn"
+    val reimbursedSubheadingHiddenText: String = "Newidiwch os cawsoch gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetsSubheadingHiddenText: String = "Newidiwch os cawsoch asedion fel buddiant cyflogaeth gan y cwmni hwn"
+    val benefitsReceivedHiddenText: String = "Newidiwch os cawsoch fuddiannau cyflogaeth gan y cwmni hwn"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    def expectedP2(year: Int = taxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
+    def expectedP2(year: Int = taxYear): String = s"Does dim modd i chi ddiweddaru buddiannau cyflogaeth eich cleient tan 6 Ebrill $year."
 
-    val expectedH1: String = "Check your client’s employment benefits"
-    val expectedTitle: String = "Check your client’s employment benefits"
-    val expectedP1: String = "Your client’s employment benefits are based on the information we already hold about them."
-    val companyCarHiddenText: String = "Change if your client got a company car as an employment benefit from this company"
-    val fuelForCompanyCarHiddenText: String = "Change if your client got a company car fuel as an employment benefit from this company"
-    val companyVanHiddenText: String = "Change if your client got a company van as an employment benefit from this company"
-    val fuelForCompanyVanHiddenText: String = "Change if your client got a company van fuel as an employment benefit from this company"
-    val mileageBenefitHiddenText: String = "Change if your client got mileage as an employment benefit for using their own car"
-    val accommodationHiddenText: String = "Change if your client got living accommodation as an employment benefit from this company"
-    val qualifyingRelocationCostsHiddenText: String = "Change if your client got qualifying relocation as an employment benefit from this company"
-    val nonQualifyingRelocationCostsHiddenText: String = "Change if your client got non-qualifying relocation as an employment benefit from this company"
-    val travelAndSubsistenceHiddenText: String = "Change if your client got travel and overnight stays as an employment benefit from this company"
-    val personalCostsHiddenText: String = "Change if your client got incidental overnight costs as an employment benefit from this company"
-    val entertainmentHiddenText: String = "Change if your client got entertainment as an employment benefit from this company"
-    val telephoneHiddenText: String = "Change if your client got a telephone as an employment benefit from this company"
-    val servicesProvidedHiddenText: String = "Change if your client got services provided by their employer as an employment benefit from this company"
-    val profSubscriptionsHiddenText: String = "Change if your client got professional fees or subscriptions as an employment benefit from this company"
-    val otherServicesHiddenText: String = "Change if your client got other services as an employment benefit from this company"
-    val medicalInsHiddenText: String = "Change if your client got medical or dental insurance as an employment benefit from this company"
-    val nurseryHiddenText: String = "Change if your client got childcare as an employment benefit from this company"
-    val beneficialLoansHiddenText: String = "Change if your client got beneficial loans as an employment benefit from this company"
-    val educationalHiddenText: String = "Change if your client got educational services as an employment benefit from this company"
-    val incomeTaxPaidHiddenText: String = "Change if your client got Income Tax paid as an employment benefit from this company"
-    val incurredCostsPaidHiddenText: String = "Change if your client got incurred costs paid as an employment benefit from this company"
-    val nonTaxableHiddenText: String = "Change if your client got non-taxable costs reimbursed as an employment benefit from this company"
-    val taxableCostsHiddenText: String = "Change if your client got taxable costs reimbursed as an employment benefit from this company"
-    val vouchersHiddenText: String = "Change if your client got vouchers or credit cards as an employment benefit from this company"
-    val nonCashHiddenText: String = "Change if your client got non-cash employment benefit from this company"
-    val otherBenefitsHiddenText: String = "Change if your client got other employment benefit from this company"
-    val assetsHiddenText: String = "Change if your client got assets to use as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if your client got assets to keep as an employment benefit from this company"
-    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit your client got"
-    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit your client got from this company"
-    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit your client got"
-    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit your client got from this company"
-    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit your client got for using their own car"
-    val accommodationAmountHiddenText: String = "Change the amount for living accommodation as an employment benefit your client got from this company"
-    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation as an employment benefit your client got from this company"
-    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation as an employment benefit your client got from this company"
-    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit your client got from this company"
-    val personalCostsAmountHiddenText: String = "Change the amount for incidental overnight costs as an employment benefit your client got from this company"
-    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit your client got from this company"
-    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit your client got from this company"
-    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your client’s employer as an employment benefit they got from this company"
-    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional fees or subscriptions as an employment benefit your client got from this company"
-    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit your client got from this company"
-    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit your client got from this company"
-    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit your client got from this company"
-    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit your client got from this company"
-    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit your client got from this company"
-    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit your client got from this company"
-    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit your client got from this company"
-    val nonTaxableAmountHiddenText: String = "Change the amount your client got for non-taxable costs reimbursed as an employment benefit from this company"
-    val taxableCostsAmountHiddenText: String = "Change the amount your client got for taxable costs reimbursed as an employment benefit from this company"
-    val vouchersAmountHiddenText: String = "Change the amount your client got for vouchers or credit cards as an employment benefit from this company"
-    val nonCashAmountHiddenText: String = "Change the amount your client got for non-cash employment benefit from this company"
-    val otherBenefitsAmountHiddenText: String = "Change the amount your client got for other employment benefit from this company"
-    val assetsAmountHiddenText: String = "Change the amount your client got for assets to use as an employment benefit from this company"
-    val assetTransfersAmountHiddenText: String = "Change the amount your client got for assets to keep as an employment benefit from this company"
-    val carSubheadingHiddenText: String = "Change if your client got a car, van or fuel as an employment benefit from this company"
-    val accommodationSubheadingHiddenText: String = "Change if your client got accommodation or relocation as an employment benefit from this company"
-    val travelSubheadingHiddenText: String = "Change if your client got travel or entertainment as an employment benefit from this company"
-    val utilitiesSubheadingHiddenText: String = "Change if your client got utilities or general services as an employment benefit from this company"
-    val medicalSubheadingHiddenText: String = "Change if your client got medical, dental, childcare, education benefits or loans from this company"
-    val incomeTaxSubheadingHiddenText: String = "Change if your client got Income Tax or incurred costs paid as an employment benefit from this company"
-    val reimbursedSubheadingHiddenText: String = "Change if your client got reimbursed costs, vouchers or non-cash benefits as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if your client got assets as an employment benefit from this company"
-    val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
+    val expectedH1: String = "Gwiriwch fuddiannau cyflogaeth eich cleient"
+    val expectedTitle: String = "Gwiriwch fuddiannau cyflogaeth eich cleient"
+    val expectedP1: String = "Mae buddiannau cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
+    val companyCarHiddenText: String = "Newidiwch os cafodd eich cleient gar cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val fuelForCompanyCarHiddenText: String = "Newidiwch os cafodd eich cleient danwydd ar gyfer car cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyVanHiddenText: String = "Newidiwch os cafodd eich cleient fan cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val fuelForCompanyVanHiddenText: String = "Newidiwch os cafodd eich cleient danwydd fan cwmni fel buddiant cyflogaeth gan y cwmni hwn"
+    val mileageBenefitHiddenText: String = "Newidiwch os cafodd eich cleient gostau milltiroedd fel buddiant cyflogaeth am ddefnyddio ei gar ei hun"
+    val accommodationHiddenText: String = "Newidiwch os cafodd eich cleient lety byw fel buddiant cyflogaeth gan y cwmni hwn"
+    val qualifyingRelocationCostsHiddenText: String = "Newidiwch os cafodd eich cleient gostau adleoli cymwys fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonQualifyingRelocationCostsHiddenText: String = "Newidiwch os cafodd eich cleient gostau adleoli anghymwys fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelAndSubsistenceHiddenText: String = "Newidiwch os cafodd eich cleient gostau teithio ac aros dros nos fel buddiant cyflogaeth gan y cwmni hwn"
+    val personalCostsHiddenText: String = "Newidiwch os cafodd eich cleient m‚n gostau dros nos fel buddiant cyflogaeth gan y cwmni hwn"
+    val entertainmentHiddenText: String = "Newidiwch os cafodd eich cleient westeia fel buddiant cyflogaeth gan y cwmni hwn"
+    val telephoneHiddenText: String = "Newidiwch os cafodd eich cleient ffÙn fel buddiant cyflogaeth gan y cwmni hwn"
+    val servicesProvidedHiddenText: String = "Newidiwch os darparwyd gwasanaethau iích cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val profSubscriptionsHiddenText: String = "Newidiwch os cafodd eich cleient ffioedd neu danysgrifiadau proffesiynol fel buddiant cyflogaeth gan y cwmni hwn"
+    val otherServicesHiddenText: String = "Newidiwch os cafodd eich cleient wasanaethau eraill fel buddiant cyflogaeth gan y cwmni hwn"
+    val medicalInsHiddenText: String = "Newidiwch os cafodd eich cleient yswiriant meddygol neu ddeintyddol fel buddiant cyflogaeth gan y cwmni hwn"
+    val nurseryHiddenText: String = "Newidiwch os cafodd eich cleient ofal plant fel buddiant cyflogaeth gan y cwmni hwn"
+    val beneficialLoansHiddenText: String = "Newidiwch os cafodd eich cleient fenthyciadau buddiannol fel buddiant cyflogaeth gan y cwmni hwn"
+    val educationalHiddenText: String = "Newidiwch os cafodd eich cleient wasanaethau addysg fel buddiant cyflogaeth gan y cwmni hwn"
+    val incomeTaxPaidHiddenText: String = "Newidiwch os cafodd Treth Incwm eich cleient ei thalu fel buddiant cyflogaeth gan y cwmni hwn"
+    val incurredCostsPaidHiddenText: String = "Newidiwch os cafodd eich cleient gostau a ysgwyddwyd eu talu fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonTaxableHiddenText: String = "Newidiwch os ad-dalwyd costau anhrethadwy eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val taxableCostsHiddenText: String = "Newidiwch os ad-dalwyd costau trethadwy iích cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val vouchersHiddenText: String = "Newidiwch os cafodd eich cleient dalebau neu gardiau credyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonCashHiddenText: String = "Newidiwch os cafodd eich cleient fuddiant cyflogaeth sydd ddim yn arian parod gan y cwmni hwn"
+    val otherBenefitsHiddenText: String = "Newidiwch os cafodd eich cleient fuddiannau cyflogaeth eraill gan y cwmni hwn"
+    val assetsHiddenText: String = "Newidiwch os cafodd eich cleient asedion iíw defnyddio fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetTransfersHiddenText: String = "Newidiwch os cafodd eich cleient asedion iíw cadw fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyCarAmountHiddenText: String = "Newidiwch y swm ar gyfer car cwmni fel buddiant cyflogaeth a gafodd eich cleient"
+    val fuelForCompanyCarAmountHiddenText: String = "Newidiwch y swm ar gyfer tanwydd ar gyfer car cwmni a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val companyVanAmountHiddenText: String = "Newidiwch y swm ar gyfer fan cwmni a gafodd eich cleient fel buddiant cyflogaeth"
+    val fuelForCompanyVanAmountHiddenText: String = "Newidiwch y swm ar gyfer tanwydd fan cwmni a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val mileageBenefitAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient mewn costau milltiroedd fel buddiant cyflogaeth am ddefnyddio ei gar ei hun"
+    val accommodationAmountHiddenText: String = "Newidiwch y swm ar gyfer llety byw a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer costau adleoli cymwys a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer costau adleoli anghymwys a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelAndSubsistenceAmountHiddenText: String = "Newidiwch y swm ar gyfer costau teithio neu aros dros nos a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val personalCostsAmountHiddenText: String = "Newidiwch y swm ar gyfer m‚n gostau dros nos a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val entertainmentAmountHiddenText: String = "Newidiwch y swm ar gyfer gwesteia a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val telephoneAmountHiddenText: String = "Newidiwch y swm ar gyfer y ffÙn a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val servicesProvidedAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau a ddarparwyd gan gyflogwr eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val profSubscriptionsAmountHiddenText: String = "Newidiwch y swm ar gyfer ffioedd neu danysgrifiadau proffesiynol a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val otherServicesAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau eraill a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val medicalInsAmountHiddenText: String = "Newidiwch y swm ar gyfer yswiriant meddygol neu ddeintyddol a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val nurseryAmountHiddenText: String = "Newidiwch y swm ar gyfer buddiant gofal plant a gafodd eich cleient gan y cwmni hwn"
+    val beneficialLoansAmountHiddenText: String = "Newidiwch y swm ar gyfer benthyciadau buddiannol a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val educationalAmountHiddenText: String = "Newidiwch y swm ar gyfer gwasanaethau addysg a gafodd eich cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val incomeTaxPaidAmountHiddenText: String = "Newidiwch y swm ar gyfer Treth Incwm eich cleient a dalwyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val incurredCostsPaidAmountHiddenText: String = "Newidiwch swm y cafodd eich cleient ei dalu ar gyfer costau a ysgwyddwyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonTaxableAmountHiddenText: String = "Newidiwch swm y costau anhrethadwy a ad-dalwyd iích cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val taxableCostsAmountHiddenText: String = "Newidiwch swm y costau trethadwy a ad-dalwyd iích cleient fel buddiant cyflogaeth gan y cwmni hwn"
+    val vouchersAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient ar gyfer talebau neu gardiau credyd fel buddiant cyflogaeth gan y cwmni hwn"
+    val nonCashAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient fel buddiant cyflogaeth sydd ddim yn arian parod gan y cwmni hwn"
+    val otherBenefitsAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient ar gyfer buddiannau cyflogaeth eraill gan y cwmni hwn"
+    val assetsAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient ar gyfer asedion iíw defnyddio fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetTransfersAmountHiddenText: String = "Newidiwch y swm a gafodd eich cleient ar gyfer asedion iíw cadw fel buddiant cyflogaeth gan y cwmni hwn"
+    val carSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient gar, fan neu danwydd fel buddiant cyflogaeth gan y cwmni hwn"
+    val accommodationSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient lety neu ei adleoli fel buddiant cyflogaeth gan y cwmni hwn"
+    val travelSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient costau teithio neu westeia fel buddiant cyflogaeth gan y cwmni hwn"
+    val utilitiesSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient gyfleustodau neu wasanaethau cyffredinol fel buddiannau cyflogaeth gan y cwmni hwn"
+    val medicalSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn"
+    val incomeTaxSubheadingHiddenText: String = "Newidiwch os cafodd Treth Incwm eich cleient ei thalu neu gostau a ysgwyddwyd eu talu fel buddiant cyflogaeth gan y cwmni hwn"
+    val reimbursedSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod fel buddiant cyflogaeth gan y cwmni hwn"
+    val assetsSubheadingHiddenText: String = "Newidiwch os cafodd eich cleient asedion fel buddiant cyflogaeth gan y cwmni hwn"
+    val benefitsReceivedHiddenText: String = "Newidiwch os cafodd eich cleient fuddiannau cyflogaeth gan y cwmni hwn"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -814,7 +808,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(13, 8), "for serviceQuestion")
           textOnPageCheck(common.otherServicesAmount, fieldNameSelector(13, 9))
           textOnPageCheck("£15", fieldAmountSelector(13, 9))
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14), "for medical section header")
           textOnPageCheck(common.medicalSubheading, fieldNameSelector(15, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(15, 1), "for medical section question")
           textOnPageCheck(common.medicalIns, fieldNameSelector(15, 2))
@@ -844,7 +838,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(17, 4), "for paymentsOnEmployeesBehalfQuestion")
           textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(17, 5))
           textOnPageCheck("£21", fieldAmountSelector(17, 5))
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18), "for reimbursed section header")
           textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(19, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(19, 1), "for reimbursements section question")
           textOnPageCheck(common.nonTaxable, fieldNameSelector(19, 2))
@@ -984,7 +978,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(13, 8), "for serviceQuestion")
           textOnPageCheck(common.otherServicesAmount, fieldNameSelector(13, 9))
           textOnPageCheck("£15", fieldAmountSelector(13, 9))
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14), "for section medical header")
           textOnPageCheck(common.medicalSubheading, fieldNameSelector(15, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(15, 1), "for medical section question")
           textOnPageCheck(common.medicalIns, fieldNameSelector(15, 2))
@@ -1014,7 +1008,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(17, 4), "for paymentsOnEmployeesBehalfQuestion")
           textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(17, 5))
           textOnPageCheck("£21", fieldAmountSelector(17, 5))
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18), "for reimbursed section header")
           textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(19, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(19, 1), "for reimbursements section question")
           textOnPageCheck(common.nonTaxable, fieldNameSelector(19, 2))
@@ -1152,7 +1146,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(13, 8), "for serviceQuestion")
           textOnPageCheck(common.otherServicesAmount, fieldNameSelector(13, 9))
           textOnPageCheck("£15", fieldAmountSelector(13, 9))
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14), "for medical section header")
           textOnPageCheck(common.medicalSubheading, fieldNameSelector(15, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(15, 1), "for medical section question")
           textOnPageCheck(common.medicalIns, fieldNameSelector(15, 2))
@@ -1182,7 +1176,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.yes, fieldAmountSelector(17, 4), "for paymentsOnEmployeesBehalfQuestion")
           textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(17, 5))
           textOnPageCheck("£21", fieldAmountSelector(17, 5))
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18), "for reimbursed section header")
           textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(19, 1))
           textOnPageCheck(common.yes, fieldAmountSelector(19, 1), "for reimbursements section question")
           textOnPageCheck(common.nonTaxable, fieldNameSelector(19, 2))
@@ -1301,7 +1295,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.otherServicesAmount, "£15", 12, 9, s"${common.changeText} ${specific.otherServicesAmountHiddenText}",
             otherServicesBenefitsAmountUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(13))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(13), "for medical section header")
           changeAmountRowCheck(common.medicalSubheading, common.yes, 14, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
             medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
           changeAmountRowCheck(common.medicalIns, common.yes, 14, 2, s"${common.changeText} ${specific.medicalInsHiddenText}", medicalDentalBenefitsUrl(taxYearEOY, employmentId))
@@ -1324,7 +1318,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.incurredCostsPaidAmount, "£21", 16, 5, s"${common.changeText} ${specific.incurredCostsPaidAmountHiddenText}",
             incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(17))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(17), "for reimbursed section header")
           changeAmountRowCheck(common.reimbursedSubheading, common.yes, 18, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
             reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 
@@ -1397,7 +1391,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.utilitiesSubheading, common.no, 12, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
             utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(13))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(13), "for medical section header")
           changeAmountRowCheck(common.medicalSubheading, common.no, 14, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
             medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
 
@@ -1405,7 +1399,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.incomeTaxSubheading, common.no, 16, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
             incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(17))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(17), "for reimbursed section header")
           changeAmountRowCheck(common.reimbursedSubheading, common.no, 18, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
             reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 
@@ -1502,7 +1496,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.utilitiesSubheading, common.no, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
             utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12), "for medical section header")
           changeAmountRowCheck(common.medicalSubheading, common.no, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
             medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
 
@@ -1510,7 +1504,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.incomeTaxSubheading, common.no, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
             incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
 
-          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16), "for reimbursed section header")
           changeAmountRowCheck(common.reimbursedSubheading, common.no, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
             reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 

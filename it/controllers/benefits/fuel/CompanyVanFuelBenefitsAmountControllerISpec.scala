@@ -89,13 +89,13 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your total company van fuel benefit?"
-    val expectedHeading: String = "How much was your total company van fuel benefit?"
-    val expectedContent: String = "You can find this information on your P11D form in section G, box 10."
+    val expectedTitle: String = "Faint oedd cyfanswm eich buddiant tanwydd ar gyfer fan cwmni?"
+    val expectedHeading: String = "Faint oedd cyfanswm eich buddiant tanwydd ar gyfer fan cwmni?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 10 ar eich ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your company van fuel benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your company van fuel benefit amount"
-    val maxAmountErrorText: String = "Your company van fuel benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm eich buddiant tanwydd ar gyfer fan cwmni yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm eich buddiant tanwydd ar gyfer fan cwmni"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant tanwydd ar gyfer fan cwmni fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -109,13 +109,13 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s total company van fuel benefit?"
-    val expectedHeading: String = "How much was your client’s total company van fuel benefit?"
-    val expectedContent: String = "You can find this information on your client’s P11D form in section G, box 10."
+    val expectedTitle: String = "Faint oedd cyfanswm buddiant tanwydd ar gyfer fan cwmni eich cleient?"
+    val expectedHeading: String = "Faint oedd cyfanswm buddiant tanwydd ar gyfer fan cwmni eich cleient?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 10 ar ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your client’s company van fuel benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your client’s company van fuel benefit amount"
-    val maxAmountErrorText: String = "Your client’s company van fuel benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm buddiant tanwydd ar gyfer fan cwmni eich cleient yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm buddiant tanwydd ar gyfer fan cwmni eich cleient"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant tanwydd ar gyfer fan cwmni eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

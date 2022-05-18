@@ -51,8 +51,11 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "employment.employmentInfo.p1.individual",
     "employment.employmentInfo.p1.agent",
     "payeRef.paragraphNew.individual",
-    "payeRef.paragraphNew.agent"
-
+    "payeRef.paragraphNew.agent",
+    "checkYourBenefits.reimbursedHeader",
+    "checkYourBenefits.reimbursedSubheading",
+    "checkYourBenefits.medicalHeader",
+    "checkYourBenefits.medicalSubheading"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages

@@ -35,6 +35,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object Selectors {
     val yesSelector = "#value"
+    val continueButtonFormSelector: String = "#main-content > div > div > form"
   }
 
   trait SpecificExpectedResults {
@@ -49,6 +50,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val radioTextYes: String
     val radioTextNo: String
     val errorText: String
+    val buttonText: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -58,9 +60,9 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Did you get a company car benefit?"
-    val expectedH1: String = "Did you get a company car benefit?"
-    val expectedError: String = "Select yes if you got a company car benefit"
+    val expectedTitle: String = "A gawsoch fuddiant car cwmni?"
+    val expectedH1: String = "A gawsoch fuddiant car cwmni?"
+    val expectedError: String = "Dewiswch ëIawní os cawsoch fuddiant car cwmni"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -70,9 +72,9 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Did your client get a company car benefit?"
-    val expectedH1: String = "Did your client get a company car benefit?"
-    val expectedError: String = "Select yes if your client got a company car benefit"
+    val expectedTitle: String = "A gafodd eich cleient fuddiant car cwmni?"
+    val expectedH1: String = "A gafodd eich cleient fuddiant car cwmni?"
+    val expectedError: String = "Dewiswch ëIawní os cafodd eich cleient fuddiant car cwmni"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -81,6 +83,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
     val errorText: String = "Error: "
+    val buttonText: String = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -89,6 +92,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val radioTextYes: String = "Iawn"
     val radioTextNo: String = "Na"
     val errorText: String = "Gwall: "
+    val buttonText: String = "Yn eich blaen"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -120,6 +124,10 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
           radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
+          buttonCheck(user.commonExpectedResults.buttonText)
+          formPostLinkCheck(carBenefitsUrl(taxYearEOY, employmentId), Selectors.continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+
         }
       }
     }
@@ -150,6 +158,9 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
           radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
+          buttonCheck(user.commonExpectedResults.buttonText)
+          formPostLinkCheck(carBenefitsUrl(taxYearEOY, employmentId), Selectors.continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
         }
       }
     }

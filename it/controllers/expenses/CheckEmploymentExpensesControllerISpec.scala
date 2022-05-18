@@ -466,6 +466,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(checkYourExpensesUrl(taxYearEOY), continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimEmploymentExpensesUrl(taxYearEOY))

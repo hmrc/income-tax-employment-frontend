@@ -29,7 +29,8 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
+  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -37,7 +38,6 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val paragraphSelector = "#main-content > div > div > p"
     val yesSelector = "#value"
     val continueButtonSelector = "#continue"
@@ -83,16 +83,14 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText: String = "Living accommodation is any accommodation that you can live in, whether you live there all " +
-      "the time or only occasionally. It includes houses, flats, houseboats, holiday homes and apartments."
+    val expectedParagraphText: String = "Diffinnir llety fel llety y gallwch fyw ynddo, píun a ydych yn byw ynddo drwyír amser neu dim ond rhan oír amser. " +
+      "Maeín cynnwys tai, fflatiau, cychod preswyl a lletyau gwyliau."
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
-    val expectedDetailsTitle = "More information about living accommodation"
-    val expectedDetailsText1: String = "Living accommodation doesn’t include hotel rooms or board and lodgings, where you’re " +
-      "dependent on someone else for cooking, cleaning or laundry."
-    val expectedDetailsText3: String = "If you think all or part of this amount should be exempt from tax, refer to HS202 Living " +
-      "accommodation and follow the working sheet."
+    val expectedDetailsTitle = "Rhagor o wybodaeth am lety byw"
+    val expectedDetailsText1: String = "Nid yw llety yn cynnwys ystafelloedd mewn gwesty neu ëboard and lodgingsí, pan eich bod yn dibynnu ar rywun arall am goginio, glanhau neu olchi dillad."
+    val expectedDetailsText3: String = "Os ydych yn credu y dylaiír swm cyfan, neu ran ohono, fod wedi ei eithrio rhag treth, cyfeiriwch at HS202 Living accommodation a dilynwch y daflen waith."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -105,12 +103,11 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any living accommodation benefits?"
-    val expectedHeading = "Did you get any living accommodation benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau llety byw?"
+    val expectedHeading = "A gawsoch unrhyw fuddiannau llety byw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes if you got living accommodation benefits"
-    val expectedDetailsText2: String = "Your employment income should include the value of any living accommodation you or your " +
-      "relations get because of your employment."
+    val expectedErrorMessage = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau llety byw"
+    val expectedDetailsText2: String = "Dylaiích incwm o gyflogaeth gynnwys gwerth unrhyw lety byw rydych chi neu eich perthnasau yn ei gael oherwydd eich cyflogaeth."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -123,12 +120,11 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any living accommodation benefits?"
-    val expectedHeading = "Did your client get any living accommodation benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau llety byw?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau llety byw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes if your client got living accommodation benefits"
-    val expectedDetailsText2: String = "Your client’s employment income should include the value of any living accommodation they " +
-      "or their relations get because of their employment."
+    val expectedErrorMessage = "Dewiswch ëIawní os cafodd eich cleient fuddiannau llety byw"
+    val expectedDetailsText2: String = "Dylai incwm o gyflogaeth eich cleient gynnwys gwerth unrhyw lety y mae ef neu ei berthnasau yn ei gael oherwydd ei gyflogaeth."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -337,6 +333,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
           formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)
+          welshToggleCheck(user.isWelsh)
         }
       }
     }
