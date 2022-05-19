@@ -14,19 +14,23 @@
  * limitations under the License.
  *@
 
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Link
 
 @this(layout: Layout, heading: Heading, link: Link)
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(firstClientTaxYear: Int, latestClientTaxYear: Int, singleValidTaxYear: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("not-found-template.heading")) {
 @heading(messages("not-found-template.heading"), None, "govuk-!-margin-bottom-5", "xl")
 
 <div class="govuk-body">
-    <p>@messages("taxYear-error-template.paragraph.1", (appConfig.defaultTaxYear -1).toString, appConfig.defaultTaxYear.toString)</p>
+    @if(singleValidTaxYear)  {
+    <p>@messages("taxYear-error-template.paragraph.1.single")</p>
+    } else {
+    <p>@messages("taxYear-error-template.paragraph.1", firstClientTaxYear.toString, latestClientTaxYear.toString)</p>
+    }
     <p>@messages("taxYear-error-template.paragraph.2")</p>
-
     <p>
         @messages("common.error.self-assessment.paragraph.1.1") @link("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment","common.error.self-assessment.paragraph.1.2",Some("govuk-self-assessment-link"),true) @messages("common.error.self-assessment.paragraph.1.3a")
     </p>

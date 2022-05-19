@@ -18,7 +18,7 @@ package utils
 
 import org.joda.time.{DateTime, DateTimeZone}
 
-object UnitTestClock extends Clock with TaxYearHelper {
+object UnitTestClock extends Clock with TestTaxYearHelper {
   private val year = taxYearEOY
   private val month = 1
   private val day = 1

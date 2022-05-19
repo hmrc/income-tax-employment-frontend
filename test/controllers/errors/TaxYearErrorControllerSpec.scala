@@ -16,6 +16,7 @@
 
 package controllers.errors
 
+import common.SessionValues
 import play.api.http.Status.OK
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
@@ -31,7 +32,10 @@ class TaxYearErrorControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
     "return an OK response .show() is called" in {
 
-      val fakeRequest = FakeRequest("GET", "/error/wrong-tax-year")
+      val fakeRequest = FakeRequest("GET", "/error/wrong-tax-year").withSession(
+        SessionValues.TAX_YEAR -> taxYear.toString,
+        SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
+      )
       val result = controller.show()(fakeRequest)
 
       status(result) shouldBe OK

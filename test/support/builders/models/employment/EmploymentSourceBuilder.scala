@@ -19,9 +19,9 @@ package support.builders.models.employment
 import models.employment.EmploymentSource
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object EmploymentSourceBuilder extends TaxYearHelper {
+object EmploymentSourceBuilder extends TestTaxYearHelper {
 
   val anEmploymentSource: EmploymentSource = EmploymentSource(
     employmentId = "employmentId",

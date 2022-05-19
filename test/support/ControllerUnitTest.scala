@@ -22,7 +22,7 @@ import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers.stubMessagesControllerComponents
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
 import support.mocks.MockAppConfig
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
 import scala.concurrent.ExecutionContext
 
@@ -30,7 +30,7 @@ trait ControllerUnitTest extends UnitTest
   with FutureAwaits with DefaultAwaitTimeout
   with GuiceOneAppPerSuite
   with Injecting
-  with TaxYearHelper {
+  with TestTaxYearHelper {
 
   protected implicit val cc: MessagesControllerComponents = stubMessagesControllerComponents()
   protected implicit val appConfig: AppConfig = new MockAppConfig().config()

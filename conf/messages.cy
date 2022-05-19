@@ -113,7 +113,8 @@ not-found-template.paragraph.1 = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwc
 not-found-template.paragraph.2 = Os gwnaethoch ddefnyddio ‘copïo a gludo’ i nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn.
 service-unavailable-error-template.heading = Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael
 service-unavailable-error-template.paragraph.1 = Byddwch yn gallu defnyddio’r gwasanaeth hwn nes ymlaen.
-taxYear-error-template.paragraph.1 = Dim ond ar gyfer blwyddyn dreth {0} i {1} y gallwch nodi gwybodaeth.
+taxYear-error-template.paragraph.1 = Dim ond gwybodaeth ar gyfer y blynyddoedd treth {0} i {1} y gallwch ei nodi.
+taxYear-error-template.paragraph.1.single = Dim ond gwybodaeth ar gyfer blwyddyn dreth ddilys y gallwch ei nodi.
 taxYear-error-template.paragraph.2 = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
 
 #################       Timeout messages        ########################################

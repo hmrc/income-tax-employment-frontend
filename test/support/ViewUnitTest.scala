@@ -25,14 +25,14 @@ import play.api.test.{FakeRequest, Injecting}
 import support.builders.models.UserBuilder.aUser
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
 trait ViewUnitTest extends UnitTest
   with UserScenarios
   with ViewHelper
   with GuiceOneAppPerSuite
   with Injecting
-  with TaxYearHelper{
+  with TestTaxYearHelper{
 
   private val fakeRequest = FakeRequest().withHeaders("X-Session-ID" -> aUser.sessionId)
 

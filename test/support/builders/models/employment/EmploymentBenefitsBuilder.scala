@@ -18,9 +18,9 @@ package support.builders.models.employment
 
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import models.employment.EmploymentBenefits
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object EmploymentBenefitsBuilder extends TaxYearHelper {
+object EmploymentBenefitsBuilder extends TestTaxYearHelper {
 
   val anEmploymentBenefits: EmploymentBenefits = EmploymentBenefits(
     submittedOn = s"${taxYearEOY-1}-02-12",

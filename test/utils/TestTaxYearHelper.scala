@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package common
+package utils
 
-object SessionValues {
-  val CLIENT_MTDITID = "ClientMTDID"
-  val CLIENT_NINO = "ClientNino"
+import java.time.LocalDate
 
-  val TAX_YEAR = "TAX_YEAR"
-  val TEMP_NEW_EMPLOYMENT_ID = "TEMP_NEW_EMPLOYMENT_ID"
-  val VALID_TAX_YEARS = "validTaxYears"
+trait TestTaxYearHelper {
 
-  val ADD_A_NEW_EMPLOYER = "eb687fc3-37fc-4b7d-8038-19aaf62f9681-111-eb687fc3-37fc-4b7d-8038-19aaf62f9681"
+  private val dateNow: LocalDate = LocalDate.now()
+  private val taxYearCutoffDate: LocalDate = LocalDate.parse(s"${dateNow.getYear}-04-05")
+
+  val taxYear: Int = if (dateNow.isAfter(taxYearCutoffDate)) LocalDate.now().getYear + 1 else LocalDate.now().getYear
+  val taxYearEOY: Int = taxYear - 1
+
+  val taxYearEndOfYearMinusOne: Int = taxYearEOY - 1
+
+  val validTaxYearList: Seq[Int] = Seq(taxYearEndOfYearMinusOne, taxYearEOY, taxYear)
+  val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
+
+  val invalidTaxYear: Int = taxYear + 999
 }

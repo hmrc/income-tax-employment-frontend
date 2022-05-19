@@ -16,13 +16,26 @@
 
 package utils
 
-import java.time.LocalDate
+import common.SessionValues
 
-trait TaxYearHelper {
+import java.time.LocalDate
+import play.api.mvc.Request
+
+trait TaxYearHelper extends SessionHelper {
 
   private val dateNow: LocalDate = LocalDate.now()
   private val taxYearCutoffDate: LocalDate = LocalDate.parse(s"${dateNow.getYear}-04-05")
 
   val taxYear: Int = if (dateNow.isAfter(taxYearCutoffDate)) LocalDate.now().getYear + 1 else LocalDate.now().getYear
+
   val taxYearEOY: Int = taxYear - 1
+
+  def retrieveTaxYearList(implicit request: Request[_]): Seq[Int] = {
+    getFromSession(SessionValues.VALID_TAX_YEARS)(request).getOrElse("").split(',').toSeq.map(_.toInt)
+  }
+
+  def firstClientTaxYear(implicit request: Request[_]): Int = retrieveTaxYearList.head
+  def latestClientTaxYear(implicit request: Request[_]): Int = retrieveTaxYearList.last
+
+  def singleValidTaxYear(implicit request: Request[_]): Boolean = firstClientTaxYear == latestClientTaxYear
 }

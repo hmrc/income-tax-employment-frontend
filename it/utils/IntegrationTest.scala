@@ -59,6 +59,15 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val defaultUser: EmploymentUserData = anEmploymentUserData
   val xSessionId: (String, String) = "X-Session-ID" -> defaultUser.sessionId
 
+  val taxYearEndOfYearMinusOne: Int = taxYearEOY - 1
+
+  val validTaxYearList: Seq[Int] = Seq(taxYearEndOfYearMinusOne, taxYearEOY, taxYear)
+  val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
+
+  val invalidTaxYear: Int = taxYear + 999
+
+
+
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> defaultUser.mtdItId)
 
@@ -211,9 +220,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
   )
 
-  def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
+  def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty, validTaxYears: Seq[Int] = validTaxYearList): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionKeys.sessionId -> defaultUser.sessionId,
+    SessionValues.VALID_TAX_YEARS -> validTaxYears.mkString(","),
     SessionValues.CLIENT_NINO -> defaultUser.nino,
     SessionValues.CLIENT_MTDITID -> defaultUser.mtdItId
   ) ++ extraData)

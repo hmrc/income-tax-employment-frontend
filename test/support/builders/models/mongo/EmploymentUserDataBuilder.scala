@@ -21,9 +21,9 @@ import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object EmploymentUserDataBuilder extends TaxYearHelper {
+object EmploymentUserDataBuilder extends TestTaxYearHelper {
 
   val anEmploymentUserData: EmploymentUserData = EmploymentUserData(
     sessionId = aUser.sessionId,
