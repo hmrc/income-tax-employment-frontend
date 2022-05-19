@@ -18,6 +18,7 @@ package controllers.errors
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{fullUrl, selfAssessmentLink, wrongTaxYearUrl}
@@ -36,6 +37,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
   trait CommonExpectedResults {
     val h1Expected: String
     val p1Expected: String
+    val p1ExpectedSingle: String
     val p2Expected: String
     val p3Expected: String
     val p3ExpectedLinkText: String
@@ -43,7 +45,8 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object CommonExpectedEN extends CommonExpectedResults {
     val h1Expected = "Page not found"
-    val p1Expected = s"You can only enter information for the ${taxYear - 1} to $taxYear tax year."
+    val p1Expected = s"You can only enter information for the tax years ${validTaxYearList.min} to ${validTaxYearList.max}."
+    val p1ExpectedSingle = "You can only enter information for a valid tax year."
     val p2Expected = "Check that you’ve entered the correct web address."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (opens in new tab) to speak to someone about your income tax."
@@ -52,7 +55,8 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Heb ddod o hyd i’r dudalen"
-    val p1Expected = s"Dim ond ar gyfer blwyddyn dreth ${taxYear - 1} i $taxYear y gallwch nodi gwybodaeth."
+    val p1Expected = s"Dim ond gwybodaeth ar gyfer y blynyddoedd treth ${validTaxYearList.min} i ${validTaxYearList.max} y gallwch ei nodi."
+    val p1ExpectedSingle = "Dim ond gwybodaeth ar gyfer blwyddyn dreth ddilys y gallwch ei nodi."
     val p2Expected = "Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (yn agor tab newydd) to speak to someone about your income tax."
@@ -70,11 +74,12 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the page with the right content" which {
+        "render the error page with the right content for multiple Tax Years" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(wrongTaxYearUrl), welsh = user.isWelsh)
+            urlGet(fullUrl(wrongTaxYearUrl), welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(invalidTaxYear, validTaxYears = validTaxYearList)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -90,6 +95,31 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
           textOnPageCheck(p1Expected,p1Selector)
+          textOnPageCheck(p2Expected,p2Selector)
+          textOnPageCheck(p3Expected,p3Selector)
+          linkCheck(p3ExpectedLinkText, linkSelector, selfAssessmentLink)
+        }
+        "render the error page with the right content for a single TaxYear" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(fullUrl(wrongTaxYearUrl), welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(invalidTaxYear, validTaxYears = validTaxYearListSingle)))
+          }
+
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          import user.commonExpectedResults._
+
+          titleCheck(h1Expected, user.isWelsh)
+          welshToggleCheck(user.isWelsh)
+          h1Check(h1Expected, "xl")
+          textOnPageCheck(p1ExpectedSingle,p1Selector)
           textOnPageCheck(p2Expected,p2Selector)
           textOnPageCheck(p3Expected,p3Selector)
           linkCheck(p3ExpectedLinkText, linkSelector, selfAssessmentLink)

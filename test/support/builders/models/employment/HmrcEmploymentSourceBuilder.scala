@@ -18,9 +18,9 @@ package support.builders.models.employment
 
 import models.employment.HmrcEmploymentSource
 import support.builders.models.employment.EmploymentFinancialDataBuilder.{aCustomerEmploymentFinancialData, aHmrcEmploymentFinancialData}
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object HmrcEmploymentSourceBuilder extends TaxYearHelper {
+object HmrcEmploymentSourceBuilder extends TestTaxYearHelper {
   val aHmrcEmploymentSource: HmrcEmploymentSource = HmrcEmploymentSource(
     employmentId = "employmentId",
     employerName = "maggie",

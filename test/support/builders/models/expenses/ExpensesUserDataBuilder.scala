@@ -19,9 +19,9 @@ package support.builders.models.expenses
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object ExpensesUserDataBuilder extends TaxYearHelper {
+object ExpensesUserDataBuilder extends TestTaxYearHelper {
 
   val anExpensesUserData: ExpensesUserData = ExpensesUserData(
     sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe",

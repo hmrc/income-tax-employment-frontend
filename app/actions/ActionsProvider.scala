@@ -28,29 +28,38 @@ import utils.InYearUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
+
 class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 employmentSessionService: EmploymentSessionService,
                                 errorHandler: ErrorHandler,
-                                inYearUtil: InYearUtil,
-                                appConfig: AppConfig
-                               )(implicit ec: ExecutionContext) {
+                                inYearUtil: InYearUtil
+                               )(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
-  def inYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] = authAction.andThen(inYearActionBuilder(taxYear))
+  def inYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] =
+    authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
+      .andThen(inYearActionBuilder(taxYear))
 
-  def notInYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] = authAction.andThen(notInYearActionBuilder(taxYear))
+  def notInYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] =
+    authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
+      .andThen(notInYearActionBuilder(taxYear))
 
   def notInYearWithSessionData(taxYear: Int, employmentId: String): ActionBuilder[UserSessionDataRequest, AnyContent] =
     authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(notInYearActionBuilder(taxYear))
       .andThen(employmentUserDataAction(taxYear, employmentId))
 
   def notInYearWithPriorData(taxYear: Int, overrideRedirect: Option[Result] = None): ActionBuilder[UserPriorDataRequest, AnyContent] =
     authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(notInYearActionBuilder(taxYear))
       .andThen(employmentPriorDataAction(taxYear, overrideRedirect))
 
   def authenticatedPriorDataAction(taxYear: Int): ActionBuilder[OptionalUserPriorDataRequest, AnyContent] =
     authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(optionalEmploymentPriorDataAction(taxYear))
 
   private def notInYearActionBuilder(taxYear: Int): ActionFilter[AuthorisationRequest] = new ActionFilter[AuthorisationRequest] {

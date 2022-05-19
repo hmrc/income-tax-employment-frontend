@@ -124,7 +124,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
 
         mockGetPriorRight(taxYearEOY, None)
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -134,7 +134,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
 
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -145,7 +145,9 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
         mockClear()
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(
+          SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
+          SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
       }
@@ -155,7 +157,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
 
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
@@ -166,7 +168,9 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
         mockClear()
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(
+          SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
+          SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
@@ -176,7 +180,9 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
         mockClear(Left())
         mockInternalServerError
 
-        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890"))
+        val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(
+          SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
+          SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -192,7 +198,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
       s"has an OK($OK) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))
 
-        val result: Future[Result] = controller().show(taxYear)(fakeRequest)
+        val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         status(result) shouldBe OK
         bodyOf(result).contains("Mishima Zaibatsu") shouldBe true
       }
@@ -202,7 +208,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
       s"has an OK($OK) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, Some(FullModel.multipleEmploymentSourcesData))
 
-        val result: Future[Result] = controller().show(taxYear)(fakeRequest)
+        val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         status(result) shouldBe OK
         bodyOf(result).contains("Violet Systems") shouldBe true
       }
@@ -212,7 +218,7 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
       s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         mockGetPriorRight(taxYearEOY, Some(FullModel.multipleEmploymentSourcesData))
 
-        val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY)(fakeRequest)
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)

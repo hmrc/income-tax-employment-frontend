@@ -23,7 +23,7 @@ import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{Result, Results}
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockFuelService}
-import utils.{TaxYearHelper, UnitTest}
+import utils.{TestTaxYearHelper, UnitTest}
 import views.html.benefits.fuel.MileageBenefitAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ class MileageBenefitAmountControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockFuelService
   with MockAuditService
-  with TaxYearHelper
+  with TestTaxYearHelper
   with MockErrorHandler {
 
   private implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global

@@ -113,7 +113,8 @@ not-found-template.paragraph.1 = If you typed the web address, check it is corre
 not-found-template.paragraph.2 = If you used ‘copy and paste’ to enter the web address, check you copied the full address.
 service-unavailable-error-template.heading = Sorry, the service is unavailable
 service-unavailable-error-template.paragraph.1 = You will be able to use this service later.
-taxYear-error-template.paragraph.1 = You can only enter information for the {0} to {1} tax year.
+taxYear-error-template.paragraph.1 = You can only enter information for the tax years {0} to {1}.
+taxYear-error-template.paragraph.1.single = You can only enter information for a valid tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
 
 #################       Timeout messages        ########################################

@@ -20,9 +20,9 @@ import DeductionsBuilder.aDeductions
 import PayBuilder.aPay
 import models.employment.{Deductions, EmploymentData, StudentLoans}
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object EmploymentDataBuilder extends TaxYearHelper {
+object EmploymentDataBuilder extends TestTaxYearHelper {
 
   val anEmploymentData: EmploymentData = EmploymentData(
     submittedOn = s"${taxYearEOY-1}-02-12",

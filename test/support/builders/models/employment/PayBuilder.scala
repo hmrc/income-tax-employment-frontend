@@ -17,9 +17,9 @@
 package support.builders.models.employment
 
 import models.employment.Pay
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object PayBuilder extends TaxYearHelper {
+object PayBuilder extends TestTaxYearHelper {
 
   val aPay: Pay = Pay(
     taxablePayToDate = Some(100),

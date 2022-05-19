@@ -25,13 +25,12 @@ trait MockActionsProvider extends MockAuthorisedAction
   with MockEmploymentSessionService
   with MockErrorHandler {
 
-  private val mockAppConfig = new MockAppConfig().config()
+  private implicit val mockAppConfig = new MockAppConfig().config()
 
   val mockActionsProvider = new ActionsProvider(
     mockAuthorisedAction,
     mockEmploymentSessionService,
     mockErrorHandler,
     new InYearUtil()(mockAppConfig),
-    mockAppConfig
   )
 }

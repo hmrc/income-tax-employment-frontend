@@ -17,9 +17,9 @@
 package support.builders.models.mongo
 
 import models.mongo.EmploymentDetails
-import utils.TaxYearHelper
+import utils.TestTaxYearHelper
 
-object EmploymentDetailsBuilder extends TaxYearHelper {
+object EmploymentDetailsBuilder extends TestTaxYearHelper {
 
   val anEmploymentDetails: EmploymentDetails = EmploymentDetails(
     employerName = "Employer Name",

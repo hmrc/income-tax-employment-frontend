@@ -25,7 +25,7 @@ import support.mocks.MockAppConfig
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class InYearUtilSpec extends UnitTest with TaxYearHelper {
+class InYearUtilSpec extends UnitTest with TestTaxYearHelper {
 
   private val currentYear: Int = taxYear
   private val month4: Int = 4
