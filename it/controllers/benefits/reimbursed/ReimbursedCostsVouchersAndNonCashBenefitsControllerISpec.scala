@@ -67,10 +67,10 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?"
-    val expectedH1 = "Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?"
+    val expectedTitle = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
+    val expectedH1 = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer"
+    val expectedError = "Dewiswch ëIawní os cawsoch gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -81,10 +81,10 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?"
-    val expectedH1 = "Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?"
+    val expectedTitle = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
+    val expectedH1 = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

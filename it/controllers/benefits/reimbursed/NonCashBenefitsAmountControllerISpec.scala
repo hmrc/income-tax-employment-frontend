@@ -87,8 +87,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val expectedIncorrectFormatErrorMessage = "Enter the amount for non-cash benefits in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount for non-cash benefits must be less than £100,000,000,000"
+    val expectedIncorrectFormatErrorMessage = "Nodwch y swm ar gyfer buddiannau nad ydynt yn arian parod yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm a nodwyd ar gyfer buddiannau sydd ddim yn arian parod fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -99,10 +99,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much did you get in total for non-cash benefits?"
-    val expectedHeading = "How much did you get in total for non-cash benefits?"
+    val expectedTitle = "Faint y cawsoch i gyd ar gyfer buddiannau sydd ddim yn arian parod?"
+    val expectedHeading = "Faint y cawsoch i gyd ar gyfer buddiannau sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you got for non-cash benefits"
+    val expectedNoEntryErrorMessage = "Nodwch y swm a gawsoch ar gyfer buddiannau sydd ddim yn arian parod"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,10 +113,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much did your client get in total for non-cash benefits?"
-    val expectedHeading = "How much did your client get in total for non-cash benefits?"
+    val expectedTitle = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau sydd ddim yn arian parod?"
+    val expectedHeading = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount your client got for non-cash benefits"
+    val expectedNoEntryErrorMessage = "Nodwch y swm a gafodd eich cleient ar gyfer buddiannau sydd ddim yn arian parod"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -1066,138 +1066,138 @@ benefits.incurredCostsAmount.title.individual = Faint oír costau yr ysgwyddwyd 
 
 #################       Reimbursed costs and vouchers messages        ########################################
 
-benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
-benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
-benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
-benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?
+benefits.reimbursedCostsVouchersAndNonCash.error.agent = Dewiswch ëIawní os cafodd eich cleient gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr
+benefits.reimbursedCostsVouchersAndNonCash.error.individual = Dewiswch ëIawní os cawsoch gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr
+benefits.reimbursedCostsVouchersAndNonCash.title.agent = A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?
+benefits.reimbursedCostsVouchersAndNonCash.title.individual = A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?
 
 #################       Non taxable costs messages        ########################################
 
-benefits.nonTaxableCosts.error.noEntry.agent = Select yes if any of your client’s non-taxable costs were reimbursed by their employer
-benefits.nonTaxableCosts.error.noEntry.individual = Select yes if any of your non-taxable costs were reimbursed by your employer
-benefits.nonTaxableCosts.paragraph.agent = This includes costs of equipment or supplies required to carry out their job.
-benefits.nonTaxableCosts.paragraph.individual = This includes costs of equipment or supplies required to carry out your job.
-benefits.nonTaxableCosts.title.agent = Were any of your client’s non-taxable costs reimbursed by their employer?
-benefits.nonTaxableCosts.title.individual = Were any of your non-taxable costs reimbursed by your employer?
-benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of non-taxable costs reimbursed by your client’s employer in the correct format
-benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount of non-taxable costs reimbursed by your employer in the correct format
-benefits.nonTaxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of non-taxable costs reimbursed by your client’s employer
-benefits.nonTaxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of non-taxable costs reimbursed by your employer
-benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.agent = The non-taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
-benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.individual = The non-taxable costs reimbursed by your employer must be less than £100,000,000,000
-benefits.nonTaxableCostsBenefitsAmount.title.agent = How much of your client’s non-taxable costs were reimbursed by their employer?
-benefits.nonTaxableCostsBenefitsAmount.title.individual = How much of your non-taxable costs were reimbursed by your employer?
+benefits.nonTaxableCosts.error.noEntry.agent = Dewiswch ëIawní os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr
+benefits.nonTaxableCosts.error.noEntry.individual = Dewiswch ëIawní os cafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr
+benefits.nonTaxableCosts.paragraph.agent = Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud ei swydd.
+benefits.nonTaxableCosts.paragraph.individual = Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud eich swydd.
+benefits.nonTaxableCosts.title.agent = A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?
+benefits.nonTaxableCosts.title.individual = A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?
+benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.agent = Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir
+benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.individual = Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir
+benefits.nonTaxableCostsBenefitsAmount.error.noEntry.agent = Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient
+benefits.nonTaxableCostsBenefitsAmount.error.noEntry.individual = Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr
+benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.agent = Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000
+benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.individual = Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000
+benefits.nonTaxableCostsBenefitsAmount.title.agent = Faint o gostau anhrethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?
+benefits.nonTaxableCostsBenefitsAmount.title.individual = Faint oích costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?
 
 #################       Taxable costs messages        ########################################
 
-benefits.taxableCosts.error.agent = Select yes if any of your client’s taxable costs were reimbursed by their employer
-benefits.taxableCosts.error.individual = Select yes if any of your taxable costs were reimbursed by your employer
-benefits.taxableCosts.theseAre = These are any costs that are not taxed at source, for example, commuting for a non-business purpose.
-benefits.taxableCosts.title.agent = Were any of your client’s taxable costs reimbursed by their employer?
-benefits.taxableCosts.title.individual = Were any of your taxable costs reimbursed by your employer?
-benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of taxable costs reimbursed by your client’s employer in the correct format
-benefits.taxableCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount of taxable costs reimbursed by your employer in the correct format
-benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of taxable costs reimbursed by your client’s employer
-benefits.taxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of taxable costs reimbursed by your employer
-benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
-benefits.taxableCostsBenefitsAmount.error.overMaximum.individual = The taxable costs reimbursed by your employer must be less than £100,000,000,000
-benefits.taxableCostsBenefitsAmount.title.agent = How much of your client’s taxable costs were reimbursed by their employer?
-benefits.taxableCostsBenefitsAmount.title.individual = How much of your taxable costs were reimbursed by your employer?
+benefits.taxableCosts.error.agent = Dewiswch ëIawní os cafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr
+benefits.taxableCosts.error.individual = Dewiswch ëIawní os cafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr
+benefits.taxableCosts.theseAre = Maeír rhain yn unrhyw gostau sydd ddim yn cael eu trethu wrth y ffynhonnell, er enghraifft, cymudo at ddiben nad ywín ymwneud ‚ busnes.
+benefits.taxableCosts.title.agent = A gafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr?
+benefits.taxableCosts.title.individual = A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.individual = Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir
+benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient
+benefits.taxableCostsBenefitsAmount.error.noEntry.individual = Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr
+benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = Maeín rhaid iír costau trethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000
+benefits.taxableCostsBenefitsAmount.error.overMaximum.individual = Maeín rhaid iír costau trethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000
+benefits.taxableCostsBenefitsAmount.title.agent = Faint o gostau trethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?
+benefits.taxableCostsBenefitsAmount.title.individual = Faint oích costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?
 
 #################       Vouchers or credit cards messages        ########################################
 
-benefits.vouchersBenefits.bullet1 = goods and services
-benefits.vouchersBenefits.bullet2 = a sum of money substantially less than the cost to provide them
-benefits.vouchersBenefits.error.agent = Select yes if your client got vouchers or credit cards
-benefits.vouchersBenefits.error.individual = Select yes if you got vouchers or credit cards
-benefits.vouchersBenefits.paragraph.agent = We only need to know about vouchers your client can exchange for:
-benefits.vouchersBenefits.paragraph.individual = We only need to know about vouchers you can exchange for:
-benefits.vouchersBenefits.title.agent = Did your client get vouchers or credit cards?
-benefits.vouchersBenefits.title.individual = Did you get vouchers or credit cards?
-benefits.vouchersBenefitsAmount.error.incorrectFormat = Enter the amount for vouchers or credit cards in the correct format
-benefits.vouchersBenefitsAmount.error.noEntry = Enter the amount for vouchers or credit cards
-benefits.vouchersBenefitsAmount.error.overMaximum = The amount for vouchers or credit cards must be less than £100,000,000,000
-benefits.vouchersBenefitsAmount.title = What is the total value of vouchers and credit card payments?
-benefits.vouchersBenefitsAmount.youCan.agent = You can find this information on your client’s P11D form in section C, box 12.
-benefits.vouchersBenefitsAmount.youCan.individual = You can find this information on your P11D form in section C, box 12.
+benefits.vouchersBenefits.bullet1 = nwyddau a gwasanaethau
+benefits.vouchersBenefits.bullet2 = swm o arian syín sylweddol is naír gost iíw darparu
+benefits.vouchersBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient dalebau neu gardiau credyd
+benefits.vouchersBenefits.error.individual = Dewiswch ëIawní os cawsoch dalebau neu gardiau credyd
+benefits.vouchersBenefits.paragraph.agent = Dim ond talebau y gall eich cleient eu cyfnewid y mae angen i ni wybod amdanynt:
+benefits.vouchersBenefits.paragraph.individual = Dim ond talebau y gallwch eu cyfnewid y mae angen i ni wybod amdanynt:
+benefits.vouchersBenefits.title.agent = A gafodd eich cleient dalebau neu gardiau credyd?
+benefits.vouchersBenefits.title.individual = A gawsoch dalebau neu gardiau credyd?
+benefits.vouchersBenefitsAmount.error.incorrectFormat = Nodwch y swm ar gyfer talebau neu gardiau credyd yn y fformat cywir
+benefits.vouchersBenefitsAmount.error.noEntry = Nodwch y swm ar gyfer talebau neu gardiau credyd
+benefits.vouchersBenefitsAmount.error.overMaximum = Maeín rhaid iír swm ar gyfer talebau neu gardiau credyd fod yn llai na £100,000,000,000
+benefits.vouchersBenefitsAmount.title = Beth yw gwerth llawn y talebau aír taliadau cerdyn credyd?
+benefits.vouchersBenefitsAmount.youCan.agent = Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar ffurflen P11D eich cleient.
+benefits.vouchersBenefitsAmount.youCan.individual = Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar eich ffurflen P11D.
 
 #################       Non cash messages        ########################################
 
-benefits.nonCashBenefits.error.noEntry.agent = Select yes if your client got any non-cash benefits
-benefits.nonCashBenefits.error.noEntry.individual = Select yes if you got any non-cash benefits
-benefits.nonCashBenefits.paragraph = This is the value of anything that cannot be used or exchanged as cash.
-benefits.nonCashBenefits.title.agent = Did your client get any non-cash benefits?
-benefits.nonCashBenefits.title.individual = Did you get any non-cash benefits?
-benefits.nonCashBenefitsAmount.error.incorrectFormat = Enter the amount for non-cash benefits in the correct format
-benefits.nonCashBenefitsAmount.error.noEntry.agent = Enter the amount your client got for non-cash benefits
-benefits.nonCashBenefitsAmount.error.noEntry.individual = Enter the amount you got for non-cash benefits
-benefits.nonCashBenefitsAmount.error.overMaximum = The amount for non-cash benefits must be less than £100,000,000,000
-benefits.nonCashBenefitsAmount.title.agent = How much did your client get in total for non-cash benefits?
-benefits.nonCashBenefitsAmount.title.individual = How much did you get in total for non-cash benefits?
+benefits.nonCashBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau sydd ddim yn arian parod
+benefits.nonCashBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau sydd ddim yn arian parod
+benefits.nonCashBenefits.paragraph = Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod.
+benefits.nonCashBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?
+benefits.nonCashBenefits.title.individual = A gawsoch unrhyw fuddiant sydd ddim yn arian parod?
+benefits.nonCashBenefitsAmount.error.incorrectFormat = Nodwch y swm ar gyfer buddiannau nad ydynt yn arian parod yn y fformat cywir
+benefits.nonCashBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau sydd ddim yn arian parod
+benefits.nonCashBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer buddiannau sydd ddim yn arian parod
+benefits.nonCashBenefitsAmount.error.overMaximum = Maeín rhaid iír swm a nodwyd ar gyfer buddiannau sydd ddim yn arian parod fod yn llai na £100,000,000,000
+benefits.nonCashBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer buddiannau sydd ddim yn arian parod?
+benefits.nonCashBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer buddiannau sydd ddim yn arian parod?
 
 #################       Other benefits messages        ########################################
 
-benefits.otherBenefits.title.individual = Did you get any other benefits?
-benefits.otherBenefits.title.agent = Did your client get any other benefits?
-benefits.otherBenefits.error.individual = Select yes if you got any other benefits
-benefits.otherBenefits.error.agent = Select yes if your client got any other benefits
-benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
-benefits.otherBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for other benefits in the correct format
-benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
-benefits.otherBenefitsAmount.error.noEntry.individual = Enter the amount you got for other benefits
-benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits must be less than £100,000,000,000
-benefits.otherBenefitsAmount.title.agent = How much did your client get in total for other benefits?
-benefits.otherBenefitsAmount.title.individual = How much did you get in total for other benefits?
+benefits.otherBenefits.title.individual = A gawsoch unrhyw fuddiannau eraill?
+benefits.otherBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau eraill?
+benefits.otherBenefits.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau eraill
+benefits.otherBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient unrhyw fuddiannau eraill
+benefits.otherBenefitsAmount.error.incorrectFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau eraill yn y fformat cywir
+benefits.otherBenefitsAmount.error.incorrectFormat.individual = Nodwch y swm a gawsoch ar gyfer buddiannau eraill yn y fformat cywir
+benefits.otherBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau eraill
+benefits.otherBenefitsAmount.error.noEntry.individual = Nodwch y swm a gawsoch ar gyfer buddiannau eraill
+benefits.otherBenefitsAmount.error.overMaximum = Maeín rhaid iír swm a nodwyd ar gyfer buddiannau eraill fod yn llai na £100,000,000,000
+benefits.otherBenefitsAmount.title.agent = Faint y cafodd eich cleient i gyd ar gyfer buddiannau eraill?
+benefits.otherBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer buddiannau eraill?
 
 #################       Assets or transfers messages        ########################################
 
-benefits.assetsOrAssetTransfers.bullet2.agent = keep for themselves
-benefits.assetsOrAssetTransfers.bullet2.individual = keep for yourself
-benefits.assetsOrAssetTransfers.description.paragraph = Assets are things like computers, televisions or bicycles.
-benefits.assetsOrAssetTransfers.error.agent = Select yes if your client got assets
-benefits.assetsOrAssetTransfers.error.individual = Select yes if you got assets
-benefits.assetsOrAssetTransfers.includes.paragraph.agent = Include assets that their employer let them:
-benefits.assetsOrAssetTransfers.includes.paragraph.individual = Include assets that your employer let you:
-benefits.assetsOrAssetTransfers.title.agent = Did your client get any assets from this company?
-benefits.assetsOrAssetTransfers.title.individual = Did you get any assets from this company?
+benefits.assetsOrAssetTransfers.bullet2.agent = iíw cadw iíw hun
+benefits.assetsOrAssetTransfers.bullet2.individual = iíw cadw eich hun
+benefits.assetsOrAssetTransfers.description.paragraph = Asedion yw pethau fel cyfrifiaduron, setiau teledu neu feiciau.
+benefits.assetsOrAssetTransfers.error.agent = Dewiswch ëIawní os cafodd eich cleient asedion
+benefits.assetsOrAssetTransfers.error.individual = Dewiswch ëIawní os cawsoch asedion
+benefits.assetsOrAssetTransfers.includes.paragraph.agent = Dylech gynnwys asedion y gwnaeth ei gyflogwr eu rhoi dros dro iddo:
+benefits.assetsOrAssetTransfers.includes.paragraph.individual = Dylech gynnwys asedion y gwnaeth eich cyflogwr eu rhoi dros dro i chi:
+benefits.assetsOrAssetTransfers.title.agent = A gafodd eich cleient unrhyw asedion gan y cwmni hwn?
+benefits.assetsOrAssetTransfers.title.individual = A gawsoch unrhyw asedion gan y cwmni hwn?
 
 #################       Assets messages        ########################################
 
-benefits.assets.error.agent = Select yes if your client’s employer made assets available for their use
-benefits.assets.error.individual = Select yes if your employer made assets available for your use
-benefits.assets.title.agent = Did your client’s employer make any assets available for their use?
-benefits.assets.title.individual = Did your employer make any assets available for your use?
-benefits.assets.youCanUse.agent = They can use these assets but they do not own them.
-benefits.assets.youCanUse.individual = You can use these assets but you do not own them.
-benefits.assetsAmount.error.incorrectFormat.agent = Enter the amount for assets made available for your client’s use in the correct format
-benefits.assetsAmount.error.incorrectFormat.individual = Enter the amount for assets made available for your use in the correct format
-benefits.assetsAmount.error.noEntry.agent = Enter the amount for assets made available for your client’s use
-benefits.assetsAmount.error.noEntry.individual = Enter the amount for assets made available for your use
-benefits.assetsAmount.error.overMaximum.agent = The amount for assets made available for your client’s use must be less than £100,000,000,000
-benefits.assetsAmount.error.overMaximum.individual = The amount for assets made available for your use must be less than £100,000,000,000
-benefits.assetsAmount.title.agent = How much were the assets made available for your client’s use?
-benefits.assetsAmount.title.individual = How much were the assets made available for your use?
-benefits.assetsAmount.youCan.agent = You can find this information on your client’s P11D form in section L, box 13.
-benefits.assetsAmount.youCan.individual = You can find this information on your P11D form in section L, box 13.
+benefits.assets.error.agent = Dewiswch ëIawní os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio
+benefits.assets.error.individual = Dewiswch ëIawní os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio
+benefits.assets.title.agent = A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?
+benefits.assets.title.individual = A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?
+benefits.assets.youCanUse.agent = Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt.
+benefits.assets.youCanUse.individual = Gallwch ddefnyddioír asedion hyn ond nid ydych yn berchen arnynt.
+benefits.assetsAmount.error.incorrectFormat.agent = Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio yn y fformat cywir
+benefits.assetsAmount.error.incorrectFormat.individual = Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio yn y fformat cywir
+benefits.assetsAmount.error.noEntry.agent = Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio
+benefits.assetsAmount.error.noEntry.individual = Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio
+benefits.assetsAmount.error.overMaximum.agent = Maeín rhaid i swm yr asedion a oedd ar gael iích cleient eu defnyddio fod yn llai na £100,000,000,000
+benefits.assetsAmount.error.overMaximum.individual = Maeín rhaid i swm yr asedion a oedd ar gael i chi eu defnyddio fod yn llai na £100,000,000,000
+benefits.assetsAmount.title.agent = Beth oedd gwerth yr asedion a oedd ar gael iích cleient eu defnyddio?
+benefits.assetsAmount.title.individual = Beth oedd gwerth yr asedion a oedd ar gael i chi eu defnyddio?
+benefits.assetsAmount.youCan.agent = Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar ffurflen P11D eich cleient.
+benefits.assetsAmount.youCan.individual = Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar eich ffurflen P11D.
 
 #################       Assets transfer messages        ########################################
 
-benefits.assetTransfers.error.agent = Select yes if your client’s employer gave them assets to keep
-benefits.assetTransfers.error.individual = Select yes if your employer gave you assets to keep
-benefits.assetTransfers.paragraph.agent = Your client became the owner of these assets.
-benefits.assetTransfers.paragraph.individual = You became the owner of these assets.
-benefits.assetTransfers.title.agent = Did your client’s employer give them any assets to keep?
-benefits.assetTransfers.title.individual = Did your employer give you any assets to keep?
-benefits.assetTransfersAmount.title.individual = How much were the assets your employer gave you to keep?
-benefits.assetTransfersAmount.title.agent = How much were the assets your client’s employer gave them to keep?
-benefits.assetTransfersAmount.youCan.individual = You can find this information on your P11D form in section A, box 13.
-benefits.assetTransfersAmount.youCan.agent = You can find this information on your client’s P11D form in section A, box 13.
-benefits.assetTransfersAmount.error.noEntry.individual = Enter the amount for assets your employer gave you to keep
-benefits.assetTransfersAmount.error.incorrectFormat.individual = Enter the amount for assets your employer gave you to keep in the correct format
-benefits.assetTransfersAmount.error.overMaximum.individual = The total amount for assets your employer gave you to keep must be less than £100,000,000,000
-benefits.assetTransfersAmount.error.noEntry.agent = Enter the amount for assets your client’s employer gave them to keep
-benefits.assetTransfersAmount.error.incorrectFormat.agent = Enter the amount for assets your client’s employer gave them to keep in the correct format
-benefits.assetTransfersAmount.error.overMaximum.agent = The total amount for assets your client’s employer gave them to keep must be less than £100,000,000,000
+benefits.assetTransfers.error.agent = Dewiswch ëIawní os rhoddodd cyflogwr eich cleient asedion iddo eu cadw
+benefits.assetTransfers.error.individual = Dewiswch ëIawní os rhoddodd eich cyflogwr asedion i chi eu cadw
+benefits.assetTransfers.paragraph.agent = Daeth eich cleient yn berchennog yr asedion hyn.
+benefits.assetTransfers.paragraph.individual = Daethoch yn berchennog yr asedion hyn.
+benefits.assetTransfers.title.agent = A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?
+benefits.assetTransfers.title.individual = A roddodd eich cyflogwr unrhyw asedion i chi eu cadw?
+benefits.assetTransfersAmount.title.individual = Beth oedd gwerth yr asedion a roddodd eich cyflogwr i chi eu cadw?
+benefits.assetTransfersAmount.title.agent = Beth oedd gwerth yr asedion a roddodd cyflogwr eich cleient iddo eu cadw?
+benefits.assetTransfersAmount.youCan.individual = Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar eich ffurflen P11D.
+benefits.assetTransfersAmount.youCan.agent = Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar ffurflen P11D eich cleient.
+benefits.assetTransfersAmount.error.noEntry.individual = Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw
+benefits.assetTransfersAmount.error.incorrectFormat.individual = Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw yn y fformat cywir
+benefits.assetTransfersAmount.error.overMaximum.individual = Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr i chi eu cadw fod yn llai na £100,000,000,000
+benefits.assetTransfersAmount.error.noEntry.agent = Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw
+benefits.assetTransfersAmount.error.incorrectFormat.agent = Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw yn y fformat cywir
+benefits.assetTransfersAmount.error.overMaximum.agent = Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr iddo eu cadw fod yn llai na £100,000,000,000
 
 #################       Expenses  messages        ########################################
 

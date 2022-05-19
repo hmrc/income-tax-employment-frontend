@@ -83,11 +83,11 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer make any assets available for your use?"
-    val expectedHeading = "Did your employer make any assets available for your use?"
-    val youCanUseText = "You can use these assets but you do not own them."
+    val expectedTitle = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
+    val expectedHeading = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
+    val youCanUseText = "Gallwch ddefnyddioír asedion hyn ond nid ydych yn berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your employer made assets available for your use"
+    val expectedErrorText = "Dewiswch ëIawní os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -99,11 +99,11 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer make any assets available for their use?"
-    val expectedHeading = "Did your client’s employer make any assets available for their use?"
-    val youCanUseText = "They can use these assets but they do not own them."
+    val expectedTitle = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
+    val expectedHeading = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
+    val youCanUseText = "Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client’s employer made assets available for their use"
+    val expectedErrorText = "Dewiswch ëIawní os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio"
   }
 
   private val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), None, None, None, None)

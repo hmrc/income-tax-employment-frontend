@@ -95,12 +95,12 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much of your taxable costs were reimbursed by your employer?"
-    val expectedHeading: String = "How much of your taxable costs were reimbursed by your employer?"
+    val expectedTitle: String = "Faint oích costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedHeading: String = "Faint oích costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount of taxable costs reimbursed by your employer"
-    val invalidFormatErrorText: String = "Enter the amount of taxable costs reimbursed by your employer in the correct format"
-    val maxAmountErrorText: String = "The taxable costs reimbursed by your employer must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr"
+    val invalidFormatErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iír costau trethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,12 +113,12 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much of your client’s taxable costs were reimbursed by their employer?"
-    val expectedHeading: String = "How much of your client’s taxable costs were reimbursed by their employer?"
+    val expectedTitle: String = "Faint o gostau trethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?"
+    val expectedHeading: String = "Faint o gostau trethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount of taxable costs reimbursed by your client’s employer"
-    val invalidFormatErrorText: String = "Enter the amount of taxable costs reimbursed by your client’s employer in the correct format"
-    val maxAmountErrorText: String = "The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient"
+    val invalidFormatErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iír costau trethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))

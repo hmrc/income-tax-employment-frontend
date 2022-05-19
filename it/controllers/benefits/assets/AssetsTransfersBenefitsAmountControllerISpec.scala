@@ -103,13 +103,13 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were the assets your employer gave you to keep?"
-    val expectedHeading = "How much were the assets your employer gave you to keep?"
+    val expectedTitle = "Beth oedd gwerth yr asedion a roddodd eich cyflogwr i chi eu cadw?"
+    val expectedHeading = "Beth oedd gwerth yr asedion a roddodd eich cyflogwr i chi eu cadw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "You can find this information on your P11D form in section A, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets your employer gave you to keep"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets your employer gave you to keep in the correct format"
-    val expectedErrorOverMaximum = "The total amount for assets your employer gave you to keep must be less than £100,000,000,000"
+    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar eich ffurflen P11D."
+    val expectedErrorNoEntry = "Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw"
+    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr i chi eu cadw fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -123,13 +123,13 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were the assets your client’s employer gave them to keep?"
-    val expectedHeading = "How much were the assets your client’s employer gave them to keep?"
+    val expectedTitle = "Beth oedd gwerth yr asedion a roddodd cyflogwr eich cleient iddo eu cadw?"
+    val expectedHeading = "Beth oedd gwerth yr asedion a roddodd cyflogwr eich cleient iddo eu cadw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "You can find this information on your client’s P11D form in section A, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets your client’s employer gave them to keep"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets your client’s employer gave them to keep in the correct format"
-    val expectedErrorOverMaximum = "The total amount for assets your client’s employer gave them to keep must be less than £100,000,000,000"
+    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar ffurflen P11D eich cleient."
+    val expectedErrorNoEntry = "Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw"
+    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr iddo eu cadw fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

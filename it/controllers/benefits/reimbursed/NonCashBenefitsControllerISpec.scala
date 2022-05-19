@@ -71,11 +71,11 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any non-cash benefits?"
-    val expectedHeading = "Did you get any non-cash benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiant sydd ddim yn arian parod?"
+    val expectedHeading = "A gawsoch unrhyw fuddiant sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got any non-cash benefits"
-    val paragraph = "This is the value of anything that cannot be used or exchanged as cash."
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau sydd ddim yn arian parod"
+    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -87,11 +87,11 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any non-cash benefits?"
-    val expectedHeading = "Did your client get any non-cash benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got any non-cash benefits"
-    val paragraph = "This is the value of anything that cannot be used or exchanged as cash."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau sydd ddim yn arian parod"
+    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
