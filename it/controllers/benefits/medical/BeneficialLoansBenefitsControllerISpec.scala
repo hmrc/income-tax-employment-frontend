@@ -67,11 +67,11 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any beneficial loans?"
-    val expectedHeading = "Did you get any beneficial loans?"
+    val expectedTitle = "A gawsoch unrhyw fenthyciadau buddiannol?"
+    val expectedHeading = "A gawsoch unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got beneficial loans"
-    val theseAreText = "These are interest free or low interest loans from your employer."
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch fenthyciadau buddiannol"
+    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,11 +83,11 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any beneficial loans?"
-    val expectedHeading = "Did your client get any beneficial loans?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got beneficial loans"
-    val theseAreText = "These are any interest free or low interest loans their employer has given them."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fenthyciadau buddiannol"
+    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

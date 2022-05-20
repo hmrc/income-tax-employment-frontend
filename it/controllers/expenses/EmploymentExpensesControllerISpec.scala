@@ -78,11 +78,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim employment expenses?"
-    val expectedHeading = "Do you want to claim employment expenses?"
-    val expectedCanClaim = "You can claim employment expenses you did not claim through your employer."
+    val expectedTitle = "A ydych am hawlio treuliau cyflogaeth?"
+    val expectedHeading = "A ydych am hawlio treuliau cyflogaeth?"
+    val expectedCanClaim = "Gallwch hawlio treuliau cyflogaeth na wnaethoch eu hawlio drwy eich cyflogwr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to claim employment expenses"
+    val expectedErrorText = "Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -94,11 +94,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim employment expenses for your client?"
-    val expectedHeading = "Do you want to claim employment expenses for your client?"
-    val expectedCanClaim = "You can claim employment expenses your client did not claim through their employer."
+    val expectedTitle = "A ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient?"
+    val expectedHeading = "A ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient?"
+    val expectedCanClaim = "Gallwch hawlio treuliau cyflogaeth na wnaeth eich cleient eu hawlio drwy ei gyflogwr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses"
+    val expectedErrorText = "Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth eich cleient"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -116,12 +116,12 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedThisIncludes = "Employment expenses include things like:"
-    val expectedThisIncludesExample1 = "business travel and hotels and meals"
-    val expectedThisIncludesExample2 = "professional fees and subscriptions"
-    val expectedThisIncludesExample3 = "uniforms, work clothes and tools"
-    val expectedFindOutMore = "Find out more about claiming employment expenses (yn agor tab newydd)."
-    val expectedFindOutMoreLink = "claiming employment expenses (yn agor tab newydd)."
+    val expectedThisIncludes = "Mae treuliau cyflogaeth yn cynnwys pethau fel:"
+    val expectedThisIncludesExample1 = "teithiau busnes a gwestai a phrydau bwyd"
+    val expectedThisIncludesExample2 = "ffioedd a thanysgrifiadau proffesiynol"
+    val expectedThisIncludesExample3 = "gwisgoedd unffurf, dillad gwaith ac offer"
+    val expectedFindOutMore = "Dysgwch Ragor o wybodaeth ynghylch hawlio treuliau cyflogaeth (yn agor tab newydd)."
+    val expectedFindOutMoreLink = "hawlio treuliau cyflogaeth (yn agor tab newydd)."
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

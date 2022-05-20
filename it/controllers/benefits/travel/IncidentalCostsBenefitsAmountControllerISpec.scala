@@ -82,7 +82,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
@@ -99,12 +99,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much did you get in total for incidental overnight costs?"
-    val expectedHeading = "How much did you get in total for incidental overnight costs?"
+    val expectedTitle = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
+    val expectedHeading = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount you got for incidental overnight costs"
-    val expectedErrorIncorrectFormat = "Enter the amount you got for incidental overnight costs in the correct format"
-    val expectedErrorOverMaximum = "Your incidental overnight costs must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm a gawsoch ar gyfer m‚n gostau dros nos"
+    val expectedErrorIncorrectFormat = "Nodwch y swm a gawsoch chi ar gyfer m‚n gostau dros nos yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iích m‚n gostau dros nos fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -117,12 +117,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much did your client get in total for incidental overnight costs?"
-    val expectedHeading = "How much did your client get in total for incidental overnight costs?"
+    val expectedTitle = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
+    val expectedHeading = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount your client got for incidental overnight costs"
-    val expectedErrorIncorrectFormat = "Enter the amount your client got for incidental overnight costs in the correct format"
-    val expectedErrorOverMaximum = "Your client’s incidental overnight costs must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos"
+    val expectedErrorIncorrectFormat = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i f‚n gostau dros nos eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

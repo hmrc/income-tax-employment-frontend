@@ -64,10 +64,10 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any medical, dental, childcare, education benefits or loans from this company?"
-    val expectedHeading = "Did you get any medical, dental, childcare, education benefits or loans from this company?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
+    val expectedHeading = "A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got medical, dental, childcare, education benefits or loans"
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -78,10 +78,10 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any medical, dental, childcare, education benefits or loans from this company?"
-    val expectedHeading = "Did your client get any medical, dental, childcare, education benefits or loans from this company?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got medical, dental, childcare, education benefits or loans"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

@@ -77,7 +77,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £200."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -90,12 +90,12 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for services provided by your employer?"
-    val expectedHeading: String = "How much did you get in total for services provided by your employer?"
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer gwasanaethau a ddarperir gan eich cyflogwr?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer gwasanaethau a ddarperir gan eich cyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount you got for services provided by your employer in the correct format"
-    val emptyErrorText: String = "Enter the amount you got for services provided by your employer"
-    val maxAmountErrorText: String = "The amount you got for services provided by your employer must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,12 +108,12 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for services provided by their employer?"
-    val expectedHeading: String = "How much did your client get in total for services provided by their employer?"
+    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau a ddarperir gan ei gyflogwr?"
+    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau a ddarperir gan ei gyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your client got for services provided by their employer in the correct format"
-    val emptyErrorText: String = "Enter the amount your client got for services provided by their employer"
-    val maxAmountErrorText: String = "The amount your client got for services provided by their employer must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

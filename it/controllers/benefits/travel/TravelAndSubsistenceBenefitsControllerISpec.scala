@@ -69,11 +69,11 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any travel and subsistence benefits?"
-    val expectedH1 = "Did you get any travel and subsistence benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau teithio a chynhaliaeth?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got travel and subsistence benefits"
-    val thisIs = "This is the cost of any travel and subsistence that is paid for by your employer and is not exempt from tax. This includes hotels and meals."
+    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau teithio a chynhaliaeth"
+    val thisIs = "Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan eich cyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -85,11 +85,11 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any travel and subsistence benefits?"
-    val expectedH1 = "Did your client get any travel and subsistence benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got travel and subsistence benefits"
-    val thisIs = "This is the cost of any travel and subsistence that is paid for by their employer and is not exempt from tax. This includes hotels and meals."
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio a chynhaliaeth"
+    val thisIs = "Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan ei gyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

@@ -71,11 +71,11 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Were any of your non-taxable costs reimbursed by your employer?"
-    val expectedHeading = "Were any of your non-taxable costs reimbursed by your employer?"
+    val expectedTitle = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if any of your non-taxable costs were reimbursed by your employer"
-    val paragraph = "This includes costs of equipment or supplies required to carry out your job."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr"
+    val paragraph = "Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud eich swydd."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -87,11 +87,11 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Were any of your client’s non-taxable costs reimbursed by their employer?"
-    val expectedHeading = "Were any of your client’s non-taxable costs reimbursed by their employer?"
+    val expectedTitle = "A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if any of your client’s non-taxable costs were reimbursed by their employer"
-    val paragraph = "This includes costs of equipment or supplies required to carry out their job."
+    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr"
+    val paragraph = "Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud ei swydd."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

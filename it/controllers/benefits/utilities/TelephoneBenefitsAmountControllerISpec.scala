@@ -77,7 +77,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £100, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £100."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -90,12 +90,12 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for telephone benefits?"
-    val expectedHeading: String = "How much did you get in total for telephone benefits?"
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiannau ffÙn?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiannau ffÙn?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount you got for telephone benefits in the correct format"
-    val emptyErrorText: String = "Enter the amount you got for telephone benefits"
-    val maxAmountErrorText: String = "Your telephone benefits must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiannau ffÙn fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,12 +108,12 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for telephone benefits?"
-    val expectedHeading: String = "How much did your client get in total for telephone benefits?"
+    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau ffÙn?"
+    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau ffÙn?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your client got for telephone benefits in the correct format"
-    val emptyErrorText: String = "Enter the amount your client got for telephone benefits"
-    val maxAmountErrorText: String = "Your client’s telephone benefits must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiannau ffÙn eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -83,9 +83,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def ifItWasNotText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
@@ -101,12 +101,12 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your non-taxable costs were reimbursed by your employer?"
-    val expectedHeading = "How much of your non-taxable costs were reimbursed by your employer?"
+    val expectedTitle = "Faint oích costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "Faint oích costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount of non-taxable costs reimbursed by your employer"
-    val expectedIncorrectFormatErrorMessage = "Enter the amount of non-taxable costs reimbursed by your employer in the correct format"
-    val expectedOverMaximumErrorMessage = "The non-taxable costs reimbursed by your employer must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr"
+    val expectedIncorrectFormatErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -119,12 +119,12 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your client’s non-taxable costs were reimbursed by their employer?"
-    val expectedHeading = "How much of your client’s non-taxable costs were reimbursed by their employer?"
+    val expectedTitle = "Faint o gostau anhrethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?"
+    val expectedHeading = "Faint o gostau anhrethadwy eich cleient a gafodd eu had-dalu gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount of non-taxable costs reimbursed by your client’s employer"
-    val expectedIncorrectFormatErrorMessage = "Enter the amount of non-taxable costs reimbursed by your client’s employer in the correct format"
-    val expectedOverMaximumErrorMessage = "The non-taxable costs reimbursed by your client’s employer must be less than £100,000,000,000"
+    val expectedNoEntryErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient"
+    val expectedIncorrectFormatErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir"
+    val expectedOverMaximumErrorMessage = "Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -88,11 +88,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
-    val hintText = "For example, 123456"
-    val bullet1: String = "upper and lower case letters (a to z)"
-    val bullet2: String = "numbers"
-    val bullet3: String = "the special characters: .,-()/=!\"%&*;<>'+:\\?"
-    val previousParagraph: String = "If the payroll ID is not 123456, tell us the correct ID."
+    val hintText = "Er enghraifft, 123456"
+    val bullet1: String = "llythrennau mawr a bach (a i z)"
+    val bullet2: String = "rhifau"
+    val bullet3: String = "y cymeriadau arbennig: .,-()/=!\"%&*;<>'+:\\?"
+    val previousParagraph: String = "Os nad 123456 ywír ID cyflogres, rhowch wybod i ni beth ywír ID cywir."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -118,25 +118,25 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "What’s your payroll ID for this employment?"
+    val expectedTitle: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedH1: String = "What’s your payroll ID for this employment?"
-    val emptyErrorText: String = "Enter your payroll ID"
-    val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
-    val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
-    val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
-    val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
+    val expectedH1: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
+    val emptyErrorText: String = "Nodwch eich ID cyflogres"
+    val wrongFormatErrorText: String = "Nodwch eich ID cyflogres yn y fformat cywir"
+    val tooLongErrorText: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai"
+    val paragraph1: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val paragraph2: String = "Mae hwn iíw weld ar eich slip cyflog neuích P60. Mae hefyd yn cael ei alwín ërhif cyflogresí."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
+    val expectedTitle: String = "Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedH1: String = "What’s your client’s payroll ID for this employment?"
-    val emptyErrorText: String = "Enter your client’s payroll ID"
-    val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
-    val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
-    val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
-    val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
+    val expectedH1: String = "Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?"
+    val emptyErrorText: String = "Nodwch ID cyflogres eich cleient"
+    val wrongFormatErrorText: String = "Nodwch ID cyflogres eich cleient yn y fformat cywir"
+    val tooLongErrorText: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai"
+    val paragraph1: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val paragraph2: String = "Mae hwn iíw weld ar slip cyflog eich cleient neu ar ei P60. Mae hefyd yn cael ei alwín ërhif cyflogresí."
   }
 
   def cya(isPriorSubmission: Boolean = true): EmploymentUserData =

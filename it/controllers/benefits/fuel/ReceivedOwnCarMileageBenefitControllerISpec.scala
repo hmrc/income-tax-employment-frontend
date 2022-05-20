@@ -36,8 +36,6 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   private val employmentId = "employmentId"
   private val mileageAmount: Option[BigDecimal] = Some(BigDecimal(4.9))
 
-  private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
   object Selectors {
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
@@ -96,22 +94,23 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a mileage benefit for using your own car for work?"
-    val expectedH1 = "Did you get a mileage benefit for using your own car for work?"
-    val expectedP1 = "We only need to know about payments made above our ‘approved amount’. If you have payments above the ‘approved amount’, they should be recorded in section E of your P11D form."
-    val expectedP2 = "Check with your employer if you are unsure."
+    val expectedTitle = "A gawsoch fuddiant milltiroedd am ddefnyddio eich car eich hun ar gyfer gwaith?"
+    val expectedH1 = "A gawsoch fuddiant milltiroedd am ddefnyddio eich car eich hun ar gyfer gwaith?"
+    val expectedP1: String = "Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gennych daliadau " +
+      "syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oích ffurflen P11D."
+    val expectedP2 = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got a mileage benefit for using your own car for work"
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant milltiroedd am ddefnyddioích car eich hun ar gyfer gwaith"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedH1 = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedP1: String = "We only need to know about payments made above our ‘approved amount’. " +
-      "If your client has payments above the ‘approved amount’, they should be recorded in section E of their P11D form."
-    val expectedP2 = "Check with your client’s employer if you are unsure."
+    val expectedTitle = "A gafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith?"
+    val expectedH1 = "A gafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith?"
+    val expectedP1: String = "Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gan eich " +
+      "cleient daliadau syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oíi ffurflen P11D."
+    val expectedP2 = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith"
   }
 
   private val someAmount: Option[BigDecimal] = Some(123.45)

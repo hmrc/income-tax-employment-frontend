@@ -85,12 +85,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
     def changeLeftEmployerHiddenText(name: String): String
 
-    val paymentsNotOnYourP60: String
     val changePAYERefHiddenText: String
     val changePayReceivedHiddenText: String => String
     val taxTakenFromPayHiddenText: String
-    val paymentsNotOnP60HiddenText: String
-    val amountOfPaymentsNotOnP60HiddenText: String
   }
 
   trait CommonExpectedResults {
@@ -108,7 +105,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdField: String
     val payrollIdHiddenText: String
     val changeEmployerNameHiddenText: String
-    val returnToEmploymentSummaryText: String
     val returnToEmployerText: String
     val employmentStartDate: String
     val employmentEndDate: String
@@ -142,7 +138,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeEmployerNameHiddenText: String = "Change the name of this employer"
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmployerText: String = "Return to employer"
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = s"11 March ${taxYearEOY - 1}"
@@ -156,20 +151,19 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val addLinkExpected = "Add"
     val changeLinkExpected = "Newid"
     val continueButtonText = "Cadw ac yn eich blaen"
-    val employerNameField1 = "Employer"
-    val employmentStartDateField1 = "Employment start date"
+    val employerNameField1 = "Cyflogwr"
+    val employmentStartDateField1 = "Dyddiad dechrauír gyflogaeth"
     val didYouLeaveEmployerField = "Left employer"
-    val employmentDatesField = "Employment dates"
-    val payeReferenceField2 = "PAYE reference"
-    val payReceivedField3 = "Pay received"
-    val taxField4 = "UK tax taken from pay"
-    val changeEmployerNameHiddenText: String = "Change the name of this employer"
-    val payrollIdField: String = "Payroll ID"
-    val payrollIdHiddenText: String = "Change the payroll ID for this employment"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val employmentDatesField = "Dyddiadau cyflogaeth"
+    val payeReferenceField2 = "Cyfeirnod TWE"
+    val payReceivedField3 = "Tal a gafwyd"
+    val taxField4 = "Treth y DU a dynnwyd oír cyflog"
+    val changeEmployerNameHiddenText: String = "Newidiwch enwír cyflogwr hwn"
+    val payrollIdField: String = "ID y gyflogres"
+    val payrollIdHiddenText: String = "Newidiwch ID y gyflogres am y gyflogaeth hon"
     val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
-    val employmentStartDate = "21 April 2019"
-    val employmentEndDate = s"11 March ${taxYearEOY - 1}"
+    val employmentStartDate = "21 Ebrill 2019"
+    val employmentEndDate = s"11 Mawrth ${taxYearEOY - 1}"
     val employmentDates = s"$employmentStartDate i $employmentEndDate"
     val didYouLeaveYes = "Iawn"
     val didYouLeaveNo = "Na"
@@ -187,12 +181,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changePAYERefHiddenText: String = "Change your PAYE reference number"
     val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay you got from $employerName"
     val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
-    val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
-    val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
 
     def changeLeftEmployerHiddenText(name: String): String = s"Change if you left $name in the tax year"
-
-    val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -205,50 +195,37 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changePAYERefHiddenText: String = "Change your client’s PAYE reference number"
     val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay your client got from $employerName"
     val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
-    val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
-    val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
 
     def changeLeftEmployerHiddenText(name: String): String = s"Change if your client left $name in the tax year"
-
-    val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1 = "Check your employment details"
-    val expectedTitle = "Check your employment details"
-    val expectedContent = "Your employment details are based on the information we already hold about you."
-    val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your start date for $employerName"
-    val changeEmploymentDatesHiddenText = "Change your employment dates"
-    val changePAYERefHiddenText: String = "Change your PAYE reference number"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay you got from $employerName"
-    val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
-    val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
-    val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
+    val expectedH1 = "Gwiriwch eich manylion cyflogaeth"
+    val expectedTitle = "Gwiriwch eich manylion cyflogaeth"
+    val expectedContent = "Maeích manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+    val expectedInsetText = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
+    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch eich dyddiad dechrau ar gyfer $employerName"
+    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadauích cyflogaeth chi"
+    val changePAYERefHiddenText: String = "Newidiwch eich cyfeirnod TWE"
+    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l a gawsoch o $employerName"
+    val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a daloch"
 
     def changeLeftEmployerHiddenText(name: String): String = s"Change if you left $name in the tax year"
-
-    val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1 = "Check your client’s employment details"
-    val expectedTitle = "Check your client’s employment details"
-    val expectedContent = "Your client’s employment details are based on the information we already hold about them."
-    val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
-    val employeeFieldName7 = "Payments not on your client’s P60"
-    val employeeFieldName8 = "Amount of payments not on your client’s P60"
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your client’s start date for $employerName"
-    val changeEmploymentDatesHiddenText = "Change your client’s employment dates"
-    val changePAYERefHiddenText: String = "Change your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay your client got from $employerName"
-    val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
-    val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
-    val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
+    val expectedH1 = "Gwiriwch fanylion cyflogaeth eich cleient"
+    val expectedTitle = "Gwiriwch fanylion cyflogaeth eich cleient"
+    val expectedContent = "Mae manylion cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
+    val expectedInsetText = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
+    val employeeFieldName7 = "Taliadau sydd ddim ar P60 eich cleient"
+    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch ddyddiad dechrau eich cleient ar gyfer $employerName"
+    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadau cyflogaeth eich cleient"
+    val changePAYERefHiddenText: String = "Newidiwch gyfeirnod TWE eich cleient"
+    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l gafodd eich cleient o $employerName"
+    val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a dalodd eich cleient"
 
     def changeLeftEmployerHiddenText(name: String): String = s"Change if your client left $name in the tax year"
-
-    val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

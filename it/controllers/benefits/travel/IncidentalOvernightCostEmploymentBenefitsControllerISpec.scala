@@ -73,11 +73,11 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any incidental overnight costs?"
-    val expectedH1 = "Did you get any incidental overnight costs?"
+    val expectedTitle = "A gawsoch unrhyw m‚n gostau dros nos?"
+    val expectedH1 = "A gawsoch unrhyw m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got incidental overnight costs"
-    val costInformation = "These are personal costs you incurred while travelling overnight on business."
+    val expectedError = "Dewiswch ëIawní os cawsoch chi m‚n gostau dros nos"
+    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -89,11 +89,11 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any incidental overnight costs?"
-    val expectedH1 = "Did your client get any incidental overnight costs?"
+    val expectedTitle = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
+    val expectedH1 = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got incidental overnight costs"
-    val costInformation = "These are personal costs they incurred while travelling overnight on business."
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient m‚n gostau dros nos"
+    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -109,7 +109,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val allowanceInformation: String = "The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance."
+    val allowanceInformation: String = "Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan iír DU. Dim ond costau syín uwch naír lwfans y mae angen i ni wybod amdanynt."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

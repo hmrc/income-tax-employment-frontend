@@ -66,10 +66,10 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer pay any of your incurred costs?"
-    val expectedHeading = "Did your employer pay any of your incurred costs?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?"
+    val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your employer paid any of your incurred costs"
+    val expectedErrorText = "Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oír costau yr ysgwyddwyd arnoch"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -80,10 +80,10 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer pay any of their incurred costs?"
-    val expectedHeading = "Did your client’s employer pay any of their incurred costs?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?"
+    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client’s employer paid any of their incurred costs"
+    val expectedErrorText = "Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oír costau yr ysgwyddwyd arno"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -99,7 +99,7 @@ class IncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelp
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val forExampleText = "For example, a speeding ticket or childcare."
+    val forExampleText = "Er enghraifft, tocyn goryrru neu ofal plant."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -122,7 +122,7 @@
         val employmentDates = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
             EmploymentDataForView(
                 messages(s"$msgKeyGeneric.employmentDates"),
-                employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+                employmentDatesFormatter(employmentDetails.startDate, employmentDetails.cessationDate),
                 EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
                 messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent))
             )

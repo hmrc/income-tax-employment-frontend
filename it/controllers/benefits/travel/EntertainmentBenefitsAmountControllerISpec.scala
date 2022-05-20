@@ -80,7 +80,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -94,13 +94,13 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for entertainment?"
-    val expectedHeading: String = "How much did you get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your P11D form, in the ‘entertainment’ box 16."
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer gwesteia?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer gwesteia?"
+    val expectedContent: String = "Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N oích ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount you got for entertainment"
-    val invalidFormatErrorText: String = "Enter the amount you got for entertainment in the correct format"
-    val maxAmountErrorText: String = "Your entertainment benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwesteia"
+    val invalidFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwesteia yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant gwesteia fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -114,13 +114,13 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for entertainment?"
-    val expectedHeading: String = "How much did your client get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your client’s P11D form, in the ‘entertainment’ box 16."
+    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer gwesteia?"
+    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer gwesteia?"
+    val expectedContent: String = "Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N o ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount your client got for entertainment"
-    val invalidFormatErrorText: String = "Enter the amount your client got for entertainment in the correct format"
-    val maxAmountErrorText: String = "Your client’s entertainment benefit must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwesteia"
+    val invalidFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwesteia yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant gwesteia eich cleient fod yn llai na £100,000,000,000"
   }
 
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))

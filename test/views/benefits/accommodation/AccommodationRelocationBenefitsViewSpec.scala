@@ -74,10 +74,10 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get accommodation or relocation benefits from this company?"
-    val expectedH1 = "Did you get accommodation or relocation benefits from this company?"
+    val expectedTitle = "A gawsoch fuddiannau llety neu adleoli gan y cwmni hwn?"
+    val expectedH1 = "A gawsoch fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got accommodation or relocation benefits"
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau llety neu adleoli"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -88,10 +88,10 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get accommodation or relocation benefits from this company?"
-    val expectedH1 = "Did your client get accommodation or relocation benefits from this company?"
+    val expectedTitle = "A gafodd eich cleient fuddiannau llety neu adleoli gan y cwmni hwn?"
+    val expectedH1 = "A gafodd eich cleient fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got accommodation or relocation benefits"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau llety neu adleoli"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

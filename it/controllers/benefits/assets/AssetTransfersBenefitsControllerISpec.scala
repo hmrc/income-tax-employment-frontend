@@ -68,11 +68,11 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer give you any assets to keep?"
-    val expectedHeading = "Did your employer give you any assets to keep?"
-    val expectedParagraph = "You became the owner of these assets."
+    val expectedTitle = "A roddodd eich cyflogwr unrhyw asedion i chi eu cadw?"
+    val expectedHeading = "A roddodd eich cyflogwr unrhyw asedion i chi eu cadw?"
+    val expectedParagraph = "Daethoch yn berchennog yr asedion hyn."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your employer gave you assets to keep"
+    val expectedErrorText = "Dewiswch ëIawní os rhoddodd eich cyflogwr asedion i chi eu cadw"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -84,11 +84,11 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer give them any assets to keep?"
-    val expectedHeading = "Did your client’s employer give them any assets to keep?"
-    val expectedParagraph = "Your client became the owner of these assets."
+    val expectedTitle = "A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?"
+    val expectedHeading = "A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?"
+    val expectedParagraph = "Daeth eich cleient yn berchennog yr asedion hyn."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client’s employer gave them assets to keep"
+    val expectedErrorText = "Dewiswch ëIawní os rhoddodd cyflogwr eich cleient asedion iddo eu cadw"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

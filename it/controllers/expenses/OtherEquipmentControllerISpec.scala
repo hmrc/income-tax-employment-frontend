@@ -80,9 +80,9 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
-    val expectedExample1 = "the cost of buying small items - like electrical drills and protective clothing"
-    val expectedExample2 = "capital allowances for larger items - like machinery and computers"
+    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
+    val expectedExample1 = "cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol"
+    val expectedExample2 = "lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
@@ -96,10 +96,10 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for buying other equipment?"
-    val expectedHeading = "Do you want to claim for buying other equipment?"
+    val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill?"
+    val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for buying other equipment"
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer prynu offer eraill"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -110,10 +110,10 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for buying other equipment for your client?"
-    val expectedHeading = "Do you want to claim for buying other equipment for your client?"
+    val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
+    val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client buying other equipment"
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

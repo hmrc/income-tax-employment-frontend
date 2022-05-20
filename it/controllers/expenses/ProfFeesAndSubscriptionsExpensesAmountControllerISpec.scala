@@ -105,14 +105,15 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for professional fees and subscriptions?"
-    val expectedHeading = "How much do you want to claim for professional fees and subscriptions?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount you want to claim for professional fees and subscriptions"
-    val expectedErrorIncorrectFormat = "Enter the amount you want to claim for professional fees and subscriptions in the correct format"
-    val expectedErrorOverMaximum = "The amount you want to claim for professional fees and subscriptions must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
+    val expectedErrorIncorrectFormat = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
 
-    def expectedReplayText(amount: BigDecimal): String = s"You told us you want to claim £$amount for professional fees and subscriptions. Tell us if this has changed."
+    def expectedReplayText(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer ffioedd a thanysgrifiadau proffesiynol. " +
+      "Rhowch wybod i ni os yw hyn wedi newid."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -127,14 +128,15 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for professional fees and subscriptions for your client?"
-    val expectedHeading = "How much do you want to claim for professional fees and subscriptions for your client?"
+    val expectedTitle = "Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
+    val expectedHeading = "Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount you want to claim for your client’s professional fees and subscriptions"
-    val expectedErrorIncorrectFormat = "Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format"
-    val expectedErrorOverMaximum = "The amount you want to claim for your client’s professional fees and subscriptions must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
+    val expectedErrorIncorrectFormat = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient fod yn llai na £100,000,000,000"
 
-    def expectedReplayText(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s professional fees and subscriptions. Tell us if this has changed."
+    def expectedReplayText(amount: BigDecimal): String = s"Dywedoch wrthym eich bod chi am hawlio £$amount ar gyfer ffioedd a thanysgrifiadau " +
+      "proffesiynol eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

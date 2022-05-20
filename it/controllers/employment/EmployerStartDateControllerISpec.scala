@@ -78,9 +78,6 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
     val expectedButtonText: String
-    val day: String
-    val month: String
-    val year: String
     val forExample: String
   }
 
@@ -102,20 +99,20 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "When did you start working for your employer?"
-    val expectedH1 = s"When did you start working at $employerName?"
+    val expectedTitle = "Pryd y gwnaethoch ddechrau gweithio iích cyflogwr?"
+    val expectedH1 = s"Pryd y gwnaethoch ddechrau gweithio yn $employerName?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val emptyDayError = "The date you started employment must include a day"
-    val emptyMonthError = "The date you started employment must include a month"
-    val emptyYearError = "The date you started employment must include a year"
-    val emptyDayYearError = "The date you started employment must include a day and year"
-    val emptyMonthYearError = "The date you started employment must include a month and year"
-    val emptyDayMonthError = "The date you started employment must include a day and month"
-    val emptyAllError = "Enter the date your employment started"
-    val invalidDateError = "The date you started employment must be a real date"
-    val tooLongAgoDateError = "The date you started your employment must be after 1 January 1900"
-    val tooRecentDateError = s"The date you started employment must be before 6 April $taxYearEOY"
-    val futureDateError = "The date you started employment must be in the past"
+    val emptyDayError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod"
+    val emptyMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis"
+    val emptyYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn"
+    val emptyDayYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn"
+    val emptyMonthYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn"
+    val emptyDayMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis"
+    val emptyAllError = "Nodwch y dyddiad y dechreuodd eich cyflogaeth"
+    val invalidDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn"
+    val tooLongAgoDateError = "Maeín rhaid i ddyddiad y gwnaethoch ddechrauích cyflogaeth fod ar Ùl 1 Ionawr 1900"
+    val tooRecentDateError = s"Maeín rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val futureDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -145,7 +142,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val emptyDayYearError = "The date your client started their employment must include a day and year"
     val emptyMonthYearError = "The date your client started their employment must include a month and year"
     val emptyDayMonthError = "The date your client started their employment must include a day and month"
-    val emptyAllError = "Enter the date your client’s employment started"
+    val emptyAllError = "Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient"
     val invalidDateError = "The date your client started their employment must be a real date"
     val tooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
     val tooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
@@ -155,19 +152,13 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
-    val day = "day"
-    val month = "month"
-    val year = "year"
     val forExample = "For example, 12 11 2007"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val day = "day"
-    val month = "month"
-    val year = "year"
-    val forExample = "For example, 12 11 2007"
+    val forExample = "Er enghraifft, 12 11 2007"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

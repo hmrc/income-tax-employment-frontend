@@ -79,11 +79,11 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "What’s the name of your employer?"
-    val expectedH1 = "What’s the name of your employer?"
+    val expectedTitle = "Beth oedd enwích cyflogwr?"
+    val expectedH1 = "Beth oedd enwích cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the name of your employer"
-    val expectedErrorWrongFormat = "Enter your employer name in the correct format"
+    val expectedErrorNoEntry = "Nodwch enwích cyflogwr"
+    val expectedErrorWrongFormat = "Nodwch enwích cyflogwr yn y fformat cywir"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -95,18 +95,17 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "What’s the name of your client’s employer?"
-    val expectedH1 = "What’s the name of your client’s employer?"
+    val expectedTitle = "Beth yw enw cyflogwr eich cleient?"
+    val expectedH1 = "Beth yw enw cyflogwr eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the name of your client’s employer"
-    val expectedErrorWrongFormat = "Enter your client’s employer name in the correct format"
+    val expectedErrorNoEntry = "Nodwch enw cyflogwr eich cleient"
+    val expectedErrorWrongFormat = "Nodwch enw cyflogwr eich cleient yn y fformat cywir"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
-    val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
     val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
     val formatList1 = "upper and lower case letters (a to z)"
     val formatList2 = "numbers"
@@ -116,12 +115,11 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
-    val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
-    val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
-    val formatList1 = "upper and lower case letters (a to z)"
-    val formatList2 = "numbers"
-    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
+    val expectedErrorCharLimit = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai"
+    val paragraphText = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val formatList1 = "llythrennau mawr a bach (a i z)"
+    val formatList2 = "rhifau"
+    val formatList3 = "y cymeriadau arbennig: & : ’ \\ , . ( ) -"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

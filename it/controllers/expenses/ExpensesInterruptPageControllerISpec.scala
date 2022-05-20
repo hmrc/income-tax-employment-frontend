@@ -65,8 +65,8 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val buttonText = "Yn eich blaen"
-    val expectedTitle = "Employment expenses"
-    val expectedHeading = "Employment expenses"
+    val expectedTitle = "Treuliau cyflogaeth"
+    val expectedHeading = "Treuliau cyflogaeth"
     val expectedExample2 = "You must add expenses as a total for all employment."
   }
 
@@ -76,7 +76,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedExample1 = "Use this section to update your employment expenses."
+    val expectedExample1 = "Defnyddiwch yr adran hon i ddiweddaru eich treuliau cyflogaeth."
     val expectedExample3 = "Tell us about expenses you did not claim through your employers."
   }
 
@@ -86,7 +86,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedExample1 = "Use this section to update your client’s employment expenses."
+    val expectedExample1 = "Defnyddiwch yr adran hon i ddiweddaru treuliau cyflogaeth eich cleient."
     val expectedExample3 = "Tell us about expenses your client did not claim through their employers."
   }
 

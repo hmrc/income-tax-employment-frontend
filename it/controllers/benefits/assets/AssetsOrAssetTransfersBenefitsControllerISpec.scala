@@ -73,12 +73,12 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any assets from this company?"
-    val expectedHeading = "Did you get any assets from this company?"
-    val expectedIncludesParagraph = "Include assets that your employer let you:"
-    val expectedBullet2 = "keep for yourself"
+    val expectedTitle = "A gawsoch unrhyw asedion gan y cwmni hwn?"
+    val expectedHeading = "A gawsoch unrhyw asedion gan y cwmni hwn?"
+    val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth eich cyflogwr eu rhoi dros dro i chi:"
+    val expectedBullet2 = "iíw cadw eich hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got assets"
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch asedion"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -91,12 +91,12 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any assets from this company?"
-    val expectedHeading = "Did your client get any assets from this company?"
-    val expectedIncludesParagraph = "Include assets that their employer let them:"
-    val expectedBullet2 = "keep for themselves"
+    val expectedTitle = "A gafodd eich cleient unrhyw asedion gan y cwmni hwn?"
+    val expectedHeading = "A gafodd eich cleient unrhyw asedion gan y cwmni hwn?"
+    val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth ei gyflogwr eu rhoi dros dro iddo:"
+    val expectedBullet2 = "iíw cadw iíw hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got assets"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient asedion"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -110,8 +110,8 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedDescriptionParagraph = "Assets are things like computers, televisions or bicycles."
-    val expectedBullet1 = "use"
+    val expectedDescriptionParagraph = "Asedion yw pethau fel cyfrifiaduron, setiau teledu neu feiciau."
+    val expectedBullet1 = "defnyddio"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

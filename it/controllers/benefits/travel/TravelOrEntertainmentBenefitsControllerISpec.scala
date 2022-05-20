@@ -70,10 +70,10 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did you get any travel or entertainment benefits from this company?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got travel or entertainment benefits"
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau teithio neu westeia"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -84,10 +84,10 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did your client get any travel or entertainment benefits from this company?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got travel or entertainment benefits"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio neu westeia"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -103,7 +103,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "This includes benefits such as travel, incidental overnight expenses and entertaining."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel treuliau teithio, m‚n dreuliau dros nos a gwesteia."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -39,7 +39,8 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    def paragraphSelector = "#main-content > div > div > p"
+    def paragraphSelector: String = "#main-content > div > div > p"
+
     def paragraphSelector2(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
@@ -84,12 +85,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -102,12 +103,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your Income Tax did your employer pay?"
-    val expectedHeading = "How much of your Income Tax did your employer pay?"
+    val expectedTitle = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
+    val expectedHeading = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your employer in the correct format"
-    val expectedErrorOverMaximum = "The Income Tax paid by your employer must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr"
+    val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -120,12 +121,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your client’s Income Tax did their employer pay?"
-    val expectedHeading = "How much of your client’s Income Tax did their employer pay?"
+    val expectedTitle = "Faint o Dreth Incwm eich cleient a dalodd ei gyflogwr?"
+    val expectedHeading = "Faint o Dreth Incwm eich cleient a dalodd ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your client’s employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your client’s employer in the correct format"
-    val expectedErrorOverMaximum = "The Income Tax paid by your client’s employer must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient"
+    val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

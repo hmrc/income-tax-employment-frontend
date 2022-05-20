@@ -74,7 +74,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
-    val expectedHintText = "For example, subscriptions or laundry services."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -86,11 +85,12 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a benefit for services provided by your employer?"
-    val expectedHeading = "Did you get a benefit for services provided by your employer?"
+    val expectedTitle = "A gawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr?"
+    val expectedHeading = "A gawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
-    val expectedParagraphText = "These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services."
+    val expectedErrorMessage = "Dewiswch ëIawní os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr"
+    val expectedParagraphText =
+      "Maeír rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig ‚ích swydd. Eich cyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -102,11 +102,12 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a benefit for services provided by their employer?"
-    val expectedHeading = "Did your client get a benefit for services provided by their employer?"
+    val expectedTitle = "A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?"
+    val expectedHeading = "A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
-    val expectedParagraphText = "These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services."
+    val expectedErrorMessage = "Dewiswch ëIawní os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr"
+    val expectedParagraphText =
+      "Maeír rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig ‚íi swydd. Ei gyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

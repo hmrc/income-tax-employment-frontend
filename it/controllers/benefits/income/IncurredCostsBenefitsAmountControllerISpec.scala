@@ -46,7 +46,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val formSelector = "#main-content > div > div > form"
 
     def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-    def paragraphSelector2 = "#main-content > div > div > p"
+
+    def paragraphSelector2: String = "#main-content > div > div > p"
   }
 
   trait CommonExpectedResults {
@@ -83,12 +84,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -101,12 +102,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your incurred costs did your employer pay?"
-    val expectedHeading = "How much of your incurred costs did your employer pay?"
+    val expectedTitle = "Faint oír costau yr ysgwyddwyd arnoch a dalodd eich cyflogwr?"
+    val expectedHeading = "Faint oír costau yr ysgwyddwyd arnoch a dalodd eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of incurred costs paid by your employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of incurred costs paid by your employer in the correct format"
-    val expectedErrorOverMaximum = "The incurred costs paid by your employer must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr"
+    val expectedErrorIncorrectFormat = "Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír costau a ysgwyddwyd ac a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -119,12 +120,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much of your client’s incurred costs did their employer pay?"
-    val expectedHeading = "How much of your client’s incurred costs did their employer pay?"
+    val expectedTitle = "Faint oír costau yr ysgwyddwyd ar eich cleient a dalodd ei gyflogwr?"
+    val expectedHeading = "Faint oír costau yr ysgwyddwyd ar eich cleient a dalodd ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of incurred costs paid by your client’s employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of incurred costs paid by your client’s employer in the correct format"
-    val expectedErrorOverMaximum = "The incurred costs paid by your client’s employer must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient"
+    val expectedErrorIncorrectFormat = "Nodwch swm y costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid iír costau a ysgwyddwyd ac a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

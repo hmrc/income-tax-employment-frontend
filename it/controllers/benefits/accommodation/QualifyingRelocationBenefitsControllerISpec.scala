@@ -85,7 +85,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
     val expectedH1 = "Did you get any qualifying relocation benefits?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if you got qualifying relocation benefits"
-    val expectedContent = "These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees. "
+    val expectedContent = "These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees."
     val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
   }
 
@@ -94,26 +94,26 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
     val expectedH1 = "Did your client get any qualifying relocation benefits?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got qualifying relocation benefits"
-    val expectedContent = "These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees. "
+    val expectedContent = "These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees."
     val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any qualifying relocation benefits?"
-    val expectedH1 = "Did you get any qualifying relocation benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiant adleoli cymwys?"
+    val expectedH1 = "A gawsoch unrhyw fuddiant adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got qualifying relocation benefits"
-    val expectedContent = "These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees. "
-    val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
+    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau adleoli cymwys"
+    val expectedContent = "Maeír rhain yn gostau y mae eich cyflogwr wedi’u talu iích helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
+    val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any qualifying relocation benefits?"
-    val expectedH1 = "Did your client get any qualifying relocation benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau adleoli cymwys?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got qualifying relocation benefits"
-    val expectedContent = "These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees. "
-    val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli cymwys"
+    val expectedContent = "Maeír rhain yn gostau y mae ei gyflogwr wediíu talu iíw helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
+    val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
   }
 
   ".show" when {
@@ -146,7 +146,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
           formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent + " " + user.specificExpectedResults.get.expectedExample1, contentSelector)
 
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -170,7 +170,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
           formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent + " " + user.specificExpectedResults.get.expectedExample1, contentSelector)
 
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -212,7 +212,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
+            textOnPageCheck(user.specificExpectedResults.get.expectedContent + " " + user.specificExpectedResults.get.expectedExample1, contentSelector)
           }
 
           "render the 'Did you get qualifying relocation benefits?' page with correct content and no button selected when there cya" +
@@ -243,7 +243,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
+            textOnPageCheck(user.specificExpectedResults.get.expectedContent + " " + user.specificExpectedResults.get.expectedExample1, contentSelector)
           }
         }
       }
@@ -341,7 +341,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
 
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent + " " + user.specificExpectedResults.get.expectedExample1, contentSelector)
         }
       }
     }

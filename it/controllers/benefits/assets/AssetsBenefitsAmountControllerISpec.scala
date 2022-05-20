@@ -85,12 +85,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Enter the total."
+    val enterTotalText = "Nodwch y cyfanswm."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -104,13 +104,13 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were the assets made available for your use?"
-    val expectedHeading = "How much were the assets made available for your use?"
+    val expectedTitle = "Beth oedd gwerth yr asedion a oedd ar gael i chi eu defnyddio?"
+    val expectedHeading = "Beth oedd gwerth yr asedion a oedd ar gael i chi eu defnyddio?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "You can find this information on your P11D form in section L, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets made available for your use"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets made available for your use in the correct format"
-    val expectedErrorOverMaximum = "The amount for assets made available for your use must be less than £100,000,000,000"
+    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar eich ffurflen P11D."
+    val expectedErrorNoEntry = "Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio"
+    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i swm yr asedion a oedd ar gael i chi eu defnyddio fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -124,13 +124,13 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much were the assets made available for your client’s use?"
-    val expectedHeading = "How much were the assets made available for your client’s use?"
+    val expectedTitle = "Beth oedd gwerth yr asedion a oedd ar gael iích cleient eu defnyddio?"
+    val expectedHeading = "Beth oedd gwerth yr asedion a oedd ar gael iích cleient eu defnyddio?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "You can find this information on your client’s P11D form in section L, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets made available for your client’s use"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets made available for your client’s use in the correct format"
-    val expectedErrorOverMaximum = "The amount for assets made available for your client’s use must be less than £100,000,000,000"
+    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar ffurflen P11D eich cleient."
+    val expectedErrorNoEntry = "Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio"
+    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio yn y fformat cywir"
+    val expectedErrorOverMaximum = "Maeín rhaid i swm yr asedion a oedd ar gael iích cleient eu defnyddio fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

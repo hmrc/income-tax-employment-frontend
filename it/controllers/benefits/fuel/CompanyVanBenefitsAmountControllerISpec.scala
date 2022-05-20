@@ -67,14 +67,14 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     override val amountHint: String = "For example, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount. "
+    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount. "
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -88,13 +88,13 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your total company van benefit?"
-    val expectedHeading: String = "How much was your total company van benefit?"
-    val expectedContent: String = "You can find this information on your P11D form in section G, box 9."
+    val expectedTitle: String = "Faint oedd cyfanswm eich buddiant fan cwmni?"
+    val expectedHeading: String = "Faint oedd cyfanswm eich buddiant fan cwmni?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 9 ar eich ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your company van benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your company van benefit amount"
-    val maxAmountErrorText: String = "Your company van benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm eich buddiant fan cwmni yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm eich buddiant fan cwmni"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant fan cwmniích cleient fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,13 +108,13 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s total company van benefit?"
-    val expectedHeading: String = "How much was your client’s total company van benefit?"
-    val expectedContent: String = "You can find this information on your client’s P11D form in section G, box 9."
+    val expectedTitle: String = "Faint oedd cyfanswm buddiant fan cwmni eich cleient?"
+    val expectedHeading: String = "Faint oedd cyfanswm buddiant fan cwmni eich cleient?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 9 ar ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your client’s company van benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your client’s company van benefit amount"
-    val maxAmountErrorText: String = "Your client’s company van benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm buddiant fan cwmniích cleient yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm buddiant fan cwmni eich cleient"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant fan cwmniích cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -184,7 +184,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent + get.expectedContent, contentSelector)
+          textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "300")
@@ -297,6 +297,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
+          welshToggleCheck(user.isWelsh)
         }
 
         "should render How much was your company van benefit? page with wrong format text when input is in incorrect format" which {
@@ -320,6 +321,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "|")
           errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
+          welshToggleCheck(user.isWelsh)
         }
 
         "should render How much was your company van benefit? page with max error ext when input > 100,000,000,000" which {
@@ -344,6 +346,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
+          welshToggleCheck(user.isWelsh)
         }
       }
     }

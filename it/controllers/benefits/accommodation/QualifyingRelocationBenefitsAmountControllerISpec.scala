@@ -72,7 +72,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £200."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -85,12 +85,12 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for qualifying relocation benefits?"
-    val expectedHeading: String = "How much did you get in total for qualifying relocation benefits?"
+    val expectedTitle: String = "Faint y cawsoch i gyd fel buddiant adleoli cymwys?"
+    val expectedHeading: String = "Faint y cawsoch i gyd fel buddiant adleoli cymwys?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm eich buddiant adleoli cymwys yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm eich buddiant adleoli cymwys"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant adleoli cymwys fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -103,12 +103,12 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s total qualifying relocation benefit?"
-    val expectedHeading: String = "How much was your client’s total qualifying relocation benefit?"
+    val expectedTitle: String = "Faint oedd cyfanswm buddiant adleoli cymwys eich cleient?"
+    val expectedHeading: String = "Faint oedd cyfanswm buddiant adleoli cymwys eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your client’s qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your client’s qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your client’s qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch swm buddiant adleoli cymwys eich cleient yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch swm buddiant adleoli cymwys eich cleient"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant adleoli cymwys eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

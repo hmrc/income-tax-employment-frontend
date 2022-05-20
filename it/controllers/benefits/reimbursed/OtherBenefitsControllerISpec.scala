@@ -69,10 +69,10 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any other benefits?"
-    val expectedHeading = "Did you get any other benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau eraill?"
+    val expectedHeading = "A gawsoch unrhyw fuddiannau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got any other benefits"
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau eraill"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,10 +83,10 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any other benefits?"
-    val expectedHeading = "Did your client get any other benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau eraill?"
+    val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got any other benefits"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient unrhyw fuddiannau eraill"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

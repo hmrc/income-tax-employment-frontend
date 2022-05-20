@@ -57,14 +57,14 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "You are not authorised to use this service"
-    val youCanText = "You can:"
-    val goToTheText = "go to the"
-    val incomeTaxHomePageText = "Income Tax home page (yn agor tab newydd)"
-    val forMoreInformationText = "for more information"
-    val useText = "use"
-    val selfAssessmentText = "Self Assessment: general enquiries (yn agor tab newydd)"
-    val toSpeakText = "to speak to someone about your income tax"
+    val h1Expected = "Nid ydych wediích awdurdodi i ddefnyddioír gwasanaeth hwn"
+    val youCanText = "Gallwch wneud y canlynol:"
+    val goToTheText = "mynd iír"
+    val incomeTaxHomePageText = "hafan Treth Incwm (yn agor tab newydd)"
+    val forMoreInformationText = "am ragor o wybodaeth"
+    val useText = "defnyddio"
+    val selfAssessmentText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
+    val toSpeakText = "i siarad ‚ rhywun am eich treth incwm"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {

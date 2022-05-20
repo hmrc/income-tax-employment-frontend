@@ -64,10 +64,10 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any car, van or fuel benefits from this company?"
-    val expectedH1 = "Did you get any car, van or fuel benefits from this company?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got car, van or fuel benefits"
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau trethadwy car, fan neu danwydd"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -78,10 +78,10 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any car, van or fuel benefits from this company?"
-    val expectedH1 = "Did your client get any car, van or fuel benefits from this company?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got car, van or fuel benefits"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau car, fan neu danwydd"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -97,7 +97,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "This includes benefits such as company cars or vans, company car or van fuel, and privately owned vehicle mileage allowances."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel ceir neu faniau cwmni, tanwydd ar gyfer car neu fan cwmni, a lwfansau milltiroedd ar gyfer cerbydau syín eiddo preifat."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

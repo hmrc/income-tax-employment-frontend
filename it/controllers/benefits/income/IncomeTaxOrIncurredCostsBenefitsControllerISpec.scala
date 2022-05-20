@@ -62,10 +62,10 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer pay any of your Income Tax or incurred costs?"
-    val expectedH1 = "Did your employer pay any of your Income Tax or incurred costs?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?"
+    val expectedH1 = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your employer paid any of your Income Tax or incurred costs"
+    val expectedError = "Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -76,10 +76,10 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer pay any of their Income Tax or incurred costs?"
-    val expectedH1 = "Did your client’s employer pay any of their Income Tax or incurred costs?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?"
+    val expectedH1 = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client’s employer paid any of their Income Tax or incurred costs"
+    val expectedError = "Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

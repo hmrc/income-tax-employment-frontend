@@ -75,11 +75,11 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get vouchers or credit cards?"
-    val expectedHeading = "Did you get vouchers or credit cards?"
+    val expectedTitle = "A gawsoch dalebau neu gardiau credyd?"
+    val expectedHeading = "A gawsoch dalebau neu gardiau credyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if you got vouchers or credit cards"
-    val paragraph = "We only need to know about vouchers you can exchange for:"
+    val expectedErrorText = "Dewiswch ëIawní os cawsoch dalebau neu gardiau credyd"
+    val paragraph = "Dim ond talebau y gallwch eu cyfnewid y mae angen i ni wybod amdanynt:"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -91,11 +91,11 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get vouchers or credit cards?"
-    val expectedHeading = "Did your client get vouchers or credit cards?"
+    val expectedTitle = "A gafodd eich cleient dalebau neu gardiau credyd?"
+    val expectedHeading = "A gafodd eich cleient dalebau neu gardiau credyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got vouchers or credit cards"
-    val paragraph = "We only need to know about vouchers your client can exchange for:"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient dalebau neu gardiau credyd"
+    val paragraph = "Dim ond talebau y gall eich cleient eu cyfnewid y mae angen i ni wybod amdanynt:"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -111,13 +111,13 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedBullet1 = "goods and services"
-    val expectedBullet2 = "a sum of money substantially less than the cost to provide them"
+    val expectedBullet1 = "nwyddau a gwasanaethau"
+    val expectedBullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val bullet1 = "goods and services"
-    val bullet2 = "a sum of money substantially less than the cost to provide them"
+    val bullet1 = "nwyddau a gwasanaethau"
+    val bullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -44,9 +44,9 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "For your security, we signed you out"
-    val p1Expected = "We did not save your answers."
-    val buttonExpectedText = "Sign in"
+    val h1Expected = "Er eich diogelwch, gwnaethom eich allgofnodi"
+    val p1Expected = "Ni wnaethom gadwích atebion."
+    val buttonExpectedText = "Mewngofnodi"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {

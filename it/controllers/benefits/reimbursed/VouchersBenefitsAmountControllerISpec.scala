@@ -86,13 +86,13 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
-    val expectedTitle: String = "What is the total value of vouchers and credit card payments?"
-    val expectedHeading: String = "What is the total value of vouchers and credit card payments?"
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
+    val expectedTitle: String = "Beth yw gwerth llawn y talebau aír taliadau cerdyn credyd?"
+    val expectedHeading: String = "Beth yw gwerth llawn y talebau aír taliadau cerdyn credyd?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount for vouchers or credit cards"
-    val invalidFormatErrorText: String = "Enter the amount for vouchers or credit cards in the correct format"
-    val maxAmountErrorText: String = "The amount for vouchers or credit cards must be less than £100,000,000,000"
+    val emptyErrorText: String = "Nodwch y swm ar gyfer talebau neu gardiau credyd"
+    val invalidFormatErrorText: String = "Nodwch y swm ar gyfer talebau neu gardiau credyd yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid iír swm ar gyfer talebau neu gardiau credyd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -100,7 +100,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val youCanText: String = "You can find this information on your P11D form in section C, box 12."
+    val youCanText: String = "Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar eich ffurflen P11D."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,7 +108,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val youCanText: String = "You can find this information on your client’s P11D form in section C, box 12."
+    val youCanText: String = "Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar ffurflen P11D eich cleient."
   }
 
   private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))

@@ -70,10 +70,10 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Were any of your taxable costs reimbursed by your employer?"
-    val expectedHeading = "Were any of your taxable costs reimbursed by your employer?"
+    val expectedTitle = "A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if any of your taxable costs were reimbursed by your employer"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -84,10 +84,10 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Were any of your client’s taxable costs reimbursed by their employer?"
-    val expectedHeading = "Were any of your client’s taxable costs reimbursed by their employer?"
+    val expectedTitle = "A gafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Select yes if any of your client’s taxable costs were reimbursed by their employer"
+    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -103,7 +103,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val theseAreText = "These are any costs that are not taxed at source, for example, commuting for a non-business purpose."
+    val theseAreText = "Maeír rhain yn unrhyw gostau sydd ddim yn cael eu trethu wrth y ffynhonnell, er enghraifft, cymudo at ddiben nad ywín ymwneud ‚ busnes."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -34,7 +34,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
   }
 
   object ExpectedResultsEN {
-    val h1Expected = "There’s a problem"
+    val h1Expected = "There is a problem"
     val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
     val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
     val beforeYouCanTryText = "before you can sign in to this service."
@@ -44,7 +44,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
   }
 
   object ExpectedResultsCY {
-    val h1Expected = "There’s a problem"
+    val h1Expected = "Mae problem wedi codi"
     val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
     val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
     val beforeYouCanTryText = "cyn y gallwch fewngofnodi i’r gwasanaeth hwn."

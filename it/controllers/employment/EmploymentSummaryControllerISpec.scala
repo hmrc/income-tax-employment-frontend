@@ -174,17 +174,17 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val change: String = s"Newid"
     val remove: String = s"Tynnu"
     val addAnother: String = "Add another employer"
-    val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
-    val expenses: String = "Expenses"
+    val thisIsATotal: String = "Dyma gyfanswm o dreuliau o bob cyflogaeth yn y flwyddyn dreth."
+    val expenses: String = "Treuliau"
     val addEmployer: String = "Add an employer"
     val addExpenses: String = "Add expenses"
-    val employer: String = "Employer"
+    val employer: String = "Cyflogwr"
     val employers: String = "Employers"
-    val returnToOverview: String = "Return to overview"
-    val employmentDetails: String = "Employment details"
-    val benefits: String = "Benefits"
+    val returnToOverview: String = "Yn Ùl iír trosolwg"
+    val employmentDetails: String = "Manylion Cyflogaeth"
+    val benefits: String = "Buddiannau"
     val view: String = "View"
-    val cannotUpdate: String = "Cannot update"
+    val cannotUpdate: String = "Ddim yn gallu diweddaru"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -202,16 +202,16 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
-    val yourEmpInfoStudentLoansUnreleased: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot update your employment information until 6 April $taxYear."
+    val yourEmpInfo: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details and benefits."
+    val cannotUpdateInfo: String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
     val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
-    val yourEmpInfoStudentLoansUnreleased: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
-    val cannotUpdateInfo: String = s"You cannot update your client’s employment information until 6 April $taxYear."
+    val yourEmpInfo: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details and benefits."
+    val cannotUpdateInfo: String = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
     val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
   }
 
@@ -620,7 +620,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(isAgent = true)
             userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-            urlGet(s"$appUrl/$taxYearEOY/employment-summary", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(s"$appUrl/$taxYearEOY/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
@@ -631,6 +631,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe OK
           }
 
+          welshToggleCheck(user.isWelsh)
           textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
           linkCheck(addExpenses, addExpensesSelector, claimEmploymentExpensesUrl(taxYearEOY))
           textOnPageCheck(employers, employersSelector, "as a heading")

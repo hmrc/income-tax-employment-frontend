@@ -78,7 +78,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "If it was not £100, tell us the correct amount."
+    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £100."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -92,13 +92,13 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for travel and subsistence?"
-    val expectedHeading: String = "How much did you get in total for travel and subsistence?"
-    val expectedContent: String = "You can find this information in section N of your P11D form."
+    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer teithio a chynhaliaeth?"
+    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer teithio a chynhaliaeth?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran N ar eich ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount you got for travel and subsistence in the correct format"
-    val emptyErrorText: String = "Enter the amount you got for travel and subsistence"
-    val maxAmountErrorText: String = "Your travel and subsistence benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer teithio a chynhaliaeth yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer teithio a chynhaliaeth"
+    val maxAmountErrorText: String = "Maeín rhaid iích buddiant teithio a chynhaliaeth fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -112,13 +112,13 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for travel and subsistence?"
-    val expectedHeading: String = "How much did your client get in total for travel and subsistence?"
-    val expectedContent: String = "You can find this information in section N of your client’s P11D form."
+    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer teithio a chynhaliaeth?"
+    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer teithio a chynhaliaeth?"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran N ar ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your client got for travel and subsistence in the correct format"
-    val emptyErrorText: String = "Enter the amount your client got for travel and subsistence"
-    val maxAmountErrorText: String = "Your client’s travel and subsistence benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer teithio a chynhaliaeth yn y fformat cywir"
+    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer teithio a chynhaliaeth"
+    val maxAmountErrorText: String = "Maeín rhaid i fuddiant teithio a chynhaliaeth eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

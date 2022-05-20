@@ -29,7 +29,8 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
+  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -78,7 +79,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
-    val optionalText = s"If it was not £${livingAccommodationBenefitAmount.get}, tell us the correct amount."
+    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £${livingAccommodationBenefitAmount.get}."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -102,23 +103,23 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much was your total living accommodation benefit?"
-    val expectedTitle: String = "How much was your total living accommodation benefit?"
+    val expectedH1: String = "Faint oedd cyfanswm eich buddiant llety byw?"
+    val expectedTitle: String = "Faint oedd cyfanswm eich buddiant llety byw?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "You can find this information on your P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your living accommodation benefit amount must be less than £100,000,000,000"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar eich ffurflen P11D."
+    val emptyErrorText: String = "Nodwch swm eich buddiant llety byw"
+    val wrongFormatErrorText: String = "Nodwch swm eich buddiant llety byw yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid i swm eich buddiant llety byw fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much was your client’s total living accommodation benefit?"
-    val expectedTitle: String = "How much was your client’s total living accommodation benefit?"
+    val expectedH1: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
+    val expectedTitle: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "You can find this information on your client’s P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your client’s living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your client’s living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s living accommodation benefit amount must be less than £100,000,000,000"
+    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar ffurflen P11D eich cleient."
+    val emptyErrorText: String = "Nodwch swm buddiant llety byw eich cleient"
+    val wrongFormatErrorText: String = "Nodwch swm buddiant llety byw eich cleient yn y fformat cywir"
+    val maxAmountErrorText: String = "Maeín rhaid i swm buddiant llety byw eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

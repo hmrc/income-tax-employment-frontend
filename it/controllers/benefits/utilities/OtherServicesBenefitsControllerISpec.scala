@@ -69,11 +69,11 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any benefits for other services?"
-    val expectedH1 = "Did you get any benefits for other services?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got benefits for other services"
-    val expectedContent = "These are any other services you have used that are required for your job. Your employer pays for them."
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau eraill"
+    val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill rydych wediíu defnyddio syín ofynnol ar gyfer eich swydd. Eich cyflogwr syín talu amdanynt."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -85,11 +85,11 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any benefits for other services?"
-    val expectedH1 = "Did your client get any benefits for other services?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got benefits for other services"
-    val expectedContent = "These are any other services they have used that are required for their job. Their employer pays for them."
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill"
+    val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -105,7 +105,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val theseAre = "These are any other services they have used that are required for their job. Their employer pays for them."
+    val theseAre = "Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

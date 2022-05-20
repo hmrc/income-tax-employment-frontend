@@ -80,10 +80,10 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a company van benefit?"
-    val expectedHeading = "Did you get a company van benefit?"
+    val expectedTitle = "A gawsoch fuddiant fan cwmni?"
+    val expectedHeading = "A gawsoch fuddiant fan cwmni?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Select yes if you got a company van benefit"
+    val expectedNoEntryErrorMessage = "Dewiswch ëIawní os cawsoch fuddiant fan cwmni"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -94,10 +94,10 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a company van benefit?"
-    val expectedHeading = "Did your client get a company van benefit?"
+    val expectedTitle = "A gafodd eich cleient fuddiant fan cwmni?"
+    val expectedHeading = "A gafodd eich cleient fuddiant fan cwmni?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Select yes if your client got a company van benefit"
+    val expectedNoEntryErrorMessage = "Dewiswch ëIawní os cafodd eich cleient fuddiant fan cwmni"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

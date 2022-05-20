@@ -87,13 +87,13 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any non-qualifying relocation benefits?"
-    val expectedH1 = "Did you get any non-qualifying relocation benefits?"
+    val expectedTitle = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
+    val expectedH1 = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you got non-qualifying relocation benefits"
-    val expectedContent = "These are relocation costs that your employer has paid for, or reimbursed you for. Examples include:"
-    val expectedExample1 = "mortgage or housing payments if you’re moving to a more expensive area"
-    val expectedExample2 = "compensation if you lose money when selling your home"
+    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau adleoli anghymwys"
+    val expectedContent = "Costau adleoli ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Mae enghreifftiauín cynnwys:"
+    val expectedExample1 = "taliadau morgais neu dai os ydych chiín symud i ardal ddrutach"
+    val expectedExample2 = "iawndal os byddwch yn colli arian wrth werthu eich cartref"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -107,13 +107,13 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any non-qualifying relocation benefits?"
-    val expectedH1 = "Did your client get any non-qualifying relocation benefits?"
+    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
+    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client got non-qualifying relocation benefits"
-    val expectedContent = "These are relocation costs that their employer has paid for, or reimbursed them for. Examples include:"
-    val expectedExample1 = "mortgage or housing payments if they’re moving to a more expensive area"
-    val expectedExample2 = "compensation if they lose money when selling their home"
+    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli anghymwys"
+    val expectedContent = "Costau adleoli ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Mae enghreifftiauín cynnwys:"
+    val expectedExample1 = "taliadau morgais neu dai os ywín symud i ardal ddrutach"
+    val expectedExample2 = "iawndal os ywín colli arian wrth werthu ei gartref"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

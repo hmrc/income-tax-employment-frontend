@@ -116,26 +116,26 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "These expenses are things like:"
+    val expectedParagraphText = "Maeír treuliau hyn yn bethau fel:"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
-    val expectedExample1 = "public transport costs"
-    val expectedExample2 = "using a vehicle for business travel"
-    val expectedExample3 = "hotel accommodation if you have to stay overnight"
-    val expectedExample4 = "food and drink"
-    val expectedExample5 = "congestion charges, tolls and parking fees"
-    val expectedExample6 = "business phone calls and printing costs"
-    val expectedDetailsTitle = "Using your own vehicle for business travel"
-    val expectedDetails2 = "multiply the mileage by the approved mileage allowance"
-    val expectedApprovedMileageHeading = "Approved mileage allowance"
-    val expectedCarVanHeading = "Car and vans"
-    val expectedCarVanText1 = "45p for the first 10,000 miles"
-    val expectedCarVanText2 = "25p for every mile over 10,000"
-    val expectedMotorcycleHeading = "Motorcycle"
-    val expectedMotorcycleText = "24p a mile"
-    val expectedBicycleHeading = "Bicycle"
-    val expectedBicycleText = "20p a mile"
+    val expectedExample1 = "costau trafnidiaeth cyhoeddus"
+    val expectedExample2 = "defnyddio cerbyd ar gyfer teithiau busnes"
+    val expectedExample3 = "llety mewn gwesty os oes rhaid i chi aros dros nos"
+    val expectedExample4 = "bwyd a diod"
+    val expectedExample5 = "taliadau atal tagfeydd, tollau a ffioedd parcio"
+    val expectedExample6 = "galwadau ffÙn a chostau argraffuír busnes"
+    val expectedDetailsTitle = "Os ydych yn defnyddioích cerbyd eich hun ar gyfer teithiau busnes"
+    val expectedDetails2 = "lluoswch y milltiroedd ‚ír lwfans milltiroedd cymeradwy"
+    val expectedApprovedMileageHeading = "Lwfans milltiroedd cymeradwy"
+    val expectedCarVanHeading = "Ceir a faniau"
+    val expectedCarVanText1 = "45c am y 10,000 milltir gyntaf"
+    val expectedCarVanText2 = "25c am bob milltir dros 10,000"
+    val expectedMotorcycleHeading = "Beic modur"
+    val expectedMotorcycleText = "24c y filltir"
+    val expectedBicycleHeading = "Beic"
+    val expectedBicycleText = "20c y filltir"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -150,14 +150,14 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim business travel and overnight expenses?"
-    val expectedHeading = "Do you want to claim business travel and overnight expenses?"
+    val expectedTitle = "A ydych am hawlio unrhyw dreuliau teithio busness ac aros dros nos?"
+    val expectedHeading = "A ydych am hawlio unrhyw dreuliau teithio busness ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim travel and overnight stays"
-    val expectedDoNotInclude = "Do not include your usual travel to work costs."
-    val expectedDetailsInfo = "To work out how much you can claim for the tax year, you’ll need to:"
-    val expectedDetails1 = "add up the mileage for each vehicle type you’ve used for work"
-    val expectedDetails3 = "take away any amount your employer paid you towards your costs"
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos"
+    val expectedDoNotInclude = "Peidiwch ‚ chynnwys eich costau teithio iír gwaith arferol."
+    val expectedDetailsInfo = "Er mwyn cyfrifo faint y gallwch ei hawlio ar gyfer y flwyddyn dreth, bydd angen i chi wneud y canlynol:"
+    val expectedDetails1 = "adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd rydych wedi ei ddefnyddio ar gyfer gwaith"
+    val expectedDetails3 = "tynnwch unrhyw swm a dalodd eich cyflogwr tuag at eich costau"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -172,14 +172,14 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim your client’s business travel and overnight expenses?"
-    val expectedHeading = "Do you want to claim your client’s business travel and overnight expenses?"
+    val expectedTitle = "A ydych am hawlio ar gyfer treuliau teithio busnes ac aros dros nos eich cleient?"
+    val expectedHeading = "A ydych am hawlio ar gyfer treuliau teithio busnes ac aros dros nos eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client’s travel and overnight stays"
-    val expectedDoNotInclude = "Do not include your client’s usual travel to work costs."
-    val expectedDetailsInfo = "To work out how much your client can claim for the tax year, you’ll need to:"
-    val expectedDetails1 = "add up the mileage for each vehicle type your client used for work"
-    val expectedDetails3 = "take away any amount your client’s employer paid them towards their costs"
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
+    val expectedDoNotInclude = "Peidiwch ‚ chynnwys costau teithio iír gwaith arferol eich cleient."
+    val expectedDetailsInfo = "Er mwyn cyfrifo faint y gall eich cleient ei hawlio ar gyfer pob blwyddyn dreth, bydd angen i chi wneud y canlynol:"
+    val expectedDetails1 = "adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd y maeích cleient yn ei ddefnyddio ar gyfer gwaith"
+    val expectedDetails3 = "tynnwch unrhyw swm a dalodd cyflogwr eich cleient tuag at ei gostau"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

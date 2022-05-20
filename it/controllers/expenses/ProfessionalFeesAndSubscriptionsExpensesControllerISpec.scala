@@ -76,7 +76,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
+    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
@@ -93,13 +93,13 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for professional fees and subscriptions?"
-    val expectedHeading = "Do you want to claim for professional fees and subscriptions?"
+    val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
+    val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for professional fees and subscriptions"
-    val expectedExample1 = "professional membership fees, if you have to pay the fees to do your job"
-    val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your job"
-    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (yn agor tab newydd)."
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
+    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith"
+    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i’ch swydd"
+    val checkIfYouCanClaim = "Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,13 +113,13 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for professional fees and subscriptions for your client?"
-    val expectedHeading = "Do you want to claim for professional fees and subscriptions for your client?"
+    val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
+    val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client’s professional fees and subscriptions"
-    val expectedExample1 = "professional membership fees, if your client has to pay the fees to do their job"
-    val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job"
-    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (yn agor tab newydd)."
+    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
+    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith"
+    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient"
+    val checkIfYouCanClaim = "Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
