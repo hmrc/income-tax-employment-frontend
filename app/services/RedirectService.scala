@@ -785,15 +785,18 @@ object RedirectService extends Logging {
   }
 
   def getUnfinishedRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[Call] = {
-    if(cya.employmentBenefits.exists(benefits => benefits.isBenefitsReceived)){
+    if (cya.employmentBenefits.exists(benefits => benefits.isBenefitsReceived)) {
       unfinishedRedirects(cya)(taxYear, employmentId)
     } else {
       Seq()
     }
   }
 
-  def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
-                                isPriorSubmission: Boolean, isStandaloneQuestion: Boolean = true): Result = {
+  def employmentDetailsRedirect(cya: EmploymentCYAModel,
+                                taxYear: Int,
+                                employmentId: String,
+                                isPriorSubmission: Boolean,
+                                isStandaloneQuestion: Boolean = true): Result = {
     Redirect(if (isPriorSubmission && isStandaloneQuestion) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
@@ -801,7 +804,7 @@ object RedirectService extends Logging {
     })
   }
 
-  def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call = {
+  private def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call = {
     cya match {
       case EmploymentCYAModel(EmploymentDetails(_, None, _, _, _, _, _, _, _, _, _, _), _, _) => PayeRefController.show(taxYear, employmentId)
       case EmploymentCYAModel(EmploymentDetails(_, _, _, _, None, _, _, _, _, _, _, _), _, _) => DidYouLeaveEmployerController.show(taxYear, employmentId)

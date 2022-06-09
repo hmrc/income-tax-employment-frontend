@@ -19,14 +19,14 @@ package controllers.employment
 import actions.AuthorisedAction
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.{CheckEmploymentDetailsController, PayeRefController}
 import forms.employment.EmployerNameForm
 import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerNameView
@@ -79,15 +79,32 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
       case Some(data: EmploymentUserData) =>
         val cya = data.employment
         val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = employerName))
-        employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,
-          data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError())(
-          employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission)
-        )
+        employmentSessionService.createOrUpdateSessionData(
+          user = request.user,
+          taxYear = taxYear,
+          employmentId = employmentId,
+          cyaModel = updatedCya,
+          isPriorSubmission = data.isPriorSubmission,
+          hasPriorBenefits = data.hasPriorBenefits,
+          hasPriorStudentLoans = data.hasPriorStudentLoans
+        )(errorHandler.internalServerError())(Redirect(getRedirectCall(cya.employmentDetails, taxYear, employmentId)))
       case None =>
-        val isPrior = false
         val newCya = EmploymentCYAModel(EmploymentDetails(employerName = employerName, currentDataIsHmrcHeld = false))
-        employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, newCya, isPrior, isPrior,
-          isPrior)(errorHandler.internalServerError())(employmentDetailsRedirect(newCya, taxYear, employmentId, isPrior))
+        employmentSessionService.createOrUpdateSessionData(
+          user = request.user,
+          taxYear = taxYear,
+          employmentId = employmentId,
+          cyaModel = newCya,
+          isPriorSubmission = false,
+          hasPriorBenefits = false,
+          hasPriorStudentLoans = false
+        )(errorHandler.internalServerError())(Redirect(getRedirectCall(newCya.employmentDetails, taxYear, employmentId)))
     }
+  }
+
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else PayeRefController.show(taxYear, employmentId)
   }
 }

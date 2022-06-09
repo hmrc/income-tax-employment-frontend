@@ -40,16 +40,15 @@ case class EmploymentDetails(employerName: String,
       totalTaxToDate.isDefined
 
   val isFinished: Boolean = {
-    val cessationSectionFinished = {
-      didYouLeaveQuestion match {
-        case Some(true) => cessationDate.isDefined
-        case Some(false) => true
-        case None => false
-      }
+    val cessationSectionFinished = didYouLeaveQuestion match {
+      case Some(true) => cessationDate.isDefined
+      case Some(false) => true
+      case None => false
     }
 
     employerRef.isDefined &&
       startDate.isDefined &&
+      payrollId.isDefined &&
       taxablePayToDate.isDefined &&
       totalTaxToDate.isDefined &&
       cessationSectionFinished

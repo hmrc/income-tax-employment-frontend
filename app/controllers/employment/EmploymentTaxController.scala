@@ -24,9 +24,8 @@ import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -86,7 +85,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateTotalTaxToDate(request.user, taxYear, employmentId, employmentUserData, totalTaxToDate).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+      case Right(_) => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
     }
   }
 

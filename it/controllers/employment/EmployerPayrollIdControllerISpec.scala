@@ -27,6 +27,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, overviewUrl, payrollIdUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -202,7 +203,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with the id pre-filled when theres payrollId data in cya" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -242,7 +242,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
@@ -257,13 +256,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(payrollIdUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location").contains(overviewUrl(taxYear)) shouldBe true
           }
         }
-
       }
     }
   }
@@ -396,7 +393,8 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya())
+            val data = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true, anEmploymentCYAModel)
+            insertCyaData(data)
             urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -405,6 +403,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to the Check Employment Details page" in {
+
             result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
           }
 

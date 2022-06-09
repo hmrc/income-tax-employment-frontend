@@ -24,13 +24,13 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import utils.PageUrls.{employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, overviewUrl, didYouLeaveUrl}
+import utils.PageUrls.{didYouLeaveUrl, employmentDatesUrl, employmentStartDateUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employerName: String = "HMRC"
-  private val employmentStartDate: String = s"${taxYearEOY-1}-01-01"
+  private val employmentStartDate: String = s"${taxYearEOY - 1}-01-01"
   private val employmentId: String = "001"
   private val cessationDate: Option[String] = Some(s"$taxYearEOY-01-01")
 
@@ -115,7 +115,6 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the 'did you leave employer' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -274,14 +273,12 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
             result.status shouldBe SEE_OTHER
             result.header("location").contains(overviewUrl(taxYear)) shouldBe true
           }
-
         }
       }
     }
   }
 
   ".submit" should {
-
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
@@ -295,9 +292,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
     }
 
     "Update the didYouLeaveQuestion to no and wipe the cessationDate data when the user chooses no" which {
-
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
@@ -313,15 +308,11 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
         cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(false)
-
       }
-
     }
 
     "Update the didYouLeaveQuestion to yes and when the user chooses yes and not wipe out the cessation date" which {
-
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
@@ -337,43 +328,14 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
         cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(true)
-
       }
-
-    }
-
-    "Redirect to employer ref page when there's a missing answer" which {
-
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, employerRef = None,
-          startDate = None, cessationDate = cessationDate, didYouLeaveQuestion = None, hmrc = true)))
-
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "redirects to the missing employer ref page" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
-        cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(true)
-
-      }
-
     }
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
           "the value is empty" which {
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)))
