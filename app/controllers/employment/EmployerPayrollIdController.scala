@@ -18,14 +18,13 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmployerPayAmountController}
 import forms.employment.EmployerPayrollIdForm
 import models.AuthorisationRequest
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -81,7 +80,17 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updatePayrollId(request.user, taxYear, employmentId, employmentUserData, payrollId).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+    }
+  }
+
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) {
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
+    } else {
+      EmployerPayAmountController.show(taxYear, employmentId)
     }
   }
 }

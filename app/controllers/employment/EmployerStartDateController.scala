@@ -18,15 +18,16 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmployerPayrollIdController}
 import forms.employment.EmploymentDateForm
+import forms.employment.EmploymentDateForm.employmentStartDateForm
 import models.AuthorisationRequest
 import models.employment.EmploymentDate
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
@@ -53,11 +54,11 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
         data.employment.employmentDetails.startDate match {
           case Some(startDate) =>
             val parsedDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
-            val filledForm: Form[EmploymentDate] = form.fill(
+            val filledForm: Form[EmploymentDate] = employmentStartDateForm.fill(
               EmploymentDate(parsedDate.getDayOfMonth.toString, parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerStartDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case None =>
-            Future.successful(Ok(employerStartDateView(form, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            Future.successful(Ok(employerStartDateView(employmentStartDateForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
         }
       }
     }
@@ -66,7 +67,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        val newForm = form.bindFromRequest()
+        val newForm = employmentStartDateForm.bindFromRequest()
         newForm.copy(errors = EmploymentDateForm.verifyStartDate(newForm.get, taxYear, request.user.isAgent, EmploymentDateForm.startDate)).fold(
           formWithErrors =>
             Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName))),
@@ -80,10 +81,17 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateStartDate(request.user, taxYear, employmentId, employmentUserData, startedDate).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) =>
-        employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission, isStandaloneQuestion = false)
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) {
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
+    } else {
+      EmployerPayrollIdController.show(taxYear, employmentId)
+    }
+  }
 }

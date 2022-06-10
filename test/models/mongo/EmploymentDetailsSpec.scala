@@ -66,4 +66,62 @@ class EmploymentDetailsSpec extends UnitTest {
       underTest.isSubmittable shouldBe true
     }
   }
+
+  ".isFinished" should {
+    "return false" when {
+      "employerRef is None" in {
+        val underTest = anEmploymentDetails.copy(employerRef = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "startDate is None" in {
+        val underTest = anEmploymentDetails.copy(startDate = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "payrollId is None" in {
+        val underTest = anEmploymentDetails.copy(payrollId = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "didYouLeaveQuestion is true and cessationDate is None" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "didYouLeaveQuestion is None" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "taxablePayToDate is None" in {
+        val underTest = anEmploymentDetails.copy(taxablePayToDate = None)
+
+        underTest.isFinished shouldBe false
+      }
+
+      "totalTaxToDate is None" in {
+        val underTest = anEmploymentDetails.copy(totalTaxToDate = None)
+
+        underTest.isFinished shouldBe false
+      }
+    }
+
+    "return true" when {
+      "all fields are populated and didYouLeaveQuestion is false" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false), cessationDate = None)
+
+        underTest.isFinished shouldBe true
+      }
+
+      "all fields are populated" in {
+        anEmploymentDetails.isFinished shouldBe true
+      }
+    }
+  }
 }

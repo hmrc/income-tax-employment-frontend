@@ -18,14 +18,14 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmployerPayrollIdController}
 import forms.employment.EmploymentDatesForm
 import models.employment.{EmploymentDate, EmploymentDates}
+import models.mongo.EmploymentDetails
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{InYearUtil, SessionHelper}
@@ -56,7 +56,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
             val parsedEndDate: Option[LocalDate] = endDate.map(LocalDate.parse(_, localDateTimeFormat))
             val filledForm: Form[EmploymentDates] = datesForm.fill(
               EmploymentDates(
-                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString,localDate.getMonthValue.toString, localDate.getYear.toString)),
+                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString)),
                 parsedEndDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
             Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
@@ -81,13 +81,28 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
               cessationDate = submittedDate.endDateToLocalDate.map(_.toString))
             )
 
-            employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,
-              data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError())(
-              employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission, isStandaloneQuestion = false)
-            )
+            employmentSessionService.createOrUpdateSessionData(
+              request.user,
+              taxYear,
+              employmentId,
+              updatedCya,
+              data.isPriorSubmission,
+              data.hasPriorBenefits,
+              data.hasPriorStudentLoans
+            )(errorHandler.internalServerError())(Redirect(getRedirectCall(updatedCya.employmentDetails, taxYear, employmentId)))
           }
         )
       }
+    }
+  }
+
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) {
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
+    } else {
+      EmployerPayrollIdController.show(taxYear, employmentId)
     }
   }
 }

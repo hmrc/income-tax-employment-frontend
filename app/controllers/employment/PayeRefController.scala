@@ -21,12 +21,11 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
 import forms.employment.PayeForm
 import models.AuthorisationRequest
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -83,11 +82,22 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
     }
   }
 
+
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payeRef: String)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateEmployerRef(request.user, taxYear, employmentId, employmentUserData, payeRef).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+    }
+  }
+
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) {
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
+    } else {
+      DidYouLeaveEmployerController.show(taxYear, employmentId)
     }
   }
 }

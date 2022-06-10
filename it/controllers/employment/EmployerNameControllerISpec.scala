@@ -25,6 +25,8 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -133,7 +135,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the 'name of your employer' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -210,9 +211,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         result.status shouldBe SEE_OTHER
         result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
-
     }
-
   }
 
 
@@ -220,12 +219,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
           "the submitted data is empty" which {
             lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> "")
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -256,7 +252,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "the submitted data is in the wrong format" which {
             lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> "~name~")
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -287,7 +282,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "the submitted data is too long" which {
             lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> charLimit)
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -332,9 +326,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     }
 
     "create a new cya model with the employer name (not prior submission)" which {
-
       lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> employerName)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -347,13 +339,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
-
     }
 
     "update a recently created cya model with the employer name (not prior submission)" which {
-
       lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> employerName)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -367,16 +356,14 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
-
     }
 
     "update existing cya model with the new employer name" which {
       lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> updatedEmployerName)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(employerName = employerName))))
         urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -385,11 +372,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
-
       }
-
     }
   }
-
 }
 

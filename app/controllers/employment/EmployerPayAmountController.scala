@@ -18,15 +18,14 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentTaxController}
 import forms.AmountForm
 import models.AuthorisationRequest
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -84,7 +83,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
@@ -92,4 +91,14 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
     emptyFieldKey = s"employerPayAmount.error.empty.${if (isAgent) "agent" else "individual"}",
     wrongFormatKey = "employerPayAmount.error.wrongFormat", exceedsMaxAmountKey = "employerPayAmount.error.amountMaxLimit"
   )
+
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
+                              taxYear: Int,
+                              employmentId: String): Call = {
+    if (employmentDetails.isFinished) {
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
+    } else {
+      EmploymentTaxController.show(taxYear, employmentId)
+    }
+  }
 }
