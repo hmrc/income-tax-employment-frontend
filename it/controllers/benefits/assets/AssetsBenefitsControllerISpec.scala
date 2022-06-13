@@ -18,8 +18,6 @@ package controllers.benefits.assets
 
 import forms.YesNoForm
 import models.benefits.AssetsModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -35,181 +33,23 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
   private val employmentId: String = "employmentId"
 
-  object Selectors {
-    val youCanUseTextSelector = "#main-content > div > div > p"
-    val yesSelector = "#value"
-    val continueButtonSelector = "#continue"
-    val formSelector = "#main-content > div > div > form"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-    val continueText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val youCanUseText: String
-    val expectedErrorTitle: String
-    val expectedErrorText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueText = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val continueText = "Yn eich blaen"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer make any assets available for your use?"
-    val expectedHeading = "Did your employer make any assets available for your use?"
-    val youCanUseText = "You can use these assets but you do not own them."
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your employer made assets available for your use"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
-    val expectedHeading = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
-    val youCanUseText = "Gallwch ddefnyddioír asedion hyn ond nid ydych yn berchen arnynt."
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer make any assets available for their use?"
-    val expectedHeading = "Did your client’s employer make any assets available for their use?"
-    val youCanUseText = "They can use these assets but they do not own them."
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your client’s employer made assets available for their use"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
-    val expectedHeading = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
-    val youCanUseText = "Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt."
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio"
-  }
-
   private val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), None, None, None, None)
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-    )
-  }
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
+    "render the assets benefits page without pre-filled radio buttons and the user doesn't have prior benefits" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
+        urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the assets benefits page without pre-filled radio buttons and the user doesn't have prior benefits" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-            urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(continueText, continueButtonSelector)
-          formPostLinkCheck(assetsForUseBenefitsUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the assets benefits page with the 'yes' radio button prefilled and the user has prior benefits" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData)
-            urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(continueText, continueButtonSelector)
-          formPostLinkCheck(assetsForUseBenefitsUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the assets benefits page with the 'no' radio button prefilled and the user doesn't have prior benefits" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(true), assetsQuestion = Some(false))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-            urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(continueText, continueButtonSelector)
-          formPostLinkCheck(assetsForUseBenefitsUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
+      s"has an OK($OK) status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -260,41 +100,18 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
+    "return an error when a user submits an empty form" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return an error when a user submits an empty form" which {
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has a BAD REQUEST($BAD_REQUEST) status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(continueText, continueButtonSelector)
-          formPostLinkCheck(assetsForUseBenefitsUrl(taxYearEOY, employmentId), formSelector)
-
-          errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorText, Some("value"))
-        }
+      s"has a BAD REQUEST($BAD_REQUEST) status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 

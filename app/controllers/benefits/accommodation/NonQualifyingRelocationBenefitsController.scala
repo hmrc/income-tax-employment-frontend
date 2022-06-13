@@ -20,11 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
-import forms.YesNoForm
+import forms.benefits.accommodation.AccommodationFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.data.Form
+import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,7 +42,8 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
                                                           nonQualifyingRelocationBenefitsView: NonQualifyingRelocationBenefitsView,
                                                           employmentSessionService: EmploymentSessionService,
                                                           accommodationService: AccommodationService,
-                                                          errorHandler: ErrorHandler)
+                                                          errorHandler: ErrorHandler,
+                                                          formsProvider: AccommodationFormsProvider)
                                                          (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
@@ -52,9 +53,11 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
+          val isAgent = request.user.isAgent
           cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion)) match {
-            case Some(yesNo) => Future.successful(Ok(nonQualifyingRelocationBenefitsView(yesNoForm(request.user.isAgent).fill(yesNo), taxYear, employmentId)))
-            case None => Future.successful(Ok(nonQualifyingRelocationBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+            case Some(yesNo) =>
+              Future.successful(Ok(nonQualifyingRelocationBenefitsView(formsProvider.nonQualifyingRelocationForm(isAgent).fill(yesNo), taxYear, employmentId)))
+            case None => Future.successful(Ok(nonQualifyingRelocationBenefitsView(formsProvider.nonQualifyingRelocationForm(isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -67,7 +70,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.nonQualifyingRelocationForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(nonQualifyingRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -90,12 +93,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
     }
   }
 
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.nonQualifyingRelocationQuestion.error.${if (isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
   }
 }
-

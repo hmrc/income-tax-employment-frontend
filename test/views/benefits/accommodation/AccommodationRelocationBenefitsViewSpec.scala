@@ -18,7 +18,7 @@ package views.benefits.accommodation
 
 import controllers.benefits.accommodation.routes.AccommodationRelocationBenefitsController
 import forms.YesNoForm
-import forms.benefits.accommodation.AccommodationRelocationBenefitsFormMapper
+import forms.benefits.accommodation.AccommodationFormsProvider
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -101,7 +101,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AccommodationRelocationBenefitsFormMapper().yesNoForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AccommodationFormsProvider().accommodationRelocationForm(isAgent)
 
   private lazy val underTest = inject[AccommodationRelocationBenefitsView]
 

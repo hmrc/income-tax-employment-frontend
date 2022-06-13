@@ -18,7 +18,7 @@ package controllers.benefits.accommodation
 
 import common.SessionValues
 import controllers.errors.routes.UnauthorisedUserErrorController
-import forms.benefits.accommodation.AccommodationRelocationBenefitsFormMapper
+import forms.benefits.accommodation.AccommodationFormsProvider
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
@@ -55,7 +55,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest w
     .withSession(SessionValues.CLIENT_MTDITID -> "1234567890", SessionValues.CLIENT_NINO -> "AA123456A")
 
   private val pageView = inject[AccommodationRelocationBenefitsView]
-  private val formMapper = new AccommodationRelocationBenefitsFormMapper()
+  private val formsProvider = new AccommodationFormsProvider()
 
   private lazy val underTest = new AccommodationRelocationBenefitsController(
     mockAuthorisedAction,
@@ -64,7 +64,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest w
     mockAccommodationService,
     mockEmploymentSessionService,
     mockErrorHandler,
-    formMapper)
+    formsProvider)
 
   ".show" should {
     "redirect to UnauthorisedUserErrorController when authentication fails" in {
