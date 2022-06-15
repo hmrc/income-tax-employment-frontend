@@ -32,190 +32,40 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val poundPrefixText = "£"
-  private val amountInputName = "amount"
   private val employmentId = "employmentId"
 
-  object Selectors {
-    val contentSelector = "#main-content > div > div > p"
-    val hintTextSelector = "#amount-hint"
-    val inputSelector = "#amount"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val continueButtonSelector = "#continue"
-    val continueButtonFormSelector = "#main-content > div > div > form"
-    val expectedErrorHref = "#amount"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val amountHint: String
-    val continue: String
-    val previousExpectedContent: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val emptyErrorText: String
-    val invalidFormatErrorText: String
-    val maxAmountErrorText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "Er enghraifft, £193.52"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £300."
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for non-qualifying relocation benefits?"
-    val expectedHeading: String = "How much did you get in total for non-qualifying relocation benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val emptyErrorText: String = "Enter your non-qualifying relocation benefit amount"
-    val invalidFormatErrorText: String = "Enter your non-qualifying relocation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your non-qualifying relocation benefit must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiant adleoli anghymwys?"
-    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiant adleoli anghymwys?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys"
-    val invalidFormatErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iích buddiant adleoli anghymwys fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for non-qualifying relocation benefits?"
-    val expectedHeading: String = "How much did your client get in total for non-qualifying relocation benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val emptyErrorText: String = "Enter your client’s non-qualifying relocation benefit amount"
-    val invalidFormatErrorText: String = "Enter your client’s non-qualifying relocation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s non-qualifying relocation benefit must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiannau adleoli anghymwys?"
-    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiannau adleoli anghymwys?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient"
-    val invalidFormatErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant adleoli anghymwys eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the non-qualifying relocation benefits amount page without pre-filled form and without replay text" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpenses = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render the non-qualifying relocation benefits amount page without pre-filled form and without replay text" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpenses = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          implicit def documentSupplier: () => Document = () => document
+    "render– the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benefits data" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          elementsNotOnPageCheck(contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
+      lazy val document = Jsoup.parse(result.body)
 
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      implicit def documentSupplier: () => Document = () => document
 
-        "render the non-qualifying relocation benefits amount page with pre-filled cy data" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent, contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "300")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benefits data" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent, contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "300")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -298,106 +148,57 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.specificExpectedResults._
+    "should render non qualifying relocation question amount page with empty error text when there no input" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render non qualifying relocation question amount page with empty error text when there no input" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
-          }
+      lazy val document = Jsoup.parse(result.body)
 
-          lazy val document = Jsoup.parse(result.body)
+      implicit def documentSupplier: () => Document = () => document
 
-          implicit def documentSupplier: () => Document = () => document
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
+      }
+    }
 
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
+    "should render the non qualifying relocation question amount page with invalid format text when input is in incorrect format" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
+      }
 
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
+      lazy val document = Jsoup.parse(result.body)
 
-          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.emptyErrorText)
-        }
+      implicit def documentSupplier: () => Document = () => document
 
-        "should render the non qualifying relocation question amount page with invalid format text when input is in incorrect format" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
-          }
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
+      }
+    }
 
-          lazy val document = Jsoup.parse(result.body)
+    "should render the non qualifying relocation question page with max error when input > 100,000,000,000" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
+      }
 
-          implicit def documentSupplier: () => Document = () => document
+      lazy val document = Jsoup.parse(result.body)
 
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
+      implicit def documentSupplier: () => Document = () => document
 
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "abc")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.invalidFormatErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.invalidFormatErrorText)
-        }
-
-        "should render the non qualifying relocation question page with max error when input > 100,000,000,000" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.maxAmountErrorText)
-        }
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 

@@ -18,8 +18,6 @@ package controllers.benefits.assets
 
 import forms.YesNoForm
 import models.benefits.AssetsModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -37,174 +35,21 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
   private val employmentId: String = "employmentId"
   private val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), assetsQuestion = Some(true), assets = Some(100.00), None, None)
 
-  object Selectors {
-    val paragraphSelector: String = "#main-content > div > div > p"
-    val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedParagraph: String
-    val expectedErrorTitle: String
-    val expectedErrorText: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your employer give you any assets to keep?"
-    val expectedHeading = "Did your employer give you any assets to keep?"
-    val expectedParagraph = "You became the owner of these assets."
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your employer gave you assets to keep"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A roddodd eich cyflogwr unrhyw asedion i chi eu cadw?"
-    val expectedHeading = "A roddodd eich cyflogwr unrhyw asedion i chi eu cadw?"
-    val expectedParagraph = "Daethoch yn berchennog yr asedion hyn."
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os rhoddodd eich cyflogwr asedion i chi eu cadw"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client’s employer give them any assets to keep?"
-    val expectedHeading = "Did your client’s employer give them any assets to keep?"
-    val expectedParagraph = "Your client became the owner of these assets."
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your client’s employer gave them assets to keep"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?"
-    val expectedHeading = "A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?"
-    val expectedParagraph = "Daeth eich cleient yn berchennog yr asedion hyn."
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os rhoddodd cyflogwr eich cleient asedion iddo eu cadw"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    import Selectors._
+    "render 'asset transfers' yes/no page with the correct content with no pre-filling" which {
+      lazy val result = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlGet(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render 'asset transfers' yes/no page with the correct content with no pre-filling" which {
-          lazy val result = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(assetsToKeepBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'asset transfers' yes/no page with the correct content with yes pre-filled" which {
-          lazy val result = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = Some(true))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(assetsToKeepBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'asset transfers' yes/no page with the correct content with no pre-filled" which {
-          lazy val result = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = Some(false))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(assetsToKeepBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -271,43 +116,18 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
   }
 
   ".submit" should {
-    import Selectors._
+    s"return a BAD_REQUEST($BAD_REQUEST) status" when {
+      "the value is empty" which {
+        val form = Map(YesNoForm.yesNo -> "")
+        lazy val result = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          insertCyaData(anEmploymentUserData)
+          urlPost(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-          "the value is empty" which {
-            val form = Map(YesNoForm.yesNo -> "")
-            lazy val result = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              insertCyaData(anEmploymentUserData)
-              urlPost(fullUrl(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(assetsToKeepBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorText, Some("value"))
-          }
+        "has the correct status" in {
+          result.status shouldBe BAD_REQUEST
         }
       }
     }

@@ -29,208 +29,27 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
-  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val poundPrefixText = "£"
-  private val amountInputName = "amount"
   private val employmentId = "employmentId"
-  private val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
-  object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-
-    val hintTextSelector = "#amount-hint"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val continueButtonSelector = "#continue"
-    val continueButtonFormSelector = "#main-content > div > div > form"
-    val expectedErrorHref = "#amount"
-    val inputAmountField = "#amount"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedH1: String
-    val expectedTitle: String
-    val expectedErrorTitle: String
-    val expectedContent: String
-    val emptyErrorText: String
-    val wrongFormatErrorText: String
-    val maxAmountErrorText: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val continueButtonText: String
-    val hintText: String
-    val optionalText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val hintText = "For example, £193.52"
-    val optionalText = s"If it was not £${livingAccommodationBenefitAmount.get}, tell us the correct amount."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Yn eich blaen"
-    val hintText = "Er enghraifft, £193.52"
-    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £${livingAccommodationBenefitAmount.get}."
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedH1: String = "How much was your total living accommodation benefit?"
-    val expectedTitle: String = "How much was your total living accommodation benefit?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "You can find this information on your P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your living accommodation benefit amount must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = "How much was your client’s total living accommodation benefit?"
-    val expectedTitle: String = "How much was your client’s total living accommodation benefit?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "You can find this information on your client’s P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your client’s living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your client’s living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s living accommodation benefit amount must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "Faint oedd cyfanswm eich buddiant llety byw?"
-    val expectedTitle: String = "Faint oedd cyfanswm eich buddiant llety byw?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar eich ffurflen P11D."
-    val emptyErrorText: String = "Nodwch swm eich buddiant llety byw"
-    val wrongFormatErrorText: String = "Nodwch swm eich buddiant llety byw yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i swm eich buddiant llety byw fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
-    val expectedTitle: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar ffurflen P11D eich cleient."
-    val emptyErrorText: String = "Nodwch swm buddiant llety byw eich cleient"
-    val wrongFormatErrorText: String = "Nodwch swm buddiant llety byw eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i swm buddiant llety byw eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      import user.specificExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render How much was your total living accommodation benefit? page with no value when theres no cya data" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(get.expectedTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, "")
-
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "should render How much was your total living accommodation benefit? page with prefilling when there is cya data" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(get.expectedTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(optionalText, paragraphTextSelector(2))
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, "123.45")
-
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior benefits" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-            urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(get.expectedTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(optionalText, paragraphTextSelector(2))
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, livingAccommodationBenefitAmount.get.toString())
-
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+    "should render How much was your total living accommodation benefit? page" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
+
+      result.status shouldBe OK
     }
 
     "redirect to the overview page when the tax year isn't valid for EOY" which {
@@ -329,137 +148,42 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   }
 
   ".submit" when {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      import user.specificExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render the How much was your Living accommodation benefit? page with an error when theres no input" which {
-          val errorAmount = ""
-          val errorForm = Map(AmountForm.amount -> errorAmount)
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
-          }
+    "should render the How much was your Living accommodation benefit? page with an error when theres no input" in {
+      val errorAmount = ""
+      val errorForm = Map(AmountForm.amount -> errorAmount)
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
+      }
 
-          lazy val document = Jsoup.parse(result.body)
+      result.status shouldBe BAD_REQUEST
+    }
 
-          implicit def documentSupplier: () => Document = () => document
+    "redirect to qualifying relocation page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
+      val newAmount = 100
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel
+          .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+          .copy(travelEntertainmentModel = None)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
+      }
 
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
+      "redirects to the check your benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+      }
 
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.emptyErrorText)
-        }
-
-        "render the How much was your total living accommodation benefit? page with an error when the amount is invalid" which {
-          val errorAmount = "abc"
-          val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.wrongFormatErrorText)
-        }
-
-        "should render the How much was your total living accommodation benefit? page with an error when the amount is too big" which {
-          val errorAmount = "100,000,000,000"
-          val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.maxAmountErrorText)
-        }
-
-        "redirect to qualifying relocation page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
-          val newAmount = 100
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel
-              .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
-              .copy(travelEntertainmentModel = None)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
-          }
-
-          "redirects to the check your benefits page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location").contains(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-          }
-
-          "updates the CYA model with the new value" in {
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-            val livingAccommodationAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
-            livingAccommodationAmount shouldBe Some(newAmount)
-          }
-        }
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        val livingAccommodationAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
+        livingAccommodationAmount shouldBe Some(newAmount)
       }
     }
 

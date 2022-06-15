@@ -18,8 +18,6 @@ package controllers.benefits.accommodation
 
 import forms.YesNoForm
 import models.benefits.AccommodationRelocationModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -36,160 +34,20 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
   private val employmentId = "employmentId"
 
-  object Selectors {
-    val yesSelector = "#value"
-    val formSelector = "#main-content > div > div > form"
-    val continueButtonSelector = "#continue"
-    val contentSelector = "#main-content > div > div > p"
-    val contentExample1Selector = "#main-content > div > div > ul > li:nth-child(1)"
-    val contentExample2Selector = "#main-content > div > div > ul > li:nth-child(2)"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val yesText: String
-    val noText: String
-    val continueButtonText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedErrorTitle: String
-    val expectedError: String
-    val expectedContent: String
-    val expectedExample1: String
-    val expectedExample2: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val yesText = "Yes"
-    val noText = "No"
-    val continueButtonText = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val continueButtonText = "Yn eich blaen"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any non-qualifying relocation benefits?"
-    val expectedH1 = "Did you get any non-qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got non-qualifying relocation benefits"
-    val expectedContent = "These are relocation costs that your employer has paid for, or reimbursed you for. Examples include:"
-    val expectedExample1 = "mortgage or housing payments if you’re moving to a more expensive area"
-    val expectedExample2 = "compensation if you lose money when selling your home"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
-    val expectedH1 = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau adleoli anghymwys"
-    val expectedContent = "Costau adleoli ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Mae enghreifftiauín cynnwys:"
-    val expectedExample1 = "taliadau morgais neu dai os ydych chiín symud i ardal ddrutach"
-    val expectedExample2 = "iawndal os byddwch yn colli arian wrth werthu eich cartref"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any non-qualifying relocation benefits?"
-    val expectedH1 = "Did your client get any non-qualifying relocation benefits?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got non-qualifying relocation benefits"
-    val expectedContent = "These are relocation costs that their employer has paid for, or reimbursed them for. Examples include:"
-    val expectedExample1 = "mortgage or housing payments if they’re moving to a more expensive area"
-    val expectedExample2 = "compensation if they lose money when selling their home"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
-    val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli anghymwys"
-    val expectedContent = "Costau adleoli ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Mae enghreifftiauín cynnwys:"
-    val expectedExample1 = "taliadau morgais neu dai os ywín symud i ardal ddrutach"
-    val expectedExample2 = "iawndal os ywín colli arian wrth werthu ei gartref"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      import user.specificExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the non-qualifying relocation benefits question page with no pre-filled radio buttons" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render the non-qualifying relocation benefits question page" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
-          textOnPageCheck(get.expectedExample1, contentExample1Selector)
-          textOnPageCheck(get.expectedExample2, contentExample2Selector)
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), formSelector)
-          welshToggleCheck(user.isWelsh)
-
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-        }
-
-        "render the non-qualifying relocation benefits question page with cya data and 'yes' radio selected" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = Some(true))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
-          textOnPageCheck(get.expectedExample1, contentExample1Selector)
-          textOnPageCheck(get.expectedExample2, contentExample2Selector)
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), formSelector)
-          welshToggleCheck(user.isWelsh)
-
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -240,47 +98,19 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   }
 
   ".submit" should {
-    userScenarios.foreach {
-      user =>
-        s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-          s"return a BAD_REQUEST($BAD_REQUEST) if no value is submitted" which {
-            lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              insertCyaData(anEmploymentUserData)
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-                welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+    s"return a BAD_REQUEST($BAD_REQUEST) if no value is submitted" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-            "has a BAD_REQUEST status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            import Selectors._
-            import user.commonExpectedResults._
-            import user.specificExpectedResults._
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            captionCheck(expectedCaption)
-            textOnPageCheck(get.expectedContent, contentSelector)
-            textOnPageCheck(get.expectedExample1, contentExample1Selector)
-            textOnPageCheck(get.expectedExample2, contentExample2Selector)
-            welshToggleCheck(user.isWelsh)
-            buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), formSelector)
-
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-          }
-        }
+      "has a BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
+      }
     }
 
     "redirect to non qualifying relocation amount page when user selects Yes and prior benefits exist" which {

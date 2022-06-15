@@ -19,12 +19,11 @@ package controllers.benefits.assets
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.{AssetTransfersBenefitsController, AssetsBenefitsAmountController}
-import forms.YesNoForm
+import forms.benefits.assets.AssetsFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,8 +41,10 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
                                          assetsBenefitsView: AssetsBenefitsView,
                                          employmentSessionService: EmploymentSessionService,
                                          assetsService: AssetsService,
-                                         errorHandler: ErrorHandler)
-(implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                         errorHandler: ErrorHandler,
+                                         formsProvider: AssetsFormsProvider)
+                                        (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -53,8 +54,8 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(assetsBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(assetsBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(assetsBenefitsView(formsProvider.assetsForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(assetsBenefitsView(formsProvider.assetsForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -67,7 +68,7 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.assetsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(assetsBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -89,10 +90,6 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.assets.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     commonAssetsModelRedirects(cya, taxYear, employmentId)

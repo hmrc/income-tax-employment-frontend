@@ -19,12 +19,11 @@ package controllers.benefits.accommodation
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
-import forms.YesNoForm
+import forms.benefits.accommodation.AccommodationFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -35,6 +34,7 @@ import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.accommodation.QualifyingRelocationBenefitsView
 
 import javax.inject.Inject
+import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
 class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAction,
@@ -42,8 +42,9 @@ class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAct
                                                        qualifyingRelocationBenefitsView: QualifyingRelocationBenefitsView,
                                                        employmentSessionService: EmploymentSessionService,
                                                        accommodationService: AccommodationService,
-                                                       errorHandler: ErrorHandler)
-                                                      (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                       errorHandler: ErrorHandler,
+                                                       formsProvider: AccommodationFormsProvider)
+                                                      (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -54,10 +55,11 @@ class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAct
           val qualifyingRelocationBenefitsQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(
             _.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion)
 
+          val isAgent = request.user.isAgent
           qualifyingRelocationBenefitsQuestion match {
             case Some(questionResult) =>
-              Future.successful(Ok(qualifyingRelocationBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(qualifyingRelocationBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              successful(Ok(qualifyingRelocationBenefitsView(formsProvider.qualifyingRelocationForm(isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => successful(Ok(qualifyingRelocationBenefitsView(formsProvider.qualifyingRelocationForm(isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -69,8 +71,8 @@ class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAct
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(qualifyingRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
+          formsProvider.qualifyingRelocationForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => successful(BadRequest(qualifyingRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
         }
@@ -92,10 +94,6 @@ class QualifyingRelocationBenefitsController @Inject()(authAction: AuthorisedAct
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.qualifyingRelocationBenefits.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)

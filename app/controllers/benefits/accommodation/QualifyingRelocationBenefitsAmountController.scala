@@ -20,11 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.accommodation.AccommodationFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,8 +42,9 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
                                                              qualifyingRelocationBenefitsAmountView: QualifyingRelocationBenefitsAmountView,
                                                              employmentSessionService: EmploymentSessionService,
                                                              accommodationService: AccommodationService,
-                                                             errorHandler: ErrorHandler)
-                                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                             errorHandler: ErrorHandler,
+                                                             formsProvider: AccommodationFormsProvider)
+                                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -51,7 +52,7 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
+          val form = fillFormFromPriorAndCYA(formsProvider.qualifyingRelocationAmountForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.qualifyingRelocationExpenses))
           }
 
@@ -65,7 +66,7 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.qualifyingRelocationAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpenses)
               Future.successful(BadRequest(qualifyingRelocationBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -86,12 +87,6 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.qualifyingRelocationBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
