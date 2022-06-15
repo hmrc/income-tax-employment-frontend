@@ -20,12 +20,12 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyCarFuelBenefitsController, CompanyVanBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.fuel.FuelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService.{commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
@@ -43,8 +43,9 @@ class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
                                                 employmentSessionService: EmploymentSessionService,
                                                 fuelService: FuelService,
-                                                errorHandler: ErrorHandler)
-                                               (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                errorHandler: ErrorHandler,
+                                                formsProvider: FuelFormsProvider)
+                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,7 +54,7 @@ class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.carFuelAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.carFuel))
           )
 
@@ -70,7 +71,7 @@ class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.carFuelAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
               Future.successful(BadRequest(carFuelBenefitsAmountView(taxYear, formWithErrors, employmentId, cyaCarAmount)))
@@ -91,12 +92,6 @@ class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.carFuelAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.carFuelAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.carFuelAmount.error.tooMuch.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     val cyaCarFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion))

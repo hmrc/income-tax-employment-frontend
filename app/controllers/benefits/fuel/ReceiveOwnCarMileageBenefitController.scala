@@ -21,11 +21,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes.AccommodationRelocationBenefitsController
 import controllers.benefits.fuel.routes.MileageBenefitAmountController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.YesNoForm
+import forms.benefits.fuel.FuelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -36,6 +35,7 @@ import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.fuel.ReceiveOwnCarMileageBenefitView
 
 import javax.inject.Inject
+import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedAction,
@@ -43,8 +43,9 @@ class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedActi
                                                       receiveOwnCarMileageBenefitView: ReceiveOwnCarMileageBenefitView,
                                                       employmentSessionService: EmploymentSessionService,
                                                       fuelService: FuelService,
-                                                      errorHandler: ErrorHandler)
-                                                     (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                      errorHandler: ErrorHandler,
+                                                      formsProvider: FuelFormsProvider)
+                                                     (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,15 +54,13 @@ class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedActi
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
-          val mileageBenefitQuestion: Option[Boolean] =
-            cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
-
+          val mileageBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+          val isAgent = request.user.isAgent
           mileageBenefitQuestion match {
             case Some(questionResult) =>
-              Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent), taxYear, employmentId)))
           }
-
         }
       }
     }
@@ -76,8 +75,8 @@ class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedActi
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
+          formsProvider.receiveOwnCarMileageForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
         }
@@ -100,8 +99,4 @@ class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedActi
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.receiveOwnCarMileageBenefit.error.${if (isAgent) "agent" else "individual"}"
-  )
 }

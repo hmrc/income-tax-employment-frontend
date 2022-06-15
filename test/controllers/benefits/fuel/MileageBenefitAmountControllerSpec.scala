@@ -18,6 +18,7 @@ package controllers.benefits.fuel
 
 import common.SessionValues
 import forms.AmountForm
+import forms.benefits.fuel.FuelFormsProvider
 import play.api.data.Form
 import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
@@ -43,7 +44,8 @@ class MileageBenefitAmountControllerSpec extends UnitTest
     inYearAction,
     mockEmploymentSessionService,
     mockFuelService,
-    mockErrorHandler
+    mockErrorHandler,
+    new FuelFormsProvider
   )(mockMessagesControllerComponents, mockAppConfig, ec)
   val employmentId = "12345"
   val form: Form[BigDecimal] = AmountForm.amountForm("benefits.mileageBenefitAmount.error.empty.individual")

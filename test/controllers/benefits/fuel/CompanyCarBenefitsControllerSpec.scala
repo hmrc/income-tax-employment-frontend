@@ -17,6 +17,7 @@
 package controllers.benefits.fuel
 
 import controllers.employment.routes.CheckYourBenefitsController
+import forms.benefits.fuel.FuelFormsProvider
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
@@ -65,8 +66,9 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
     view,
     mockEmploymentSessionService,
     mockFuelService,
-    mockErrorHandler)
-  (mockMessagesControllerComponents, mockAppConfig)
+    mockErrorHandler,
+    new FuelFormsProvider
+  )(mockMessagesControllerComponents, mockAppConfig)
 
   ".show" should {
     "get user session data and return the result from the given execution block" in new TestWithAuth {

@@ -20,12 +20,12 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.CompanyCarFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.fuel.FuelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService.{carBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
@@ -43,8 +43,9 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                    inYearAction: InYearUtil,
                                                    employmentSessionService: EmploymentSessionService,
                                                    fuelService: FuelService,
-                                                   errorHandler: ErrorHandler)
-                                                  (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                   errorHandler: ErrorHandler,
+                                                   formsProvider: FuelFormsProvider)
+                                                  (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,7 +54,7 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
-          val form = fillFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.companyCarAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.car))
           )
 
@@ -69,7 +70,7 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          amountForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.companyCarAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
               Future.successful(BadRequest(companyCarBenefitsAmountView(formWithErrors, taxYear, employmentId, cyaCarAmount)))
@@ -90,12 +91,6 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.companyCarBenefitsAmount.error.no-entry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.companyCarBenefitsAmount.error.incorrect-format.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.companyCarBenefitsAmount.error.max-length.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     carBenefitsAmountRedirects(cya, taxYear, employmentId)
