@@ -20,12 +20,12 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.reimbursed.routes.NonCashBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.reimbursed.ReimbursedFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -43,8 +43,9 @@ class VouchersBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                  pageView: VouchersBenefitsAmountView,
                                                  employmentSessionService: EmploymentSessionService,
                                                  reimbursedService: ReimbursedService,
-                                                 errorHandler: ErrorHandler)
-                                                (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                 errorHandler: ErrorHandler,
+                                                 formsProvider: ReimbursedFormsProvider)
+                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -52,7 +53,7 @@ class VouchersBenefitsAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards))
-          val form = fillFormFromPriorAndCYA(buildForm, prior, cyaAmount, employmentId)(employment =>
+          val form = fillFormFromPriorAndCYA(formsProvider.vouchersAmountForm, prior, cyaAmount, employmentId)(employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.vouchersAndCreditCards))
           )
 
@@ -66,7 +67,7 @@ class VouchersBenefitsAmountController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          buildForm.bindFromRequest().fold(
+          formsProvider.vouchersAmountForm.bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.vouchersAndCreditCards)
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -86,12 +87,6 @@ class VouchersBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm: Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = "benefits.vouchersBenefitsAmount.error.noEntry",
-    wrongFormatKey = "benefits.vouchersBenefitsAmount.error.incorrectFormat",
-    exceedsMaxAmountKey = "benefits.vouchersBenefitsAmount.error.overMaximum"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)

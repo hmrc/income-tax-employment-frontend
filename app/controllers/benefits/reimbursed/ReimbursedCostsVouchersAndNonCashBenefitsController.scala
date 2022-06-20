@@ -20,12 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController
-import forms.YesNoForm
+import forms.benefits.reimbursed.ReimbursedFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -43,8 +42,9 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
                                                                     pageView: ReimbursedCostsVouchersAndNonCashBenefitsView,
                                                                     employmentSessionService: EmploymentSessionService,
                                                                     reimbursedService: ReimbursedService,
-                                                                    errorHandler: ErrorHandler)
-                                                                    (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                                    errorHandler: ErrorHandler,
+                                                                    formsProvider: ReimbursedFormsProvider)
+                                                                   (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,9 +53,11 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
+          val isAgent = request.user.isAgent
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) match {
-            case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+            case Some(questionResult) =>
+              Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -68,7 +70,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.vouchersAndNonCashForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -90,10 +92,6 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.reimbursedCostsVouchersAndNonCash.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)

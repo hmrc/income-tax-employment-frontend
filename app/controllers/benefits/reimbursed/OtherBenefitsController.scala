@@ -20,11 +20,10 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.benefits.reimbursed.routes.OtherBenefitsAmountController
-import forms.YesNoForm
+import forms.benefits.reimbursed.ReimbursedFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -39,11 +38,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
                                         inYearAction: InYearUtil,
-                                        view: OtherBenefitsView,
+                                        pageView: OtherBenefitsView,
                                         employmentSessionService: EmploymentSessionService,
                                         reimbursedService: ReimbursedService,
-                                        errorHandler: ErrorHandler)
-                                        (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                        errorHandler: ErrorHandler,
+                                        formsProvider: ReimbursedFormsProvider)
+                                       (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -55,8 +55,8 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(view(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(view(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(pageView(formsProvider.otherBenefitsForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.otherBenefitsForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -70,8 +70,8 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(otherItemsRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
+          formsProvider.otherBenefitsForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
@@ -93,8 +93,4 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.otherBenefits.error.${if (isAgent) "agent" else "individual"}"
-  )
 }
