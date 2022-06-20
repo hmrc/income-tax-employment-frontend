@@ -20,11 +20,10 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncurredCostsBenefitsAmountController
 import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
-import forms.YesNoForm
+import forms.benefits.income.IncomeFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -39,11 +38,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
-                                                incurredCostsBenefitsView: IncurredCostsBenefitsView,
+                                                pageView: IncurredCostsBenefitsView,
                                                 employmentSessionService: EmploymentSessionService,
                                                 incomeService: IncomeService,
-                                                errorHandler: ErrorHandler)
-                                               (implicit val mcc: MessagesControllerComponents, appConfig: AppConfig)
+                                                errorHandler: ErrorHandler,
+                                                formsProvider: IncomeFormsProvider)
+                                               (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext
@@ -56,8 +56,8 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(incurredCostsBenefitsView(buildForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(incurredCostsBenefitsView(buildForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(pageView(formsProvider.incurredCostsForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.incurredCostsForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -70,8 +70,8 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          buildForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(incurredCostsBenefitsView(formWithErrors, taxYear, employmentId))),
+          formsProvider.incurredCostsForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
@@ -92,10 +92,6 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incurredCosts.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)

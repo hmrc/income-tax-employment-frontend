@@ -19,11 +19,10 @@ package controllers.benefits.fuel
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyVanBenefitsAmountController, ReceiveOwnCarMileageBenefitController}
-import forms.YesNoForm
+import forms.benefits.fuel.FuelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -41,8 +40,9 @@ class CompanyVanBenefitsController @Inject()(authAction: AuthorisedAction,
                                              companyVanBenefitsView: CompanyVanBenefitsView,
                                              employmentSessionService: EmploymentSessionService,
                                              fuelService: FuelService,
-                                             errorHandler: ErrorHandler)
-                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                             errorHandler: ErrorHandler,
+                                             formsProvider: FuelFormsProvider)
+                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,8 +53,8 @@ class CompanyVanBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(companyVanBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(companyVanBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(companyVanBenefitsView(formsProvider.companyVanForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(companyVanBenefitsView(formsProvider.companyVanForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -67,7 +67,7 @@ class CompanyVanBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(vanBenefitsRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.companyVanForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -83,16 +83,11 @@ class CompanyVanBenefitsController @Inject()(authAction: AuthorisedAction,
       case Right(employmentUserData) =>
         val nextPage = if (questionValue) {
           CompanyVanBenefitsAmountController.show(taxYear, employmentId)
-        }
-        else {
+        } else {
           ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
         }
 
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.companyVanBenefits.error.${if (isAgent) "agent" else "individual"}"
-  )
 }

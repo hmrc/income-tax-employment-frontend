@@ -20,12 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncomeTaxBenefitsController
 import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
-import forms.YesNoForm
+import forms.benefits.income.IncomeFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -40,11 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeTaxOrIncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
                                                            inYearAction: InYearUtil,
-                                                           incomeTaxOrIncurredCostsBenefitsView: IncomeTaxOrIncurredCostsBenefitsView,
+                                                           pageView: IncomeTaxOrIncurredCostsBenefitsView,
                                                            employmentSessionService: EmploymentSessionService,
                                                            incomeService: IncomeService,
-                                                           errorHandler: ErrorHandler)
-                                                          (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+                                                           errorHandler: ErrorHandler,
+                                                           formsProvider: IncomeFormsProvider)
+                                                          (implicit appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -55,8 +55,8 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(authAction: Authorise
 
           cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(pageView(formsProvider.incomeTaxOrIncurredCostsForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.incomeTaxOrIncurredCostsForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -69,8 +69,8 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(authAction: Authorise
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(incomeTaxOrIncurredCostsBenefitsView(formWithErrors, taxYear, employmentId))),
+          formsProvider.incomeTaxOrIncurredCostsForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
@@ -92,10 +92,6 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(authAction: Authorise
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incomeTaxOrIncurredCosts.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     incomeTaxAndCostsRedirects(cya, taxYear, employmentId)

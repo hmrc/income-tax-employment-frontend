@@ -20,11 +20,10 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyVanFuelBenefitsAmountController, ReceiveOwnCarMileageBenefitController}
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.YesNoForm
+import forms.benefits.fuel.FuelFormsProvider
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import models.{AuthorisationRequest, User}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,8 +41,9 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
                                                  companyVanFuelBenefitsView: CompanyVanFuelBenefitsView,
                                                  employmentSessionService: EmploymentSessionService,
                                                  fuelService: FuelService,
-                                                 errorHandler: ErrorHandler)
-                                                (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                 errorHandler: ErrorHandler,
+                                                 formsProvider: FuelFormsProvider)
+                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -51,13 +51,12 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
-
-          val vanFuelBenefitQuestion: Option[Boolean] =
-            cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
-
+          val vanFuelBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
+          val isAgent = request.user.isAgent
           vanFuelBenefitQuestion match {
-            case Some(questionResult) => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm(request.user).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm(request.user), taxYear, employmentId)))
+            case Some(questionResult) =>
+              Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -73,7 +72,7 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
-          yesNoForm(request.user).bindFromRequest().fold(
+          formsProvider.companyVanFuelForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
@@ -96,10 +95,6 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(user: User): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.companyVanFuelBenefits.error.${if (user.isAgent) "agent" else "individual"}"
-  )
 }
 
 

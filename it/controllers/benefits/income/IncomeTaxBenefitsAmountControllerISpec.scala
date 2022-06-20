@@ -18,8 +18,6 @@ package controllers.benefits.income
 
 import forms.AmountForm
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -34,202 +32,21 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId: String = "employmentId"
-  private val amount: BigDecimal = 255
-  private val amountInputName = "amount"
-  private val expectedErrorHref = "#amount"
 
-  object Selectors {
-    def paragraphSelector: String = "#main-content > div > div > p"
-
-    def paragraphSelector2(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-
-    val hintTextSelector = "#amount-hint"
-    val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val inputSelector = "#amount"
-    val continueButtonSelector = "#continue"
-    val ifItWasNotTextSelector = "#previous-amount-text"
-    val formSelector = "#main-content > div > div > form"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-
-    def optionalParagraphText(amount: BigDecimal): String
-
-    val expectedHintText: String
-    val currencyPrefix: String
-    val continueButtonText: String
-    val enterTotalText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val expectedErrorNoEntry: String
-    val expectedErrorIncorrectFormat: String
-    val expectedErrorOverMaximum: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
-    val expectedHintText = "For example, £193.52"
-    val currencyPrefix = "£"
-    val continueButtonText = "Continue"
-    val enterTotalText = "Enter the total."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
-    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
-
-    val expectedHintText = "Er enghraifft, £193.52"
-    val currencyPrefix = "£"
-    val continueButtonText = "Yn eich blaen"
-    val enterTotalText = "Nodwch y cyfanswm."
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "How much of your Income Tax did your employer pay?"
-    val expectedHeading = "How much of your Income Tax did your employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your employer in the correct format"
-    val expectedErrorOverMaximum = "The Income Tax paid by your employer must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
-    val expectedHeading = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr"
-    val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "How much of your client’s Income Tax did their employer pay?"
-    val expectedHeading = "How much of your client’s Income Tax did their employer pay?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount of Income Tax paid by your client’s employer"
-    val expectedErrorIncorrectFormat = "Enter the amount of Income Tax paid by your client’s employer in the correct format"
-    val expectedErrorOverMaximum = "The Income Tax paid by your client’s employer must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint o Dreth Incwm eich cleient a dalodd ei gyflogwr?"
-    val expectedHeading = "Faint o Dreth Incwm eich cleient a dalodd ei gyflogwr?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient"
-    val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the how much of your client’s Income Tax did their employer pay?' page with an empty amount field" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirector = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(enterTotalText, paragraphSelector)
-          textOnPageCheck(expectedHintText, hintTextSelector)
-          elementsNotOnPageCheck(ifItWasNotTextSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the income tax benefits amount page with a pre-filled amount field when there's cya data and prior benefits" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData)
-            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-          textOnPageCheck(enterTotalText, paragraphSelector2(3))
-          textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the income tax benefits amount page with a pre-filled amount field when there's cya data and no prior benefits" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
-            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-          textOnPageCheck(enterTotalText, paragraphSelector2(3))
-          textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
+    "render the how much of your client’s Income Tax did their employer pay?' page with an empty amount field" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirector = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+      s"has an OK($OK) status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -311,117 +128,18 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
+    "render page with error when a form is submitted with no entry" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = "",
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the income tax benefits amount page with an error" when {
-          "a form is submitted with no entry" which {
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData)
-              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-            textOnPageCheck(enterTotalText, paragraphSelector2(4))
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, "")
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
-            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
-
-          "a form is submitted with an incorrectly formatted amount" which {
-            val incorrectFormatAmount = "abc"
-            val form: Map[String, String] = Map(AmountForm.amount -> incorrectFormatAmount)
-
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData)
-              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption)
-            textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-            textOnPageCheck(enterTotalText, paragraphSelector2(4))
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
-            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
-
-          "a form is submitted and the amount is over the maximum limit" which {
-            val overMaximumAmount = "100,000,000,000,000,000,000"
-            val form: Map[String, String] = Map(AmountForm.amount -> overMaximumAmount)
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData)
-              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            captionCheck(expectedCaption)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
-            textOnPageCheck(enterTotalText, paragraphSelector2(4))
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
-            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
-        }
+      s"has an BAD REQUEST($BAD_REQUEST) status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 

@@ -19,11 +19,10 @@ package controllers.benefits.income
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.{IncomeTaxBenefitsAmountController, IncurredCostsBenefitsController}
-import forms.YesNoForm
+import forms.benefits.income.IncomeFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -41,7 +40,8 @@ class IncomeTaxBenefitsController @Inject()(authAction: AuthorisedAction,
                                             incomeTaxBenefitsView: IncomeTaxBenefitsView,
                                             employmentSessionService: EmploymentSessionService,
                                             incomeService: IncomeService,
-                                            errorHandler: ErrorHandler)
+                                            errorHandler: ErrorHandler,
+                                            formsProvider: IncomeFormsProvider)
                                            (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
@@ -55,8 +55,8 @@ class IncomeTaxBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(incomeTaxBenefitsView(buildForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(incomeTaxBenefitsView(buildForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(incomeTaxBenefitsView(formsProvider.incomeTaxForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(incomeTaxBenefitsView(formsProvider.incomeTaxForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -69,7 +69,7 @@ class IncomeTaxBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.incomeTaxForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(incomeTaxBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -89,10 +89,6 @@ class IncomeTaxBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incomeTax.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)

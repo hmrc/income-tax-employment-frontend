@@ -17,10 +17,9 @@
 package controllers.benefits.fuel
 
 import forms.YesNoForm
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
+import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
@@ -33,135 +32,39 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   private val employmentId = "employmentId"
 
-  object Selectors {
-    val yesSelector = "#value"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedError: String
-  }
-
-  trait CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String
-
-    val radioTextYes: String
-    val radioTextNo: String
-    val errorText: String
-    val buttonText: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "Did you get a company car benefit?"
-    val expectedH1: String = "Did you get a company car benefit?"
-    val expectedError: String = "Select yes if you got a company car benefit"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "A gawsoch fuddiant car cwmni?"
-    val expectedH1: String = "A gawsoch fuddiant car cwmni?"
-    val expectedError: String = "Dewiswch ëIawní os cawsoch fuddiant car cwmni"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "Did your client get a company car benefit?"
-    val expectedH1: String = "Did your client get a company car benefit?"
-    val expectedError: String = "Select yes if your client got a company car benefit"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "A gafodd eich cleient fuddiant car cwmni?"
-    val expectedH1: String = "A gafodd eich cleient fuddiant car cwmni?"
-    val expectedError: String = "Dewiswch ëIawní os cafodd eich cleient fuddiant car cwmni"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-
-    val radioTextYes: String = "Yes"
-    val radioTextNo: String = "No"
-    val errorText: String = "Error: "
-    val buttonText: String = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-
-    val radioTextYes: String = "Iawn"
-    val radioTextNo: String = "Na"
-    val errorText: String = "Gwall: "
-    val buttonText: String = "Yn eich blaen"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return a radio button page when not in year" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlGet(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "return a radio button page when not in year" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
-          radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
-          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
-          buttonCheck(user.commonExpectedResults.buttonText)
-          formPostLinkCheck(carBenefitsUrl(taxYearEOY, employmentId), Selectors.continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
   }
 
   ".submit" when {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return a radio button page when not in year and a bad form submission" which {
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlPost(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
-          }
+    "return a radio button page when not in year and a bad form submission" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlPost(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.commonExpectedResults.errorText + user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
-          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-          radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
-          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
-          buttonCheck(user.commonExpectedResults.buttonText)
-          formPostLinkCheck(carBenefitsUrl(taxYearEOY, employmentId), Selectors.continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has the correct status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
   }
