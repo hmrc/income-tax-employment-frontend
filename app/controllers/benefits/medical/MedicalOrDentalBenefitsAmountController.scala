@@ -19,12 +19,12 @@ package controllers.benefits.medical
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes._
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.medical.MedicalFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService.{medicalInsuranceAmountRedirects, redirectBasedOnCurrentAnswers}
@@ -39,11 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                         inYearAction: InYearUtil,
-                                                        medicalOrDentalBenefitsAmountView: MedicalOrDentalBenefitsAmountView,
-                                                        val employmentSessionService: EmploymentSessionService,
+                                                        pageView: MedicalOrDentalBenefitsAmountView,
+                                                        employmentSessionService: EmploymentSessionService,
                                                         medicalService: MedicalService,
-                                                        errorHandler: ErrorHandler)
-                                                       (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+                                                        errorHandler: ErrorHandler,
+                                                        formsProvider: MedicalFormsProvider)
+                                                       (implicit appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -51,10 +52,10 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
+          val form = fillFormFromPriorAndCYA(formsProvider.medicalOrAmountForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.medicalInsurance))
           }
-          Future(Ok(medicalOrDentalBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -66,10 +67,10 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.medicalOrAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel).flatMap(_.medicalInsurance)
-              Future.successful(BadRequest(medicalOrDentalBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
@@ -87,12 +88,6 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
         RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.medicalOrDentalBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.medicalOrDentalBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     medicalInsuranceAmountRedirects(cya, taxYear, employmentId)

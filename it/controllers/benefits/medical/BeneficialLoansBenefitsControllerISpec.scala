@@ -18,8 +18,6 @@ package controllers.benefits.medical
 
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -36,179 +34,21 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
   private val employmentId: String = "employmentId"
 
-  object Selectors {
-    val paragraphSelector: String = "#main-content > div > div > p"
-    val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val theseAreText: String
-    val expectedErrorTitle: String
-    val expectedErrorText: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any beneficial loans?"
-    val expectedHeading = "Did you get any beneficial loans?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you got beneficial loans"
-    val theseAreText = "These are interest free or low interest loans from your employer."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch unrhyw fenthyciadau buddiannol?"
-    val expectedHeading = "A gawsoch unrhyw fenthyciadau buddiannol?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fenthyciadau buddiannol"
-    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr."
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any beneficial loans?"
-    val expectedHeading = "Did your client get any beneficial loans?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got beneficial loans"
-    val theseAreText = "These are any interest free or low interest loans their employer has given them."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
-    val expectedHeading = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fenthyciadau buddiannol"
-    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo."
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render 'Did you get any beneficial loans?' page with the correct content with no pre-filling" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoanQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render 'Did you get any beneficial loans?' page with the correct content with no pre-filling" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoanQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(beneficialLoansBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'Did you get any beneficial loans?' page with the correct content with yes pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(beneficialLoansBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'Did you get any beneficial loans?' page with the correct content with no pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoanQuestion = Some(false))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(beneficialLoansBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -292,43 +132,18 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-          "the value is empty" which {
-            lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              insertCyaData(anEmploymentUserData)
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+    s"return a BAD_REQUEST($BAD_REQUEST) status" when {
+      "the value is empty" which {
+        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          insertCyaData(anEmploymentUserData)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            import Selectors._
-            import user.commonExpectedResults._
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.theseAreText, paragraphSelector)
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(beneficialLoansBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorText, Some("value"))
-          }
+        "has the correct status" in {
+          result.status shouldBe BAD_REQUEST
         }
       }
     }

@@ -19,8 +19,6 @@ package controllers.benefits.reimbursed
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -40,190 +38,21 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
-  object Selectors {
-    val paragraphSelector: String = "#main-content > div > div > p"
-    val bullet1Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(1)"
-    val bullet2Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(2)"
-    val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val paragraph: String
-    val expectedErrorTitle: String
-    val expectedErrorText: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedBullet1: String
-    val expectedBullet2: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get vouchers or credit cards?"
-    val expectedHeading = "Did you get vouchers or credit cards?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you got vouchers or credit cards"
-    val paragraph = "We only need to know about vouchers you can exchange for:"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch dalebau neu gardiau credyd?"
-    val expectedHeading = "A gawsoch dalebau neu gardiau credyd?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch dalebau neu gardiau credyd"
-    val paragraph = "Dim ond talebau y gallwch eu cyfnewid y mae angen i ni wybod amdanynt:"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get vouchers or credit cards?"
-    val expectedHeading = "Did your client get vouchers or credit cards?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got vouchers or credit cards"
-    val paragraph = "We only need to know about vouchers your client can exchange for:"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient dalebau neu gardiau credyd?"
-    val expectedHeading = "A gafodd eich cleient dalebau neu gardiau credyd?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient dalebau neu gardiau credyd"
-    val paragraph = "Dim ond talebau y gall eich cleient eu cyfnewid y mae angen i ni wybod amdanynt:"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedBullet1 = "goods and services"
-    val expectedBullet2 = "a sum of money substantially less than the cost to provide them"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val bullet1 = "goods and services"
-    val bullet2 = "a sum of money substantially less than the cost to provide them"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedBullet1 = "nwyddau a gwasanaethau"
-    val expectedBullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val bullet1 = "nwyddau a gwasanaethau"
-    val bullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    import Selectors._
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render 'vouchers or credit cards' page with the correct content with no pre-filling" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render 'vouchers or credit cards' page with the correct content with no pre-filling" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
-          textOnPageCheck(expectedBullet1, bullet1Selector)
-          textOnPageCheck(expectedBullet2, bullet2Selector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'vouchers or credit cards' page with the correct content with yes pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
-          textOnPageCheck(expectedBullet1, bullet1Selector)
-          textOnPageCheck(expectedBullet2, bullet2Selector)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'vouchers or credit cards' page with the correct content with no pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = Some(false))))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
-          textOnPageCheck(expectedBullet1, bullet1Selector)
-          textOnPageCheck(expectedBullet2, bullet2Selector)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -304,44 +133,19 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   ".submit" should {
-    import Selectors._
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-          "the value is empty" which {
-            lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-                welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+    s"return a BAD_REQUEST($BAD_REQUEST) status" when {
+      "the value is empty" which {
+        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
-            textOnPageCheck(expectedBullet1, bullet1Selector)
-            textOnPageCheck(expectedBullet2, bullet2Selector)
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorText, Some("value"))
-          }
+        "has the correct status" in {
+          result.status shouldBe BAD_REQUEST
         }
       }
     }

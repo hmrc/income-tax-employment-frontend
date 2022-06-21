@@ -18,8 +18,6 @@ package controllers.benefits.medical
 
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -28,204 +26,27 @@ import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewMo
 import support.builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsAmountUrl, childcareBenefitsUrl, educationalServicesBenefitsUrl, exemptLink, fullUrl, overviewUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsAmountUrl, childcareBenefitsUrl, educationalServicesBenefitsUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId: String = "employmentId"
 
-  object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-
-    val onlyNeedLinkSelector: String = "#exempt-link"
-    val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedErrorTitle: String
-    val expectedError: String
-    val expectedTheseAre: String
-    val expectedCheckWith: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-    val expectedWeOnly: String
-    val expectedWeOnlyLink: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get a childcare benefit?"
-    val expectedH1 = "Did you get a childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got a childcare benefit"
-    val expectedTheseAre = "These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs."
-    val expectedCheckWith = "Check with your employer if you are unsure."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch fuddiant gofal plant?"
-    val expectedH1 = "A gawsoch fuddiant gofal plant?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant gofal plant"
-    val expectedTheseAre = "Costau gofal plant y talodd eich cyflogwr amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
-    val expectedCheckWith = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get a childcare benefit?"
-    val expectedH1 = "Did your client get a childcare benefit?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got a childcare benefit"
-    val expectedTheseAre = "These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs."
-    val expectedCheckWith = "Check with your client’s employer if you are unsure."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient fuddiant gofal plant?"
-    val expectedH1 = "A gafodd eich cleient fuddiant gofal plant?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant gofal plant"
-    val expectedTheseAre = "Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
-    val expectedCheckWith = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (opens in new tab)."
-    val expectedWeOnlyLink = "exempt limit (opens in new tab)."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val expectedWeOnly = "Dim ond costau gofal plant syín uwch na throthwyír eithriad y mae angen i ni wybod amdanynt (yn agor tab newydd)."
-    val expectedWeOnlyLink = "y mae angen i ni wybod amdanynt (yn agor tab newydd)."
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the 'Did you get childcare benefits' page with the correct content without pre-filled form" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render the 'Did you get childcare benefits' page with the correct content without pre-filled form" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-          textOnPageCheck(expectedWeOnly, paragraphSelector(3))
-          linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the 'Did you get childcare benefits' page with the correct content with yes value pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-          textOnPageCheck(expectedWeOnly, paragraphSelector(3))
-          linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the 'Did you get childcare benefits' page with the correct content with no value pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = Some(false))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-          textOnPageCheck(expectedWeOnly, paragraphSelector(3))
-          linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -295,44 +116,17 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render 'Did you get childcare benefits' page with empty error text when there no input" which {
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "should render 'Did you get childcare benefits' page with empty error text when there no input" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "has the correct status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(3))
-          textOnPageCheck(expectedWeOnly, paragraphSelector(4))
-          linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-          textOnPageCheck(user.specificExpectedResults.get.expectedCheckWith, paragraphSelector(5))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-        }
+      "has the correct status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 

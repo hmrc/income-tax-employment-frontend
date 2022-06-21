@@ -19,12 +19,12 @@ package controllers.benefits.medical
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes._
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.medical.MedicalFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService.{childcareAmountRedirects, redirectBasedOnCurrentAnswers}
@@ -39,10 +39,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ChildcareBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                   inYearAction: InYearUtil,
-                                                  childcareBenefitsAmountView: ChildcareBenefitsAmountView,
+                                                  pageView: ChildcareBenefitsAmountView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   medicalService: MedicalService,
-                                                  errorHandler: ErrorHandler)
+                                                  errorHandler: ErrorHandler,
+                                                  formsProvider: MedicalFormsProvider)
                                                  (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
@@ -52,10 +53,10 @@ class ChildcareBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlaces))
-          val form = fillFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.childcareAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nurseryPlaces))
           )
-          Future.successful(Ok(childcareBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -67,10 +68,10 @@ class ChildcareBenefitsAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          amountForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.childcareAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlaces))
-              Future.successful(BadRequest(childcareBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
@@ -88,12 +89,6 @@ class ChildcareBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.childcareBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.childcareBenefitsAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.childcareBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     childcareAmountRedirects(cya, taxYear, employmentId)

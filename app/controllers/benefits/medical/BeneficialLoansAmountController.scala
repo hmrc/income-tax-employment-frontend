@@ -19,12 +19,12 @@ package controllers.benefits.medical
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncomeTaxOrIncurredCostsBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.medical.MedicalFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -39,11 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
-                                                beneficialLoansAmountView: BeneficialLoansAmountView,
+                                                pageView: BeneficialLoansAmountView,
                                                 employmentSessionService: EmploymentSessionService,
                                                 medicalService: MedicalService,
-                                                errorHandler: ErrorHandler)
-                                               (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+                                                errorHandler: ErrorHandler,
+                                                formsProvider: MedicalFormsProvider)
+                                               (implicit appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,10 +54,10 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
 
-          val form = fillFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.beneficialLoansAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.beneficialLoan))
           )
-          Future.successful(Ok(beneficialLoansAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -67,10 +68,10 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          amountForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.beneficialLoansAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
-              Future.successful(BadRequest(beneficialLoansAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
@@ -88,12 +89,6 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.beneficialLoansAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.beneficialLoansAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.beneficialLoansAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     beneficialLoansAmountRedirects(cya, taxYear, employmentId)

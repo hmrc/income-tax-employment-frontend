@@ -20,11 +20,10 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
-import forms.YesNoForm
+import forms.benefits.medical.MedicalFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -39,11 +38,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MedicalDentalChildcareBenefitsController @Inject()(authAction: AuthorisedAction,
                                                          inYearAction: InYearUtil,
-                                                         medicalDentalChildcareBenefitsView: MedicalDentalChildcareBenefitsView,
+                                                         pageView: MedicalDentalChildcareBenefitsView,
                                                          employmentSessionService: EmploymentSessionService,
                                                          medicalService: MedicalService,
-                                                         errorHandler: ErrorHandler)
-                                                         (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
+                                                         errorHandler: ErrorHandler,
+                                                         formsProvider: MedicalFormsProvider)
+                                                        (implicit appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -55,8 +55,8 @@ class MedicalDentalChildcareBenefitsController @Inject()(authAction: AuthorisedA
 
           cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(pageView(formsProvider.medicalDentalChildcareForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.medicalDentalChildcareForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -70,8 +70,8 @@ class MedicalDentalChildcareBenefitsController @Inject()(authAction: AuthorisedA
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(medicalBenefitsRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(medicalDentalChildcareBenefitsView(formWithErrors, taxYear, employmentId))),
+          formsProvider.medicalDentalChildcareForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
@@ -92,9 +92,5 @@ class MedicalDentalChildcareBenefitsController @Inject()(authAction: AuthorisedA
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.medicalDentalChildcare.error.noEntry.${if (isAgent) "agent" else "individual"}"
-  )
 }
 

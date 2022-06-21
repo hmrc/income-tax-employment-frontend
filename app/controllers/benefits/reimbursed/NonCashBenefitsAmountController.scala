@@ -20,12 +20,12 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.reimbursed.routes.OtherBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.reimbursed.ReimbursedFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -40,11 +40,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
-                                                nonCashBenefitsAmountView: NonCashBenefitsAmountView,
+                                                pageView: NonCashBenefitsAmountView,
                                                 employmentSessionService: EmploymentSessionService,
                                                 reimbursedService: ReimbursedService,
-                                                errorHandler: ErrorHandler)
-                                                (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                errorHandler: ErrorHandler,
+                                                formsProvider: ReimbursedFormsProvider)
+                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,10 +54,10 @@ class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash))
-          val form = fillFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.nonCashAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nonCash))
           )
-          Future.successful(Ok(nonCashBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -69,10 +70,10 @@ class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          amountForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.nonCashAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash))
-              Future.successful(BadRequest(nonCashBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
@@ -90,12 +91,6 @@ class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.nonCashBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.nonCashBenefitsAmount.error.incorrectFormat",
-    exceedsMaxAmountKey = s"benefits.nonCashBenefitsAmount.error.overMaximum"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     nonCashAmountRedirects(cya, taxYear, employmentId)

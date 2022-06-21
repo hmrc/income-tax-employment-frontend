@@ -20,11 +20,10 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
-import forms.YesNoForm
+import forms.benefits.medical.MedicalFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -39,10 +38,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
                                                   inYearAction: InYearUtil,
-                                                  beneficialLoansBenefitsView: BeneficialLoansBenefitsView,
+                                                  pageView: BeneficialLoansBenefitsView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   medicalService: MedicalService,
-                                                  errorHandler: ErrorHandler)
+                                                  errorHandler: ErrorHandler,
+                                                  formsProvider: MedicalFormsProvider)
                                                  (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
@@ -55,8 +55,8 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
 
           cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(beneficialLoansBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(beneficialLoansBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(pageView(formsProvider.beneficialLoansForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.beneficialLoansForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -70,8 +70,8 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(beneficialLoansRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(beneficialLoansBenefitsView(formWithErrors, taxYear, employmentId))),
+          formsProvider.beneficialLoansForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
@@ -92,8 +92,4 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.beneficialLoans.error.noEntry.${if (isAgent) "agent" else "individual"}"
-  )
 }
