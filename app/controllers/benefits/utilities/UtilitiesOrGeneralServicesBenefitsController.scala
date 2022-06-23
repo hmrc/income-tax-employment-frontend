@@ -20,12 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes._
 import controllers.benefits.utilities.routes._
-import forms.YesNoForm
+import forms.benefits.utilities.UtilitiesFormsProvider
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import models.{AuthorisationRequest, User}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -43,8 +42,9 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
                                                              utilitiesOrGeneralServicesBenefitsView: UtilitiesOrGeneralServicesBenefitsView,
                                                              employmentSessionService: EmploymentSessionService,
                                                              utilitiesService: UtilitiesService,
+                                                             formsProvider: UtilitiesFormsProvider,
                                                              errorHandler: ErrorHandler)
-                                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,8 +53,10 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(yesNoForm(request.user).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(yesNoForm(request.user), taxYear, employmentId)))
+              Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(formsProvider.utilitiesOrGeneralServicesBenefitsForm(
+                request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(formsProvider.utilitiesOrGeneralServicesBenefitsForm(
+              request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -65,7 +67,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
-          yesNoForm(request.user).bindFromRequest().fold(
+          formsProvider.utilitiesOrGeneralServicesBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(utilitiesOrGeneralServicesBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -87,10 +89,6 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(user: User): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.utilitiesOrGeneralServices.error.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     utilitiesBenefitsRedirects(cya, taxYear, employmentId)

@@ -17,8 +17,6 @@
 package controllers.benefits.utilities
 
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -33,162 +31,26 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val poundPrefixText = "£"
-  private val amountInputName = "amount"
   private val employmentId = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
-  object Selectors {
-    val contentSelector = "#main-content > div > div > p"
-    val hintTextSelector = "#amount-hint"
-    val inputSelector = "#amount"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val continueButtonSelector = "#continue"
-    val continueButtonFormSelector = "#main-content > div > div > form"
-    val expectedErrorHref = "#amount"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val amountHint: String
-    val continue: String
-    val previousExpectedContent: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val wrongFormatErrorText: String
-    val emptyErrorText: String
-    val maxAmountErrorText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £100, tell us the correct amount."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "Er enghraifft, £193.52"
-    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £100."
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for telephone benefits?"
-    val expectedHeading: String = "How much did you get in total for telephone benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount you got for telephone benefits in the correct format"
-    val emptyErrorText: String = "Enter the amount you got for telephone benefits"
-    val maxAmountErrorText: String = "Your telephone benefits must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer buddiannau ffÙn?"
-    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer buddiannau ffÙn?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn yn y fformat cywir"
-    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer buddiannau ffÙn"
-    val maxAmountErrorText: String = "Maeín rhaid iích buddiannau ffÙn fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for telephone benefits?"
-    val expectedHeading: String = "How much did your client get in total for telephone benefits?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter the amount your client got for telephone benefits in the correct format"
-    val emptyErrorText: String = "Enter the amount your client got for telephone benefits"
-    val maxAmountErrorText: String = "Your client’s telephone benefits must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau ffÙn?"
-    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer buddiannau ffÙn?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn yn y fformat cywir"
-    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiannau ffÙn eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
+    "render the telephone employment benefits amount page" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephone = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the telephone employment benefits amount page without pre-filled form" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephone = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          elementsNotOnPageCheck(contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(telephoneBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the telephone employment benefits amount page with pre-filled form" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent, contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "100")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(telephoneBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -255,103 +117,18 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.specificExpectedResults._
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render the telephone employment benefits amount page with empty error text when there no input" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
-          }
+    "should render the telephone employment benefits amount page with empty error text when there no input" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(telephoneBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.emptyErrorText)
-        }
-
-        "should render the telephone employment benefits amount page with wrong format text when input is in incorrect format" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "abc")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(telephoneBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.wrongFormatErrorText)
-        }
-
-        "should render the telephone employment benefits amount page with max error when input > 100,000,000,000" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(telephoneBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.maxAmountErrorText)
-        }
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 

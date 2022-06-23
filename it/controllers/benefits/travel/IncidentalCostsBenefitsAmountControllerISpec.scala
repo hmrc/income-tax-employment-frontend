@@ -18,8 +18,6 @@ package controllers.benefits.travel
 
 import forms.AmountForm
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -35,198 +33,25 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId: String = "employmentId"
-  private val prefilledAmount: BigDecimal = 200
-  private val amountInputName = "amount"
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = hasPriorBenefits, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
-  object Selectors {
-    val optionalParagraphSelector = "#main-content > div > div > p"
-    val hintTextSelector = "#amount-hint"
-    val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val inputSelector = "#amount"
-    val continueButtonSelector = "#continue"
-    val formSelector = "#main-content > div > div > form"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: Int => String
-
-    def optionalParagraphText(amount: BigDecimal): String
-
-    val expectedHintText: String
-    val currencyPrefix: String
-    val continueButtonText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val expectedErrorNoEntry: String
-    val expectedErrorIncorrectFormat: String
-    val expectedErrorOverMaximum: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
-
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
-    val expectedHintText = "For example, £193.52"
-    val currencyPrefix = "£"
-    val continueButtonText = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-
-    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
-
-    val expectedHintText = "Er enghraifft, £193.52"
-    val currencyPrefix = "£"
-    val continueButtonText = "Yn eich blaen"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "How much did you get in total for incidental overnight costs?"
-    val expectedHeading = "How much did you get in total for incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount you got for incidental overnight costs"
-    val expectedErrorIncorrectFormat = "Enter the amount you got for incidental overnight costs in the correct format"
-    val expectedErrorOverMaximum = "Your incidental overnight costs must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedHeading = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch y swm a gawsoch ar gyfer m‚n gostau dros nos"
-    val expectedErrorIncorrectFormat = "Nodwch y swm a gawsoch chi ar gyfer m‚n gostau dros nos yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iích m‚n gostau dros nos fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "How much did your client get in total for incidental overnight costs?"
-    val expectedHeading = "How much did your client get in total for incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorNoEntry = "Enter the amount your client got for incidental overnight costs"
-    val expectedErrorIncorrectFormat = "Enter the amount your client got for incidental overnight costs in the correct format"
-    val expectedErrorOverMaximum = "Your client’s incidental overnight costs must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedHeading = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos"
-    val expectedErrorIncorrectFormat = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i f‚n gostau dros nos eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the 'incidental overnight expenses amount' page with no pre-filled amount field" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render the 'incidental overnight expenses amount' page" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          elementsNotOnPageCheck(optionalParagraphSelector)
-          hintTextCheck(expectedHintText, hintTextSelector)
-          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and prior benefits exist" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
-          hintTextCheck(expectedHintText, hintTextSelector)
-          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and no prior benefits exist" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
-          hintTextCheck(expectedHintText, hintTextSelector)
-          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-          welshToggleCheck(user.isWelsh)
-        }
+      s"has an OK($OK) status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -295,113 +120,19 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return an error" when {
-          "a form is submitted with no entry" which {
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+    "return an error" when {
+      "a form is submitted with no entry" which {
+        implicit lazy val result: WSResponse = {
+          authoriseAgentOrIndividual(isAgent = false)
+          dropEmploymentDB()
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "",
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, "")
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
-            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
-
-          "a form is submitted with an incorrect format" which {
-            val incorrectAmount = "abc"
-            val form: Map[String, String] = Map(AmountForm.amount -> incorrectAmount)
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, incorrectAmount)
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, inputSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
-            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
-
-          "a form is submitted and the amount is over the maximum limit" which {
-            val overMaxAmount = "100,000,000,000,000,000,000"
-            val form: Map[String, String] = Map(AmountForm.amount -> overMaxAmount)
-            implicit lazy val result: WSResponse = {
-              authoriseAgentOrIndividual(user.isAgent)
-              dropEmploymentDB()
-              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has an BAD REQUEST($BAD_REQUEST) status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY))
-            textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
-            hintTextCheck(expectedHintText, hintTextSelector)
-            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldValueCheck(amountInputName, inputSelector, overMaxAmount)
-            buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, inputSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
-            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
-
-            welshToggleCheck(user.isWelsh)
-          }
+        s"has an BAD REQUEST($BAD_REQUEST) status" in {
+          result.status shouldBe BAD_REQUEST
         }
       }
     }

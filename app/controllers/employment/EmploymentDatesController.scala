@@ -56,7 +56,8 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
             val parsedEndDate: Option[LocalDate] = endDate.map(LocalDate.parse(_, localDateTimeFormat))
             val filledForm: Form[EmploymentDates] = datesForm.fill(
               EmploymentDates(
-                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString)),
+                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString,
+                  localDate.getMonthValue.toString, localDate.getYear.toString)),
                 parsedEndDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
             Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>

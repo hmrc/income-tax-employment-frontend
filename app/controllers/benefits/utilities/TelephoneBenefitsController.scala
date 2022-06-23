@@ -19,11 +19,10 @@ package controllers.benefits.utilities
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.utilities.routes.{EmployerProvidedServicesBenefitsController, TelephoneBenefitsAmountController}
-import forms.YesNoForm
+import forms.benefits.utilities.UtilitiesFormsProvider
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import models.{AuthorisationRequest, User}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -41,8 +40,9 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
                                             telephoneBenefitsView: TelephoneBenefitsView,
                                             employmentSessionService: EmploymentSessionService,
                                             utilitiesService: UtilitiesService,
+                                            formsProvider: UtilitiesFormsProvider,
                                             errorHandler: ErrorHandler)
-                                           (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                           (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,8 +53,9 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
           EmploymentBenefitsType)(commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) match {
-            case Some(questionResult) => Future.successful(Ok(telephoneBenefitsView(yesNoForm(request.user).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(telephoneBenefitsView(yesNoForm(request.user), taxYear, employmentId)))
+            case Some(questionResult) => Future.successful(Ok(telephoneBenefitsView(formsProvider.telephoneBenefitsForm(
+              request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(telephoneBenefitsView(formsProvider.telephoneBenefitsForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -68,7 +69,7 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user).bindFromRequest().fold(
+          formsProvider.telephoneBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(telephoneBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -90,8 +91,4 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(user: User): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.telephoneBenefits.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
-  )
 }

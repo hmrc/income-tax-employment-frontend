@@ -19,12 +19,11 @@ package controllers.benefits.travel
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
-import forms.YesNoForm
+import forms.benefits.travel.TravelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,8 +41,9 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(authAction: 
                                                                     pageView: IncidentalOvernightCostEmploymentBenefitsView,
                                                                     employmentSessionService: EmploymentSessionService,
                                                                     travelService: TravelService,
+                                                                    formsProvider: TravelFormsProvider,
                                                                     errorHandler: ErrorHandler)
-                                                                   (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                                   (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,8 +53,10 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(authAction: 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) match {
-            case Some(yesNo) => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent).fill(yesNo), taxYear, employmentId)))
-            case None => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+            case Some(yesNo) => Future.successful(Ok(pageView(formsProvider.incidentalOvernightCostEmploymentBenefitsForm(
+              request.user.isAgent).fill(yesNo), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(formsProvider.incidentalOvernightCostEmploymentBenefitsForm(
+              request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -67,7 +69,7 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(authAction: 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.incidentalOvernightCostEmploymentBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -89,10 +91,6 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(authAction: 
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incidentalOvernightCostEmploymentBenefits.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)

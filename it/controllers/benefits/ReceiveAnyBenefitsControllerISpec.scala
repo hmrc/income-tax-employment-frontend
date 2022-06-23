@@ -16,11 +16,8 @@
 
 package controllers.benefits
 
-import common.SessionValues
 import forms.YesNoForm
 import models.benefits.BenefitsViewModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -31,140 +28,19 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  object Selectors {
-    val expectedErrorHref = "#value"
-    val paragraphSelector = "#main-content > div > div > p"
-    val formSelector = "#main-content > div > div > form"
-  }
+  val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
-  trait SpecificExpectedResults {
-    val expectedH1: String
-    val expectedTitle: String
-    val expectedErrorTitle: String
-    val expectedErrorText: String
-  }
+  ".show" should {
+    "return Did you receive any benefits question page" when {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
+        urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-  trait CommonExpectedResults {
-    val continueButton: String
-    val expectedCaption: String
-    val paragraphText: String
-    val yesText: String
-    val noText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val continueButton: String = "Continue"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val paragraphText = "Examples of benefits include company cars or vans, fuel allowance and medical insurance."
-    val yesText = "Yes"
-    val noText = "No"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val continueButton: String = "Yn eich blaen"
-    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val paragraphText = "Enghreifftiau o fuddiannau yw ceir neu faniau cwmni, lwfans tanwydd ac yswiriant meddygol."
-    val yesText = "Iawn"
-    val noText = "Na"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedH1: String = "Did you get any benefits from this company?"
-    val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you got any benefits from this company"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = "Did your client get any benefits from this company?"
-    val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if your client got any benefits from this company"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "A gawsoch unrhyw fuddiannau gan y cwmni hwn?"
-    val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiannau gan y cwmni hwn"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "A gafodd eich cleient unrhyw fuddiannau gan y cwmni hwn?"
-    val expectedTitle: String = expectedH1
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient unrhyw fuddiannau gan y cwmni hwn"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
-
-  ".show" when {
-    import Selectors._
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-      val specific = user.specificExpectedResults.get
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return Did you receive any benefits question page" when {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
-            urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "status OK" in {
-            result.status shouldBe 200
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(paragraphText, paragraphSelector)
-          buttonCheck(continueButton)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
-        }
-
-        "return Did you receive any benefits question page with radio button pre-filled if isBenefits received field true" when {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false, isBenefitsReceived = true)
-            val employmentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel))
-            urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
-          }
-
-          "status OK" in {
-            result.status shouldBe 200
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(paragraphText, paragraphSelector)
-          buttonCheck(continueButton)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
-        }
+      "status OK" in {
+        result.status shouldBe 200
       }
     }
 
@@ -205,39 +81,20 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   ".submit" should {
-    import Selectors._
     val yesNoFormYes = Map(YesNoForm.yesNo -> YesNoForm.yes)
     val yesNoFormNo = Map(YesNoForm.yesNo -> YesNoForm.no)
     val yesNoFormEmpty = Map[String, String]()
 
-    userScenarios.foreach { user =>
-      import user.commonExpectedResults._
-      val specific = user.specificExpectedResults.get
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return the Did you receive any employments Page with errors when no radio button is selected" when {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
-            urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "return the Did you receive any employments Page with errors when no radio button is selected" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), body = yesNoFormEmpty, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "status BAD_REQUEST" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedErrorTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(expectedCaption)
-          buttonCheck(continueButton)
-          errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
-          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
-        }
+      "status BAD_REQUEST" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 
