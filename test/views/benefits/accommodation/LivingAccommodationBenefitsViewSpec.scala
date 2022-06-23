@@ -77,7 +77,7 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedParagraphText: String = "Diffinnir llety fel llety y gallwch fyw ynddo, píun a ydych yn byw ynddo drwyír amser neu dim ond rhan oír amser. " +
       "Maeín cynnwys tai, fflatiau, cychod preswyl a lletyau gwyliau."
     val yesText = "Iawn"
@@ -101,7 +101,7 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fuddiannau llety byw?"
     val expectedHeading = "A gawsoch unrhyw fuddiannau llety byw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau llety byw"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau llety byw"
     val expectedDetailsText2: String = "Dylaiích incwm o gyflogaeth gynnwys gwerth unrhyw lety byw rydych chi neu eich perthnasau yn ei gael oherwydd eich cyflogaeth."
   }
 
@@ -118,7 +118,7 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau llety byw?"
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau llety byw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní os cafodd eich cleient fuddiannau llety byw"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau llety byw"
     val expectedDetailsText2: String = "Dylai incwm o gyflogaeth eich cleient gynnwys gwerth unrhyw lety y mae ef neu ei berthnasau yn ei gael oherwydd ei gyflogaeth."
   }
 

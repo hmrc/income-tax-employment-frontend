@@ -79,7 +79,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
     val expectedExample1 = "cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol"
     val expectedExample2 = "lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron"
@@ -99,7 +99,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill?"
     val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer prynu offer eraill"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer prynu offer eraill"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,7 +113,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
     val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

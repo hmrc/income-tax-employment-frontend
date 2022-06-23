@@ -79,7 +79,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
     val wrongFormatErrorText: String = "Nodwch y swm a dalwyd yn y fformat cywir"

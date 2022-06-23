@@ -70,10 +70,10 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you leave this employer in the tax year?"
-    val expectedH1 = "Did you leave HMRC in the tax year?"
+    val expectedTitle = "A wnaethoch adael y cyflogwr hwn yn y flwyddyn dreth?"
+    val expectedH1 = "A wnaethoch adael HMRC yn y flwyddyn dreth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if you left HMRC in the tax year"
+    val expectedError = "Dewiswch ‘Iawn’ os gwnaethoch adael HMRC yn y flwyddyn dreth"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -84,10 +84,10 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client leave this employer in the tax year?"
-    val expectedH1 = "Did your client leave HMRC in the tax year?"
+    val expectedTitle = "A adawodd eich cleient y cyflogwr hwn yn y flwyddyn dreth?"
+    val expectedH1 = "A adawodd eich cleient HMRC yn y flwyddyn dreth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Select yes if your client left HMRC in the tax year"
+    val expectedError = "Dewiswch ‘Iawn’ os gadawodd eich cleient HMRC yn y flwyddyn dreth"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -98,7 +98,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

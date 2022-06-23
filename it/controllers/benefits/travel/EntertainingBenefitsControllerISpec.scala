@@ -70,7 +70,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val yesText = "Iawn"
     val noText = "Na"
     val continueButtonText = "Yn eich blaen"
@@ -88,7 +88,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     val expectedTitle = "A gawsoch unrhyw fuddiannau gwesteia?"
     val expectedH1 = "A gawsoch unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia"
     val expectedContent = "Costau gwesteia ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 
@@ -104,7 +104,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau gwesteia?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia"
     val expectedContent = "Costau gwesteia ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 

@@ -66,7 +66,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val hint: String = "Er enghraifft, £193.52"
     val continue: String = "Yn eich blaen"
     val expectedPTextWithData: String = s"Os na chafodd £200 ei thynnu fel treth y DU, rhowch wybod i ni beth ywír swm cywir."

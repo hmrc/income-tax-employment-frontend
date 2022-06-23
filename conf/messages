@@ -147,7 +147,6 @@ expenses.hiddenText.individual = your expenses from all employment this tax year
 employment.employmentSummary.employers = Employers
 employment.employmentSummary.addAnotherEmployer = Add another employer
 employment.employmentSummary.addAnEmployer = Add an employer
-employment.employmentSummary.noExpensesAdded = No expenses added
 employment.employmentSummary.addExpenses = Add expenses
 employment.employmentSummary.cannotAdd.individual = You cannot add expenses until 6 April {0}.
 employment.employmentSummary.cannotAdd.agent = You cannot add your client’s expenses until 6 April {0}.
@@ -629,7 +628,6 @@ checkYourBenefits.vouchersAmount = Amount for vouchers or credit cards
 
 #################       Benefits messages        ########################################
 
-benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
 receiveAnyBenefits.errors.noRadioSelected.agent = Select yes if your client got any benefits from this company
 receiveAnyBenefits.errors.noRadioSelected.individual = Select yes if you got any benefits from this company
 receiveAnyBenefits.paragraph = Examples of benefits include company cars or vans, fuel allowance and medical insurance.

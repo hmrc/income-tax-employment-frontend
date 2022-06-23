@@ -72,7 +72,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
     val expectedTitle = "A gawsoch unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedH1 = "A gawsoch unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau teithio a chynhaliaeth"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau teithio a chynhaliaeth"
     val thisIs = "Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan eich cyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd."
   }
 
@@ -88,7 +88,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio a chynhaliaeth"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau teithio a chynhaliaeth"
     val thisIs = "Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan ei gyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd."
   }
 
@@ -100,7 +100,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

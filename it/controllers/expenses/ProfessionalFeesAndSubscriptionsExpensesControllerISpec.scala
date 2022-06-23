@@ -75,7 +75,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
     val yesText = "Iawn"
     val noText = "Na"
@@ -96,7 +96,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
     val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
     val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith"
     val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i’ch swydd"
     val checkIfYouCanClaim = "Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
@@ -116,7 +116,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
     val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
     val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith"
     val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient"
     val checkIfYouCanClaim = "Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."

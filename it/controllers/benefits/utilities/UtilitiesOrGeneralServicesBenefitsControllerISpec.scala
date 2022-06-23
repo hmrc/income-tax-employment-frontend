@@ -67,7 +67,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
     val expectedTitle = "A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedH1 = "A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -81,7 +81,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -93,7 +93,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

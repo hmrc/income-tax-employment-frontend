@@ -66,7 +66,7 @@ class NonTaxableCostsBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
     val expectedHeading = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd unrhyw rai o’ch costau anhrethadwy eu had-dalu gan eich cyflogwr"
     val paragraph = "Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud eich swydd."
   }
 
@@ -82,7 +82,7 @@ class NonTaxableCostsBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?"
     val expectedHeading = "A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr"
     val paragraph = "Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud ei swydd."
   }
 
@@ -94,7 +94,7 @@ class NonTaxableCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

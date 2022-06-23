@@ -111,6 +111,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentDates: String
     val didYouLeaveNo: String
     val didYouLeaveYes: String
+    val notProvided: String
   }
 
   object ContentValues {
@@ -144,11 +145,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentDates = s"$employmentStartDate to $employmentEndDate"
     val didYouLeaveYes = "Yes"
     val didYouLeaveNo = "No"
+    val notProvided = "Not provided"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val addLinkExpected = "Add"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    val addLinkExpected = "Ychwanegu"
     val changeLinkExpected = "Newid"
     val continueButtonText = "Cadw ac yn eich blaen"
     val employerNameField1 = "Cyflogwr"
@@ -167,6 +169,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentDates = s"$employmentStartDate i $employmentEndDate"
     val didYouLeaveYes = "Iawn"
     val didYouLeaveNo = "Na"
+    val notProvided = "Heb ddarparu"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -210,7 +213,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l a gawsoch o $employerName"
     val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a daloch"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if you left $name in the tax year"
+    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gwnaethoch adael $name yn y flwyddyn dreth"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -225,7 +228,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l gafodd eich cleient o $employerName"
     val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a dalodd eich cleient"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if your client left $name in the tax year"
+    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gadawodd eich cleient $name yn y flwyddyn dreth"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -392,22 +395,22 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(anEmploymentDetails.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "paye ref")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "paye ref")
           linkCheck(s"${common.addLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
           textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "employment start date")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "employment start date")
           linkCheck(s"${common.addLinkExpected} ${specific.changeEmploymentStartDateHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(4), employmentStartDateUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(5), "payroll id")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "payroll id")
           linkCheck(s"${common.addLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(6), "pay received")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(6), "pay received")
           linkCheck(s"${common.addLinkExpected} ${specific.changePayReceivedHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(7), "tax taken from pay")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(7), "tax taken from pay")
           linkCheck(s"${common.addLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId))
         }
 
@@ -623,13 +626,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
           textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
           textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(5), "for payroll")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
@@ -661,17 +664,17 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
           linkCheck(s"${common.addLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
           textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
           textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
           linkCheck(s"${common.addLinkExpected} ${specific.changeEmploymentStartDateHiddenText(ContentValues.employerName)}", cyaChangeLink(4),
             employmentStartDateUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(5), "for payroll")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
           linkCheck(s"${common.addLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(5)))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(6))
@@ -709,13 +712,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
           textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
           textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(5), "for payroll")
+          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))

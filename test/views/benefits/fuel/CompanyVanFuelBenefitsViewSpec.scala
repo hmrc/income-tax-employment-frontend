@@ -60,7 +60,7 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
@@ -84,14 +84,14 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch fuddiant tanwydd ar gyfer fan cwmni?"
     val expectedH1 = "A gawsoch fuddiant tanwydd ar gyfer fan cwmni?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant tanwydd ar gyfer fan cwmni"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiant tanwydd ar gyfer fan cwmni"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A gafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni?"
     val expectedH1 = "A gafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

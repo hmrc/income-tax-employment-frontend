@@ -82,7 +82,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedHeading = "A ydych am hawlio treuliau cyflogaeth?"
     val expectedCanClaim = "Gallwch hawlio treuliau cyflogaeth na wnaethoch eu hawlio drwy eich cyflogwr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os ydych am hawlio treuliau cyflogaeth"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -98,7 +98,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedHeading = "A ydych am hawlio treuliau cyflogaeth ar gyfer eich cleient?"
     val expectedCanClaim = "Gallwch hawlio treuliau cyflogaeth na wnaeth eich cleient eu hawlio drwy ei gyflogwr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth eich cleient"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os ydych am hawlio treuliau cyflogaeth eich cleient"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -115,7 +115,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedThisIncludes = "Mae treuliau cyflogaeth yn cynnwys pethau fel:"
     val expectedThisIncludesExample1 = "teithiau busnes a gwestai a phrydau bwyd"
     val expectedThisIncludesExample2 = "ffioedd a thanysgrifiadau proffesiynol"

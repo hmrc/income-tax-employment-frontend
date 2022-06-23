@@ -81,7 +81,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen arnoch i wneud eich gwaith"
     val expectedUniformsAndToolsLink = "Gwiriwch i weld a allwch hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
+    val expectedErrorText = "Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -99,7 +99,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen ar eich cleient i wneud ei waith"
     val expectedUniformsAndToolsLink = "Gwiriwch i weld a all eich cleient hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
+    val expectedErrorText = "Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -113,7 +113,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedCanClaim = "Maeín bosibl y gallwch hawlio ar gyfer costau:"
     val expectedCanClaimExample2 = "glanhau, atgyweirio neu ddisodli gwisgoedd unffurf neu ddillad gwaith arbenigol"
     val flatRateExpense = "Maeír treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (ëtraul cyfradd unffurfí neu ëdidyniad sefydlogí)."

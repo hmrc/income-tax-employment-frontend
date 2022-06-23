@@ -70,7 +70,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
@@ -88,7 +88,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedTitle = "A gawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr?"
     val expectedHeading = "A gawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr"
     val expectedParagraphText =
       "Maeír rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig ‚ích swydd. Eich cyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }
@@ -105,7 +105,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedTitle = "A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?"
     val expectedHeading = "A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr"
     val expectedParagraphText =
       "Maeír rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig ‚íi swydd. Ei gyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }

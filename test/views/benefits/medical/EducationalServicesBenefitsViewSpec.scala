@@ -67,7 +67,7 @@ class EducationalServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
     val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt ywír rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau addysg"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau addysg"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,7 +83,7 @@ class EducationalServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
     val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt ywír rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -94,7 +94,7 @@ class EducationalServicesBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

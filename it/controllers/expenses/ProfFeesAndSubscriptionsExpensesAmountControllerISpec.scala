@@ -86,8 +86,8 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedTotalAmountParagraph = "Total amount for all employers"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    val expectedTotalAmountParagraph = "Cyfanswm ar gyfer pob cyflogwr"
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"

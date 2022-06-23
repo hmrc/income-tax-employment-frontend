@@ -81,7 +81,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedH1: String = "Beth yw cyfeirnod TWE maggie?"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, 123/AB456"

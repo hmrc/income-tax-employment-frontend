@@ -61,7 +61,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "A gawsoch fuddiant car cwmni?"
     val expectedH1: String = "A gawsoch fuddiant car cwmni?"
-    val expectedError: String = "Dewiswch ëIawní os cawsoch fuddiant car cwmni"
+    val expectedError: String = "Dewiswch ‘Iawn’ os cawsoch fuddiant car cwmni"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -73,7 +73,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "A gafodd eich cleient fuddiant car cwmni?"
     val expectedH1: String = "A gafodd eich cleient fuddiant car cwmni?"
-    val expectedError: String = "Dewiswch ëIawní os cafodd eich cleient fuddiant car cwmni"
+    val expectedError: String = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant car cwmni"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -86,7 +86,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
 
     val radioTextYes: String = "Iawn"
     val radioTextNo: String = "Na"

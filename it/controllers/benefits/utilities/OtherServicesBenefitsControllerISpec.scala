@@ -72,7 +72,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
     val expectedTitle = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedH1 = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau eraill"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau eraill"
     val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill rydych wediíu defnyddio syín ofynnol ar gyfer eich swydd. Eich cyflogwr syín talu amdanynt."
   }
 
@@ -88,7 +88,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill"
     val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt."
   }
 
@@ -101,7 +101,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

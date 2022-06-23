@@ -66,7 +66,7 @@ class NonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fuddiant sydd ddim yn arian parod?"
     val expectedHeading = "A gawsoch unrhyw fuddiant sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau sydd ddim yn arian parod"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau sydd ddim yn arian parod"
     val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
   }
 
@@ -82,7 +82,7 @@ class NonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?"
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau sydd ddim yn arian parod"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau sydd ddim yn arian parod"
     val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
   }
 
@@ -94,7 +94,7 @@ class NonCashBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

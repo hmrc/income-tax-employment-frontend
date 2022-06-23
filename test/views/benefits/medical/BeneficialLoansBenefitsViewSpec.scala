@@ -66,7 +66,7 @@ class BeneficialLoansBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fenthyciadau buddiannol?"
     val expectedHeading = "A gawsoch unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fenthyciadau buddiannol"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fenthyciadau buddiannol"
     val theseAreText = "Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr."
   }
 
@@ -82,7 +82,7 @@ class BeneficialLoansBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
     val expectedHeading = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fenthyciadau buddiannol"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fenthyciadau buddiannol"
     val theseAreText = "Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo."
   }
 
@@ -94,7 +94,7 @@ class BeneficialLoansBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

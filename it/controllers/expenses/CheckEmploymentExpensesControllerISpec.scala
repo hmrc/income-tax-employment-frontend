@@ -162,7 +162,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val yes: String = "Iawn"
     val no: String = "Na"
 
-    def expectedCaption(taxYear: Int = taxYear): String = s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int = taxYear): String = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

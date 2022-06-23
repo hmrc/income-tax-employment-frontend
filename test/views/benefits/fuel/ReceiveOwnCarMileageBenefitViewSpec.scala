@@ -64,7 +64,7 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
@@ -96,7 +96,7 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
       "syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oích ffurflen P11D."
     val expectedP2 = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant milltiroedd am ddefnyddioích car eich hun ar gyfer gwaith"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiant milltiroedd am ddefnyddio’ch car eich hun ar gyfer gwaith"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -106,7 +106,7 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
       "cleient daliadau syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oíi ffurflen P11D."
     val expectedP2 = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

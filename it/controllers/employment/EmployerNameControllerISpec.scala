@@ -115,7 +115,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val expectedErrorCharLimit = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai"
     val paragraphText = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:"

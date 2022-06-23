@@ -63,7 +63,7 @@ class MedicalDentalChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedHeading = "A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -77,7 +77,7 @@ class MedicalDentalChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -88,7 +88,7 @@ class MedicalDentalChildcareBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
