@@ -20,16 +20,15 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTest
-import views.html.templates.YouNeedAgentServicesView
+import views.html.errors.YouNeedAgentServicesView
 
 class YouNeedAgentServicesControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
-  lazy val controller = new YouNeedAgentServicesController(mockMessagesControllerComponents, app.injector.instanceOf[YouNeedAgentServicesView], mockAppConfig)
+  private val pageView = app.injector.instanceOf[YouNeedAgentServicesView]
+  private val controller = new YouNeedAgentServicesController(pageView)(mockMessagesControllerComponents, mockAppConfig)
 
   "The show method" should {
-
     "return an OK response when .show() is called" in {
-
       val fakeRequest = FakeRequest("GET", "/error/you-need-agent-services-account")
       val result = controller.show()(fakeRequest)
 

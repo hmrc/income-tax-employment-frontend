@@ -19,11 +19,10 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes._
-import forms.YesNoForm
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -38,10 +37,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(authAction: AuthorisedAction,
                                                                    inYearAction: InYearUtil,
-                                                                   professionalFeesAndSubscriptionsExpensesView: ProfessionalFeesAndSubscriptionsExpensesView,
+                                                                   pageView: ProfessionalFeesAndSubscriptionsExpensesView,
                                                                    employmentSessionService: EmploymentSessionService,
                                                                    expensesService: ExpensesService,
-                                                                   errorHandler: ErrorHandler)
+                                                                   errorHandler: ErrorHandler,
+                                                                   formsProvider: ExpensesFormsProvider)
                                                                   (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
@@ -51,8 +51,8 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(authAction: A
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
 
           data.expensesCya.expenses.professionalSubscriptionsQuestion match {
-            case Some(cya) => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm(request.user.isAgent).fill(cya), taxYear)))
-            case None => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm(request.user.isAgent), taxYear)))
+            case Some(cya) => Future.successful(Ok(pageView(formsProvider.professionalFeesAndSubscriptionsForm(request.user.isAgent).fill(cya), taxYear)))
+            case None => Future.successful(Ok(pageView(formsProvider.professionalFeesAndSubscriptionsForm(request.user.isAgent), taxYear)))
           }
         }
       }
@@ -65,8 +65,8 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(authAction: A
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(professionalFeesAndSubscriptionsExpensesView(formWithErrors, taxYear))),
+          formsProvider.professionalFeesAndSubscriptionsForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear))),
             yesNo => handleSuccessForm(taxYear, data, yesNo)
           )
         }
@@ -87,10 +87,6 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(authAction: A
         expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.professionalFeesAndSubscriptions.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
     professionalSubscriptionsRedirects(cya, taxYear)

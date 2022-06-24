@@ -19,11 +19,11 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import forms.{AmountForm, FormUtils}
+import forms.expenses.ExpensesFormsProvider
+import forms.FormUtils
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.ExpensesRedirectService.{otherAllowanceAmountRedirects, redirectBasedOnCurrentAnswers}
@@ -39,10 +39,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
                                                inYearAction: InYearUtil,
-                                               otherEquipmentAmountView: OtherEquipmentAmountView,
+                                               pageView: OtherEquipmentAmountView,
                                                employmentSessionService: EmploymentSessionService,
                                                expensesService: ExpensesService,
-                                               errorHandler: ErrorHandler)
+                                               errorHandler: ErrorHandler,
+                                               formsProvider: ExpensesFormsProvider)
                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
@@ -51,11 +52,11 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
           val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
-          val form = fillExpensesFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
+          val form = fillExpensesFormFromPriorAndCYA(formsProvider.otherEquipmentAmountForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
             employmentExpenses.expenses.flatMap(_.otherAndCapitalAllowances)
           }
 
-          Future.successful(Ok(otherEquipmentAmountView(taxYear, form, cyaAmount)))
+          Future.successful(Ok(pageView(taxYear, form, cyaAmount)))
         }
       })
     }
@@ -65,10 +66,10 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.otherEquipmentAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = data.expensesCya.expenses.otherAndCapitalAllowances
-              Future.successful(BadRequest(otherEquipmentAmountView(taxYear, formWithErrors, fillValue)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue)))
             },
             amount => handleSuccessForm(taxYear, data, amount)
           )
@@ -86,12 +87,6 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
         ExpensesRedirectService.expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"expenses.otherEquipmentAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"expenses.otherEquipmentAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"expenses.otherEquipmentAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
     otherAllowanceAmountRedirects(cya, taxYear)

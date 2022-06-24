@@ -20,15 +20,15 @@ import config.AppConfig
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.templates.YouNeedAgentServicesView
+import views.html.errors.YouNeedAgentServicesView
 
 import javax.inject.Inject
 
-class YouNeedAgentServicesController @Inject()(val mcc: MessagesControllerComponents,
-                                               youNeedAgentServicesPage: YouNeedAgentServicesView,
-                                               implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+class YouNeedAgentServicesController @Inject()(pageView: YouNeedAgentServicesView)
+                                              (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(mcc) with I18nSupport {
 
   def show(): Action[AnyContent] = Action { implicit request =>
-    Unauthorized(youNeedAgentServicesPage())
+    Unauthorized(pageView())
   }
 }

@@ -37,7 +37,7 @@ import views.html.expenses.CheckEmploymentExpensesView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: CheckEmploymentExpensesView,
+class CheckEmploymentExpensesController @Inject()(pageView: CheckEmploymentExpensesView,
                                                   createOrAmendExpensesService: CreateOrAmendExpensesService,
                                                   employmentSessionService: EmploymentSessionService,
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
@@ -141,7 +141,7 @@ class CheckEmploymentExpensesController @Inject()(checkEmploymentExpensesView: C
                                         isUsingCustomerData: Boolean,
                                         cya: Option[ExpensesViewModel] = None)(implicit request: AuthorisationRequest[_]): Result = {
     checkEmploymentExpensesService.sendViewEmploymentExpensesAudit(request.user, taxYear, expenses)
-    Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
+    Ok(pageView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
   }
 }
 

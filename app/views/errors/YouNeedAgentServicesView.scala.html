@@ -14,15 +14,25 @@
  * limitations under the License.
  *@
 
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Link
 
-@this(layout: Layout, heading: Heading, link: Link)
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@this(
+    layout: Layout,
+    heading: Heading,
+    link: Link
+)
 
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @layout(messages("error.unauthorised.title"), backLink = false) {
-    @heading(messages("error.unauthorised.title"), None, "govuk-!-margin-bottom-5", "xl")
-    <p class="govuk-body">@messages("error.unauthorised.1") @link("https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax","error.unauthorised.2a") @messages("error.unauthorised.3")</p>
+
+    @heading(messages("error.unauthorised.title"), None, extraClasses = "govuk-!-margin-bottom-5", size = "xl")
+
+    <p class="govuk-body">
+        @messages("error.unauthorised.1") @link("https://www.gov.uk/guidance/get-an-hmrc-agent-services-account","error.unauthorised.2",Some("create_agent_services_link")) @messages("error.unauthorised.3")
+    </p>
+
 }
 
 @{

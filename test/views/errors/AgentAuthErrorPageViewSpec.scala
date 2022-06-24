@@ -16,15 +16,15 @@
 
 package views.errors
 
+import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.twirl.api.Html
-import utils.ViewTest
+import play.api.i18n.Messages
+import play.api.mvc.AnyContent
+import support.ViewUnitTest
+import views.html.errors.AgentAuthErrorPageView
 
-class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with ViewTest{
+class AgentAuthErrorPageViewSpec extends ViewUnitTest {
 
   object Selectors {
     val p1Selector = "#main-content > div > div > p:nth-child(2)"
@@ -33,7 +33,17 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
     val anotherClientDetailsButtonSelector = "#main-content > div > div > a"
   }
 
-  object ExpectedResultsEN {
+  trait CommonExpectedResults {
+    val h1Expected: String
+    val youCannotViewText: String
+    val authoriseYouAsText: String
+    val beforeYouCanTryText: String
+    val tryAnotherClientText: String
+    val tryAnotherClientExpectedHref: String
+    val authoriseAsAnAgentLink: String
+  }
+
+  object CommonExpectedEN extends CommonExpectedResults {
     val h1Expected = "There is a problem"
     val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
     val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
@@ -43,7 +53,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
     val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
   }
 
-  object ExpectedResultsCY {
+  object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Mae problem wedi codi"
     val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
     val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
@@ -53,34 +63,32 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
     val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
   }
 
-  import Selectors._
-  "AgentAuthErrorPageView in English" should {
-    import ExpectedResultsEN._
-    "Render correctly" which {
-      lazy val view: Html = agentAuthErrorPageView()(fakeRequest, messages, mockAppConfig)
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY)
+  )
 
-      titleCheck(h1Expected, isWelsh = false)
-      welshMessages("English")
-      h1Check(h1Expected, "xl")
-      textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
-      linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-      buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))
-    }
-  }
+  private lazy val underTest = inject[AgentAuthErrorPageView]
 
-  "AgentAuthErrorPageView in Welsh" should {
-    import ExpectedResultsCY._
-    "Render correctly" which {
-      lazy val view: Html = agentAuthErrorPageView()(fakeRequest, welshMessages, mockAppConfig)
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+  userScenarios.foreach { userScenario =>
+    import Selectors._
+    import userScenario.commonExpectedResults._
+    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+      "Render correctly" which {
+        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-      titleCheck(h1Expected, isWelsh = true)
-      welshMessages("Welsh")
-      h1Check(h1Expected, "xl")
-      textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
-      linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-      buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))
+        val htmlFormat = underTest()
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        titleCheck(h1Expected, isWelsh = userScenario.isWelsh)
+        h1Check(h1Expected, "xl")
+        textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
+        linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
+        buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))
+        welshToggleCheck(userScenario.isWelsh)
+      }
     }
   }
 }

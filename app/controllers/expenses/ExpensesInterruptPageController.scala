@@ -18,6 +18,7 @@ package controllers.expenses
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
+import controllers.expenses.routes.{BusinessTravelOvernightExpensesController, CheckEmploymentExpensesController}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -29,7 +30,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ExpensesInterruptPageController @Inject()(employmentSessionService: EmploymentSessionService,
-                                                expensesInterruptPageView: ExpensesInterruptPageView,
+                                                pageView: ExpensesInterruptPageView,
                                                 authAction: AuthorisedAction,
                                                 inYearAction: InYearUtil,
                                                 errorHandler: ErrorHandler)
@@ -38,9 +39,9 @@ class ExpensesInterruptPageController @Inject()(employmentSessionService: Employ
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     if (!inYearAction.inYear(taxYear)) {
-      Future.successful(Ok(expensesInterruptPageView(taxYear)))
+      Future.successful(Ok(pageView(taxYear)))
     } else {
-      Future.successful(Redirect(controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYear)))
+      Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
     }
   }
 
@@ -50,13 +51,13 @@ class ExpensesInterruptPageController @Inject()(employmentSessionService: Employ
         case Left(error) => errorHandler.handleError(error.status)
         case Right(data) =>
           if (data.employment.flatMap(_.latestEOYExpenses).nonEmpty) {
-            Redirect(controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYear))
+            Redirect(CheckEmploymentExpensesController.show(taxYear))
           } else {
-            Redirect(controllers.expenses.routes.BusinessTravelOvernightExpensesController.show(taxYear))
+            Redirect(BusinessTravelOvernightExpensesController.show(taxYear))
           }
       }
     } else {
-      Future.successful(Redirect(controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYear)))
+      Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
     }
   }
 }

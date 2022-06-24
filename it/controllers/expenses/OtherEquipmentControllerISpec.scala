@@ -19,8 +19,6 @@ package controllers.expenses
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -40,185 +38,19 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   def expensesViewModel(otherAndCapitalAllowancesQuestion: Option[Boolean] = None): ExpensesViewModel =
     anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
 
-  object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-
-    def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
-
-    val continueButtonSelector: String = "#continue"
-    val formSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-  }
-
-
-  trait CommonExpectedResults {
-    val expectedCaption: Int => String
-    val expectedParagraphText: String
-    val expectedExample1: String
-    val expectedExample2: String
-    val yesText: String
-    val noText: String
-    val buttonText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val expectedErrorMessage: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
-    val expectedExample1 = "the cost of buying small items - like electrical drills and protective clothing"
-    val expectedExample2 = "capital allowances for larger items - like machinery and computers"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
-    val expectedExample1 = "cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol"
-    val expectedExample2 = "lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val buttonText = "Yn eich blaen"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for buying other equipment?"
-    val expectedHeading = "Do you want to claim for buying other equipment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for buying other equipment"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill?"
-    val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer prynu offer eraill"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for buying other equipment for your client?"
-    val expectedHeading = "Do you want to claim for buying other equipment for your client?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client buying other equipment"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
-    val expectedHeading = "A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
+    "render other equipment question page with no pre-filled radio buttons" which {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
+        urlGet(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      import Selectors._
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "render other equipment question page with no pre-filled radio buttons" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
-            urlGet(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(expectedExample1, bulletListSelector(1))
-          textOnPageCheck(expectedExample2, bulletListSelector(2))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(otherEquipmentExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render other equipment question page with 'Yes' pre-filled and CYA data exists" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            urlGet(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(expectedExample1, bulletListSelector(1))
-          textOnPageCheck(expectedExample2, bulletListSelector(2))
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(otherEquipmentExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render other equipment question page with 'No' pre-filled and not a prior submission" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              ExpensesCYAModel(expensesViewModel(Some(false)))))
-            urlGet(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(expectedExample1, bulletListSelector(1))
-          textOnPageCheck(expectedExample2, bulletListSelector(2))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(otherEquipmentExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -252,46 +84,20 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.commonExpectedResults._
+    "return an error when form is submitted with no entry" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "return an error when form is submitted with no entry" which {
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "has the correct status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 3))
-          textOnPageCheck(expectedExample1, bulletListSelector(index = 1))
-          textOnPageCheck(expectedExample2, bulletListSelector(index = 2))
-          radioButtonCheck(yesText, radioNumber = 1, checked = false)
-          radioButtonCheck(noText, radioNumber = 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(otherEquipmentExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, Selectors.yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
-        }
-
+      "has the correct status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
+
     "redirect to Other Equipment amount page when user selects 'yes' and not a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -318,7 +124,6 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     "redirect to Check Employment Expenses page" when {
       "user selects no and it's a prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
@@ -343,7 +148,6 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "user has no expenses" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
@@ -370,7 +174,5 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
-
   }
-
 }

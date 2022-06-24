@@ -16,74 +16,24 @@
 
 package controllers.errors
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
-import utils.PageUrls.{createAnAgentLink, fullUrl, youNeedAgentServicesUrl}
+import utils.PageUrls.{fullUrl, youNeedAgentServicesUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object Selectors {
-    val p1Selector = "#main-content > div > div > p"
-    val createAnAgentLinkSelector = "#create_agent_services_link"
-  }
-
-  trait CommonExpectedResults {
-    val h1Expected: String
-    val youNeedText: String
-    val createAnAgentText: String
-    val beforeYouCanText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val h1Expected = "You cannot view this page"
-    val youNeedText = "You need to"
-    val createAnAgentText = "create an agent services account"
-    val beforeYouCanText = "before you can view this page."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "Ni allwch fwrw golwg dros y dudalen hon"
-    val youNeedText = "Mae angen"
-    val createAnAgentText = "creu cyfrif gwasanaethau asiant"
-    val beforeYouCanText = "cyn i chi allu bwrw golwg dros y dudalen hon."
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY))
-  }
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
-    import Selectors._
+    "render the page with the right content" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(youNeedAgentServicesUrl))
+      }
 
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "render the page with the right content" which {
-
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(youNeedAgentServicesUrl), welsh = user.isWelsh)
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an UNAUTHORIZED(401) status" in {
-            result.status shouldBe UNAUTHORIZED
-          }
-
-          import user.commonExpectedResults._
-
-          titleCheck(h1Expected, user.isWelsh)
-          welshToggleCheck(user.isWelsh)
-          h1Check(h1Expected, "xl")
-          textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", p1Selector)
-          linkCheck(createAnAgentText, createAnAgentLinkSelector, createAnAgentLink)
-        }
+      "has an UNAUTHORIZED(401) status" in {
+        result.status shouldBe UNAUTHORIZED
       }
     }
   }

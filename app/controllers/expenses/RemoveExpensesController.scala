@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveExpensesController @Inject()(authAction: AuthorisedAction,
                                          inYearAction: InYearUtil,
-                                         removeExpensesView: RemoveExpensesView,
+                                         pageView: RemoveExpensesView,
                                          employmentSessionService: EmploymentSessionService,
                                          deleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService,
                                          errorHandler: ErrorHandler)
@@ -44,7 +44,7 @@ class RemoveExpensesController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
         (allEmploymentData.customerExpenses, allEmploymentData.notIgnoredHmrcExpenses) match {
           case (None, None) => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-          case _ => Ok(removeExpensesView(taxYear))
+          case _ => Ok(pageView(taxYear))
         }
       }
     }

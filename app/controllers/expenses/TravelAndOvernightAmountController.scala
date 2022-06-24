@@ -19,11 +19,11 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.UniformsOrToolsExpensesController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -38,10 +38,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
                                                    inYearAction: InYearUtil,
-                                                   travelAndOvernightAmountView: TravelAndOvernightAmountView,
+                                                   pageView: TravelAndOvernightAmountView,
                                                    employmentSessionService: EmploymentSessionService,
                                                    expensesService: ExpensesService,
-                                                   errorHandler: ErrorHandler)
+                                                   errorHandler: ErrorHandler,
+                                                   formsProvider: ExpensesFormsProvider)
                                                   (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
@@ -51,10 +52,10 @@ class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.jobExpenses
 
-          val form = fillExpensesFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount)(
+          val form = fillExpensesFormFromPriorAndCYA(formsProvider.businessTravelAndOvernightAmountForm(request.user.isAgent), prior, cyaAmount)(
             expenses => expenses.expenses.flatMap(_.jobExpenses)
           )
-          Future.successful(Ok(travelAndOvernightAmountView(taxYear, form, cyaAmount)))
+          Future.successful(Ok(pageView(taxYear, form, cyaAmount)))
         }
       })
     }
@@ -65,8 +66,8 @@ class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
-          amountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, data.expensesCya.expenses.jobExpenses))),
+          formsProvider.businessTravelAndOvernightAmountForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors, data.expensesCya.expenses.jobExpenses))),
             amount => handleSuccessForm(taxYear, data, amount)
           )
         }
@@ -82,12 +83,6 @@ class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
       case Right(expensesUserData) => expensesSubmitRedirect(expensesUserData.expensesCya, UniformsOrToolsExpensesController.show(taxYear))(taxYear)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"expenses.businessTravelAndOvernightAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"expenses.businessTravelAndOvernightAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"expenses.businessTravelAndOvernightAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
     jobExpensesAmountRedirects(cya, taxYear)

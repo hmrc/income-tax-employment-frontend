@@ -19,8 +19,6 @@ package controllers.expenses
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -29,7 +27,7 @@ import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, professionalFeesExpensesUrl, professionalFeesLink}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, professionalFeesExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -37,202 +35,20 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
-  object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-
-    def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
-
-    val continueButtonSelector: String = "#continue"
-    val formSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-    val professionFeesLinkSelector = "#professional-fees-link"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: Int => String
-    val expectedParagraphText: String
-    val yesText: String
-    val noText: String
-    val buttonText: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val expectedErrorMessage: String
-    val expectedExample1: String
-    val expectedExample2: String
-    val checkIfYouCanClaim: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedParagraphText = "This includes things like:"
-    val yesText = "Yes"
-    val noText = "No"
-    val buttonText = "Continue"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val buttonText = "Yn eich blaen"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for professional fees and subscriptions?"
-    val expectedHeading = "Do you want to claim for professional fees and subscriptions?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for professional fees and subscriptions"
-    val expectedExample1 = "professional membership fees, if you have to pay the fees to do your job"
-    val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your job"
-    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
-    val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
-    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith"
-    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i’ch swydd"
-    val checkIfYouCanClaim = "Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Do you want to claim for professional fees and subscriptions for your client?"
-    val expectedHeading = "Do you want to claim for professional fees and subscriptions for your client?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorMessage = "Select yes to claim for your client’s professional fees and subscriptions"
-    val expectedExample1 = "professional membership fees, if your client has to pay the fees to do their job"
-    val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job"
-    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
-    val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
-    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith"
-    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient"
-    val checkIfYouCanClaim = "Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render professional fees and subscriptions expenses question page with no pre-filled radio buttons" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
-            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render professional fees and subscriptions expenses question page with no pre-filled radio buttons" which {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
+        urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render professional fees and subscriptions expenses question page with 'Yes' pre-filled and CYA data exists" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render professional fees and subscriptions expenses question page with 'No' pre-filled and not a prior submission" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))))
-            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = true)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -281,52 +97,23 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+    "return an error when form is submitted with no entry" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-        "return an error when form is submitted with no entry" which {
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "has the correct status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-          import Selectors._
-          import user.commonExpectedResults._
-
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(index = 1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(index = 2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
-          radioButtonCheck(yesText, radioNumber = 1, checked = false)
-          radioButtonCheck(noText, radioNumber = 2, checked = false)
-          buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, Selectors.yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
-        }
-
+      "has the correct status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 
     "redirect to Professional Subscriptions amount page when user selects 'yes' and not a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -375,7 +162,6 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "user has no expenses" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)

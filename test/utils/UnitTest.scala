@@ -35,7 +35,7 @@ import play.api.test.{FakeRequest, Helpers}
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
-import views.html.templates.AgentAuthErrorPageView
+import views.html.errors.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}

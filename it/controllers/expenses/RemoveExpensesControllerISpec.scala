@@ -18,8 +18,6 @@ package controllers.expenses
 
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource, HmrcEmploymentSource}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -48,99 +46,19 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
     customerExpenses = Some(anEmploymentExpenses)
   )
 
-  object Selectors {
-    val paragraphTextSelector = "#main-content > div > div > form > p"
-    val removeExpensesButtonSelector = "#remove-expenses-button-id"
-    val cancelLinkSelector = "#cancel-link-id"
-    val formSelector = "#main-content > div > div > form"
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedRemoveExpensesText: String
-    val expectedRemoveExpensesButton: String
-    val expectedCancelLink: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveExpensesText = "This will remove expenses for all employment in this tax year."
-    val expectedRemoveExpensesButton = "Remove expenses"
-    val expectedCancelLink = "Cancel"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val expectedRemoveExpensesText = "Bydd hyn yn dileu treuliau ar gyfer pob cyflogaeth yn y flwyddyn dreth hon."
-    val expectedRemoveExpensesButton = "Dileu treuliau"
-    val expectedCancelLink = "Canslo"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove your expenses?"
-    val expectedHeading = "Are you sure you want to remove your expenses?"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove your client’s expenses?"
-    val expectedHeading = "Are you sure you want to remove your client’s expenses?"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych yn siŵr eich bod am ddileu’ch treuliau?"
-    val expectedHeading = "A ydych yn siŵr eich bod am ddileu’ch treuliau?"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A ydych yn siŵr eich bod am ddileu treuliau’ch cleient?"
-    val expectedHeading = "A ydych yn siŵr eich bod am ddileu treuliau’ch cleient?"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
+    "render the remove expenses page when user has expenses" which {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
+        urlGet(fullUrl(removeExpensesUrl(taxYearEOY)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-    import Selectors._
-
-    userScenarios.foreach { user =>
-
-      val common = user.commonExpectedResults
-      val specific = user.specificExpectedResults.get
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the remove expenses page when user has expenses" which {
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-            urlGet(fullUrl(removeExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK ($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedHeading)
-          captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedRemoveExpensesText, paragraphTextSelector)
-          buttonCheck(common.expectedRemoveExpensesButton, removeExpensesButtonSelector)
-          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
-          formPostLinkCheck(removeExpensesUrl(taxYearEOY), formSelector)
-        }
+      s"has an OK ($OK) status" in {
+        result.status shouldBe OK
       }
     }
 
@@ -158,13 +76,10 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
           result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
-
-
     }
   }
 
   ".submit" should {
-
     "redirect the user to the overview page" when {
       "it is not end of year" which {
         lazy val result: WSResponse = {
@@ -213,5 +128,4 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
       }
     }
   }
-
 }

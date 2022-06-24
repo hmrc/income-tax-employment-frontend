@@ -21,27 +21,24 @@ import play.api.http.Status.OK
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTest
-import views.html.templates.TaxYearErrorTemplate
+import views.html.errors.TaxYearErrorTemplate
 
 class TaxYearErrorControllerSpec extends UnitTest with DefaultAwaitTimeout {
 
-  lazy val taxYearErrorTemplate: TaxYearErrorTemplate = app.injector.instanceOf[TaxYearErrorTemplate]
-  lazy val controller = new TaxYearErrorController(mockMessagesControllerComponents, mockAppConfig, taxYearErrorTemplate)
+  private val pageView = app.injector.instanceOf[TaxYearErrorTemplate]
+
+  private val underTest = new TaxYearErrorController(pageView)(mockMessagesControllerComponents, mockAppConfig)
 
   ".show()" should {
-
     "return an OK response .show() is called" in {
-
       val fakeRequest = FakeRequest("GET", "/error/wrong-tax-year").withSession(
         SessionValues.TAX_YEAR -> taxYear.toString,
         SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
       )
-      val result = controller.show()(fakeRequest)
+      val result = underTest.show()(fakeRequest)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
     }
-
   }
-
 }
