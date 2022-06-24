@@ -1399,3 +1399,9 @@ studentLoans.inset.agent = Ni allwch ddiweddaru manylion benthyciad myfyriwr eic
 
 studentLoans.common.checkWith.individual = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60.
 studentLoans.common.checkWith.agent = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, slipiau cyflog neu P60 eich cleient.
+
+#####################    Tailoring messages    #####################
+tailoring.title.individual = A gawsoch incwm o gyflogaeth TWE?
+tailoring.title.agent = A gafodd eich cleient incwm o gyflogaeth TWE?
+tailoring.empty.error.individual = Dewiswch ‘Iawn’ os cawsoch incwm o gyflogaeth TWE
+tailoring.empty.error.agent = Dewiswch ‘Iawn’ os cafodd incwm o gyflogaeth TWE

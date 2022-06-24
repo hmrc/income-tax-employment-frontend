@@ -121,7 +121,9 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   )
 
   def configContentFeatureSwitchOff: Map[String, String] = config() +
-    ("feature-switch.studentLoans" -> "false")
+    ("feature-switch.studentLoans" -> "false",
+      "feature-switch.tailoringEnabled" -> "false")
+
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 

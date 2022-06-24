@@ -1,0 +1,61 @@
+@*
+* Copyright 2022 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.InputRadioAlt
+@import controllers.tailorings.routes.EmploymentGatewayController
+
+@this(
+    layout: Layout,
+    heading: Heading,
+    errorSummary: ErrorSummary,
+    formWithCsrf: FormWithCSRF,
+    inputRadio: InputRadioAlt,
+    button: Button
+)
+
+@(form: Form[Boolean], taxYear: Int)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(s"tailoring.title.${if(request.user.isAgent) "agent" else "individual"}")}
+
+@headingForUse = @{titleForUse}
+
+@hasFormErrors = @{form.hasErrors}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
+
+    @errorSummary(form.errors.distinct)
+
+    @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-4")
+
+    @formWithCsrf(action = EmploymentGatewayController.submit(taxYear)) {
+        @inputRadio(
+            form = form,
+            legendHeading = Some(Html(headingForUse)),
+            legendHidden = true,
+            inline = true
+        )
+
+        @button()
+    }
+}
+
+@{
+// $COVERAGE-OFF$
+}
