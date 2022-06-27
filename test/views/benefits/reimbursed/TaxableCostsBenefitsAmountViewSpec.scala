@@ -72,7 +72,7 @@ class TaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "Er enghraifft, £193.52"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continue = "Yn eich blaen"
     val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £200."
     val enterTotalText: String = "Nodwch y cyfanswm."

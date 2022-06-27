@@ -76,7 +76,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
     val expectedTitle = "A gawsoch unrhyw m‚n gostau dros nos?"
     val expectedH1 = "A gawsoch unrhyw m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch chi m‚n gostau dros nos"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch chi mân gostau dros nos"
     val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes."
   }
 
@@ -92,7 +92,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
     val expectedTitle = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
     val expectedH1 = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient m‚n gostau dros nos"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient mân gostau dros nos"
     val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes."
   }
 
@@ -105,7 +105,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

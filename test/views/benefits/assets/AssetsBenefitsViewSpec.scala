@@ -64,7 +64,7 @@ class AssetsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
@@ -84,7 +84,7 @@ class AssetsBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
     val youCanUseText = "Gallwch ddefnyddioír asedion hyn ond nid ydych yn berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -100,7 +100,7 @@ class AssetsBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
     val youCanUseText = "Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

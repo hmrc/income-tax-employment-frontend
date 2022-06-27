@@ -66,7 +66,7 @@ class IncomeTaxBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm?"
     val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’ch Treth Incwm"
     val ifYouText = "Os nad ydych wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan eich cyflogwr."
   }
 
@@ -82,7 +82,7 @@ class IncomeTaxBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?"
     val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’i Dreth Incwm"
     val ifYouText = "Os nad yw eich cleient wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan ei gyflogwr."
   }
 
@@ -94,7 +94,7 @@ class IncomeTaxBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

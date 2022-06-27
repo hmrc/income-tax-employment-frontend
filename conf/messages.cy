@@ -11,11 +11,11 @@ service.name = Diweddaru a chyflwyno Ffurflen Dreth Incwm
 
 common.account-details = manylion y cyfrif
 common.account = cyfrif
-common.add.missing.employment.details = add missing employment details.
+common.add.missing.employment.details = ychwanegu manylion cyflogaeth sydd ar goll.
 common.aDifferentAmount = Swm gwahanol
 common.back = Yn ôl
 common.benefits = Buddiannau
-common.cancel = Cancel
+common.cancel = Canslo
 common.change = Newid
 common.checkWithEmployer.agent = Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r.
 common.checkWithEmployer.individual = Gwiriwch ‚ích cyflogwr os nad ydych yn si?r.
@@ -42,26 +42,26 @@ common.returnToEmployer = Dychwelyd i‘r cyflogwr
 common.returnToPayeEmployment = Return to PAYE employment
 common.saveAndContinue = Cadw ac yn eich blaen
 common.status.cannotUpdate = Ddim yn gallu diweddaru
-common.started.date.missing = Start date missing
-common.started.before = Started before 6 April {0}
-common.started.date = Started {0}
+common.started.date.missing = Dyddiad dechrau ar goll
+common.started.before = Wedi dechrau cyn 6 Ebrill {0}
+common.started.date = Wedi dechrau ar {0}
 common.status.notStarted = Heb ddechrau
 common.status.updated = Wedi diweddaru
-common.status.toDo = To do
+common.status.toDo = I’w gwneud
 common.studentLoans = Benthyciadau Myfyrwyr
 common.thisIncludes = Mae hyn yn cynnwys pethau fel:
 common.update = Diweddaru
 common.use = defnyddio
 common.yes = Iawn
-common.view = View
+common.view = Bwrw golwg
 common.and = ac
-common.notProvided = Not provided
-common.add = Add
+common.notProvided = Heb ddarparu
+common.add = Ychwanegu
 common.employer = Cyflogwr
 common.or = neu
 common.dateRange = {0} i {1}
-common.dateFrom = From {0}
-common.expenses.totalForAllEmployers = Total amount for all employers
+common.dateFrom = Gan {0}
+common.expenses.totalForAllEmployers = Cyfanswm ar gyfer pob cyflogwr
 common.january = Ionawr
 common.february = Chwefror
 common.march = Mawrth
@@ -77,10 +77,10 @@ common.december = Rhagfyr
 
 #################   Subheadings/Captions    ##################################
 
-payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
-employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
-benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
-expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
+payeEmployment.caption = Cyflogaeth TWE ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
+employmentDetails.caption = Manylion cyflogaeth ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
+benefits.caption = Buddiannau cyflogaeth ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
+expenses.caption = Treuliau cyflogaeth ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 studentLoans.subheading = Benthyciadau Myfyrwyr ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 
 #################       Error messages        ########################################
@@ -127,56 +127,55 @@ timeout.p1 = Ni wnaethom gadwích atebion.
 employment.employment.details.label = Manylion Cyflogaeth
 employment.employmentDetails.heading.agent = Gwiriwch fanylion cyflogaeth eich cleient
 employment.employmentDetails.heading.individual = Gwiriwch eich manylion cyflogaeth
-employment.employmentInfo.you.must = You must
+employment.employmentInfo.you.must = Mae’n rhaid
 employment.employmentInfo.buttonText = Yn Ùl i grynodeb oích cyflogaeth
-employment.employerInformation.title = Employer information
+employment.employerInformation.title = Gwybodaeth y cyflogwr
 employment.employmentInfo.p1.agent = Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill {0}.
 employment.employmentInfo.p1.individual = Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill {0}.
 employment.employmentInformation.content.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano.
 employment.employmentInformation.content.individual = Maeích manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
-employment.employmentSummary.content.studentLoansUnreleased.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details and benefits.
-employment.employmentSummary.content.studentLoansUnreleased.individual = Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details and benefits.
-employment.employmentSummary.content.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details, benefits and student loans contributions.
-employment.employmentSummary.content.individual = Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details, benefits and student loans contributions.
-employment.employmentSummary.heading = PAYE employment
+employment.employmentSummary.content.studentLoansUnreleased.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth a buddiannau.
+employment.employmentSummary.content.studentLoansUnreleased.individual = Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth a buddiannau.
+employment.employmentSummary.content.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr.
+employment.employmentSummary.content.individual = Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr.
+employment.employmentSummary.heading = Cyflogaeth TWE
 employment.expenses.label = Treuliau
 employment.expenses.subheading = Dyma gyfanswm o dreuliau o bob cyflogaeth yn y flwyddyn dreth.
 employment.hiddenText = gwybodaeth cyflogaeth ar gyfer {0}
 expenses.hiddenText.agent = treuliau eich cleient o bob cyflogaeth yn ystod y flwyddyn dreth hon
 expenses.hiddenText.individual = eich treuliau o bob cyflogaeth yn ystod y flwyddyn dreth hon
-employment.employmentSummary.employers = Employers
-employment.employmentSummary.addAnotherEmployer = Add another employer
-employment.employmentSummary.addAnEmployer = Add an employer
-employment.employmentSummary.noExpensesAdded = No expenses added
-employment.employmentSummary.addExpenses = Add expenses
-employment.employmentSummary.cannotAdd.individual = You cannot add expenses until 6 April {0}.
-employment.employmentSummary.cannotAdd.agent = You cannot add your client’s expenses until 6 April {0}.
-employment.employmentSummary.cannotHaveExpensesWithoutEmployer = You cannot have expenses without an employer.
-employment.employmentSummary.addEmployerOrRemoveExpenses = Add an employer or remove expenses.
-employment.noEmployers = No employers
+employment.employmentSummary.employers = Cyflogwyr
+employment.employmentSummary.addAnotherEmployer = Ychwanegu cyflogwr arall
+employment.employmentSummary.addAnEmployer = Ychwanegu cyflogwr
+employment.employmentSummary.addExpenses = Ychwanegu treuliau
+employment.employmentSummary.cannotAdd.individual = Ni allwch ychwanegu treuliau tan 6 Ebrill {0}.
+employment.employmentSummary.cannotAdd.agent = Ni allwch ychwanegu treuliau eich cleient tan 6 Ebrill {0}.
+employment.employmentSummary.cannotHaveExpensesWithoutEmployer = Ni allwch gael treuliau heb gyflogwr.
+employment.employmentSummary.addEmployerOrRemoveExpenses = Ychwanegu cyflogwr neu dynnu treuliau.
+employment.noEmployers = Dim cyflogwyr
 
 #################       Remove employment messages        ########################################
 
 employment.removeEmployment.title = A ydych yn si?r eich bod am dynnuír gyflogaeth hon?
 employment.removeEmployment.heading = A ydych yn si?r eich bod am dynnu {0}?
-employment.removeEmployment.remove-all-paragraph = This will also remove any benefits and expenses for this employer.
-employment.removeEmployment.remove-paragraph = If you remove this period of employment, you’ll also remove any employment benefits.
-employment.removeEmployment.remove-paragraph.sl = If you remove this period of employment, you’ll also remove any employment benefits and student loans.
-employment.removeEmployment.removeExpenses = You must remove any expenses from the separate expenses section.
-employment.removeEmployment.inset = This is information we hold about you. If the information is incorrect, you need to contact the employer
-employment.removeEmployment.button = Remove employer
+employment.removeEmployment.remove-all-paragraph = Bydd hyn hefyd yn dileu unrhyw fuddiannau a threuliau ar gyfer y cyflogwr hwn.
+employment.removeEmployment.remove-paragraph = Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth.
+employment.removeEmployment.remove-paragraph.sl = Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth a benthyciadau myfyrwyr.
+employment.removeEmployment.removeExpenses = Mae’n rhaid i chi dynnu unrhyw dreuliau o’r adran treuliau ar wahân.
+employment.removeEmployment.inset = Dyma’r wybodaeth sydd gennym amdanoch. Os yw’r wybodaeth yn anghywir, mae angen i chi gysylltu â’r cyflogwr
+employment.removeEmployment.button = Dileu’r cyflogwr
 
 #################       Select employer messages        ########################################
 
-employment.unignoreEmployment.title = Which period of employment do you want to add?
-employment.unignoreEmployment.p1.agent = The information we hold about your client does not include changes you made.
-employment.unignoreEmployment.p1.individual = The information we hold about you does not include changes you made.
-employment.unignoreEmployment.addANewEmployer = Add a new period of employment
-employment.unignoreEmployment.error = Select a period of employment or add a new one
+employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?
+employment.unignoreEmployment.p1.agent = Nid yw’r wybodaeth sydd gennym am eich cleient yn cynnwys newidiadau a wnaethoch.
+employment.unignoreEmployment.p1.individual = Nid yw’r wybodaeth sydd gennym amdanoch yn cynnwys newidiadau a wnaethoch.
+employment.unignoreEmployment.addANewEmployer = Ychwanegwch gyfnod newydd o gyflogaeth
+employment.unignoreEmployment.error = Dewiswch gyfnod cyflogaeth neu ychwanegwch un newydd
 
 #################       Check Employment details messages        ########################################
 
-employment.employmentDetails.bannerHeading = You must add missing employment details:
+employment.employmentDetails.bannerHeading = Mae’n rhaid i chi ychwanegu manylion cyflogaeth sydd ar goll:
 employment.employmentDetails.closeCompany =  Cwmni caeedig
 employment.employmentDetails.companyDirector =  Cyfarwyddwr cwmni
 employment.employmentDetails.content.agent = Mae manylion cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano..
@@ -192,8 +191,8 @@ employment.employmentDetails.hiddenText.payReceived.individual = Newidiwch swm y
 employment.employmentDetails.hiddenText.payrollId = Newidiwch ID y gyflogres am y gyflogaeth hon
 employment.employmentDetails.hiddenText.startDate.agent = Newidiwch ddyddiad dechrau eich cleient ar gyfer {0}
 employment.employmentDetails.hiddenText.startDate.individual = Newidiwch eich dyddiad dechrau ar gyfer {0}
-employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left {0} in the tax year
-employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left {0} in the tax year
+employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gadawodd eich cleient {0} yn y flwyddyn dreth
+employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael {0} yn y flwyddyn dreth
 employment.employmentDetails.hiddenText.employmentDates.agent = Newidiwch ddyddiadau cyflogaeth eich cleient
 employment.employmentDetails.hiddenText.employmentDates.individual = Newidiwch ddyddiadauích cyflogaeth chi
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = Newidiwch swm y taliadau nad oeddent ar P60 eich cleient
@@ -202,17 +201,17 @@ employment.employmentDetails.hiddenText.totalTaxToDate.agent = Newidiwch swm y d
 employment.employmentDetails.hiddenText.totalTaxToDate.individual = Newidiwch swm y dreth a daloch
 employment.employmentDetails.insetText.agent = Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill {0}.
 employment.employmentDetails.insetText.individual = Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill {0}.
-employment.employmentDetails.payeRef =  Cyfeirnod TWE
-employment.employmentDetails.paymentNotOnYourP60.agent =  Taliadau sydd ddim ar P60 eich cleient
-employment.employmentDetails.paymentNotOnYourP60.individual =  Taliadau sydd ddim ar eich P60
-employment.employmentDetails.payReceived =  Tal a gafwyd
+employment.employmentDetails.payeRef = Cyfeirnod TWE
+employment.employmentDetails.paymentNotOnYourP60.agent = Taliadau sydd ddim ar P60 eich cleient
+employment.employmentDetails.paymentNotOnYourP60.individual = Taliadau sydd ddim ar eich P60
+employment.employmentDetails.payReceived = Tal a gafwyd
 employment.employmentDetails.payrollId = ID y gyflogres
-employment.employmentDetails.startDate =  Dyddiad dechrauír gyflogaeth
+employment.employmentDetails.startDate = Dyddiad dechrauír gyflogaeth
 employment.employmentDetails.didYouLeave = Left employer
 employment.employmentDetails.employmentDates = Dyddiadau cyflogaeth
-employment.employmentDetails.tipsAndOtherPayments.agent =  Swm y taliadau sydd ddim ar P60 eich cleient
-employment.employmentDetails.tipsAndOtherPayments.individual =  Swm y taliadau sydd ddim ar eich P60
-employment.employmentDetails.totalTaxToDate =  Treth y DU a dynnwyd oír cyflog
+employment.employmentDetails.tipsAndOtherPayments.agent = Swm y taliadau sydd ddim ar P60 eich cleient
+employment.employmentDetails.tipsAndOtherPayments.individual = Swm y taliadau sydd ddim ar eich P60
+employment.employmentDetails.totalTaxToDate = Treth y DU a dynnwyd oír cyflog
 
 #################       Employment name messages        ########################################
 
@@ -244,29 +243,29 @@ payeRef.title.individual = Beth yw cyfeirnod TWE eich cyflogwr?
 employment.commonEmploymentDate.forExample = Er enghraifft, 12 11 2007
 employment.employmentStartDate.error.incompleteAll.agent = Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient
 employment.employmentStartDate.error.incompleteAll.individual = Nodwch y dyddiad y dechreuodd eich cyflogaeth
-employment.employmentStartDate.error.incompleteDay.agent = The date your client started their employment must include a day
+employment.employmentStartDate.error.incompleteDay.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod
 employment.employmentStartDate.error.incompleteDay.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod
-employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started their employment must include a day and month
+employment.employmentStartDate.error.incompleteDayMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a mis
 employment.employmentStartDate.error.incompleteDayMonth.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis
-employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started their employment must include a day and year
+employment.employmentStartDate.error.incompleteDayYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a blwyddyn
 employment.employmentStartDate.error.incompleteDayYear.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn
-employment.employmentStartDate.error.incompleteMonth.agent = The date your client started their employment must include a month
+employment.employmentStartDate.error.incompleteMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis
 employment.employmentStartDate.error.incompleteMonth.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis
-employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started their employment must include a month and year
+employment.employmentStartDate.error.incompleteMonthYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis a blwyddyn
 employment.employmentStartDate.error.incompleteMonthYear.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn
-employment.employmentStartDate.error.incompleteYear.agent = The date your client started their employment must include a year
+employment.employmentStartDate.error.incompleteYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys blwyddyn
 employment.employmentStartDate.error.incompleteYear.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn
-employment.employmentStartDate.error.invalidDate.agent = The date your client started their employment must be a real date
+employment.employmentStartDate.error.invalidDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn ddyddiad go iawn
 employment.employmentStartDate.error.invalidDate.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn
-employment.employmentStartDate.error.notInPast.agent = The date your client started their employment must be in the past
+employment.employmentStartDate.error.notInPast.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn y gorffennol
 employment.employmentStartDate.error.notInPast.individual = Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol
-employment.employmentStartDate.error.tooLongAgo.agent = The date your client started their employment must be after 1 January 1900
+employment.employmentStartDate.error.tooLongAgo.agent = Mae’n rhaid i ddyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod ar ôl 1 Ionawr 1900
 employment.employmentStartDate.error.tooLongAgo.individual = Maeín rhaid i ddyddiad y gwnaethoch ddechrauích cyflogaeth fod ar Ùl 1 Ionawr 1900
-employment.employmentStartDate.error.tooRecent.agent = The date your client started their employment must be before 6 April {0}
+employment.employmentStartDate.error.tooRecent.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod cyn 6 Ebrill {0}
 employment.employmentStartDate.error.tooRecent.individual = Maeín rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill {0}
-employment.employmentStartDate.heading.agent = When did your client start working at {0}?
+employment.employmentStartDate.heading.agent = Pryd y dechreuodd eich cleient weithio yn {0}?
 employment.employmentStartDate.heading.individual = Pryd y gwnaethoch ddechrau gweithio yn {0}?
-employment.employmentStartDate.title.agent = When did your client start working for their employer?
+employment.employmentStartDate.title.agent = Pryd y gwnaeth eich cleient ddechrau gweithio i’w gyflogwr?
 employment.employmentStartDate.title.individual = Pryd y gwnaethoch ddechrau gweithio iích cyflogwr?
 
 #################       Employment end date messages        ########################################
@@ -302,19 +301,19 @@ employment.employmentLeaveDate.title.individual = Pryd y gwnaethoch adael eich c
 
 #################       Employment dates messages        ########################################
 
-employment.employmentDates.tellUs.individual = Tell us when your employment started and ended.
-employment.employmentDates.tellUs.agent = Tell us when your client’s employment started and ended.
-employment.employmentDates.startDate = Start date
-employment.employmentDates.endDate = End date
+employment.employmentDates.tellUs.individual = Rhowch wybod i ni pan ddechreuodd eich cyflogaeth a pan ddaeth i ben.
+employment.employmentDates.tellUs.agent = Rhowch wybod i ni pan ddechreuodd cyflogaeth eich cleient a pan ddaeth i ben.
+employment.employmentDates.startDate = Dyddiad dechrau
+employment.employmentDates.endDate = Dyddiad dod i ben
 
 #################       Did you leave employer messages        ########################################
 
-employment.didYouLeave.error.agent = Select yes if your client left {0} in the tax year
-employment.didYouLeave.error.individual = Select yes if you left {0} in the tax year
-employment.didYouLeave.heading.agent = Did your client leave {0} in the tax year?
-employment.didYouLeave.heading.individual = Did you leave {0} in the tax year?
-employment.didYouLeave.title.agent = Did your client leave this employer in the tax year?
-employment.didYouLeave.title.individual = Did you leave this employer in the tax year?
+employment.didYouLeave.error.agent = Dewiswch ‘Iawn’ os gadawodd eich cleient {0} yn y flwyddyn dreth
+employment.didYouLeave.error.individual = Dewiswch ‘Iawn’ os gwnaethoch adael {0} yn y flwyddyn dreth
+employment.didYouLeave.heading.agent = A adawodd eich cleient {0} yn y flwyddyn dreth?
+employment.didYouLeave.heading.individual = A wnaethoch adael {0} yn y flwyddyn dreth?
+employment.didYouLeave.title.agent = A adawodd eich cleient y cyflogwr hwn yn y flwyddyn dreth?
+employment.didYouLeave.title.individual = A wnaethoch adael y cyflogwr hwn yn y flwyddyn dreth?
 
 #################       Payroll id messages        ########################################
 
@@ -367,8 +366,8 @@ employment.employmentTax.title.individual = Faint o dreth y DU a gafodd ei thynn
 
 employment.other-payments.detail.agent = Mae hyn yn cynnwys unrhyw gildyrnau (rhodd fach o arian ar gyfer gwasanaeth a ddarparwyd gan eich cleient).
 employment.other-payments.detail.individual = Mae hyn yn cynnwys unrhyw gildyrnau (rhodd fach o arian ar gyfer gwasanaeth a ddarparwyd gennych).
-employment.other-payments.errors.noRadioSelected.agent = Dewiswch ëIawní os cafodd eich cleient unrhyw daliadau sydd ddim ar ei P60
-employment.other-payments.errors.noRadioSelected.individual = Dewiswch ëIawní os cawsoch unrhyw daliadau sydd ddim ar eich P60
+employment.other-payments.errors.noRadioSelected.agent = Dewiswch ‘Iawn’ os cafodd eich cleient unrhyw daliadau sydd ddim ar ei P60
+employment.other-payments.errors.noRadioSelected.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw daliadau sydd ddim ar eich P60
 employment.other-payments.title.agent = A gafodd eich cleient unrhyw daliadau sydd ddim ar ei P60?
 employment.other-payments.title.individual = A gawsoch unrhyw daliadau sydd ddim ar eich P60?
 otherPaymentsAmount.error.noEntry.agent =  Nodwch swm y taliadau sydd heb eu cynnwys ar P60 eich cleient
@@ -629,17 +628,16 @@ checkYourBenefits.vouchersAmount = Swm ar gyfer talebau neu gardiau credyd
 
 #################       Benefits messages        ########################################
 
-benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
-receiveAnyBenefits.errors.noRadioSelected.agent = Dewiswch ëiawní os cafodd eich cleient unrhyw fuddiannau gan y cwmni hwn
-receiveAnyBenefits.errors.noRadioSelected.individual = Dewiswch ëIawní os cawsoch fuddiannau gan y cwmni hwn
+receiveAnyBenefits.errors.noRadioSelected.agent = Dewiswch ‘Iawn’ os cafodd eich cleient unrhyw fuddiannau gan y cwmni hwn
+receiveAnyBenefits.errors.noRadioSelected.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau gan y cwmni hwn
 receiveAnyBenefits.paragraph = Enghreifftiau o fuddiannau yw ceir neu faniau cwmni, lwfans tanwydd ac yswiriant meddygol.
 receiveAnyBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau gan y cwmni hwn?
 receiveAnyBenefits.title.individual = A gawsoch unrhyw fuddiannau gan y cwmni hwn?
 
 #################       Car van fuel messages        ########################################
 
-benefits.carVanFuel.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau car, fan neu danwydd
-benefits.carVanFuel.error.individual = Dewiswch ëIawní os cawsoch fuddiannau trethadwy car, fan neu danwydd
+benefits.carVanFuel.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau car, fan neu danwydd
+benefits.carVanFuel.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau trethadwy car, fan neu danwydd
 benefits.carVanFuel.thisIncludes = Mae hyn yn cynnwys buddiannau fel ceir neu faniau cwmni, tanwydd ar gyfer car neu fan cwmni, a lwfansau milltiroedd ar gyfer cerbydau syín eiddo preifat.
 benefits.carVanFuel.title.agent = A gafodd eich cleient unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?
 benefits.carVanFuel.title.individual = A gawsoch unrhyw fuddiannau car, fan neu danwydd gan y cwmni hwn?
@@ -656,9 +654,8 @@ benefits.companyCarBenefitsAmount.paragraph.agent = Maeír wybodaeth hon ar gael
 benefits.companyCarBenefitsAmount.paragraph.individual = Maeír wybodaeth hon ar gael yn adran F, blwch 9 ar eich ffurflen P11D.
 benefits.companyCarBenefitsAmount.title.agent = Faint oedd cyfanswm buddiant car cwmni eich cleient?
 benefits.companyCarBenefitsAmount.title.individual = Faint oedd cyfanswm eich buddiant car cwmni?
-
-CompanyCarBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant car cwmni
-CompanyCarBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiant car cwmni
+CompanyCarBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant car cwmni
+CompanyCarBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant car cwmni
 CompanyCarBenefits.header.agent = A gafodd eich cleient fuddiant car cwmni?
 CompanyCarBenefits.header.individual = A gawsoch fuddiant car cwmni?
 
@@ -674,8 +671,8 @@ benefits.carFuelAmount.paragraph.agent = Maeír wybodaeth hon ar gael yn adran F
 benefits.carFuelAmount.paragraph.individual = Maeír wybodaeth hon ar gael yn adran F, blwch 10 ar eich ffurflen P11D.
 benefits.carFuelAmount.title.agent = Faint oedd cyfanswm y buddiant tanwydd ar gyfer car cwmni eich cleient?
 benefits.carFuelAmount.title.individual = Faint oedd cyfanswm eich buddiant tanwydd ar gyfer car cwmni?
-benefits.companyCarFuelBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant tanwydd ar gyfer car cwmni
-benefits.companyCarFuelBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiant tanwydd ar gyfer car cwmni
+benefits.companyCarFuelBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant tanwydd ar gyfer car cwmni
+benefits.companyCarFuelBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant tanwydd ar gyfer car cwmni
 benefits.companyCarFuelBenefits.title.agent = A gafodd eich cleient fuddiant tanwydd ar gyfer car cwmni?
 benefits.companyCarFuelBenefits.title.individual = A gawsoch fuddiant tanwydd ar gyfer car cwmni?
 
@@ -691,8 +688,8 @@ benefits.companyVanAmountBenefits.informationText.agent = Maeír wybodaeth hon a
 benefits.companyVanAmountBenefits.informationText.individual = Maeír wybodaeth hon ar gael yn adran G, blwch 9 ar eich ffurflen P11D.
 benefits.companyVanAmountBenefits.title.agent = Faint oedd cyfanswm buddiant fan cwmni eich cleient?
 benefits.companyVanAmountBenefits.title.individual = Faint oedd cyfanswm eich buddiant fan cwmni?
-benefits.companyVanBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant fan cwmni
-benefits.companyVanBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiant fan cwmni
+benefits.companyVanBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant fan cwmni
+benefits.companyVanBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant fan cwmni
 benefits.companyVanBenefits.title.agent = A gafodd eich cleient fuddiant fan cwmni?
 benefits.companyVanBenefits.title.individual =A gawsoch fuddiant fan cwmni?
 
@@ -708,8 +705,8 @@ benefits.companyVanFuelAmountBenefits.informationText.agent = Maeír wybodaeth h
 benefits.companyVanFuelAmountBenefits.informationText.individual = Maeír wybodaeth hon ar gael yn adran G, blwch 10 ar eich ffurflen P11D.
 benefits.companyVanFuelAmountBenefits.title.agent = Faint oedd cyfanswm buddiant tanwydd ar gyfer fan cwmni eich cleient?
 benefits.companyVanFuelAmountBenefits.title.individual = Faint oedd cyfanswm eich buddiant tanwydd ar gyfer fan cwmni?
-benefits.companyVanFuelBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni
-benefits.companyVanFuelBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiant tanwydd ar gyfer fan cwmni
+benefits.companyVanFuelBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni
+benefits.companyVanFuelBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant tanwydd ar gyfer fan cwmni
 benefits.companyVanFuelBenefits.title.agent = A gafodd eich cleient fuddiant tanwydd ar gyfer fan cwmni?
 benefits.companyVanFuelBenefits.title.individual = A gawsoch fuddiant tanwydd ar gyfer fan cwmni?
 
@@ -725,8 +722,8 @@ benefits.mileageBenefitAmount.paragraph.agent = Maeír wybodaeth hon ar gael yn 
 benefits.mileageBenefitAmount.paragraph.individual = Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D.
 benefits.mileageBenefitAmount.title.agent = Faint o fuddiant milltiroedd a gafodd eich cleient i gyd am ddefnyddio ei gar ei hun?
 benefits.mileageBenefitAmount.title.individual = Faint o fuddiant milltiroedd a gawsoch i gyd am ddefnyddio eich car eich hun?
-benefits.receiveOwnCarMileageBenefit.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith
-benefits.receiveOwnCarMileageBenefit.error.individual = Dewiswch ëIawní os cawsoch fuddiant milltiroedd am ddefnyddioích car eich hun ar gyfer gwaith
+benefits.receiveOwnCarMileageBenefit.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith
+benefits.receiveOwnCarMileageBenefit.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant milltiroedd am ddefnyddio’ch car eich hun ar gyfer gwaith
 benefits.receiveOwnCarMileageBenefit.needToKnow.agent = Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gan eich cleient daliadau syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oíi ffurflen P11D.
 benefits.receiveOwnCarMileageBenefit.needToKnow.individual = Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gennych daliadau syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oích ffurflen P11D.
 benefits.receiveOwnCarMileageBenefit.title.agent = A gafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith?
@@ -734,8 +731,8 @@ benefits.receiveOwnCarMileageBenefit.title.individual = A gawsoch fuddiant millt
 
 #################       Accommodation relocation messages        ########################################
 
-benefits.accommodationRelocation.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau llety neu adleoli
-benefits.accommodationRelocation.error.individual = Dewiswch ëIawní os cawsoch fuddiannau llety neu adleoli
+benefits.accommodationRelocation.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau llety neu adleoli
+benefits.accommodationRelocation.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau llety neu adleoli
 benefits.accommodationRelocation.title.agent = A gafodd eich cleient fuddiannau llety neu adleoli gan y cwmni hwn?
 benefits.accommodationRelocation.title.individual = A gawsoch fuddiannau llety neu adleoli gan y cwmni hwn?
 
@@ -756,16 +753,16 @@ benefits.livingAccommodationBenefits.details.2.agent = Dylai incwm o gyflogaeth 
 benefits.livingAccommodationBenefits.details.2.individual = Dylaiích incwm o gyflogaeth gynnwys gwerth unrhyw lety byw rydych chi neu eich perthnasau yn ei gael oherwydd eich cyflogaeth.
 benefits.livingAccommodationBenefits.details.3 = Os ydych yn credu y dylaiír swm cyfan, neu ran ohono, fod wedi ei eithrio rhag treth, cyfeiriwch at HS202 Living accommodation a dilynwch y daflen waith.
 benefits.livingAccommodationBenefits.details.title = Rhagor o wybodaeth am lety byw
-benefits.livingAccommodationBenefits.error.no-entry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau llety byw
-benefits.livingAccommodationBenefits.error.no-entry.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau llety byw
+benefits.livingAccommodationBenefits.error.no-entry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau llety byw
+benefits.livingAccommodationBenefits.error.no-entry.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau llety byw
 benefits.livingAccommodationBenefits.paragraph = Diffinnir llety fel llety y gallwch fyw ynddo, píun a ydych yn byw ynddo drwyír amser neu dim ond rhan oír amser. Maeín cynnwys tai, fflatiau, cychod preswyl a lletyau gwyliau.
 benefits.livingAccommodationBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau llety byw?
 benefits.livingAccommodationBenefits.title.individual = A gawsoch unrhyw fuddiannau llety byw?
 
 #################       Qualifying relocation messages        ########################################
 
-benefits.qualifyingRelocationBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli cymwys
-benefits.qualifyingRelocationBenefits.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau adleoli cymwys
+benefits.qualifyingRelocationBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli cymwys
+benefits.qualifyingRelocationBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau adleoli cymwys
 benefits.qualifyingRelocationBenefits.thisIncludes.agent = Maeír rhain yn gostau y mae ei gyflogwr wediíu talu iíw helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol.
 benefits.qualifyingRelocationBenefits.thisIncludes.example1 = Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU.
 benefits.qualifyingRelocationBenefits.thisIncludes.individual = Maeír rhain yn gostau y mae eich cyflogwr wedi’u talu iích helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol.
@@ -790,8 +787,8 @@ benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.agent = Maeín r
 benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.individual = Maeín rhaid iích buddiant adleoli anghymwys fod yn llai na £100,000,000,000
 benefits.nonQualifyingRelocationBenefitAmount.title.agent = Faint y cawsoch i gyd ar gyfer buddiannau adleoli anghymwys?
 benefits.nonQualifyingRelocationBenefitAmount.title.individual = Faint y cawsoch i gyd ar gyfer buddiant adleoli anghymwys?
-benefits.nonQualifyingRelocationQuestion.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli anghymwys
-benefits.nonQualifyingRelocationQuestion.error.individual = Dewiswch ëIawní os cawsoch fuddiannau adleoli anghymwys
+benefits.nonQualifyingRelocationQuestion.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli anghymwys
+benefits.nonQualifyingRelocationQuestion.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau adleoli anghymwys
 benefits.nonQualifyingRelocationQuestion.thisIncludes.agent = Costau adleoli ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Mae enghreifftiauín cynnwys:
 benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.agent = taliadau morgais neu dai os ywín symud i ardal ddrutach
 benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.individual = taliadau morgais neu dai os ydych chiín symud i ardal ddrutach
@@ -803,16 +800,16 @@ benefits.nonQualifyingRelocationQuestion.title.individual = A gawsoch unrhyw fud
 
 #################       Travel or entertainment messages        ########################################
 
-benefits.travelOrEntertainment.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio neu westeia
-benefits.travelOrEntertainment.error.individual = Dewiswch ëIawní os cawsoch fuddiannau teithio neu westeia
+benefits.travelOrEntertainment.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau teithio neu westeia
+benefits.travelOrEntertainment.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau teithio neu westeia
 benefits.travelOrEntertainment.thisIncludes = Mae hyn yn cynnwys buddiannau fel treuliau teithio, m‚n dreuliau dros nos a gwesteia.
 benefits.travelOrEntertainment.title.agent = A gafodd eich cleient unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?
 benefits.travelOrEntertainment.title.individual = A gawsoch unrhyw fuddiannau teithio neu westeia gan y cwmni hwn?
 
 #################       Travel and subsistence messages        ########################################
 
-benefits.travelAndSubsistence.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau teithio a chynhaliaeth
-benefits.travelAndSubsistence.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau teithio a chynhaliaeth
+benefits.travelAndSubsistence.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau teithio a chynhaliaeth
+benefits.travelAndSubsistence.error.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau teithio a chynhaliaeth
 benefits.travelAndSubsistence.thisIs.agent = Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan ei gyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd.
 benefits.travelAndSubsistence.thisIs.individual = Dyma gost unrhyw deithio a chynhaliaeth syín cael ei thalu gan eich cyflogwr, ac nid yw wediíi heithrio rhag treth. Mae hyn yn cynnwys gwestai a phrydau bwyd.
 benefits.travelAndSubsistence.title.agent = A gafodd eich cleient unrhyw fuddiannau teithio a chynhaliaeth?
@@ -841,15 +838,15 @@ benefits.incidentalCostsBenefitsAmount.title.individual = Faint y cawsoch i gyd 
 benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan iír DU. Dim ond costau syín uwch naír lwfans y mae angen i ni wybod amdanynt.
 benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes.
 benefits.incidentalOvernightCostEmploymentBenefits.costInformation.individual = Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes.
-benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient m‚n gostau dros nos
-benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Dewiswch ëIawní os cawsoch chi m‚n gostau dros nos
+benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient mân gostau dros nos
+benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch chi mân gostau dros nos
 benefits.incidentalOvernightCostEmploymentBenefits.title.agent = A gafodd eich cleient unrhyw m‚n gostau dros nos?
 benefits.incidentalOvernightCostEmploymentBenefits.title.individual = A gawsoch unrhyw m‚n gostau dros nos?
 
 #################       Entertainment messages        ########################################
 
-benefits.entertainingBenefits.error.agent = Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia
-benefits.entertainingBenefits.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau gwesteia
+benefits.entertainingBenefits.error.agent = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia
+benefits.entertainingBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia
 benefits.entertainingBenefits.paragraph.agent = Costau gwesteia ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch.
 benefits.entertainingBenefits.paragraph.individual = Costau gwesteia ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch.
 benefits.entertainingBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau gwesteia?
@@ -867,8 +864,8 @@ benefits.entertainmentBenefitAmount.title.individual = Faint y cawsoch i gyd ar 
 
 #################       Utilities messages        ########################################
 
-benefits.utilitiesOrGeneralServices.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol
-benefits.utilitiesOrGeneralServices.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol
+benefits.utilitiesOrGeneralServices.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau cyfleustodau neu wasanaethau cyffredinol
+benefits.utilitiesOrGeneralServices.error.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol
 benefits.utilitiesOrGeneralServices.thisIncludes = Mae hyn yn cynnwys buddiannau fel costau ffÙn, gwasanaethau a ddarperir gan y cyflogwr a ffioedd neu danysgrifiadau proffesiynol.
 benefits.utilitiesOrGeneralServices.title.agent = A gafodd eich cleient unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?
 benefits.utilitiesOrGeneralServices.title.individual = A gawsoch unrhyw fuddiannau cyfleustodau neu wasanaethau cyffredinol gan y cwmni hwn?
@@ -877,8 +874,8 @@ benefits.utilitiesOrGeneralServices.title.individual = A gawsoch unrhyw fuddiann
 
 benefits.telephoneBenefits.costDetail.agent = Costau ffÙn ywír rhain syín cael eu talu gan ei gyflogwr ac sydd ddim wediíu heithrio rhag treth.
 benefits.telephoneBenefits.costDetail.individual = Costau ffÙn ywír rhain syín cael eu talu gan eich cyflogwr ac sydd ddim wediíu heithrio rhag treth.
-benefits.telephoneBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant ar gyfer defnyddio ffÙn
-benefits.telephoneBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiant ar gyfer defnyddio ffÙn
+benefits.telephoneBenefits.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant ar gyfer defnyddio ffôn
+benefits.telephoneBenefits.error.noEntry.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant ar gyfer defnyddio ffôn
 benefits.telephoneBenefits.title.agent = A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?
 benefits.telephoneBenefits.title.individual = A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?
 benefits.telephoneEmploymentBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau ffÙn
@@ -892,8 +889,8 @@ benefits.telephoneEmploymentBenefitsAmount.title.individual = Faint y cawsoch i 
 
 #################       Employer provided services messages        ########################################
 
-benefits.employerProvidedServices.error.no-entry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr
-benefits.employerProvidedServices.error.no-entry.individual = Dewiswch ëIawní os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr
+benefits.employerProvidedServices.error.no-entry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr
+benefits.employerProvidedServices.error.no-entry.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr
 benefits.employerProvidedServices.paragraph.agent = Maeír rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig ‚íi swydd. Ei gyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad.
 benefits.employerProvidedServices.paragraph.individual = Maeír rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig ‚ích swydd. Eich cyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad.
 benefits.employerProvidedServices.title.agent = A gafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr?
@@ -909,8 +906,8 @@ benefits.employerProvidedServicesBenefitsAmount.title.individual = Faint y cawso
 
 #################       Professional subscriptions messages        ########################################
 
-benefits.professionalSubscriptions.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
-benefits.professionalSubscriptions.error.individual = Dewiswch ëIawní os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptions.error.agent = Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
+benefits.professionalSubscriptions.error.individual = Dewiswch ‘Iawn’ os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol
 benefits.professionalSubscriptions.paragraphText.agent = Maeín bosibl bod cyflogwr eich cleient wedi talu ffioedd y maeín rhaid iddo eu talu er mwyn gallu gwneud ei waith. Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iíw waith.
 benefits.professionalSubscriptions.paragraphText.individual = Maeín bosibl bod eich cyflogwr wedi taluír ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd. Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iích gwaith.
 benefits.professionalSubscriptions.title.agent = A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?
@@ -926,8 +923,8 @@ benefits.professionalSubscriptionsAmount.title.individual = Faint y gwnaeth eich
 
 #################       Other services messages        ########################################
 
-benefits.otherServicesBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill
-benefits.otherServicesBenefits.error.individual = Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill
+benefits.otherServicesBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau eraill
 benefits.otherServicesBenefits.theseAre.agent = Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt.
 benefits.otherServicesBenefits.theseAre.individual = Maeír rhain yn unrhyw wasanaethau eraill rydych wediíu defnyddio syín ofynnol ar gyfer eich swydd. Eich cyflogwr syín talu amdanynt.
 benefits.otherServicesBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?
@@ -943,8 +940,8 @@ benefits.otherServicesBenefitsAmount.title.individual = Faint y cawsoch i gyd ar
 
 #################       Medical dental childcare messages        ########################################
 
-benefits.medicalDentalChildcare.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
-benefits.medicalDentalChildcare.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
+benefits.medicalDentalChildcare.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
+benefits.medicalDentalChildcare.error.noEntry.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg
 benefits.medicalDentalChildcare.title.agent = A gafodd eich cleient unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?
 benefits.medicalDentalChildcare.title.individual = A gawsoch unrhyw fuddiannau neu fenthyciadau meddygol, deintyddol, gofal plant neu addysg gan y cwmni hwn?
 
@@ -952,8 +949,8 @@ benefits.medicalDentalChildcare.title.individual = A gawsoch unrhyw fuddiannau n
 
 benefits.medicalDentalBenefits.content.agent = Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan ei gyflogwr.
 benefits.medicalDentalBenefits.content.individual = Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan eich cyflogwr.
-benefits.medicalDentalBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant meddygol neu ddeintyddol
-benefits.medicalDentalBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch fuddiant meddygol neu ddeintyddol
+benefits.medicalDentalBenefits.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant meddygol neu ddeintyddol
+benefits.medicalDentalBenefits.error.noEntry.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant meddygol neu ddeintyddol
 benefits.medicalDentalBenefits.title.agent = A gafodd eich cleient fuddiant meddygol neu ddeintyddol?
 benefits.medicalDentalBenefits.title.individual = A gawsoch fuddiant meddygol neu ddeintyddol?
 benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.agent = Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient yn y fformat cywir
@@ -971,8 +968,8 @@ benefits.medicalOrDentalBenefitsAmount.title.individual = Faint oedd cyfanswm ei
 
 #################       Childcare messages        ########################################
 
-benefits.childcare.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiant gofal plant
-benefits.childcare.error.individual = Dewiswch ëIawní os cawsoch fuddiant gofal plant
+benefits.childcare.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant gofal plant
+benefits.childcare.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiant gofal plant
 benefits.childcare.onlyNeed = Dim ond costau gofal plant syín uwch na throthwyír eithriad
 benefits.childcare.onlyNeedLink = y mae angen i ni wybod amdanynt
 benefits.childcare.theseAre.agent = Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol.
@@ -990,8 +987,8 @@ benefits.childcareBenefitsAmount.title.individual = Faint oedd cyfanswm eich bud
 
 #################       Educational services messages        ########################################
 
-benefits.educationalServices.error.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg
-benefits.educationalServices.error.individual = Dewiswch ëIawní os cawsoch fuddiannau ar gyfer gwasanaethau addysg
+benefits.educationalServices.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg
+benefits.educationalServices.error.individual = Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau addysg
 benefits.educationalServices.theseAre.agent = Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt ywír rhain.
 benefits.educationalServices.theseAre.individual = Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt ywír rhain.
 benefits.educationalServices.title.agent = A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?
@@ -1007,8 +1004,8 @@ benefits.educationalServicesBenefitsAmount.title.individual = Faint y cawsoch i 
 
 #################       Beneficial loans messages        ########################################
 
-benefits.beneficialLoans.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fenthyciadau buddiannol
-benefits.beneficialLoans.error.noEntry.individual = Dewiswch ëIawní os cawsoch fenthyciadau buddiannol
+benefits.beneficialLoans.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fenthyciadau buddiannol
+benefits.beneficialLoans.error.noEntry.individual = Dewiswch ‘Iawn’ os cawsoch fenthyciadau buddiannol
 benefits.beneficialLoans.theseAre.agent = Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo.
 benefits.beneficialLoans.theseAre.individual = Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr.
 benefits.beneficialLoans.title.agent = A gafodd eich cleient unrhyw fenthyciadau buddiannol?
@@ -1026,15 +1023,15 @@ benefits.beneficialLoansAmount.youCanFind.individual = Maeír wybodaeth hon ar g
 
 #################       Income tax and incurred costs messages        ########################################
 
-benefits.incomeTaxOrIncurredCosts.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd
-benefits.incomeTaxOrIncurredCosts.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTaxOrIncurredCosts.error.agent = Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’i Dreth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTaxOrIncurredCosts.error.individual = Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’ch Treth Incwm neu gostau a ysgwyddwyd
 benefits.incomeTaxOrIncurredCosts.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?
 benefits.incomeTaxOrIncurredCosts.title.individual = A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?
 
 #################       Income tax messages        ########################################
 
-benefits.incomeTax.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oíi Dreth Incwm
-benefits.incomeTax.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd
+benefits.incomeTax.error.agent = Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’i Dreth Incwm
+benefits.incomeTax.error.individual = Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’ch Treth Incwm
 benefits.incomeTax.ifYou.agent = Os nad yw eich cleient wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan ei gyflogwr.
 benefits.incomeTax.ifYou.individual = Os nad ydych wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan eich cyflogwr.
 benefits.incomeTax.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?
@@ -1050,8 +1047,8 @@ benefits.incomeTaxBenefitsAmount.title.individual = Faint oích Treth Incwm a da
 
 #################       Incurred costs messages        ########################################
 
-benefits.incurredCosts.error.agent = Dewiswch ëIawní os talodd cyflogwr eich cleient unrhyw gyfran oír costau yr ysgwyddwyd arno
-benefits.incurredCosts.error.individual = Dewiswch ëIawní os talodd eich cyflogwr unrhyw gyfran oír costau yr ysgwyddwyd arnoch
+benefits.incurredCosts.error.agent = Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’r costau yr ysgwyddwyd arno
+benefits.incurredCosts.error.individual = Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’r costau yr ysgwyddwyd arnoch
 benefits.incurredCosts.forExample = Er enghraifft, tocyn goryrru neu ofal plant.
 benefits.incurredCosts.title.agent = A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?
 benefits.incurredCosts.title.individual = A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?
@@ -1066,15 +1063,15 @@ benefits.incurredCostsAmount.title.individual = Faint oír costau yr ysgwyddwyd 
 
 #################       Reimbursed costs and vouchers messages        ########################################
 
-benefits.reimbursedCostsVouchersAndNonCash.error.agent = Dewiswch ëIawní os cafodd eich cleient gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr
-benefits.reimbursedCostsVouchersAndNonCash.error.individual = Dewiswch ëIawní os cawsoch gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr
+benefits.reimbursedCostsVouchersAndNonCash.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr
+benefits.reimbursedCostsVouchersAndNonCash.error.individual = Dewiswch ‘Iawn’ os cawsoch gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr
 benefits.reimbursedCostsVouchersAndNonCash.title.agent = A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?
 benefits.reimbursedCostsVouchersAndNonCash.title.individual = A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?
 
 #################       Non taxable costs messages        ########################################
 
-benefits.nonTaxableCosts.error.noEntry.agent = Dewiswch ëIawní os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr
-benefits.nonTaxableCosts.error.noEntry.individual = Dewiswch ëIawní os cafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr
+benefits.nonTaxableCosts.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr
+benefits.nonTaxableCosts.error.noEntry.individual = Dewiswch ‘Iawn’ os cafodd unrhyw rai o’ch costau anhrethadwy eu had-dalu gan eich cyflogwr
 benefits.nonTaxableCosts.paragraph.agent = Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud ei swydd.
 benefits.nonTaxableCosts.paragraph.individual = Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud eich swydd.
 benefits.nonTaxableCosts.title.agent = A gafodd unrhyw rai o gostau anhrethadwy eich cleient eu had-dalu gan ei gyflogwr?
@@ -1090,8 +1087,8 @@ benefits.nonTaxableCostsBenefitsAmount.title.individual = Faint oích costau anh
 
 #################       Taxable costs messages        ########################################
 
-benefits.taxableCosts.error.agent = Dewiswch ëIawní os cafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr
-benefits.taxableCosts.error.individual = Dewiswch ëIawní os cafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr
+benefits.taxableCosts.error.agent = Dewiswch ‘Iawn’ os cafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr
+benefits.taxableCosts.error.individual = Dewiswch ‘Iawn’ os cafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr
 benefits.taxableCosts.theseAre = Maeír rhain yn unrhyw gostau sydd ddim yn cael eu trethu wrth y ffynhonnell, er enghraifft, cymudo at ddiben nad ywín ymwneud ‚ busnes.
 benefits.taxableCosts.title.agent = A gafodd unrhyw rai o gostau trethadwy eich cleient eu had-dalu gan ei gyflogwr?
 benefits.taxableCosts.title.individual = A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?
@@ -1108,8 +1105,8 @@ benefits.taxableCostsBenefitsAmount.title.individual = Faint oích costau tretha
 
 benefits.vouchersBenefits.bullet1 = nwyddau a gwasanaethau
 benefits.vouchersBenefits.bullet2 = swm o arian syín sylweddol is naír gost iíw darparu
-benefits.vouchersBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient dalebau neu gardiau credyd
-benefits.vouchersBenefits.error.individual = Dewiswch ëIawní os cawsoch dalebau neu gardiau credyd
+benefits.vouchersBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient dalebau neu gardiau credyd
+benefits.vouchersBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch dalebau neu gardiau credyd
 benefits.vouchersBenefits.paragraph.agent = Dim ond talebau y gall eich cleient eu cyfnewid y mae angen i ni wybod amdanynt:
 benefits.vouchersBenefits.paragraph.individual = Dim ond talebau y gallwch eu cyfnewid y mae angen i ni wybod amdanynt:
 benefits.vouchersBenefits.title.agent = A gafodd eich cleient dalebau neu gardiau credyd?
@@ -1123,8 +1120,8 @@ benefits.vouchersBenefitsAmount.youCan.individual = Maeír wybodaeth hon ar gael
 
 #################       Non cash messages        ########################################
 
-benefits.nonCashBenefits.error.noEntry.agent = Dewiswch ëIawní os cafodd eich cleient fuddiannau sydd ddim yn arian parod
-benefits.nonCashBenefits.error.noEntry.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau sydd ddim yn arian parod
+benefits.nonCashBenefits.error.noEntry.agent = Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau sydd ddim yn arian parod
+benefits.nonCashBenefits.error.noEntry.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau sydd ddim yn arian parod
 benefits.nonCashBenefits.paragraph = Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod.
 benefits.nonCashBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?
 benefits.nonCashBenefits.title.individual = A gawsoch unrhyw fuddiant sydd ddim yn arian parod?
@@ -1139,8 +1136,8 @@ benefits.nonCashBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer
 
 benefits.otherBenefits.title.individual = A gawsoch unrhyw fuddiannau eraill?
 benefits.otherBenefits.title.agent = A gafodd eich cleient unrhyw fuddiannau eraill?
-benefits.otherBenefits.error.individual = Dewiswch ëIawní os cawsoch unrhyw fuddiannau eraill
-benefits.otherBenefits.error.agent = Dewiswch ëIawní os cafodd eich cleient unrhyw fuddiannau eraill
+benefits.otherBenefits.error.individual = Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau eraill
+benefits.otherBenefits.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient unrhyw fuddiannau eraill
 benefits.otherBenefitsAmount.error.incorrectFormat.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau eraill yn y fformat cywir
 benefits.otherBenefitsAmount.error.incorrectFormat.individual = Nodwch y swm a gawsoch ar gyfer buddiannau eraill yn y fformat cywir
 benefits.otherBenefitsAmount.error.noEntry.agent = Nodwch y swm a gafodd eich cleient ar gyfer buddiannau eraill
@@ -1154,8 +1151,8 @@ benefits.otherBenefitsAmount.title.individual = Faint y cawsoch i gyd ar gyfer b
 benefits.assetsOrAssetTransfers.bullet2.agent = iíw cadw iíw hun
 benefits.assetsOrAssetTransfers.bullet2.individual = iíw cadw eich hun
 benefits.assetsOrAssetTransfers.description.paragraph = Asedion yw pethau fel cyfrifiaduron, setiau teledu neu feiciau.
-benefits.assetsOrAssetTransfers.error.agent = Dewiswch ëIawní os cafodd eich cleient asedion
-benefits.assetsOrAssetTransfers.error.individual = Dewiswch ëIawní os cawsoch asedion
+benefits.assetsOrAssetTransfers.error.agent = Dewiswch ‘Iawn’ os cafodd eich cleient asedion
+benefits.assetsOrAssetTransfers.error.individual = Dewiswch ‘Iawn’ os cawsoch asedion
 benefits.assetsOrAssetTransfers.includes.paragraph.agent = Dylech gynnwys asedion y gwnaeth ei gyflogwr eu rhoi dros dro iddo:
 benefits.assetsOrAssetTransfers.includes.paragraph.individual = Dylech gynnwys asedion y gwnaeth eich cyflogwr eu rhoi dros dro i chi:
 benefits.assetsOrAssetTransfers.title.agent = A gafodd eich cleient unrhyw asedion gan y cwmni hwn?
@@ -1163,8 +1160,8 @@ benefits.assetsOrAssetTransfers.title.individual = A gawsoch unrhyw asedion gan 
 
 #################       Assets messages        ########################################
 
-benefits.assets.error.agent = Dewiswch ëIawní os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio
-benefits.assets.error.individual = Dewiswch ëIawní os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio
+benefits.assets.error.agent = Dewiswch ‘Iawn’ os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio
+benefits.assets.error.individual = Dewiswch ‘Iawn’ os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio
 benefits.assets.title.agent = A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?
 benefits.assets.title.individual = A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?
 benefits.assets.youCanUse.agent = Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt.
@@ -1182,8 +1179,8 @@ benefits.assetsAmount.youCan.individual = Maeír wybodaeth hon ar gael yn adran 
 
 #################       Assets transfer messages        ########################################
 
-benefits.assetTransfers.error.agent = Dewiswch ëIawní os rhoddodd cyflogwr eich cleient asedion iddo eu cadw
-benefits.assetTransfers.error.individual = Dewiswch ëIawní os rhoddodd eich cyflogwr asedion i chi eu cadw
+benefits.assetTransfers.error.agent = Dewiswch ‘Iawn’ os rhoddodd cyflogwr eich cleient asedion iddo eu cadw
+benefits.assetTransfers.error.individual = Dewiswch ‘Iawn’ os rhoddodd eich cyflogwr asedion i chi eu cadw
 benefits.assetTransfers.paragraph.agent = Daeth eich cleient yn berchennog yr asedion hyn.
 benefits.assetTransfers.paragraph.individual = Daethoch yn berchennog yr asedion hyn.
 benefits.assetTransfers.title.agent = A roddodd cyflogwr eich cleient unrhyw asedion iddo eu cadw?
@@ -1203,8 +1200,8 @@ benefits.assetTransfersAmount.error.overMaximum.agent = Maeín rhaid i gyfanswm 
 
 expenses.claimEmploymentExpenses.canClaim.agent = Gallwch hawlio treuliau cyflogaeth na wnaeth eich cleient eu hawlio drwy ei gyflogwr.
 expenses.claimEmploymentExpenses.canClaim.individual = Gallwch hawlio treuliau cyflogaeth na wnaethoch eu hawlio drwy eich cyflogwr.
-expenses.claimEmploymentExpenses.error.noEntry.agent = Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth eich cleient
-expenses.claimEmploymentExpenses.error.noEntry.individual = Dewiswch ëIawní os ydych am hawlio treuliau cyflogaeth
+expenses.claimEmploymentExpenses.error.noEntry.agent = Dewiswch ‘Iawn’ os ydych am hawlio treuliau cyflogaeth eich cleient
+expenses.claimEmploymentExpenses.error.noEntry.individual = Dewiswch ‘Iawn’ os ydych am hawlio treuliau cyflogaeth
 expenses.claimEmploymentExpenses.findOutMore = Dysgwch Ragor o wybodaeth ynghylch
 expenses.claimEmploymentExpenses.findOutMoreLink = hawlio treuliau cyflogaeth
 expenses.claimEmploymentExpenses.thisIncludes.example1 = teithiau busnes a gwestai a phrydau bwyd
@@ -1218,9 +1215,9 @@ expenses.claimEmploymentExpenses.title.individual = A ydych am hawlio treuliau c
 
 expenses.startEmploymentExpenses.details1.individual = Defnyddiwch yr adran hon i ddiweddaru eich treuliau cyflogaeth.
 expenses.startEmploymentExpenses.details1.agent = Defnyddiwch yr adran hon i ddiweddaru treuliau cyflogaeth eich cleient.
-expenses.startEmploymentExpenses.details2 = You must add expenses as a total for all employment.
-expenses.startEmploymentExpenses.details3.individual = Tell us about expenses you did not claim through your employers.
-expenses.startEmploymentExpenses.details3.agent = Tell us about expenses your client did not claim through their employers.
+expenses.startEmploymentExpenses.details2 = Mae’n rhaid i chi ychwanegu treuliau fel cyfanswm ar gyfer pob cyflogaeth.
+expenses.startEmploymentExpenses.details3.individual = Rhowch wybod i ni am dreuliau na wnaethoch eu hawlio drwy’ch cyflogwyr.
+expenses.startEmploymentExpenses.details3.agent = Rhowch wybod i ni am dreuliau na wnaeth eich cleient eu hawlio drwy ei gyflogwyr.
 
 #################       Business travel messages        ########################################
 
@@ -1255,8 +1252,8 @@ expenses.businessTravelOvernightExpenses.details.motorcycle.text = 24c y filltir
 expenses.businessTravelOvernightExpenses.details.title = Os ydych yn defnyddioích cerbyd eich hun ar gyfer teithiau busnes
 expenses.businessTravelOvernightExpenses.doNotInclude.agent = Peidiwch ‚ chynnwys costau teithio iír gwaith arferol eich cleient.
 expenses.businessTravelOvernightExpenses.doNotInclude.individual = Peidiwch ‚ chynnwys eich costau teithio iír gwaith arferol.
-expenses.businessTravelOvernightExpenses.error.agent = Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos eich cleient
-expenses.businessTravelOvernightExpenses.error.individual = Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos
+expenses.businessTravelOvernightExpenses.error.agent = Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos eich cleient
+expenses.businessTravelOvernightExpenses.error.individual = Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos
 expenses.businessTravelOvernightExpenses.example1 = costau trafnidiaeth cyhoeddus
 expenses.businessTravelOvernightExpenses.example2 = defnyddio cerbyd ar gyfer teithiau busnes
 expenses.businessTravelOvernightExpenses.example3 = llety mewn gwesty os oes rhaid i chi aros dros nos
@@ -1275,8 +1272,8 @@ expenses.uniformsWorkClothesTools.canClaim.example2 = glanhau, atgyweirio neu dd
 expenses.uniformsWorkClothesTools.canClaim = Maeín bosibl y gallwch hawlio ar gyfer costau:
 expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.agent = Gwiriwch i weld a all eich cleient hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
 expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.individual = Gwiriwch i weld a allwch hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
-expenses.uniformsWorkClothesTools.error.noEntry.agent = Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient
-expenses.uniformsWorkClothesTools.error.noEntry.individual = Dewiswch ëIawní i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
+expenses.uniformsWorkClothesTools.error.noEntry.agent = Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient
+expenses.uniformsWorkClothesTools.error.noEntry.individual = Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer
 expenses.uniformsWorkClothesTools.flatRateExpense = Maeír treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (ëtraul cyfradd unffurfí neu ëdidyniad sefydlogí).
 expenses.uniformsWorkClothesTools.title.agent = A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?
 expenses.uniformsWorkClothesTools.title.individual = A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?
@@ -1297,8 +1294,8 @@ expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual = Dywedoch eich b
 
 expenses.professionalFeesAndSubscriptions.checkLink.agent = Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
 expenses.professionalFeesAndSubscriptions.checkLink.individual = Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
-expenses.professionalFeesAndSubscriptions.error.agent = Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient
-expenses.professionalFeesAndSubscriptions.error.individual = Dewiswch ëIawní i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
+expenses.professionalFeesAndSubscriptions.error.agent = Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient
+expenses.professionalFeesAndSubscriptions.error.individual = Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
 expenses.professionalFeesAndSubscriptions.thisIncludes.example1.agent = ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith
 expenses.professionalFeesAndSubscriptions.thisIncludes.example1.individual = ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith
 expenses.professionalFeesAndSubscriptions.thisIncludes.example2.agent = tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient
@@ -1319,8 +1316,8 @@ expenses.professionalFeesAndSubscriptionsAmount.title.individual = Faint rydych 
 
 #################       Other equipment messages        ########################################
 
-expenses.otherEquipment.error.agent = Dewiswch ëIawní i hawlio ar gyfer offer eraill a brynwyd gan eich cleient
-expenses.otherEquipment.error.individual = Dewiswch ëIawní i hawlio ar gyfer prynu offer eraill
+expenses.otherEquipment.error.agent = Dewiswch ‘Iawn’ i hawlio ar gyfer offer eraill a brynwyd gan eich cleient
+expenses.otherEquipment.error.individual = Dewiswch ‘Iawn’ i hawlio ar gyfer prynu offer eraill
 expenses.otherEquipment.thisIncludes.example1 = cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol
 expenses.otherEquipment.thisIncludes.example2 = lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron
 expenses.otherEquipment.title.agent = A ydych am hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?
@@ -1339,10 +1336,10 @@ expenses.otherEquipmentAmount.wantToClaim.individual = Dywedoch wrthym eich bod 
 
 #################       Remove Expenses messages        ########################################
 
-expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
-expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
-expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
-expenses.removeExpenses.button = Remove expenses
+expenses.removeExpenses.title.individual = A ydych yn siŵr eich bod am ddileu’ch treuliau?
+expenses.removeExpenses.title.agent = A ydych yn siŵr eich bod am ddileu treuliau’ch cleient?
+expenses.removeExpenses.remove-paragraph = Bydd hyn yn dileu treuliau ar gyfer pob cyflogaeth yn y flwyddyn dreth hon.
+expenses.removeExpenses.button = Dileu treuliau
 
 #####################    Student Loans Question messages    #####################
 

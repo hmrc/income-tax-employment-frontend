@@ -80,8 +80,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val totalAmountText = "Total amount for all employers"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    val totalAmountText = "Cyfanswm ar gyfer pob cyflogwr"
     val hintText = "Er enghraifft, £193.52"
     val buttonText = "Yn eich blaen"
   }
@@ -102,7 +102,6 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos"
     val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi."
     val expectedReplay: Int => String = amount =>
       s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos. Rhowch wybod i ni os yw hyn wedi newid."
@@ -128,7 +127,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorMessage = "Dewiswch ëIawní i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
     val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo."
     val expectedReplay: Int => String = amount =>
       s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos eich cleient . Rhowch wybod i ni os yw hyn wedi newid."

@@ -180,17 +180,17 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val startEmptyDayError = "The date your client started their employment must include a day"
-    val startEmptyMonthError = "The date your client started their employment must include a month"
-    val startEmptyYearError = "The date your client started their employment must include a year"
-    val startEmptyDayYearError = "The date your client started their employment must include a day and year"
-    val startEmptyMonthYearError = "The date your client started their employment must include a month and year"
-    val startEmptyDayMonthError = "The date your client started their employment must include a day and month"
+    val startEmptyDayError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod"
+    val startEmptyMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis"
+    val startEmptyYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys blwyddyn"
+    val startEmptyDayYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a blwyddyn"
+    val startEmptyMonthYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis a blwyddyn"
+    val startEmptyDayMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a mis"
     val startEmptyAllError = "Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient"
-    val invalidStartDateError = "The date your client started their employment must be a real date"
-    val startTooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
-    val startTooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
-    val startFutureDateError = "The date your client started their employment must be in the past"
+    val invalidStartDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn ddyddiad go iawn"
+    val startTooLongAgoDateError = "Mae’n rhaid i ddyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod ar ôl 1 Ionawr 1900"
+    val startTooRecentDateError = s"Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val startFutureDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn y gorffennol"
     val leaveBeforeStartDate = s"Does dim modd iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn 4 April $taxYearEOY"
     val leaveEmptyDayError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod"
     val leaveEmptyMonthError = "Maeín rhaid iír dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys mis"
@@ -218,18 +218,17 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val expectedTitle = "Dyddiadau cyflogaeth"
     val expectedH1 = "Dyddiadau cyflogaeth"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val forExample = "Er enghraifft, 12 11 2007"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(
-      UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   private val employmentDetailsWithCessationDate = anEmploymentUserData.copy(
     employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(
@@ -269,7 +268,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
           textOnPageCheck(forExample, startForExampleSelector, "forStart")
           inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "11")
           inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "11")
-          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, s"${taxYearEOY-1}")
+          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, s"${taxYearEOY - 1}")
           textOnPageCheck(forExample, endForExampleSelector, "forEnd")
           inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "12")
           inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "12")

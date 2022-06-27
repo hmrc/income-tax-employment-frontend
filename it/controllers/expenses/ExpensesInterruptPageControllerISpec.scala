@@ -63,11 +63,11 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val buttonText = "Yn eich blaen"
     val expectedTitle = "Treuliau cyflogaeth"
     val expectedHeading = "Treuliau cyflogaeth"
-    val expectedExample2 = "You must add expenses as a total for all employment."
+    val expectedExample2 = "Mae’n rhaid i chi ychwanegu treuliau fel cyfanswm ar gyfer pob cyflogaeth."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -77,7 +77,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedExample1 = "Defnyddiwch yr adran hon i ddiweddaru eich treuliau cyflogaeth."
-    val expectedExample3 = "Tell us about expenses you did not claim through your employers."
+    val expectedExample3 = "Rhowch wybod i ni am dreuliau na wnaethoch eu hawlio drwy’ch cyflogwyr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -87,15 +87,15 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedExample1 = "Defnyddiwch yr adran hon i ddiweddaru treuliau cyflogaeth eich cleient."
-    val expectedExample3 = "Tell us about expenses your client did not claim through their employers."
+    val expectedExample3 = "Rhowch wybod i ni am dreuliau na wnaeth eich cleient eu hawlio drwy ei gyflogwyr."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>

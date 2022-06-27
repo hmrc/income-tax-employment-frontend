@@ -66,7 +66,7 @@ class MedicalDentalBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch fuddiant meddygol neu ddeintyddol?"
     val expectedHeading = "A gawsoch fuddiant meddygol neu ddeintyddol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiant meddygol neu ddeintyddol"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiant meddygol neu ddeintyddol"
     val expectedParagraphText = "Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan eich cyflogwr."
   }
 
@@ -82,7 +82,7 @@ class MedicalDentalBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient fuddiant meddygol neu ddeintyddol?"
     val expectedHeading = "A gafodd eich cleient fuddiant meddygol neu ddeintyddol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiant meddygol neu ddeintyddol"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant meddygol neu ddeintyddol"
     val expectedParagraphText: String = "Mae hyn yn golygu triniaeth neu yswiriant meddygol neu ddeintyddol a ddarparwyd gan ei gyflogwr."
   }
 
@@ -94,7 +94,7 @@ class MedicalDentalBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

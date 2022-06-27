@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER, UNAUTHORIZED}
-import play.api.i18n.Messages
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -158,32 +157,31 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedH1: String = "PAYE employment"
+    val expectedH1: String = "Cyflogaeth TWE"
     val expectedTitle: String = expectedH1
 
-    def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
 
     val notificationTitle: String = "Important"
-    val notificationContent: String = "You cannot have expenses without an employer. Add an employer or remove expenses."
-    val noEmployers: String = "No employers"
+    val notificationContent: String = "Ni allwch gael treuliau heb gyflogwr. Ychwanegu cyflogwr neu dynnu treuliau."
+    val noEmployers: String = "Dim cyflogwyr"
     val name: String = "maggie"
-    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Started " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = true))
-    val startedDateMissingString: String = "Start date missing"
-    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Started before 6 April $taxYear"
-    val add: String = "Add"
+    val startedDateString: LocalDate => String = (startedOn: LocalDate) => s"Wedi dechrau ar " + ViewUtils.translatedDateFormatter(startedOn)(getMessages(isWelsh = true))
+    val startedDateMissingString: String = "Dyddiad dechrau ar goll"
+    val startedDateBeforeString: Int => String = (taxYear: Int) => s"Wedi dechrau cyn 6 Ebrill $taxYear"
     val change: String = s"Newid"
     val remove: String = s"Tynnu"
-    val addAnother: String = "Add another employer"
+    val addAnother: String = "Ychwanegu cyflogwr arall"
     val thisIsATotal: String = "Dyma gyfanswm o dreuliau o bob cyflogaeth yn y flwyddyn dreth."
     val expenses: String = "Treuliau"
-    val addEmployer: String = "Add an employer"
-    val addExpenses: String = "Add expenses"
+    val addEmployer: String = "Ychwanegu cyflogwr"
+    val addExpenses: String = "Ychwanegu treuliau"
     val employer: String = "Cyflogwr"
-    val employers: String = "Employers"
+    val employers: String = "Cyflogwyr"
     val returnToOverview: String = "Yn Ùl iír trosolwg"
     val employmentDetails: String = "Manylion Cyflogaeth"
     val benefits: String = "Buddiannau"
-    val view: String = "View"
+    val view: String = "Bwrw golwg"
     val cannotUpdate: String = "Ddim yn gallu diweddaru"
   }
 
@@ -202,17 +200,19 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details, benefits and student loans contributions."
-    val yourEmpInfoStudentLoansUnreleased: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. It includes employment details and benefits."
+    val yourEmpInfo: String =
+      "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
+    val yourEmpInfoStudentLoansUnreleased: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth a buddiannau."
     val cannotUpdateInfo: String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
-    val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
+    val cannotAdd: String = s"Ni allwch ychwanegu treuliau tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details, benefits and student loans contributions."
-    val yourEmpInfoStudentLoansUnreleased: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. It includes employment details and benefits."
+    val yourEmpInfo: String =
+      "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
+    val yourEmpInfoStudentLoansUnreleased: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth a buddiannau."
     val cannotUpdateInfo: String = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
-    val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
+    val cannotAdd: String = s"Ni allwch ychwanegu treuliau eich cleient tan 6 Ebrill $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -318,7 +318,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(employer, employersSelector)
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
-            textOnPageCheck(name + " " + s"Started before 6 April ${taxYearEOY - 1}", employerNameSelector)
+            textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameSelector)
             linkCheck(s"$change$change $name", changeEmployerSelector(1), employerInformationUrl(taxYearEOY, employmentId))
             linkCheck(s"$remove $remove $name", removeEmployerSelector(1), removeEmploymentUrl(taxYearEOY, employmentId))
             linkCheck(addAnother, addAnotherSelector, summaryAddNewEmployerUrl(taxYearEOY), isExactUrlMatch = false)

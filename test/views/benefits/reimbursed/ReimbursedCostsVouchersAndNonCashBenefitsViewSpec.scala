@@ -63,7 +63,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
     val expectedH1 = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -77,7 +77,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
     val expectedH1 = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -88,7 +88,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

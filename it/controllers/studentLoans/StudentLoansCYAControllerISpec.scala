@@ -187,8 +187,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsWelshEOY extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
-    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
-    override val bannerLinkText: String = "add missing employment details."
+    override val bannerParagraph: String = "You cannot update student loans until you ychwanegu manylion cyflogaeth sydd ar goll."
+    override val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     override val title: String = "Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr"
     override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText: String = "Mae’ch manylion ad-dalu benthyciad myfyriwr yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
@@ -234,8 +234,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsWelshEOYAgent extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
-    override val bannerParagraph: String = "You cannot update student loans until you add missing employment details."
-    override val bannerLinkText: String = "add missing employment details."
+    override val bannerParagraph: String = "You cannot update student loans until you ychwanegu manylion cyflogaeth sydd ar goll."
+    override val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     override val title: String = "Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient"
     override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText: String = "Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
@@ -340,8 +340,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val taxYearInUse = if(scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
-      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
+      val taxYearInUse = if (scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
+      val welshLang = if (scenarioData.isWelsh) "Welsh" else "English"
 
       s"render the page for $inYearText, for an $affinityText when there is $prior in $welshLang" when {
 
@@ -532,7 +532,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
+      val welshLang = if (scenarioData.isWelsh) "Welsh" else "English"
 
       lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
         Seq(),
@@ -663,7 +663,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
           result.headers("Location").headOption shouldBe
             Some(
-              if(scenarioData.commonExpectedResults.hasPrior) claimEmploymentExpensesUrl(taxYearEOY) else checkYourExpensesUrl(taxYearEOY)
+              if (scenarioData.commonExpectedResults.hasPrior) claimEmploymentExpensesUrl(taxYearEOY) else checkYourExpensesUrl(taxYearEOY)
             )
         }
 

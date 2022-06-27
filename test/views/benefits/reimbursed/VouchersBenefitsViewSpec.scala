@@ -70,7 +70,7 @@ class VouchersBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch dalebau neu gardiau credyd?"
     val expectedHeading = "A gawsoch dalebau neu gardiau credyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch dalebau neu gardiau credyd"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch dalebau neu gardiau credyd"
     val paragraph = "Dim ond talebau y gallwch eu cyfnewid y mae angen i ni wybod amdanynt:"
   }
 
@@ -86,7 +86,7 @@ class VouchersBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient dalebau neu gardiau credyd?"
     val expectedHeading = "A gafodd eich cleient dalebau neu gardiau credyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient dalebau neu gardiau credyd"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient dalebau neu gardiau credyd"
     val paragraph = "Dim ond talebau y gall eich cleient eu cyfnewid y mae angen i ni wybod amdanynt:"
   }
 
@@ -102,7 +102,7 @@ class VouchersBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedBullet1 = "nwyddau a gwasanaethau"
     val expectedBullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
     val expectedButtonText = "Yn eich blaen"

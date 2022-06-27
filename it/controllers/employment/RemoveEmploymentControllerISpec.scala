@@ -57,7 +57,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   trait CommonExpectedResults {
     val expectedTitle: String
     val expectedErrorTitle: String
+
     def expectedHeading(employerName: String): String
+
     val expectedCaption: String
     val expectedRemoveAccountText: String
     val expectedLastAccountText: String
@@ -69,7 +71,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedTitle = "Are you sure you want to remove this employment?"
     val expectedErrorTitle = s"Error: $expectedTitle"
+
     def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
+
     val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedRemoveAccountText: String = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
       " You must remove any expenses from the separate expenses section."
@@ -82,29 +86,27 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedTitle = "A ydych yn si?r eich bod am dynnuír gyflogaeth hon?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
+
     def expectedHeading(employerName: String): String = s"A ydych yn si?r eich bod am dynnu $employerName?"
-    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText: String = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
-      " You must remove any expenses from the separate expenses section."
-    val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
-    val expectedRemoveEmployerButton = "Remove employer"
-    val infoWeHold = "This is information we hold about you. If the information is incorrect, you need to contact the employer"
-    val expectedCancelLink = "Cancel"
+
+    val expectedCaption = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    val expectedRemoveAccountText: String = "Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth a benthyciadau myfyrwyr." +
+      " Mae’n rhaid i chi dynnu unrhyw dreuliau o’r adran treuliau ar wahân."
+    val expectedLastAccountText = "Bydd hyn hefyd yn dileu unrhyw fuddiannau a threuliau ar gyfer y cyflogwr hwn."
+    val expectedRemoveEmployerButton = "Dileu’r cyflogwr"
+    val infoWeHold = "Dyma’r wybodaeth sydd gennym amdanoch. Os yw’r wybodaeth yn anghywir, mae angen i chi gysylltu â’r cyflogwr"
+    val expectedCancelLink = "Canslo"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY)
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY)
   )
 
   ".show" should {
-
     import Selectors._
-
     userScenarios.foreach { user =>
-
       val common = user.commonExpectedResults
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "render the remove employment page for when it isn't the last employment" which {
           lazy val result: WSResponse = {

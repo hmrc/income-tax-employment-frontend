@@ -63,7 +63,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
@@ -91,7 +91,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fuddiant adleoli cymwys?"
     val expectedH1 = "A gawsoch unrhyw fuddiant adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch unrhyw fuddiannau adleoli cymwys"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau adleoli cymwys"
     val expectedContent = "Maeír rhain yn gostau y mae eich cyflogwr wedi’u talu iích helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
     val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
   }
@@ -100,7 +100,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau adleoli cymwys?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli cymwys"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli cymwys"
     val expectedContent = "Maeír rhain yn gostau y mae ei gyflogwr wediíu talu iíw helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
     val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
   }

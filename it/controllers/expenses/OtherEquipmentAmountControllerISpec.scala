@@ -130,9 +130,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continueButtonText = "Yn eich blaen"
-    val totalAmountParagraph = "Total amount for all employers"
+    val totalAmountParagraph = "Cyfanswm ar gyfer pob cyflogwr"
     val hintText = "Er enghraifft, £193.52"
   }
 

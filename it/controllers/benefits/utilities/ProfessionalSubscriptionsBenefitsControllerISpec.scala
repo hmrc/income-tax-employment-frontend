@@ -71,7 +71,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val yesText = "Iawn"
     val noText = "Na"
     val continueButtonText = "Yn eich blaen"
@@ -94,7 +94,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     val expectedParagraphText: String = "Maeín bosibl bod eich cyflogwr wedi taluír ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd. " +
       "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iích gwaith."
     val checkWithEmployerText = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
-    val expectedErrorMessage = "Dewiswch ëIawní os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -114,7 +114,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     val expectedParagraphText: String = "Maeín bosibl bod cyflogwr eich cleient wedi talu ffioedd y maeín rhaid iddo eu talu er mwyn gallu gwneud ei waith. " +
       "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iíw waith."
     val checkWithEmployerText = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
-    val expectedErrorMessage = "Dewiswch ëIawní os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
+    val expectedErrorMessage = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

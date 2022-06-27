@@ -46,7 +46,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val bannerLinkSelector: String = ".govuk-notification-banner__link"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val buttonSelector = "#returnToEmploymentSummaryBtn"
-    val employmentDetailsLinkSelector: Boolean => String = (welshLang: Boolean) => if(welshLang) "#manylion-cyflogaeth_link" else "#employment-details_link"
+    val employmentDetailsLinkSelector: Boolean => String = (welshLang: Boolean) => if (welshLang) "#manylion-cyflogaeth_link" else "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
     val formSelector = "#main-content > div > div > form"
 
@@ -101,14 +101,14 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
 
-    val bannerParagraph: String = "You must add missing employment details."
-    val bannerLinkText: String = "add missing employment details."
+    val bannerParagraph: String = "Mae’n rhaid ychwanegu manylion cyflogaeth sydd ar goll."
+    val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     val fieldNames = Seq("Manylion cyflogaeth", "Employment benefits", "Benthyciadau Myfyrwyr")
     val buttonText = "Return to PAYE employment"
     val updated = "Wedi diweddaru"
-    val toDo: String = "To do"
+    val toDo: String = "I’w gwneud"
     val cannotUpdate = "Ddim yn gallu diweddaru"
     val notStarted = "Heb ddechrau"
   }
@@ -129,14 +129,14 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employer information"
+    val expectedTitle: String = "Gwybodaeth y cyflogwr"
 
     def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employer information"
+    val expectedTitle: String = "Gwybodaeth y cyflogwr"
 
     def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
   }

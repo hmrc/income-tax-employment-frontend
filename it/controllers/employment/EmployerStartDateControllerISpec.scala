@@ -33,7 +33,7 @@ import java.time.LocalDate
 class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employerName: String = "HMRC"
-  private val employmentStartDate: String = s"${taxYearEOY-1}-01-01"
+  private val employmentStartDate: String = s"${taxYearEOY - 1}-01-01"
   private val employmentId: String = "employmentId"
   private val dayInputName = "amount-day"
   private val monthInputName = "amount-month"
@@ -133,20 +133,20 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "When did your client start working for their employer?"
-    val expectedH1 = s"When did your client start working at $employerName?"
+    val expectedTitle = "Pryd y gwnaeth eich cleient ddechrau gweithio i’w gyflogwr?"
+    val expectedH1 = s"Pryd y dechreuodd eich cleient weithio yn $employerName?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val emptyDayError = "The date your client started their employment must include a day"
-    val emptyMonthError = "The date your client started their employment must include a month"
-    val emptyYearError = "The date your client started their employment must include a year"
-    val emptyDayYearError = "The date your client started their employment must include a day and year"
-    val emptyMonthYearError = "The date your client started their employment must include a month and year"
-    val emptyDayMonthError = "The date your client started their employment must include a day and month"
+    val emptyDayError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod"
+    val emptyMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis"
+    val emptyYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys blwyddyn"
+    val emptyDayYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a blwyddyn"
+    val emptyMonthYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis a blwyddyn"
+    val emptyDayMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a mis"
     val emptyAllError = "Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient"
-    val invalidDateError = "The date your client started their employment must be a real date"
-    val tooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
-    val tooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
-    val futureDateError = "The date your client started their employment must be in the past"
+    val invalidDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn ddyddiad go iawn"
+    val tooLongAgoDateError = "Mae’n rhaid i ddyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod ar ôl 1 Ionawr 1900"
+    val tooRecentDateError = s"Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val futureDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn y gorffennol"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -156,7 +156,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val forExample = "Er enghraifft, 12 11 2007"
   }
@@ -171,7 +171,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   object CyaModel {
     val cya: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true,
       EmploymentCYAModel(
-        EmploymentDetails(employerName, startDate = Some(s"${taxYearEOY-1}-01-01"), currentDataIsHmrcHeld = false),
+        EmploymentDetails(employerName, startDate = Some(s"${taxYearEOY - 1}-01-01"), currentDataIsHmrcHeld = false),
         None
       )
     )
@@ -239,7 +239,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "1")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
-          inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+          inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -272,7 +272,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
 
           "the day is empty" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "01",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
               EmploymentDateForm.day -> "")
 
             lazy val result: WSResponse = {
@@ -299,7 +299,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -309,7 +309,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the month is empty" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "",
               EmploymentDateForm.day -> "01")
 
             lazy val result: WSResponse = {
@@ -336,7 +336,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -383,7 +383,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the day and month are empty" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "",
               EmploymentDateForm.day -> "")
 
             lazy val result: WSResponse = {
@@ -410,7 +410,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -531,7 +531,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the day is invalid" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "01",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
               EmploymentDateForm.day -> "abc")
 
             lazy val result: WSResponse = {
@@ -558,7 +558,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "abc")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -568,7 +568,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the month is invalid" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "abc",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "abc",
               EmploymentDateForm.day -> "01")
 
             lazy val result: WSResponse = {
@@ -595,7 +595,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "abc")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -642,7 +642,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the date is an invalid date i.e. month is set to 13" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "13",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "13",
               EmploymentDateForm.day -> "01")
 
             lazy val result: WSResponse = {
@@ -669,7 +669,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "13")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY-1}")
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, s"${taxYearEOY - 1}")
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -810,7 +810,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
     "create a new cya model with the employer start date" which {
 
-      lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY-1}", EmploymentDateForm.month -> "01",
+      lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
         EmploymentDateForm.day -> "01")
 
       lazy val result: WSResponse = {

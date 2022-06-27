@@ -70,10 +70,10 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveExpensesText = "This will remove expenses for all employment in this tax year."
-    val expectedRemoveExpensesButton = "Remove expenses"
-    val expectedCancelLink = "Cancel"
+    val expectedCaption = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
+    val expectedRemoveExpensesText = "Bydd hyn yn dileu treuliau ar gyfer pob cyflogaeth yn y flwyddyn dreth hon."
+    val expectedRemoveExpensesButton = "Dileu treuliau"
+    val expectedCancelLink = "Canslo"
   }
 
   trait SpecificExpectedResults {
@@ -92,13 +92,13 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove your expenses?"
-    val expectedHeading = "Are you sure you want to remove your expenses?"
+    val expectedTitle = "A ydych yn siŵr eich bod am ddileu’ch treuliau?"
+    val expectedHeading = "A ydych yn siŵr eich bod am ddileu’ch treuliau?"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Are you sure you want to remove your client’s expenses?"
-    val expectedHeading = "Are you sure you want to remove your client’s expenses?"
+    val expectedTitle = "A ydych yn siŵr eich bod am ddileu treuliau’ch cleient?"
+    val expectedHeading = "A ydych yn siŵr eich bod am ddileu treuliau’ch cleient?"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

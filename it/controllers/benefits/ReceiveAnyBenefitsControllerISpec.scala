@@ -62,7 +62,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object CommonExpectedCY extends CommonExpectedResults {
     val continueButton: String = "Yn eich blaen"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val paragraphText = "Enghreifftiau o fuddiannau yw ceir neu faniau cwmni, lwfans tanwydd ac yswiriant meddygol."
     val yesText = "Iawn"
     val noText = "Na"
@@ -86,14 +86,14 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val expectedH1: String = "A gawsoch unrhyw fuddiannau gan y cwmni hwn?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiannau gan y cwmni hwn"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiannau gan y cwmni hwn"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "A gafodd eich cleient unrhyw fuddiannau gan y cwmni hwn?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëiawní os cafodd eich cleient unrhyw fuddiannau gan y cwmni hwn"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient unrhyw fuddiannau gan y cwmni hwn"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

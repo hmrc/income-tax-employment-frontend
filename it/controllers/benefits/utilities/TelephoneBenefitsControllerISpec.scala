@@ -73,7 +73,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
     val expectedHeading = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch fuddiant ar gyfer defnyddio ffÙn"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiant ar gyfer defnyddio ffôn"
     val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan eich cyflogwr ac sydd ddim wediíu heithrio rhag treth."
   }
 
@@ -89,7 +89,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
     val expectedHeading = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient fuddiant ar gyfer defnyddio ffÙn"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant ar gyfer defnyddio ffôn"
     val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan ei gyflogwr ac sydd ddim wediíu heithrio rhag treth."
   }
 
@@ -101,7 +101,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

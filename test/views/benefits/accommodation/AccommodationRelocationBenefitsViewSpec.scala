@@ -60,7 +60,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
@@ -77,7 +77,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedH1 = "A gawsoch fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau llety neu adleoli"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiannau llety neu adleoli"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -91,7 +91,7 @@ class AccommodationRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedH1 = "A gafodd eich cleient fuddiannau llety neu adleoli gan y cwmni hwn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau llety neu adleoli"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau llety neu adleoli"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

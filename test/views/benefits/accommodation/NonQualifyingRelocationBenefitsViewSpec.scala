@@ -66,7 +66,7 @@ class NonQualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val yesText = "Iawn"
     val noText = "Na"
     val continueButtonText = "Yn eich blaen"
@@ -86,7 +86,7 @@ class NonQualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
     val expectedH1 = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiannau adleoli anghymwys"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiannau adleoli anghymwys"
     val expectedContent = "Costau adleoli ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Mae enghreifftiauín cynnwys:"
     val expectedExample1 = "taliadau morgais neu dai os ydych chiín symud i ardal ddrutach"
     val expectedExample2 = "iawndal os byddwch yn colli arian wrth werthu eich cartref"
@@ -106,7 +106,7 @@ class NonQualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiannau adleoli anghymwys"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli anghymwys"
     val expectedContent = "Costau adleoli ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Mae enghreifftiauín cynnwys:"
     val expectedExample1 = "taliadau morgais neu dai os ywín symud i ardal ddrutach"
     val expectedExample2 = "iawndal os ywín colli arian wrth werthu ei gartref"

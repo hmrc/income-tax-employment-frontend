@@ -74,7 +74,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
     val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth eich cyflogwr eu rhoi dros dro i chi:"
     val expectedBullet2 = "iíw cadw eich hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cawsoch asedion"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch asedion"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -92,7 +92,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
     val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth ei gyflogwr eu rhoi dros dro iddo:"
     val expectedBullet2 = "iíw cadw iíw hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ëIawní os cafodd eich cleient asedion"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient asedion"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -105,7 +105,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedDescriptionParagraph = "Asedion yw pethau fel cyfrifiaduron, setiau teledu neu feiciau."
     val expectedBullet1 = "defnyddio"
     val expectedButtonText = "Yn eich blaen"

@@ -73,7 +73,7 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch fuddiant gofal plant?"
     val expectedH1 = "A gawsoch fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cawsoch fuddiant gofal plant"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiant gofal plant"
     val expectedTheseAre = "Costau gofal plant y talodd eich cyflogwr amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
     val expectedCheckWith = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
   }
@@ -91,7 +91,7 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient fuddiant gofal plant?"
     val expectedH1 = "A gafodd eich cleient fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ëIawní os cafodd eich cleient fuddiant gofal plant"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant gofal plant"
     val expectedTheseAre = "Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
     val expectedCheckWith = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
   }
@@ -106,7 +106,7 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
