@@ -20,11 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.utilities.UtilitiesFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,8 +42,9 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
                                                       otherServicesBenefitsAmountView: OtherServicesBenefitsAmountView,
                                                       employmentSessionService: EmploymentSessionService,
                                                       utilitiesService: UtilitiesService,
+                                                      formsProvider: UtilitiesFormsProvider,
                                                       errorHandler: ErrorHandler)
-                                                     (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                     (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,7 +54,7 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.service))
           )
 
@@ -70,7 +71,7 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.service)
               Future.successful(BadRequest(otherServicesBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -91,10 +92,4 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.otherServicesBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.otherServicesBenefitsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.otherServicesBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 }

@@ -19,12 +19,12 @@ package controllers.benefits.utilities
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.utilities.routes._
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.utilities.UtilitiesFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -43,8 +43,9 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
                                                                   professionalSubscriptionBenefitsView: ProfessionalSubscriptionsBenefitsAmountView,
                                                                   employmentSessionService: EmploymentSessionService,
                                                                   utilitiesService: UtilitiesService,
+                                                                  formsProvider: UtilitiesFormsProvider,
                                                                   errorHandler: ErrorHandler)
-                                                                 (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                                 (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,7 +54,8 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
+          val form = fillFormFromPriorAndCYA(formsProvider.professionalSubscriptionsBenefitsAmountForm(
+            request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedProfessionalSubscriptions))
           }
 
@@ -69,7 +71,7 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.professionalSubscriptionsBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.employerProvidedProfessionalSubscriptions)
               Future.successful(BadRequest(professionalSubscriptionBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -90,12 +92,6 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.professionalSubscriptionsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.professionalSubscriptionsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.professionalSubscriptionsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)

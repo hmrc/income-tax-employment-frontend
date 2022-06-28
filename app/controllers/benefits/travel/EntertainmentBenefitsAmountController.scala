@@ -20,11 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.travel.TravelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -40,10 +40,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class EntertainmentBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                       inYearAction: InYearUtil,
                                                       entertainmentBenefitsAmountView: EntertainmentBenefitsAmountView,
-                                                      val employmentSessionService: EmploymentSessionService,
+                                                      employmentSessionService: EmploymentSessionService,
                                                       travelService: TravelService,
+                                                      formsProvider: TravelFormsProvider,
                                                       errorHandler: ErrorHandler)
-                                                     (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                     (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,7 +54,7 @@ class EntertainmentBenefitsAmountController @Inject()(authAction: AuthorisedActi
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(entertainmentBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
-          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.entertainmentBenefitsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.entertaining))
           )
 
@@ -70,7 +71,7 @@ class EntertainmentBenefitsAmountController @Inject()(authAction: AuthorisedActi
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(entertainmentBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
-          buildForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.entertainmentBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).flatMap(_.entertaining)
               Future.successful(BadRequest(entertainmentBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -91,10 +92,4 @@ class EntertainmentBenefitsAmountController @Inject()(authAction: AuthorisedActi
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.entertainmentBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.entertainmentBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.entertainmentBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 }

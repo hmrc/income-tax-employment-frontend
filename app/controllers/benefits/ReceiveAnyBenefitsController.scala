@@ -20,10 +20,9 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.YesNoForm
+import forms.benefits.BenefitsFormsProvider
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -41,6 +40,7 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
                                              receiveAnyBenefitsView: ReceiveAnyBenefitsView,
                                              employmentSessionService: EmploymentSessionService,
                                              benefitsService: BenefitsService,
+                                             benefitsFormsProvider: BenefitsFormsProvider,
                                              errorHandler: ErrorHandler)
                                             (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
@@ -50,8 +50,9 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya: EmploymentUserData) => cya.employment.employmentBenefits match {
           case Some(model) =>
-            Future.successful(Ok(receiveAnyBenefitsView(yesNoForm(request.user.isAgent).fill(model.isBenefitsReceived), taxYear, employmentId)))
-          case None => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+            Future.successful(Ok(receiveAnyBenefitsView(benefitsFormsProvider.receiveAnyBenefitsForm(
+              request.user.isAgent).fill(model.isBenefitsReceived), taxYear, employmentId)))
+          case None => Future.successful(Ok(receiveAnyBenefitsView(benefitsFormsProvider.receiveAnyBenefitsForm(request.user.isAgent), taxYear, employmentId)))
         }
         case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
@@ -62,7 +63,7 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya) =>
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          benefitsFormsProvider.receiveAnyBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
@@ -82,8 +83,4 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
       }
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (isAgent) "agent" else "individual"}"
-  )
 }

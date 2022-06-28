@@ -20,12 +20,12 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.benefits.travel.TravelFormsProvider
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import models.{AuthorisationRequest, User}
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -42,10 +42,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                         inYearAction: InYearUtil,
                                                         incidentalCostsBenefitsAmountView: IncidentalCostsBenefitsAmountView,
-                                                        val employmentSessionService: EmploymentSessionService,
+                                                        employmentSessionService: EmploymentSessionService,
                                                         travelService: TravelService,
+                                                        formsProvider: TravelFormsProvider,
                                                         errorHandler: ErrorHandler)
-                                                       (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                       (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -54,7 +55,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
-          val form = fillFormFromPriorAndCYA(amountForm(request.user), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses))
           )
           Future.successful(Ok(incidentalCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
@@ -69,7 +70,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          amountForm(request.user).bindFromRequest().fold(
+          formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
               Future.successful(BadRequest(incidentalCostsBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
@@ -90,12 +91,6 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def amountForm(user: User): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.incidentalCostsBenefitsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.incidentalCostsBenefitsAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)

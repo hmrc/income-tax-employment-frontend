@@ -18,8 +18,6 @@ package controllers.benefits.utilities
 
 import models.benefits.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -41,199 +39,32 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employment = employmentCyaModel)
 
-  object Selectors {
-    val contentSelector = "#main-content > div > div > p"
-    val hintTextSelector = "#amount-hint"
-    val inputSelector = "#amount"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val continueButtonSelector = "#continue"
-    val continueButtonFormSelector = "#main-content > div > div > form"
-    val expectedErrorHref = "#amount"
-  }
-
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val amountHint: String
-    val continue: String
-    val previousExpectedContent: String
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-    val expectedErrorTitle: String
-    val emptyErrorText: String
-    val invalidFormatErrorText: String
-    val maxAmountErrorText: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    override val amountHint: String = "For example, £193.52"
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £400, tell us the correct amount."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    override val amountHint: String = "Er enghraifft, £193.52"
-    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £400."
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for other services?"
-    val expectedHeading: String = "How much did you get in total for other services?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount you got for other services"
-    val invalidFormatErrorText: String = "Enter the amount you got for other services in the correct format"
-    val maxAmountErrorText: String = "The amount you got for other services must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer gwasanaethau eraill?"
-    val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer gwasanaethau eraill?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill"
-    val invalidFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gawsoch ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did your client get in total for other services?"
-    val expectedHeading: String = "How much did your client get in total for other services?"
-    val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val emptyErrorText: String = "Enter the amount your client got for other services"
-    val invalidFormatErrorText: String = "Enter the amount your client got for other services in the correct format"
-    val maxAmountErrorText: String = "The amount your client got for other services must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau eraill?"
-    val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer gwasanaethau eraill?"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill"
-    val invalidFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gafodd eich cleient ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
-  }
+  val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
-
   ".show" should {
-    userScenarios.foreach { user =>
+    "render the other services amount page" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(service = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the other services amount page without pre-filled form and without replay text" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(service = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          elementsNotOnPageCheck(contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the other services amount page with pre-filled cy data" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent, contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "400")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the other services amount page with the amount field pre-filled with prior submitted data" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption)
-          textOnPageCheck(previousExpectedContent, contentSelector)
-          textOnPageCheck(amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "400")
-          buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
     "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
       "Redirect user to the check your benefits page with no cya data in session" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -247,8 +78,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYear, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -260,11 +91,11 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       "redirect to the other services question page when there is a service amount but the other serviceQuestion has not been answered" +
         " but entertainment benefit question empty" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = None)))
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -275,11 +106,11 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
       "redirect to the check employment benefits page when benefits has serviceQuestion set to false and prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -290,10 +121,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
       "redirect the user to the check employment benefits page when there's no benefits and prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
-          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -305,118 +136,28 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      import Selectors._
-      import user.specificExpectedResults._
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render the other services amount amount page with empty error text when there no input" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
-          }
+    "should render the other services amount amount page with empty error text when there no input" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+        urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.emptyErrorText)
-        }
-
-        "should render the entertainment benefit question amount page with invalid format text when input is in incorrect format" which {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "abc")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.invalidFormatErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.invalidFormatErrorText)
-        }
-
-        "should render the entertainment benefit question page with max error when input > 100,000,000,000" which {
-
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
-              body = Map("amount" -> "9999999999999999999999999999"))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
-          textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
-          buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.maxAmountErrorText)
-        }
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 
     "redirect to another page when a valid request is made and then" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
       "redirect to medical dental childcare benefits page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
         }
 
@@ -434,11 +175,11 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
       "redirect to the utility general service next question page when a valid form is submitted and not prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
         }
 
@@ -457,8 +198,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       "redirect user to the check your benefits page with no cya data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -473,9 +214,9 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYear, employmentId)), follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -487,11 +228,11 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       "redirect to the other services question page when there is a service amount but the other serviceQuestion has not been answered" +
         " but entertainment benefit question empty" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = None)))
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -503,11 +244,11 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
       "redirect to the check employment benefits page when benefits has serviceQuestion set to false and prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -519,10 +260,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
       "redirect the user to the check employment benefits page when theres no benefits and prior submission" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 

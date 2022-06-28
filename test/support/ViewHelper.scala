@@ -65,6 +65,12 @@ trait ViewHelper {
     }
   }
 
+  def elementsNotOnPageCheck(selector: String)(implicit document: Document): Unit = {
+    s"not have the page elements for selector '$selector'" in {
+      document.select(selector).isEmpty shouldBe true
+    }
+  }
+
   def textOnPageCheck(text: String, selector: String, additionalTestText: String = "")(implicit document: Document): Unit = {
     s"have text on the screen of '$text' $additionalTestText" in {
       document.select(selector).text() shouldBe text

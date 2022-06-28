@@ -20,12 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import forms.YesNoForm
+import forms.benefits.travel.TravelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -43,8 +42,9 @@ class TravelOrEntertainmentBenefitsController @Inject()(authAction: AuthorisedAc
                                                         travelOrEntertainmentBenefitsView: TravelOrEntertainmentBenefitsView,
                                                         employmentSessionService: EmploymentSessionService,
                                                         travelService: TravelService,
+                                                        formsProvider: TravelFormsProvider,
                                                         errorHandler: ErrorHandler)
-                                                       (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                       (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -55,8 +55,10 @@ class TravelOrEntertainmentBenefitsController @Inject()(authAction: AuthorisedAc
 
           cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(travelOrEntertainmentBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(travelOrEntertainmentBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+              Future.successful(Ok(travelOrEntertainmentBenefitsView(formsProvider.travelOrEntertainmentBenefitsForm(
+                request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(travelOrEntertainmentBenefitsView(formsProvider.travelOrEntertainmentBenefitsForm(
+              request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
@@ -69,7 +71,7 @@ class TravelOrEntertainmentBenefitsController @Inject()(authAction: AuthorisedAc
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.travelOrEntertainmentBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(travelOrEntertainmentBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -91,10 +93,6 @@ class TravelOrEntertainmentBenefitsController @Inject()(authAction: AuthorisedAc
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.travelOrEntertainment.error.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)

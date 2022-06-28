@@ -19,8 +19,6 @@ package controllers.benefits.travel
 import forms.YesNoForm
 import models.benefits.TravelEntertainmentModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -40,163 +38,34 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
-  object Selectors {
-    val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedErrorTitle: String
-    val expectedError: String
-    val costInformation: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val expectedButtonText: String
-    val yesText: String
-    val noText: String
-    val allowanceInformation: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any incidental overnight costs?"
-    val expectedH1 = "Did you get any incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got incidental overnight costs"
-    val costInformation = "These are personal costs you incurred while travelling overnight on business."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch unrhyw m‚n gostau dros nos?"
-    val expectedH1 = "A gawsoch unrhyw m‚n gostau dros nos?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os cawsoch chi mân gostau dros nos"
-    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes."
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any incidental overnight costs?"
-    val expectedH1 = "Did your client get any incidental overnight costs?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got incidental overnight costs"
-    val costInformation = "These are personal costs they incurred while travelling overnight on business."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
-    val expectedH1 = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient mân gostau dros nos"
-    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes."
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedButtonText = "Continue"
-    val yesText = "Yes"
-    val noText = "No"
-    val allowanceInformation: String = "The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val expectedButtonText = "Yn eich blaen"
-    val yesText = "Iawn"
-    val noText = "Na"
-    val allowanceInformation: String = "Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan iír DU. Dim ond costau syín uwch naír lwfans y mae angen i ni wybod amdanynt."
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render 'Did you get any incidental overnight costs?' page with the correct content with no pre-filling" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
 
-          lazy val document = Jsoup.parse(result.body)
+    "render 'Did you get any incidental overnight costs?' page" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
-          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
-          radioButtonCheck(yesText, 1, checked = false)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'Did you get any incidental overnight costs?' page with the correct content with cya data and the yes value pre-filled" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
-          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
-          radioButtonCheck(yesText, 1, checked = true)
-          radioButtonCheck(noText, 2, checked = false)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
     "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
+
       "redirect the user to the check employment benefits page when theres no benefits and prior submission" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -208,10 +77,10 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the benefits received page when theres no benefits and not prior submission" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = None)))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -223,8 +92,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the check employment benefits page when theres no session data for that user" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -236,10 +105,10 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the check employment benefits page when the travel or entertainment question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -251,10 +120,10 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the travel or entertainment page when the travel or entertainment question is empty" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = None)))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -266,9 +135,9 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the overview page when the request is in year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -281,8 +150,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -299,50 +168,24 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   }
 
   ".submit" should {
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-          "the value is empty" which {
-            lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-                welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+    s"return a BAD_REQUEST($BAD_REQUEST) status" when {
+      "the value is empty" which {
+        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            lazy val document = Jsoup.parse(result.body)
-
-            implicit def documentSupplier: () => Document = () => document
-
-            import Selectors._
-            import user.commonExpectedResults._
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            captionCheck(expectedCaption)
-            textOnPageCheck(user.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 3))
-            textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 4))
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-          }
+        "has the correct status" in {
+          result.status shouldBe BAD_REQUEST
         }
       }
     }
 
     "redirect to another page when a valid request is made and then" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
       "redirect to entertainment expenses page and update the PersonalIncidentalQuestion to no and wipe the personalIncidentalAmount" +
         " data when the user chooses no" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -350,9 +193,9 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -377,9 +220,9 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
             .copy(utilitiesAndServicesModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the incidental costs amount page" in {
@@ -396,8 +239,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
 
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -411,9 +254,9 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -431,11 +274,11 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -448,11 +291,11 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = None)))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
