@@ -187,7 +187,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsWelshEOY extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
-    override val bannerParagraph: String = "You cannot update student loans until you ychwanegu manylion cyflogaeth sydd ar goll."
+    override val bannerParagraph: String = "Ni allwch ddiweddaru benthyciadau myfyrwyr hyd nes eich bod yn ychwanegu manylion cyflogaeth sydd ar goll."
     override val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     override val title: String = "Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr"
     override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
@@ -234,7 +234,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   object ExpectedResultsWelshEOYAgent extends CommonExpectedResults {
     override val isEndOfYear: Boolean = true
     override val hasPrior: Boolean = true
-    override val bannerParagraph: String = "You cannot update student loans until you ychwanegu manylion cyflogaeth sydd ar goll."
+    override val bannerParagraph: String = "Ni allwch ddiweddaru benthyciadau myfyrwyr hyd nes eich bod yn ychwanegu manylion cyflogaeth sydd ar goll."
     override val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     override val title: String = "Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient"
     override lazy val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"

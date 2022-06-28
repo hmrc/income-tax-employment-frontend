@@ -155,7 +155,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val continueButtonText = "Cadw ac yn eich blaen"
     val employerNameField1 = "Cyflogwr"
     val employmentStartDateField1 = "Dyddiad dechrauír gyflogaeth"
-    val didYouLeaveEmployerField = "Left employer"
+    val didYouLeaveEmployerField = "Wedi gadael y cyflogwr"
     val employmentDatesField = "Dyddiadau cyflogaeth"
     val payeReferenceField2 = "Cyfeirnod TWE"
     val payReceivedField3 = "Tal a gafwyd"

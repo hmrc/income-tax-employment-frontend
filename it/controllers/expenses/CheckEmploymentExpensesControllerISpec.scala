@@ -146,7 +146,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestion = "Offer eraill"
     val otherAndCapitalAllowancesAmount = "Swm ar gyfer offer eraill"
     val continueButtonText = "Cadw ac yn eich blaen"
-    val returnToEmploymentSummaryText: String = "Return to PAYE employment"
+    val returnToEmploymentSummaryText: String = "Yn ôl i ‘Cyflogaeth TWE’"
 
     val fieldNames = Seq(
       "Treuliau cyflogaeth",
