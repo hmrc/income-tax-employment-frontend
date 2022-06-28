@@ -19,7 +19,7 @@ package controllers.employment
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status._
+import play.api.http.Status.{SEE_OTHER, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -47,7 +47,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector: Boolean => String = (welshLang: Boolean) => if (welshLang) "#manylion-cyflogaeth_link" else "#employment-details_link"
-    val employmentBenefitsLinkSelector = "#employment-benefits_link"
+    val employmentBenefitsLinkSelector: Boolean => String = (welshLang: Boolean) => if (welshLang) "#buddiannau-cyflogaeth_link" else "#employment-benefits_link"
     val formSelector = "#main-content > div > div > form"
 
     def studentLoansLinkSelector(welshLang: Boolean): String = if (welshLang) "#benthyciadau-myfyrwyr_link" else "#student-loans_link"
@@ -105,8 +105,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
 
     val bannerParagraph: String = "Mae’n rhaid ychwanegu manylion cyflogaeth sydd ar goll."
     val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
-    val fieldNames = Seq("Manylion cyflogaeth", "Employment benefits", "Benthyciadau Myfyrwyr")
-    val buttonText = "Return to PAYE employment"
+    val fieldNames = Seq("Manylion cyflogaeth", "Buddiannau cyflogaeth", "Benthyciadau Myfyrwyr")
+    val buttonText = "Yn ôl i ‘Cyflogaeth TWE’"
     val updated = "Wedi diweddaru"
     val toDo: String = "I’w gwneud"
     val cannotUpdate = "Ddim yn gallu diweddaru"
@@ -261,7 +261,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector(user.isWelsh), checkYourBenefitsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(2))
           }
 
@@ -339,7 +339,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector((user.isWelsh)), checkYourBenefitsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(2))
           }
 
@@ -377,7 +377,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector(user.isWelsh), checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.notStarted, summaryListStatusTagsSelectorEOY(2))
           }
 
@@ -413,7 +413,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector(user.isWelsh), checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(2))
           }
 
@@ -456,7 +456,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector(user.isWelsh), checkYourBenefitsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(2))
           }
 
@@ -497,7 +497,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector(user.isWelsh), checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(2))
           }
 

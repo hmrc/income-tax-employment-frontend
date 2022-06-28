@@ -327,7 +327,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(year: Int = taxYear): String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${year - 1} i 5 Ebrill $year"
 
-    val bannerParagraph: String = "You cannot update employment benefits until you ychwanegu manylion cyflogaeth sydd ar goll."
+    val bannerParagraph: String = "Ni allwch ddiweddaru buddiannau cyflogaeth hyd nes eich bod yn ychwanegu manylion cyflogaeth sydd ar goll."
     val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
     val employerName: String = "maggie"
     val changeText: String = "Newid"
