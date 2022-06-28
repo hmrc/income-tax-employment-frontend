@@ -18,10 +18,10 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.studentLoans.StudentLoansFormsProvider
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -38,6 +38,7 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     employmentSessionService: EmploymentSessionService,
                                     studentLoansService: StudentLoansService,
                                     view: UglAmountView,
+                                    formsProvider: StudentLoansFormsProvider,
                                     inYearAction: InYearUtil,
                                     errorHandler: ErrorHandler)
                                    (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
@@ -56,8 +57,8 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
                 val uglAmount = cyaData.employment.studentLoans.flatMap(_.uglDeductionAmount)
                 val employerName = cyaData.employment.employmentDetails.employerName
 
-                val form = uglAmount.fold(amountForm(employerName, request.user.isAgent)
-                )(amountForm(employerName, request.user.isAgent).fill _)
+                val form = uglAmount.fold(formsProvider.uglAmountForm(employerName, request.user.isAgent)
+                )(formsProvider.uglAmountForm(employerName, request.user.isAgent).fill _)
                 Ok(view(taxYear, form, employmentId, employerName))
 
               } else {
@@ -79,7 +80,7 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       val redirectUrl = studentLoansCyaControllerRoute.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        amountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
+        formsProvider.uglAmountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
           formWithErrors => {
             Future.successful(BadRequest(view(taxYear, formWithErrors, employmentId, cya.employment.employmentDetails.employerName)))
           },
@@ -112,10 +113,4 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
         }
     }
   }
-
-  private def amountForm(employerName: String, isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"studentLoans.undergraduateLoanAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = "studentLoans.undergraduateLoanAmount.error.invalidFormat",
-    emptyFieldArguments = Seq(employerName)
-  )
 }

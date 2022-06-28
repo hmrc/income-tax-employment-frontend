@@ -18,6 +18,7 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
+import forms.studentLoans.StudentLoansFormsProvider
 import forms.{AmountForm, FormUtils}
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
@@ -38,6 +39,7 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     employmentSessionService: EmploymentSessionService,
                                     studentLoansService: StudentLoansService,
                                     view: PglAmountView,
+                                    formsProvider: StudentLoansFormsProvider,
                                     inYearAction: InYearUtil,
                                     errorHandler: ErrorHandler)
                                    (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
@@ -56,8 +58,8 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
                 val pglAmount = cyaData.employment.studentLoans.flatMap(_.pglDeductionAmount)
                 val employerName = cyaData.employment.employmentDetails.employerName
 
-                val form = pglAmount.fold(amountForm(employerName, request.user.isAgent)
-                )(amountForm(employerName, request.user.isAgent).fill _)
+                val form = pglAmount.fold(formsProvider.pglAmountForm(employerName, request.user.isAgent)
+                )(formsProvider.pglAmountForm(employerName, request.user.isAgent).fill _)
                 Ok(view(taxYear, form, employmentId, employerName))
 
               } else {
@@ -79,7 +81,7 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       val redirectUrl = studentLoansCyaControllerRoute.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        amountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
+        formsProvider.pglAmountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
           formWithErrors => {
             Future.successful(BadRequest(view(taxYear, formWithErrors, employmentId, cya.employment.employmentDetails.employerName)))
           },
@@ -105,11 +107,4 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
       case Right(_) => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
     }
   }
-
-  private def amountForm(employerName: String, isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"studentLoans.postgraduateLoanAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"studentLoans.postgraduateLoanAmount.error.invalidFormat",
-    emptyFieldArguments = Seq(employerName)
-  )
-
 }
