@@ -74,6 +74,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   def contactUrl(implicit isAgent: Boolean): String = s"$contactFrontEndUrl/contact/contact-hmrc?service=$contactFormServiceIdentifier"
 
+  def getExcludedJourneysUrl(taxYear: Int, nino: String): String =
+    s"$incomeTaxSubmissionBaseUrl/income-tax-submission-service/income-tax/nino/$nino/sources/excluded-journeys/$taxYear"
+
   private lazy val basGatewayUrl = servicesConfig.getString(ConfigKeys.basGatewayFrontendUrl)
 
   lazy val signOutUrl: String = s"$basGatewayUrl/bas-gateway/sign-out-without-state"
@@ -102,6 +105,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val studentLoansEnabled: Boolean = servicesConfig.getBoolean("feature-switch.studentLoans")
 
   lazy val employmentEOYEnabled: Boolean = servicesConfig.getBoolean("feature-switch.employmentEOYEnabled")
+
+  lazy val tailoringEnabled: Boolean = servicesConfig.getBoolean("feature-switch.tailoringEnabled")
 
   lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
 

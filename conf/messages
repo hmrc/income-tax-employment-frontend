@@ -1396,3 +1396,10 @@ studentLoans.inset.agent = You cannot update your client’s student loan detail
 
 studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
 studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
+
+#####################    Tailoring messages    #####################
+tailoring.title.individual = Did you get income from PAYE employment?
+tailoring.title.agent = Did your client get income from PAYE employment?
+tailoring.empty.error.individual = Select yes if you got income from PAYE employment
+tailoring.empty.error.agent = Select yes if your client got income from PAYE employment
+
