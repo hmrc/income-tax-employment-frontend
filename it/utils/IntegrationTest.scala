@@ -44,7 +44,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import views.html.templates.AgentAuthErrorPageView
+import views.html.errors.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
@@ -65,7 +65,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
 
   val invalidTaxYear: Int = taxYear + 999
-
 
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global

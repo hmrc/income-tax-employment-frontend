@@ -16,82 +16,24 @@
 
 package controllers.errors
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
-import utils.PageUrls.{authoriseAsAnAgentLink, fullUrl, tryAnotherExpectedHref, youNeedClientAuthUrl}
+import utils.PageUrls.{fullUrl, youNeedClientAuthUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object Selectors {
-    val youCan = "#main-content > div > div > p:nth-child(2)"
-    val authoriseAsAnAgentLinkSelector = "#client_auth_link"
-    val tryAnother = "#main-content > div > div > a"
-  }
-
-  trait CommonExpectedResults {
-    val heading: String
-    val title: String
-    val youCannotViewText: String
-    val authoriseYouAsText: String
-    val beforeYouCanTryText: String
-    val tryAnother: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val heading: String = "There is a problem"
-    val title = "There is a problem"
-    val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
-    val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
-    val beforeYouCanTryText = "before you can sign in to this service."
-    val tryAnother = "Try another client’s details"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val heading: String = "Mae problem wedi codi"
-    val title = "Mae problem wedi codi"
-    val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
-    val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
-    val beforeYouCanTryText = "cyn y gallwch fewngofnodi i’r gwasanaeth hwn."
-    val tryAnother = "Rhowch gynnig ar fanylion cleient arall"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY))
-  }
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
-    import Selectors._
+    "return the AgentAuthErrorPageView with the right content" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(youNeedClientAuthUrl))
+      }
 
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "return the AgentAuthErrorPageView with the right content" which {
-
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(youNeedClientAuthUrl), welsh = user.isWelsh)
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an UNAUTHORIZED(401) status" in {
-            result.status shouldBe UNAUTHORIZED
-          }
-
-          import user.commonExpectedResults._
-
-          titleCheck(title, user.isWelsh)
-          h1Check(heading,"xl")
-          textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", youCan)
-          linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-          buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an UNAUTHORIZED(401) status" in {
+        result.status shouldBe UNAUTHORIZED
       }
     }
   }

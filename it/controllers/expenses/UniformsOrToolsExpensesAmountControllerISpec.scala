@@ -19,8 +19,6 @@ package controllers.expenses
 import forms.AmountForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -34,243 +32,37 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val poundPrefixText = "£"
   private val newAmount: BigDecimal = 250
-  private val maxLimit: String = "100000000000"
-  private val amountField = "#amount"
-  private val amountFieldName = "amount"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
-  object Selectors {
-    val formSelector = "#main-content > div > div > form"
-    val wantToClaimSelector: String = "#previous-amount"
-    val cannotClaimParagraphSelector: String = "#cannot-claim"
-    val totalAmountParagraphSelector: String = "#total-amount-text"
-    val hintTextSelector = "#amount-hint"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val continueButtonSelector: String = "#continue"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String
-
-    val expectedErrorTitle: String
-    val expectedNoEntryErrorMessage: String
-    val expectedInvalidFormatErrorMessage: String
-    val expectedOverMaximumErrorMessage: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: String
-    val continueButtonText: String
-    val totalAmountText: String
-    val hintText: String
-    val expectedCannotClaim: String
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools?"
-    val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for uniform, work clothes, or tools. Tell us if this has changed."
-
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
-    val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer. Rhowch wybod i ni os yw hyn wedi newid."
-
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
-    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer yn y format cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer fod yn llai na £100,000,000,000"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
-    val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s uniform, work clothes, or tools. Tell us if this has changed."
-
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools"
-    val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format"
-    val expectedOverMaximumErrorMessage = "The amount you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
-    val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
-
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
-    val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer eich cleient fod yn llai na £100,000,000,000"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val continueButtonText = "Continue"
-    val totalAmountText = "Total amount for all employers"
-    val hintText = "For example, £193.52"
-    val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val continueButtonText = "Yn eich blaen"
-    val totalAmountText = "Cyfanswm ar gyfer pob cyflogwr"
-    val hintText = "Er enghraifft, £193.52"
-    val expectedCannotClaim = "Ni allwch hawlio ar gyfer y gost gychwynnol o brynu m‚n offer neu ddillad ar gyfer gwaith."
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
+    "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with the correct content and" +
+      " no pre-filled amount no values pre-filled when no user data" which {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = None))))
+        urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-    userScenarios.foreach { user =>
-
-      import Selectors._
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with the correct content and" +
-          " no pre-filled amount no values pre-filled when no user data" which {
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = None))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          elementsNotOnPageCheck(wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with  pre-filled amount if it has changed" which {
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with with no pre-filled cya data if amount has not changed" which {
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 
     "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
       "Redirect user to the tax overview page when in year" which {
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -282,9 +74,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
       "Redirect user to the check your benefits page with no cya data in session" which {
         lazy val result: WSResponse = {
           dropExpensesDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -296,16 +87,12 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
       "redirect to the check your expenses page when there is a flatRateJobExpenses amount but the flatRateJobExpensesQuestion is false" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           dropExpensesDB()
-          authoriseAgentOrIndividual(user.isAgent)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
             anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false)))))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -317,139 +104,32 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   }
 
   ".submit" should {
+    "return an error when the flatRateJobExpenses amount is in the wrong format" which {
+      lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
 
-    userScenarios.foreach { user =>
+      }
 
-      import Selectors._
-      import user.commonExpectedResults._
-
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "return an error when the flatRateJobExpenses amount is in the wrong format" which {
-
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, "abc")
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, Some(amountFieldName))
-          errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, amountField)
-          welshToggleCheck(user.isWelsh)
-
-        }
-
-        "return an error when no flatRateJobExpenses amount is submitted" which {
-
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "")
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
-          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
-          welshToggleCheck(user.isWelsh)
-
-        }
-
-        "return an error when no flatRateJobExpenses amount larger than maximum is submitted" which {
-
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> maxLimit)
-
-          lazy val result: WSResponse = {
-            dropExpensesDB()
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
-          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
-          textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(amountFieldName, amountField, maxLimit)
-          formPostLinkCheck(uniformsClothesToolsExpensesAmountUrl(taxYearEOY), formSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
-          errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountField)
-          welshToggleCheck(user.isWelsh)
-        }
+      "has an BAD_REQUEST status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
 
     "redirect to another page when valid request is made and then" should {
-
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
       "redirect to next page and update flatRateJobExpenses to the new amount when not in year and not a prior submission" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
               flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))))
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -463,19 +143,17 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
           cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(newAmount)
         }
-
       }
 
       "redirect to flatRate Question page when flatRateJobExpensesQuestion is None" which {
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
               flatRateJobExpensesQuestion = None, isUsingCustomerData = true))))
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -486,15 +164,13 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
       }
 
       "redirect to 'check your expenses' page when a prior submission and update flatRateJobExpenses to the new amount" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -527,8 +203,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), body = form, follow = false, welsh = user.isWelsh,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), body = form, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -539,13 +215,11 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
       }
 
       "Redirect user to the check your benefits page with no cya data in session" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
         lazy val result: WSResponse = {
           dropExpensesDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

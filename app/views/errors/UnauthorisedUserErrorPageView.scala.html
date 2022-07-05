@@ -14,10 +14,15 @@
  * limitations under the License.
  *@
 
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Link
 
-@this(layout: Layout, heading: Heading, link: Link)
+@this(
+    layout: Layout,
+    heading: Heading,
+    link: Link
+)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @layout(pageTitle = messages("error.unauthorised-user.heading"), backLink = false) {

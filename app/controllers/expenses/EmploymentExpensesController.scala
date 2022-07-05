@@ -19,12 +19,11 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
-import forms.YesNoForm
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.joda.time.DateTimeZone
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -35,23 +34,26 @@ import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.expenses.EmploymentExpensesView
 
 import javax.inject.Inject
+import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentExpensesController @Inject()(authAction: AuthorisedAction,
                                              inYearAction: InYearUtil,
-                                             employmentExpensesView: EmploymentExpensesView,
+                                             pageView: EmploymentExpensesView,
                                              employmentSessionService: EmploymentSessionService,
                                              expensesService: ExpensesService,
-                                             errorHandler: ErrorHandler)
+                                             errorHandler: ErrorHandler,
+                                             formsProvider: ExpensesFormsProvider)
                                             (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext, clock: Clock)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
+      val isAgent = request.user.isAgent
       employmentSessionService.getExpensesSessionDataResult(taxYear) {
         case Some(data) =>
-          Future.successful(Ok(employmentExpensesView(yesNoForm(request.user.isAgent).fill(data.expensesCya.expenses.claimingEmploymentExpenses), taxYear)))
-        case None => Future.successful(Ok(employmentExpensesView(yesNoForm(request.user.isAgent), taxYear)))
+          successful(Ok(pageView(formsProvider.claimEmploymentExpensesForm(isAgent).fill(data.expensesCya.expenses.claimingEmploymentExpenses), taxYear)))
+        case None => successful(Ok(pageView(formsProvider.claimEmploymentExpensesForm(isAgent), taxYear)))
       }
     }
   }
@@ -60,8 +62,8 @@ class EmploymentExpensesController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { data =>
-        yesNoForm(request.user.isAgent).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(employmentExpensesView(formWithErrors, taxYear))),
+        formsProvider.claimEmploymentExpensesForm(request.user.isAgent).bindFromRequest().fold(
+          formWithErrors => successful(BadRequest(pageView(formWithErrors, taxYear))),
           yesNo => handleSuccessForm(taxYear, data, yesNo)
         )
       }
@@ -84,8 +86,4 @@ class EmploymentExpensesController @Inject()(authAction: AuthorisedAction,
         expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.claimEmploymentExpenses.error.noEntry.${if (isAgent) "agent" else "individual"}"
-  )
 }

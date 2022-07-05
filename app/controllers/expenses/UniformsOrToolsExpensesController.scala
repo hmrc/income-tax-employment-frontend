@@ -19,10 +19,9 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes._
-import forms.YesNoForm
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.ExpensesUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -40,7 +39,8 @@ class UniformsOrToolsExpensesController @Inject()(authAction: AuthorisedAction,
                                                   pageView: UniformsOrToolsExpensesView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   expensesService: ExpensesService,
-                                                  errorHandler: ErrorHandler)
+                                                  errorHandler: ErrorHandler,
+                                                  formsProvider: ExpensesFormsProvider)
                                                  (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
@@ -50,9 +50,10 @@ class UniformsOrToolsExpensesController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(flatRateRedirects(_, taxYear)) { data =>
 
+          val isAgent = request.user.isAgent
           data.expensesCya.expenses.flatRateJobExpensesQuestion match {
-            case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear)))
-            case None => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent), taxYear)))
+            case Some(questionResult) => Future.successful(Ok(pageView(formsProvider.uniformsWorkClothesToolsForm(isAgent).fill(questionResult), taxYear)))
+            case None => Future.successful(Ok(pageView(formsProvider.uniformsWorkClothesToolsForm(isAgent), taxYear)))
           }
         }
       }
@@ -64,7 +65,7 @@ class UniformsOrToolsExpensesController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(flatRateRedirects(_, taxYear)) { data =>
 
-          yesNoForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.uniformsWorkClothesToolsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear))),
             yesNo => handleSuccessForm(taxYear, data, yesNo)
           )
@@ -86,8 +87,4 @@ class UniformsOrToolsExpensesController @Inject()(authAction: AuthorisedAction,
         expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
     }
   }
-
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.uniformsWorkClothesTools.error.noEntry.${if (isAgent) "agent" else "individual"}"
-  )
 }

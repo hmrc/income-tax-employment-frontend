@@ -19,11 +19,11 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.OtherEquipmentController
-import forms.{AmountForm, FormUtils}
+import forms.FormUtils
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -38,10 +38,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: AuthorisedAction,
                                                                  inYearAction: InYearUtil,
-                                                                 profSubscriptionsExpensesAmountView: ProfFeesAndSubscriptionsExpensesAmountView,
+                                                                 pageView: ProfFeesAndSubscriptionsExpensesAmountView,
                                                                  employmentSessionService: EmploymentSessionService,
                                                                  expensesService: ExpensesService,
-                                                                 errorHandler: ErrorHandler)
+                                                                 errorHandler: ErrorHandler,
+                                                                 formsProvider: ExpensesFormsProvider)
                                                                 (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
@@ -51,10 +52,11 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
           val cyaAmount = cyaData.expensesCya.expenses.professionalSubscriptions
-          val form = fillExpensesFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
+          val agent = request.user.isAgent
+          val form = fillExpensesFormFromPriorAndCYA(formsProvider.professionalFeesAndSubscriptionsAmountForm(agent), prior, cyaAmount) { employmentExpenses =>
             employmentExpenses.expenses.flatMap(_.professionalSubscriptions)
           }
-          Future(Ok(profSubscriptionsExpensesAmountView(taxYear, form, cyaAmount)))
+          Future(Ok(pageView(taxYear, form, cyaAmount)))
         }
       })
     }
@@ -65,10 +67,10 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
 
-          amountForm(request.user.isAgent).bindFromRequest().fold(
+          formsProvider.professionalFeesAndSubscriptionsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = data.expensesCya.expenses.professionalSubscriptions
-              Future.successful(BadRequest(profSubscriptionsExpensesAmountView(taxYear, formWithErrors, fillValue)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue)))
             },
             amount => handleSuccessForm(taxYear, data, amount)
           )
@@ -84,12 +86,6 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
       case Right(expensesUserData) => expensesSubmitRedirect(expensesUserData.expensesCya, OtherEquipmentController.show(taxYear))(taxYear)
     }
   }
-
-  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
     professionalSubscriptionsAmountRedirects(cya, taxYear)
