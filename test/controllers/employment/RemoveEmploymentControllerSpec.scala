@@ -40,17 +40,14 @@ class RemoveEmploymentControllerSpec extends UnitTest
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
-  private lazy val controller = new RemoveEmploymentController()(
+  private lazy val controller = new RemoveEmploymentController(
     mockMessagesControllerComponents,
     authorisedAction,
     inYearAction,
     view,
-    mockAppConfig,
     mockEmploymentSessionService,
     mockRemoveEmploymentService,
-    mockErrorHandler,
-    ec
-  )
+    mockErrorHandler)(mockAppConfig, ec)
 
   ".show" should {
     "return a result" which {

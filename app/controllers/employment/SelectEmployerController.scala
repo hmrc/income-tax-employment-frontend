@@ -35,7 +35,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
-                                         selectEmployerView: SelectEmployerView,
+                                         pageView: SelectEmployerView,
                                          unignoreEmploymentService: UnignoreEmploymentService,
                                          employmentSessionService: EmploymentSessionService,
                                          errorHandler: ErrorHandler,
@@ -53,7 +53,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
     if (ignoredEmployments.isEmpty) {
       employerNameRedirect(taxYear)
     } else {
-      Ok(selectEmployerView(taxYear, ignoredEmployments.map(_.toEmployerView), prefilledForm))
+      Ok(pageView(taxYear, ignoredEmployments.map(_.toEmployerView), prefilledForm))
     }
   }
 
@@ -82,7 +82,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
   private def handleForm(form: Form[String], taxYear: Int, ignoredEmployments: Seq[EmploymentSource])
                         (implicit request: UserPriorDataRequest[_]): Future[Result] = {
     form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(selectEmployerView(taxYear, ignoredEmployments.map(_.toEmployerView), formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(pageView(taxYear, ignoredEmployments.map(_.toEmployerView), formWithErrors))),
       employer => if (employer == SessionValues.ADD_A_NEW_EMPLOYER) {
         Future.successful(employerNameRedirect(taxYear))
       } else {

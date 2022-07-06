@@ -47,21 +47,17 @@ class CheckYourBenefitsControllerSpec extends UnitTest
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
-  private def controller(mimic: Boolean = false, slEnabled: Boolean = true) = new CheckYourBenefitsController()(
-    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled),
-    mockMessagesControllerComponents,
-    authorisedAction,
+  private def controller(mimic: Boolean = false, slEnabled: Boolean = true) = new CheckYourBenefitsController(
     view,
     mockEmploymentSessionService,
     mockCheckYourBenefitsService,
     mockAuditService,
     inYearAction,
-    mockErrorHandler,
-    ec
-  )
+    mockErrorHandler
+  )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), authorisedAction)
 
   private val employmentId = "223AB12399"
-  val employerName: String = "Mishima Zaibatsu"
+  private val employerName: String = "Mishima Zaibatsu"
 
   private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,

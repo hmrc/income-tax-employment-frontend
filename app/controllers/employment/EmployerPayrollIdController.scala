@@ -34,14 +34,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
-                                            val mcc: MessagesControllerComponents,
-                                            implicit val appConfig: AppConfig,
-                                            employerPayrollIdView: EmployerPayrollIdView,
+                                            pageView: EmployerPayrollIdView,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
-                                            employmentService: EmploymentService,
-                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                            employmentService: EmploymentService)
+                                           (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     val emptyForm = EmployerPayrollIdForm.employerPayrollIdForm(request.user.isAgent)
@@ -52,11 +51,11 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
           cya.employment.employmentDetails.payrollId match {
             case Some(payrollId) =>
               val filledForm = emptyForm.fill(payrollId)
-              Ok(employerPayrollIdView(filledForm, taxYear, employmentId, Some(payrollId)))
+              Ok(pageView(filledForm, taxYear, employmentId, Some(payrollId)))
             case None =>
-              Ok(employerPayrollIdView(emptyForm, taxYear, employmentId, None))
+              Ok(pageView(emptyForm, taxYear, employmentId, None))
           }
-        case _ => Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
+        case _ => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
       }
     }
   }
@@ -68,7 +67,7 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
         EmployerPayrollIdForm.employerPayrollIdForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => {
             val previousData = data.employment.employmentDetails.payrollId
-            Future.successful(BadRequest(employerPayrollIdView(formWithErrors, taxYear, employmentId, previousData)))
+            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId, previousData)))
           },
           submittedPayrollId => handleSuccessForm(taxYear, employmentId, data, submittedPayrollId)
         )

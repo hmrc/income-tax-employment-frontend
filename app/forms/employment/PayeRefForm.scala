@@ -24,21 +24,18 @@ import play.api.data.Form
 import play.api.data.validation.Constraint
 import play.api.data.validation.Constraints.nonEmpty
 
-object PayeForm extends InputFilters{
+object PayeRefForm extends InputFilters{
 
-  val payeRef: String = "payeRef"
-  val charRegex ="^\\d{3}\\/[A-Za-z0-9 ]{1,10}$"
+  private val payeRef: String = "payeRef"
+  private val charRegex ="^\\d{3}\\/[A-Za-z0-9 ]{1,10}$"
 
-  def notEmpty(isAgent: Boolean): Constraint[String] =
-    nonEmpty("payeRef.errors.empty")
+  private val notEmpty: Constraint[String] = nonEmpty(errorMessage = "payeRef.errors.empty")
 
+  private val validateFormat: Constraint[String] = validateChar(charRegex)("payeRef.errors.wrongFormat")
 
-  val validateFormat: Constraint[String] = validateChar(charRegex)("payeRef.errors.wrongFormat")
-
-  def payeRefForm(isAgent: Boolean): Form[String] = Form(
+  def payeRefForm: Form[String] = Form(
     payeRef -> trimmedText.transform[String](filter, identity).verifying(
-      notEmpty(isAgent) andThen validateFormat
+      notEmpty andThen validateFormat
     )
   )
-
 }

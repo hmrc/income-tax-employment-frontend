@@ -31,7 +31,7 @@ import views.html.employment.EmploymentSummaryView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentSummaryController @Inject()(employmentSummaryView: EmploymentSummaryView,
+class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
                                             employmentSessionService: EmploymentSessionService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
@@ -55,7 +55,7 @@ class EmploymentSummaryController @Inject()(employmentSummaryView: EmploymentSum
 
       employmentData match {
         case Seq() if isInYear && !doExpensesExist => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        case _ => Ok(employmentSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
+        case _ => Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent))
       }
     }
   }

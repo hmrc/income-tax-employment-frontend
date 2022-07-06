@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
-import forms.employment.PayeForm
+import forms.employment.PayeRefForm
 import models.AuthorisationRequest
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
@@ -34,14 +34,15 @@ import views.html.employment.PayeRefView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedAction,
+class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
                                   mcc: MessagesControllerComponents,
-                                  appConfig: AppConfig,
-                                  payeRefView: PayeRefView,
+                                  pageView: PayeRefView,
                                   inYearAction: InYearUtil,
                                   errorHandler: ErrorHandler,
                                   employmentSessionService: EmploymentSessionService,
-                                  employmentService: EmploymentService) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                  employmentService: EmploymentService)
+                                 (implicit appConfig: AppConfig)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
@@ -52,11 +53,11 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
             val cyaRef = cya.employment.employmentDetails.employerRef
             val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorRef = priorEmployment.headOption.flatMap(_.employerRef)
-            lazy val unfilledForm = PayeForm.payeRefForm(request.user.isAgent)
+            lazy val unfilledForm = PayeRefForm.payeRefForm //TODO - unit tests unfilled forms and pre-filled forms conditions
             val form: Form[String] = cyaRef.fold(unfilledForm)(
-              cyaPaye => if (priorRef.exists(_.equals(cyaPaye))) unfilledForm else PayeForm.payeRefForm(request.user.isAgent).fill(cyaPaye))
+              cyaPaye => if (priorRef.exists(_.equals(cyaPaye))) unfilledForm else PayeRefForm.payeRefForm.fill(cyaPaye))
             val employerName = cya.employment.employmentDetails.employerName
-            Future.successful(Ok(payeRefView(form, taxYear, employerName, cyaRef, employmentId)))
+            Future.successful(Ok(pageView(form, taxYear, employerName, cyaRef, employmentId)))
 
           case _ => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -70,11 +71,11 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
     inYearAction.notInYear(taxYear) {
       val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
-        PayeForm.payeRefForm(request.user.isAgent).bindFromRequest().fold(
+        PayeRefForm.payeRefForm.bindFromRequest().fold(
           formWithErrors => {
             val payeRef = data.employment.employmentDetails.employerRef
             val employerName = data.employment.employmentDetails.employerName
-            Future.successful(BadRequest(payeRefView(formWithErrors, taxYear, employerName, payeRef, employmentId)))
+            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, payeRef, employmentId)))
           },
           payeRef => handleSuccessForm(taxYear, employmentId, data, payeRef)
         )

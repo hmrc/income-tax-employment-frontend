@@ -67,7 +67,7 @@ class AssetsFormsProviderSpec extends UnitTest {
     }
   }
 
-  ".livingAccommodationForm" should {
+  ".assetsForm" should {
     "return a form that maps data when data is correct" in {
       underTest.assetsForm(isAgent = anyBoolean).bind(correctBooleanData).errors shouldBe Seq.empty
     }

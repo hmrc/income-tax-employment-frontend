@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentTaxController}
-import forms.AmountForm
+import forms.employment.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
@@ -34,14 +34,16 @@ import views.html.employment.EmployerPayAmountView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
-                                            employerPayAmountView: EmployerPayAmountView,
+class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
+                                            pageView: EmployerPayAmountView,
                                             inYearAction: InYearUtil,
-                                            appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
-                                            errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                            errorHandler: ErrorHandler,
+                                            formsProvider: EmploymentDetailsFormsProvider)
+                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
+
   private implicit val executionContext: ExecutionContext = cc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -53,11 +55,11 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
             val cyaAmount = cya.employment.employmentDetails.taxablePayToDate
             val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
-            lazy val unfilledForm = buildForm(request.user.isAgent)
+            lazy val unfilledForm = formsProvider.employerPayAmountForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(request.user.isAgent).fill(cyaPay))
+              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else formsProvider.employerPayAmountForm(request.user.isAgent).fill(cyaPay))
 
-            Future.successful(Ok(employerPayAmountView(taxYear, form,
+            Future.successful(Ok(pageView(taxYear, form,
               cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
 
           case None => Future.successful(
@@ -70,8 +72,8 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
-        buildForm(request.user.isAgent).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
+        formsProvider.employerPayAmountForm(request.user.isAgent).bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors,
             data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId))),
           amount => handleSuccessForm(taxYear, employmentId, data, amount)
         )
@@ -86,11 +88,6 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
       case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"employerPayAmount.error.empty.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = "employerPayAmount.error.wrongFormat", exceedsMaxAmountKey = "employerPayAmount.error.amountMaxLimit"
-  )
 
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,

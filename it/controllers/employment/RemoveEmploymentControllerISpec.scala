@@ -18,8 +18,6 @@ package controllers.employment
 
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource, HmrcEmploymentSource}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -29,8 +27,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
   private val employmentId: String = "employmentId"
-  private val employerName: String = "maggie"
 
   private val modelWithMultipleSources: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
@@ -46,150 +44,46 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     customerExpenses = None
   )
 
-  object Selectors {
-    val paragraphTextSelector = "#main-content > div > div > form > p"
-    val insetTextSelector = "#main-content > div > div > form > div.govuk-inset-text"
-    val removeEmployerButtonSelector = "#remove-employer-button-id"
-    val cancelLinkSelector = "#cancel-link-id"
-    val formSelector = "#main-content > div > div > form"
-  }
-
-  trait CommonExpectedResults {
-    val expectedTitle: String
-    val expectedErrorTitle: String
-
-    def expectedHeading(employerName: String): String
-
-    val expectedCaption: String
-    val expectedRemoveAccountText: String
-    val expectedLastAccountText: String
-    val expectedRemoveEmployerButton: String
-    val expectedCancelLink: String
-    val infoWeHold: String
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedTitle = "Are you sure you want to remove this employment?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-
-    def expectedHeading(employerName: String): String = s"Are you sure you want to remove $employerName?"
-
-    val expectedCaption = s"PAYE employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText: String = "If you remove this period of employment, you’ll also remove any employment benefits and student loans." +
-      " You must remove any expenses from the separate expenses section."
-    val expectedLastAccountText = "This will also remove any benefits and expenses for this employer."
-    val expectedRemoveEmployerButton = "Remove employer"
-    val infoWeHold = "This is information we hold about you. If the information is incorrect, you need to contact the employer"
-    val expectedCancelLink = "Cancel"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedTitle = "A ydych yn si?r eich bod am dynnuír gyflogaeth hon?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-
-    def expectedHeading(employerName: String): String = s"A ydych yn si?r eich bod am dynnu $employerName?"
-
-    val expectedCaption = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val expectedRemoveAccountText: String = "Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth a benthyciadau myfyrwyr." +
-      " Mae’n rhaid i chi dynnu unrhyw dreuliau o’r adran treuliau ar wahân."
-    val expectedLastAccountText = "Bydd hyn hefyd yn dileu unrhyw fuddiannau a threuliau ar gyfer y cyflogwr hwn."
-    val expectedRemoveEmployerButton = "Dileu’r cyflogwr"
-    val infoWeHold = "Dyma’r wybodaeth sydd gennym amdanoch. Os yw’r wybodaeth yn anghywir, mae angen i chi gysylltu â’r cyflogwr"
-    val expectedCancelLink = "Canslo"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY)
-  )
-
   ".show" should {
-    import Selectors._
-    userScenarios.foreach { user =>
-      val common = user.commonExpectedResults
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the remove employment page for when it isn't the last employment" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
-            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+    "render the remove employment page for when it isn't the last employment" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
+        urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          s"has an OK ($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-
-          titleCheck(common.expectedTitle, user.isWelsh)
-          h1Check(common.expectedHeading(employerName))
-          captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
-          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
-          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
-          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
-        }
-        "render the remove employment page for when it isn't the last employment and removing a hmrc employment" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
-            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "002")), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK ($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-
-          titleCheck(common.expectedTitle, user.isWelsh)
-          h1Check(common.expectedHeading("apple"))
-          captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
-          textOnPageCheck(common.infoWeHold, insetTextSelector)
-          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
-          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
-          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, "002"), formSelector)
-        }
-
-        "render the remove employment page for when it's the last employment" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
-            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          s"has an OK ($OK) status" in {
-            result.status shouldBe OK
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          welshToggleCheck(user.isWelsh)
-
-          titleCheck(common.expectedTitle, user.isWelsh)
-          h1Check(common.expectedHeading(employerName))
-          captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
-          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
-          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
-          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
-        }
+      s"has an OK ($OK) status" in {
+        result.status shouldBe OK
       }
     }
+    "render the remove employment page for when it isn't the last employment and removing a hmrc employment" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
+        urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "002")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK ($OK) status" in {
+        result.status shouldBe OK
+      }
+    }
+
+    "render the remove employment page for when it's the last employment" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
+        urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK ($OK) status" in {
+        result.status shouldBe OK
+      }
+    }
+
+
     "redirect to the overview page" when {
       "it is not end of year" which {
         lazy val result: WSResponse = {

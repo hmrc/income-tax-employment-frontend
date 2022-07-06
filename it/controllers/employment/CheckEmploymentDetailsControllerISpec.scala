@@ -20,8 +20,6 @@ import common.SessionValues
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -51,192 +49,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
   private val employmentId = "employmentId"
 
-  object Selectors {
-    var notificationBanner: String = ".govuk-notification-banner"
-    var bannerEmployerRefSelector: String = "#paye-ref-link"
-    var bannerEmployerStartDateSelector: String = "#employer-start-date-link"
-    var bannerEmploymentDatesSelector: String = "#employment-dates-link"
-    var bannerPayrollIdSelector: String = "#employer-payroll-id-link"
-    var bannerTaxablePayToDateSelector: String = "#employer-pay-amount-link"
-    var bannerTotalTaxToDateSelector: String = "#employment-tax-link"
-    val contentTextSelector = "#main-content > div > div > p"
-    val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-    val continueButtonSelector = "#continue"
-    val continueButtonFormSelector = "#main-content > div > div > form"
-    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
-    val returnToEmployerSelector = "#returnToEmployerBtn"
-
-    def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
-
-    def summaryListRowFieldAmountSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
-
-    def cyaChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a"
-
-    def cyaHiddenChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a > span.govuk-visually-hidden"
-  }
-
-  trait SpecificExpectedResults {
-    val expectedH1: String
-    val expectedTitle: String
-    val expectedContent: String
-    val expectedInsetText: String
-    val changeEmploymentStartDateHiddenText: String => String
-    val changeEmploymentDatesHiddenText: String
-
-    def changeLeftEmployerHiddenText(name: String): String
-
-    val changePAYERefHiddenText: String
-    val changePayReceivedHiddenText: String => String
-    val taxTakenFromPayHiddenText: String
-  }
-
-  trait CommonExpectedResults {
-    val expectedCaption: Int => String
-    val addLinkExpected: String
-    val changeLinkExpected: String
-    val continueButtonText: String
-    val employerNameField1: String
-    val employmentStartDateField1: String
-    val didYouLeaveEmployerField: String
-    val employmentDatesField: String
-    val payeReferenceField2: String
-    val payReceivedField3: String
-    val taxField4: String
-    val payrollIdField: String
-    val payrollIdHiddenText: String
-    val changeEmployerNameHiddenText: String
-    val returnToEmployerText: String
-    val employmentStartDate: String
-    val employmentEndDate: String
-    val employmentDates: String
-    val didYouLeaveNo: String
-    val didYouLeaveYes: String
-    val notProvided: String
-  }
-
-  object ContentValues {
-    val employerName = "maggie"
-    val payeRef = "223/AB12399"
-    val payReceived = "£100"
-    val payReceivedB = "£34,234.50"
-    val taxTakenFromPay = "£200"
-    val taxTakenFromPayB = "£6,782.90"
-    val payrollId = "12345678"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val addLinkExpected = "Add"
-    val changeLinkExpected = "Change"
-    val continueButtonText = "Save and continue"
-    val employerNameField1 = "Employer"
-    val employmentStartDateField1 = "Employment start date"
-    val didYouLeaveEmployerField = "Left employer"
-    val employmentDatesField = "Employment dates"
-    val payeReferenceField2 = "PAYE reference"
-    val payReceivedField3 = "Pay received"
-    val taxField4 = "UK tax taken from pay"
-    val changeEmployerNameHiddenText: String = "Change the name of this employer"
-    val payrollIdField: String = "Payroll ID"
-    val payrollIdHiddenText: String = "Change the payroll ID for this employment"
-    val returnToEmployerText: String = "Return to employer"
-    val employmentStartDate = "21 April 2019"
-    val employmentEndDate = s"11 March ${taxYearEOY - 1}"
-    val employmentDates = s"$employmentStartDate to $employmentEndDate"
-    val didYouLeaveYes = "Yes"
-    val didYouLeaveNo = "No"
-    val notProvided = "Not provided"
-  }
-
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val addLinkExpected = "Ychwanegu"
-    val changeLinkExpected = "Newid"
-    val continueButtonText = "Cadw ac yn eich blaen"
-    val employerNameField1 = "Cyflogwr"
-    val employmentStartDateField1 = "Dyddiad dechrauír gyflogaeth"
-    val didYouLeaveEmployerField = "Wedi gadael y cyflogwr"
-    val employmentDatesField = "Dyddiadau cyflogaeth"
-    val payeReferenceField2 = "Cyfeirnod TWE"
-    val payReceivedField3 = "Tal a gafwyd"
-    val taxField4 = "Treth y DU a dynnwyd oír cyflog"
-    val changeEmployerNameHiddenText: String = "Newidiwch enwír cyflogwr hwn"
-    val payrollIdField: String = "ID y gyflogres"
-    val payrollIdHiddenText: String = "Newidiwch ID y gyflogres am y gyflogaeth hon"
-    val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
-    val employmentStartDate = "21 Ebrill 2019"
-    val employmentEndDate = s"11 Mawrth ${taxYearEOY - 1}"
-    val employmentDates = s"$employmentStartDate i $employmentEndDate"
-    val didYouLeaveYes = "Iawn"
-    val didYouLeaveNo = "Na"
-    val notProvided = "Heb ddarparu"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedH1 = "Check your employment details"
-    val expectedTitle = "Check your employment details"
-    val expectedContent = "Your employment details are based on the information we already hold about you."
-    val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
-    val employeeFieldName7 = "Payments not on your P60"
-    val employeeFieldName8 = "Amount of payments not on your P60"
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your start date for $employerName"
-    val changeEmploymentDatesHiddenText = "Change your employment dates"
-    val changePAYERefHiddenText: String = "Change your PAYE reference number"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay you got from $employerName"
-    val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
-
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if you left $name in the tax year"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1 = "Check your client’s employment details"
-    val expectedTitle = "Check your client’s employment details"
-    val expectedContent = "Your client’s employment details are based on the information we already hold about them."
-    val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your client’s start date for $employerName"
-    val changeEmploymentDatesHiddenText = "Change your client’s employment dates"
-    val changePAYERefHiddenText: String = "Change your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Change the amount of pay your client got from $employerName"
-    val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
-
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if your client left $name in the tax year"
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1 = "Gwiriwch eich manylion cyflogaeth"
-    val expectedTitle = "Gwiriwch eich manylion cyflogaeth"
-    val expectedContent = "Maeích manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
-    val expectedInsetText = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch eich dyddiad dechrau ar gyfer $employerName"
-    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadauích cyflogaeth chi"
-    val changePAYERefHiddenText: String = "Newidiwch eich cyfeirnod TWE"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l a gawsoch o $employerName"
-    val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a daloch"
-
-    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gwnaethoch adael $name yn y flwyddyn dreth"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1 = "Gwiriwch fanylion cyflogaeth eich cleient"
-    val expectedTitle = "Gwiriwch fanylion cyflogaeth eich cleient"
-    val expectedContent = "Mae manylion cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
-    val expectedInsetText = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
-    val employeeFieldName7 = "Taliadau sydd ddim ar P60 eich cleient"
-    val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch ddyddiad dechrau eich cleient ar gyfer $employerName"
-    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadau cyflogaeth eich cleient"
-    val changePAYERefHiddenText: String = "Newidiwch gyfeirnod TWE eich cleient"
-    val changePayReceivedHiddenText: String => String = (employerName: String) => s"Newidiwch swm y t‚l gafodd eich cleient o $employerName"
-    val taxTakenFromPayHiddenText: String = "Newidiwch swm y dreth a dalodd eich cleient"
-
-    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gadawodd eich cleient $name yn y flwyddyn dreth"
-  }
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   object MinModel {
     val miniData: AllEmploymentData = AllEmploymentData(
@@ -355,375 +168,119 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   ".show" when {
-    import Selectors._
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        val specific = user.specificExpectedResults.get
-        val common = user.commonExpectedResults
+    "return page when in year and all the fields are populated" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-        "for end of year when data not submittable" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            val employmentDetails = anEmploymentDetails.copy(employerRef = None, startDate = None, payrollId = None, didYouLeaveQuestion = Some(false), taxablePayToDate = None, totalTaxToDate = None)
-            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          lazy val document = Jsoup.parse(result.body)
+    "for in year with multiple employment sources, return a fully populated page when all fields are populated" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val multipleSources: Seq[HmrcEmploymentSource] = Seq(
+          aHmrcEmploymentSource,
+          aHmrcEmploymentSource.copy(
+            employmentId = "002",
+            employerName = "dave",
+            payrollId = Some("12345693"),
+            startDate = Some("2018-04-18"),
+          ))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleSources))), nino, taxYear)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          implicit def documentSupplier: () => Document = () => document
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
+    "for end of year when data not submittable" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val employmentDetails = anEmploymentDetails.copy(employerRef = None, startDate = None, payrollId = None, didYouLeaveQuestion = Some(false), taxablePayToDate = None, totalTaxToDate = None)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)))
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          "has a Notification banner with links" which {
-            textOnPageCheck(user.commonExpectedResults.payeReferenceField2, Selectors.bannerEmployerRefSelector)
-            textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, Selectors.bannerEmployerStartDateSelector)
-            textOnPageCheck(user.commonExpectedResults.payrollIdField, Selectors.bannerPayrollIdSelector)
-            textOnPageCheck(user.commonExpectedResults.payReceivedField3, Selectors.bannerTaxablePayToDateSelector)
-            textOnPageCheck(user.commonExpectedResults.taxField4, Selectors.bannerTotalTaxToDateSelector)
-          }
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYearEOY))
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(anEmploymentDetails.employerName, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "paye ref")
-          linkCheck(s"${common.addLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "employment start date")
-          linkCheck(s"${common.addLinkExpected} ${specific.changeEmploymentStartDateHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(4), employmentStartDateUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "payroll id")
-          linkCheck(s"${common.addLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(6), "pay received")
-          linkCheck(s"${common.addLinkExpected} ${specific.changePayReceivedHiddenText(anEmploymentDetails.employerName)}", cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(7), "tax taken from pay")
-          linkCheck(s"${common.addLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId))
-        }
+    "for end of year return a fully populated page when cya data exists" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(EmploymentUserData(
+          sessionId,
+          "1234567890",
+          "AA123456A",
+          taxYearEOY,
+          employmentId,
+          isPriorSubmission = true,
+          hasPriorBenefits = true,
+          hasPriorStudentLoans = true,
+          EmploymentCYAModel(
+            anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(didYouLeaveQuestion = Some(true)),
+            None
+          )
+        ))
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-        "for end of year return a fully populated page when cya data exists" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              "1234567890",
-              "AA123456A",
-              taxYearEOY,
-              employmentId,
-              isPriorSubmission = true,
-              hasPriorBenefits = true,
-              hasPriorStudentLoans = true,
-              EmploymentCYAModel(
-                anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(didYouLeaveQuestion = Some(true)),
-                None
-              )
-            ))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          lazy val document = Jsoup.parse(result.body)
+    "for end of year return a fully populated page, with change links, when all the fields are populated" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          implicit def documentSupplier: () => Document = () => document
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
+    "for end of year return a fully populated page, with change links when minimum data is returned" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(MinModel.miniData)), nino, taxYearEOY)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYearEOY))
-          textOnPageCheck(specific.expectedContent, contentTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
 
-        "for in year return a fully populated page when all the fields are populated" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "for end of year return customer employment data if there is both HMRC and customer Employment Data " +
+      "and render page without filtering when minimum data is returned" when {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(CustomerMinModel.miniData)), nino, taxYearEOY)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          "has no Notification banner" in {
-            elementExist(notificationBanner) shouldBe false
-          }
-
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYear))
-          textOnPageCheck(specific.expectedContent, contentTextSelector)
-          textOnPageCheck(specific.expectedInsetText, insetTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-          buttonCheck(user.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
-        }
-
-        "for in year with multiple employment sources, return a fully populated page when all fields are populated" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            val multipleSources: Seq[HmrcEmploymentSource] = Seq(
-              aHmrcEmploymentSource,
-              aHmrcEmploymentSource.copy(
-                employmentId = "002",
-                employerName = "dave",
-                payrollId = Some("12345693"),
-                startDate = Some("2018-04-18"),
-              ))
-            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleSources))), nino, taxYear)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle, user.isWelsh)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(common.expectedCaption(taxYear))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(user.commonExpectedResults.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-          buttonCheck(user.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
-        }
-
-        "for end of year return a fully populated page, with change links, when all the fields are populated" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYearEOY))
-          textOnPageCheck(specific.expectedContent, contentTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(1)))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3),
-            didYouLeaveUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(3)))
-          textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentDatesHiddenText}", cyaChangeLink(4), employmentDatesUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
-          linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(5)))
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText(ContentValues.employerName)}",
-            cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(6)))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(7)))
-        }
-
-        "for end of year return a fully populated page, with change links when minimum data is returned" which {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(MinModel.miniData)), nino, taxYear)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYear))
-          textOnPageCheck(specific.expectedContent, contentTextSelector)
-          textOnPageCheck(specific.expectedInsetText, insetTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-        }
-
-        "for end of year return customer employment data if there is both HMRC and customer Employment Data " +
-          "and render page without filtering when minimum data is returned" when {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(CustomerMinModel.miniData)), nino, taxYearEOY)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYearEOY))
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(1)))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
-          linkCheck(s"${common.addLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3), didYouLeaveUrl(taxYearEOY, employmentId))
-          textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
-          linkCheck(s"${common.addLinkExpected} ${specific.changeEmploymentStartDateHiddenText(ContentValues.employerName)}", cyaChangeLink(4),
-            employmentStartDateUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
-          linkCheck(s"${common.addLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(5)))
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(6))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText(ContentValues.employerName)}",
-            cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(6)))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(7))
-          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(7)))
-
-          buttonCheck(common.continueButtonText, continueButtonSelector)
-          formPostLinkCheck(checkYourDetailsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-        }
-
-        "handle a model with an Invalid date format returned" when {
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(SomeModelWithInvalidDateFormat.invalidData)), nino, taxYear)
-            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          lazy val document = Jsoup.parse(result.body)
-
-          implicit def documentSupplier: () => Document = () => document
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-          titleCheck(specific.expectedTitle, user.isWelsh)
-          h1Check(specific.expectedH1)
-          captionCheck(common.expectedCaption(taxYear))
-          textOnPageCheck(specific.expectedContent, contentTextSelector)
-          textOnPageCheck(specific.expectedInsetText, insetTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "for payee reference")
-          textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "for start date")
-          textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(5), "for payroll")
-          textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-        }
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
 

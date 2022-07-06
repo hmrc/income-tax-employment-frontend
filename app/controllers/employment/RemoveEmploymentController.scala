@@ -32,16 +32,15 @@ import views.html.employment.RemoveEmploymentView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
+class RemoveEmploymentController @Inject()(cc: MessagesControllerComponents,
                                            authAction: AuthorisedAction,
                                            inYearAction: InYearUtil,
-                                           removeEmploymentView: RemoveEmploymentView,
-                                           appConfig: AppConfig,
+                                           pageView: RemoveEmploymentView,
                                            employmentSessionService: EmploymentSessionService,
                                            removeEmploymentService: RemoveEmploymentService,
-                                           errorHandler: ErrorHandler,
-                                           ec: ExecutionContext
-                                          ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                           errorHandler: ErrorHandler)
+                                          (implicit appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -50,7 +49,7 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
           case Some(EmploymentSourceOrigin(source, isCustomerData)) =>
             val employerName = source.employerName
             val isHmrcEmployment = !isCustomerData
-            Ok(removeEmploymentView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment, isHmrcEmployment))
+            Ok(pageView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment, isHmrcEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }

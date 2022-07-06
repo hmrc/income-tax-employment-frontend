@@ -27,6 +27,7 @@ import utils.ViewUtils
 
 import scala.util.Try
 
+//TODO - unit test the form validation and error message keys
 object EmploymentDateForm extends InputFilters {
 
   val startDate = "employmentStartDate"
