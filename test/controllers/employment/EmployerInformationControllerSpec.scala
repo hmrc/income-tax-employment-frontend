@@ -34,15 +34,12 @@ class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSess
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
-  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController()(
-    mockMessagesControllerComponents,
+  private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController(
     authorisedAction,
     view,
     inYearAction,
-    new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled),
     mockEmploymentSessionService,
-    ec
-  )
+  )(mockMessagesControllerComponents, appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   private val employmentId: String = "223/AB12399"
 
@@ -67,7 +64,7 @@ class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSess
 
     "redirect the User to the Overview page when GetEmploymentDataModel is in mongo but " which {
       s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-        val result = controller(isEmploymentEOYEnabled = false).show(taxYearEOY, anEmploymentSource.employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY, anEmploymentSource.employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)

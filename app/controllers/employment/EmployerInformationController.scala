@@ -27,16 +27,14 @@ import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerInformationView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class EmployerInformationController @Inject()(implicit val cc: MessagesControllerComponents,
-                                              authAction: AuthorisedAction,
-                                              employerInformationView: EmployerInformationView,
+class EmployerInformationController @Inject()(authAction: AuthorisedAction,
+                                              pageView: EmployerInformationView,
                                               inYearAction: InYearUtil,
-                                              implicit val appConfig: AppConfig,
-                                              employmentSessionService: EmploymentSessionService,
-                                              implicit val ec: ExecutionContext
-                                             ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                              employmentSessionService: EmploymentSessionService
+                                             )(implicit cc: MessagesControllerComponents, val appConfig: AppConfig)
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     if (!inYearAction.inYear(taxYear) && !appConfig.employmentEOYEnabled) {
@@ -56,7 +54,7 @@ class EmployerInformationController @Inject()(implicit val cc: MessagesControlle
 
             val (name, benefitsIsDefined, studentLoansIsDefined) = (source.employerName, source.employmentBenefits.isDefined,
               studentLoansCheck)
-            Ok(employerInformationView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear, showNotification))
+            Ok(pageView(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear, showNotification))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }

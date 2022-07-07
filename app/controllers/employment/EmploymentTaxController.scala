@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
-import forms.AmountForm
+import forms.employment.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -34,14 +34,15 @@ import views.html.employment.EmploymentTaxView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComponents,
+class EmploymentTaxController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthorisedAction,
-                                        appConfig: AppConfig,
-                                        employmentTaxView: EmploymentTaxView,
+                                        pageView: EmploymentTaxView,
                                         employmentSessionService: EmploymentSessionService,
                                         employmentService: EmploymentService,
                                         inYearAction: InYearUtil,
-                                        errorHandler: ErrorHandler) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                        formsProvider: EmploymentDetailsFormsProvider,
+                                        errorHandler: ErrorHandler)
+                                       (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -54,10 +55,10 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
             val cyaTax = cya.employment.employmentDetails.totalTaxToDate
             val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
-            lazy val unfilledForm = buildForm(request.user.isAgent)
+            lazy val unfilledForm = formsProvider.employmentTaxAmountForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(request.user.isAgent).fill(cyaTaxed))
-            Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
+              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else formsProvider.employmentTaxAmountForm(request.user.isAgent).fill(cyaTaxed))
+            Future.successful(Ok(pageView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
 
           case None => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -72,8 +73,8 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
       val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        buildForm(request.user.isAgent).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
+        formsProvider.employmentTaxAmountForm(request.user.isAgent).bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(pageView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
             formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
           completeForm => handleSuccessForm(taxYear, employmentId, cya, completeForm)
         )
@@ -88,10 +89,4 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
       case Right(_) => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
     }
   }
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"employment.employmentTax.error.noEntry.${if (isAgent) "agent" else "individual"}",
-    wrongFormatKey = "employment.employmentTax.error.format",
-    exceedsMaxAmountKey = "employment.employmentTax.error.max"
-  )
 }

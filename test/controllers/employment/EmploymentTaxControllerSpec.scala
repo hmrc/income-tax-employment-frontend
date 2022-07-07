@@ -19,6 +19,7 @@ package controllers.employment
 import common.SessionValues
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
+import forms.employment.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -38,7 +39,7 @@ class EmploymentTaxControllerSpec extends UnitTest
 
   object Model {
 
-    val employmentSource1: EmploymentDetails = EmploymentDetails(
+    private val employmentSource1: EmploymentDetails = EmploymentDetails(
       "Mishima Zaibatsu",
       employerRef = Some("223/AB12399"),
       startDate = Some("2019-04-21"),
@@ -54,16 +55,16 @@ class EmploymentTaxControllerSpec extends UnitTest
   private lazy val view = app.injector.instanceOf[EmploymentTaxView]
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
-  private lazy val controller = new EmploymentTaxController()(
+  private lazy val controller = new EmploymentTaxController(
     mockMessagesControllerComponents,
     authorisedAction,
-    mockAppConfig,
     view,
     mockEmploymentSessionService,
     mockEmploymentService,
     inYearAction,
-    mockErrorHandler
-  )
+    new EmploymentDetailsFormsProvider(),
+    mockErrorHandler,
+  )(mockAppConfig)
 
   ".show" should {
     "return a result when " which {

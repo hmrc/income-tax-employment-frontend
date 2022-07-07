@@ -36,14 +36,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
-                                          val mcc: MessagesControllerComponents,
-                                          implicit val appConfig: AppConfig,
-                                          employmentDatesView: EmploymentDatesView,
+                                          mcc: MessagesControllerComponents,
+                                          pageView: EmploymentDatesView,
                                           inYearAction: InYearUtil,
                                           errorHandler: ErrorHandler,
-                                          employmentSessionService: EmploymentSessionService,
-                                          implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
-
+                                          employmentSessionService: EmploymentSessionService)
+                                         (implicit appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def datesForm: Form[EmploymentDates] = EmploymentDatesForm.employmentDatesForm
 
@@ -54,12 +53,12 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
           case (startDate, endDate) =>
             val parsedStartDate: Option[LocalDate] = startDate.map(LocalDate.parse(_, localDateTimeFormat))
             val parsedEndDate: Option[LocalDate] = endDate.map(LocalDate.parse(_, localDateTimeFormat))
-            val filledForm: Form[EmploymentDates] = datesForm.fill(
+            val filledForm: Form[EmploymentDates] = datesForm.fill( //TODO - unit tests unfilled forms and pre-filled forms conditions
               EmploymentDates(
                 parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString,
                   localDate.getMonthValue.toString, localDate.getYear.toString)),
                 parsedEndDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
-            Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            Future.successful(Ok(pageView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
             Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
@@ -73,7 +72,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
         val newForm = datesForm.bindFromRequest()
         newForm.copy(errors = EmploymentDatesForm.verifyDates(newForm.get, taxYear, request.user.isAgent)).fold(
           { formWithErrors =>
-            Future.successful(BadRequest(employmentDatesView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           },
           { submittedDate =>
             val cya = data.employment

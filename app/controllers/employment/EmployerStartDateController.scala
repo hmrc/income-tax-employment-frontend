@@ -39,14 +39,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
-                                            val mcc: MessagesControllerComponents,
-                                            implicit val appConfig: AppConfig,
                                             employerStartDateView: EmployerStartDateView,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
-                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                            mcc: MessagesControllerComponents)
+                                           (implicit appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -54,7 +54,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
         data.employment.employmentDetails.startDate match {
           case Some(startDate) =>
             val parsedDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
-            val filledForm: Form[EmploymentDate] = employmentStartDateForm.fill(
+            val filledForm: Form[EmploymentDate] = employmentStartDateForm.fill( //TODO - unit tests unfilled forms and pre-filled forms conditions
               EmploymentDate(parsedDate.getDayOfMonth.toString, parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerStartDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case None =>

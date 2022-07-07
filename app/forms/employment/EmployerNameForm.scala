@@ -20,7 +20,6 @@ import filters.InputFilters
 import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
-import models.AuthorisationRequest
 import play.api.data.Form
 import play.api.data.validation.Constraint
 import play.api.data.validation.Constraints.nonEmpty

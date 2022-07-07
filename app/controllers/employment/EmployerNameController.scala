@@ -35,13 +35,12 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
-                                       val mcc: MessagesControllerComponents,
-                                       implicit val appConfig: AppConfig,
-                                       employerNameView: EmployerNameView,
+                                       pageView: EmployerNameView,
                                        inYearAction: InYearUtil,
                                        errorHandler: ErrorHandler,
-                                       employmentSessionService: EmploymentSessionService,
-                                       implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                       employmentSessionService: EmploymentSessionService)
+                                       (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -56,10 +55,10 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
       case Some(data) =>
         val employerName = data.employment.employmentDetails.employerName
         val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent).fill(employerName)
-        Future.successful(Ok(employerNameView(prefilledForm, taxYear, employmentId)))
+        Future.successful(Ok(pageView(prefilledForm, taxYear, employmentId)))
       case None =>
         val form: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent)
-        Future.successful(Ok(employerNameView(form, taxYear, employmentId)))
+        Future.successful(Ok(pageView(form, taxYear, employmentId)))
     }
   }
 
@@ -67,7 +66,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       val form: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent)
       form.bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(employerNameView(formWithErrors, taxYear, employmentId))),
+        formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
         submittedName => handleSuccessForm(taxYear, employmentId, submittedName)
       )
     }

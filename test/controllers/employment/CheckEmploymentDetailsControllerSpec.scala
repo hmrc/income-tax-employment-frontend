@@ -42,17 +42,13 @@ class CheckEmploymentDetailsControllerSpec extends UnitTest
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
-  private def controller(mimic: Boolean = false, isEmploymentEOYEnabled: Boolean = true) = new CheckEmploymentDetailsController()(
-    mockMessagesControllerComponents,
+  private def controller(mimic: Boolean = false, isEmploymentEOYEnabled: Boolean = true) = new CheckEmploymentDetailsController(
     view,
-    authorisedAction,
     inYearAction,
-    new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled),
     mockEmploymentSessionService,
     mockCheckEmploymentDetailsService,
-    ec,
     mockErrorHandler
-  )
+  )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), authorisedAction)
 
   private val employmentId = "223AB12399"
 

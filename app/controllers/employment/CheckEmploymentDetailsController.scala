@@ -38,15 +38,14 @@ import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                 employmentDetailsView: CheckEmploymentDetailsView,
-                                                 authorisedAction: AuthorisedAction,
+class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetailsView,
                                                  inYearAction: InYearUtil,
-                                                 appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
                                                  checkEmploymentDetailsService: CheckEmploymentDetailsService,
-                                                 ec: ExecutionContext,
-                                                 errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper with Logging {
+                                                 errorHandler: ErrorHandler)
+                                                (implicit cc: MessagesControllerComponents, ec: ExecutionContext,
+                                                 appConf: AppConfig, authAction: AuthorisedAction)
+  extends FrontendController(cc) with I18nSupport with SessionHelper with Logging {
   //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
@@ -55,15 +54,15 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-            Ok(employmentDetailsView(viewModel, taxYear, isInYear = true, showNotification = false))
+            Ok(pageView(viewModel, taxYear, isInYear = true, showNotification = false))
           case None =>
             logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
               s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
-            Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
-    } else if (!appConfig.employmentEOYEnabled) {
-      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    } else if (!appConf.employmentEOYEnabled) {
+      Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
@@ -75,16 +74,16 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
                 val showNotification = !cya.employment.employmentDetails.isSubmittable
-                Ok(employmentDetailsView(viewModel, taxYear, isInYear = false, showNotification))
+                Ok(pageView(viewModel, taxYear, isInYear = false, showNotification))
               }
               case None => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                Ok(employmentDetailsView(viewModel, taxYear, isInYear = false, showNotification = false))
+                Ok(pageView(viewModel, taxYear, isInYear = false, showNotification = false))
               }
             }
           }
-          case None => prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
+          case None => prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
             saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
           }
         }
@@ -94,9 +93,9 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
   //scalastyle:on
 
   //scalastyle:off
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    if (!inYearAction.inYear(taxYear) && !appConfig.employmentEOYEnabled) {
-      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
+    if (!inYearAction.inYear(taxYear) && !appConf.employmentEOYEnabled) {
+      Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
         case Left(result) => Future.successful(result)
@@ -130,7 +129,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConfig.nrsEnabled) {
+    if (appConf.nrsEnabled) {
       checkEmploymentDetailsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
     }
   }
@@ -153,7 +152,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
 
           logger.info(s"$log User has created a new employment. Continuing to benefits section.")
-          if (appConfig.mimicEmploymentAPICalls) {
+          if (appConf.mimicEmploymentAPICalls) {
             logger.info(s"$log [mimicEmploymentAPICalls] Saving expected CYA data.")
             employmentSessionService.createOrUpdateSessionData(
               request.user, taxYear, employmentId, cya.employment, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false
@@ -183,12 +182,12 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
         val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
         checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
         val showNotification = !source.employmentDetailsSubmittable
-        Ok(employmentDetailsView(viewModel, taxYear, isInYear = false, showNotification))
+        Ok(pageView(viewModel, taxYear, isInYear = false, showNotification))
       })
       case None =>
         logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
           s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
-        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        Future(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
 }
