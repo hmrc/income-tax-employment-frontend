@@ -19,7 +19,8 @@ package controllers.employment
 import actions.ActionsProvider
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{EmployerNameController, SelectEmployerController}
+import controllers.details.routes.EmployerNameController
+import controllers.employment.routes.SelectEmployerController
 import models.employment.AllEmploymentData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

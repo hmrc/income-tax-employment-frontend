@@ -32,29 +32,29 @@ POST        /:taxYear/expenses/check-employment-expenses                        
 
 #################       Employment details pages      ##############################
 
-GET         /:taxYear/employer-name                                                  controllers.employment.EmployerNameController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employer-name                                                  controllers.employment.EmployerNameController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/employer-name                                          controllers.details.EmployerNameController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/employer-name                                          controllers.details.EmployerNameController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/employer-paye-reference                                        controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employer-paye-reference                                        controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/employer-paye-reference                                controllers.details.PayeRefController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/employer-paye-reference                                controllers.details.PayeRefController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/employment-start-date                                          controllers.employment.EmployerStartDateController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employment-start-date                                          controllers.employment.EmployerStartDateController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/employment-start-date                                  controllers.details.EmployerStartDateController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/employment-start-date                                  controllers.details.EmployerStartDateController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/leave-employer                                                 controllers.employment.DidYouLeaveEmployerController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/leave-employer                                                 controllers.employment.DidYouLeaveEmployerController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/leave-employer                                         controllers.details.DidYouLeaveEmployerController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/leave-employer                                         controllers.details.DidYouLeaveEmployerController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/payroll-id                                                     controllers.employment.EmployerPayrollIdController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/payroll-id                                             controllers.details.EmployerPayrollIdController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/payroll-id                                             controllers.details.EmployerPayrollIdController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/how-much-pay                                                   controllers.employment.EmployerPayAmountController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/how-much-pay                                                   controllers.employment.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/how-much-pay                                           controllers.details.EmployerPayAmountController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/how-much-pay                                           controllers.details.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/uk-tax                                                         controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/uk-tax                                                         controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/uk-tax                                                 controllers.details.EmploymentTaxController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/uk-tax                                                 controllers.details.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/employment-dates                                               controllers.employment.EmploymentDatesController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employment-dates                                               controllers.employment.EmploymentDatesController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/details/employment-dates                                       controllers.details.EmploymentDatesController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/employment-dates                                       controllers.details.EmploymentDatesController.submit(taxYear: Int, employmentId: String)
 
 #################       Employment management pages      ###########################
 

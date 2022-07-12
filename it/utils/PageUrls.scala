@@ -57,15 +57,15 @@ object PageUrls extends IntegrationTest {
 
 //  *****************       Employment details pages      ******************************
 
-  def employerNameUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-name?employmentId=$employmentId"
-  def employerNameUrlWithoutEmploymentId(taxYear: Int): String = s"$appUrl/$taxYear/employer-name?employmentId="
-  def employerPayeReferenceUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-paye-reference?employmentId=$employmentId"
-  def employmentStartDateUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId"
-  def didYouLeaveUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/leave-employer?employmentId=$employmentId"
-  def payrollIdUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/payroll-id?employmentId=$employmentId"
-  def howMuchPayUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
-  def howMuchTaxUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/uk-tax?employmentId=$employmentId"
-  def employmentDatesUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employment-dates?employmentId=$employmentId"
+  def employerNameUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/employer-name?employmentId=$employmentId"
+  def employerNameUrlWithoutEmploymentId(taxYear: Int): String = s"$appUrl/$taxYear/details/employer-name?employmentId="
+  def employerPayeReferenceUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/employer-paye-reference?employmentId=$employmentId"
+  def employmentStartDateUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/employment-start-date?employmentId=$employmentId"
+  def didYouLeaveUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/leave-employer?employmentId=$employmentId"
+  def payrollIdUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/payroll-id?employmentId=$employmentId"
+  def howMuchPayUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/how-much-pay?employmentId=$employmentId"
+  def howMuchTaxUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/uk-tax?employmentId=$employmentId"
+  def employmentDatesUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/employment-dates?employmentId=$employmentId"
   def summaryAddNewEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment-summary/add-employment"
 
 //  *****************       Employment management pages      ***************************

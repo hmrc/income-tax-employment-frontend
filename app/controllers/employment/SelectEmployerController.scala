@@ -19,7 +19,7 @@ package controllers.employment
 import actions.ActionsProvider
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.EmployerNameController
+import controllers.details.routes.EmployerNameController
 import forms.employment.SelectEmployerForm
 import models.UserPriorDataRequest
 import models.employment.EmploymentSource
@@ -64,7 +64,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
       val id = UUID.randomUUID
       Redirect(EmployerNameController.show(taxYear, id)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id)
     } { id =>
-      Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
+      Redirect(controllers.details.routes.EmployerNameController.show(taxYear, id))
     }
   }
 

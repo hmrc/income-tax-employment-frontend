@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@import controllers.employment.routes.EmployerPayAmountController
-@import controllers.employment.routes.EmployerPayrollIdController
-@import controllers.employment.routes.EmployerStartDateController
-@import controllers.employment.routes.EmploymentDatesController
-@import controllers.employment.routes.EmploymentTaxController
-@import controllers.employment.routes.PayeRefController
+@import controllers.details.routes.EmployerPayAmountController
+@import controllers.details.routes.EmployerPayrollIdController
+@import controllers.details.routes.EmployerStartDateController
+@import controllers.details.routes.EmploymentDatesController
+@import controllers.details.routes.EmploymentTaxController
+@import controllers.details.routes.PayeRefController
 @import models.employment.EmploymentDetailsViewModel
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
@@ -101,7 +101,7 @@
         val employerName = EmploymentDataForView(
             messages("common.employer"),
             Some(employmentDetails.employerName),
-            controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
+            controllers.details.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
@@ -115,7 +115,7 @@
         val didYouLeave = EmploymentDataForView(
             messages(s"$msgKeyGeneric.didYouLeave"),
             Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-            controllers.employment.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
+            controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent), employmentDetails.employerName)
         )
 

@@ -25,6 +25,7 @@ import controllers.benefits.reimbursed.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
+import controllers.details.routes._
 import controllers.employment.routes._
 import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}

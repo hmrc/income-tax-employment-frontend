@@ -93,7 +93,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithMileageNo, isPriorSubmission = false, hasPriorBenefits = false))
-        val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
+        val inYearUrl = s"$appUrl/$taxYear/details/how-much-pay?employmentId=$employmentId"
         urlGet(inYearUrl, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
