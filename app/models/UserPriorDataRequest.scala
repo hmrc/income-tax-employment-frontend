@@ -19,12 +19,13 @@ package models
 import models.employment.AllEmploymentData
 import play.api.mvc.{Request, WrappedRequest}
 
+// TODO: Check how to remove one of those classes
 case class UserPriorDataRequest[T](employmentPriorData: AllEmploymentData,
                                    user: User,
                                    request: Request[T]
-                                  ) extends WrappedRequest[T](request) with CommonAuthorisationRequest
+                                  ) extends WrappedRequest[T](request)
 
 case class OptionalUserPriorDataRequest[T](employmentPriorData: Option[AllEmploymentData],
                                            user: User,
                                            request: Request[T]
-                                          ) extends WrappedRequest[T](request) with CommonAuthorisationRequest
+                                          ) extends WrappedRequest[T](request)

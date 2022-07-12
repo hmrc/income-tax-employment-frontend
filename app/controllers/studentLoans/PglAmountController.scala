@@ -18,11 +18,10 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
+import forms.FormUtils
 import forms.studentLoans.StudentLoansFormsProvider
-import forms.{AmountForm, FormUtils}
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -47,7 +46,7 @@ class PglAmountController @Inject()(mcc: MessagesControllerComponents,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataOld(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
           optionCyaData match {

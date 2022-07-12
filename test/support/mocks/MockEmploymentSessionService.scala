@@ -21,7 +21,7 @@ import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models._
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, CreateUpdateEmploymentRequestError}
 import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
-import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
+import models.mongo._
 import org.scalamock.handlers._
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
@@ -78,16 +78,25 @@ trait MockEmploymentSessionService extends MockFactory {
       .anyNumberOfTimes()
   }
 
-  def mockClear(response: Either[Unit, Unit] = Right(()), clearCya: Boolean = true): CallHandler6[User, Int, String, Boolean, HeaderCarrier, CommonAuthorisationRequest, Future[Either[Unit, Unit]]] = {
-    (mockEmploymentSessionService.clear(_: User, _: Int, _:String, _:Boolean)(_: HeaderCarrier, _:CommonAuthorisationRequest))
-      .expects(*, *, *, clearCya, *, *)
+  def mockClear(response: Either[Unit, Unit] = Right(()), clearCya: Boolean = true): CallHandler5[User, Int, String, Boolean, HeaderCarrier, Future[Either[Unit, Unit]]] = {
+    (mockEmploymentSessionService.clear(_: User, _: Int, _: String, _: Boolean)(_: HeaderCarrier))
+      .expects(*, *, *, clearCya, *)
       .returns(Future.successful(response))
   }
 
-  def mockGetSessionData(taxYear: Int, employmentId: String, result: Either[Result, Option[EmploymentUserData]])
-                              (implicit executionContext: ExecutionContext): CallHandler3[Int, String, AuthorisationRequest[_],
+  def mockGetSessionData(taxYear: Int,
+                         employmentId: String,
+                         user: User,
+                         result: Either[DatabaseError, Option[EmploymentUserData]]): CallHandler3[Int, String, User, Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
+    (mockEmploymentSessionService.getSessionData(_: Int, _: String, _: User))
+      .expects(taxYear, employmentId, user)
+      .returns(Future.successful(result))
+  }
+
+  def mockGetSessionDataOld(taxYear: Int, employmentId: String, result: Either[Result, Option[EmploymentUserData]])
+                           (implicit executionContext: ExecutionContext): CallHandler3[Int, String, AuthorisationRequest[_],
     Future[Either[Result, Option[EmploymentUserData]]]] = {
-    (mockEmploymentSessionService.getSessionData(_: Int, _: String)(_: AuthorisationRequest[_]))
+    (mockEmploymentSessionService.getSessionDataOld(_: Int, _: String)(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *)
       .returns(Future.successful(result))
   }

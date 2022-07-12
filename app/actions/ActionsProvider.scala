@@ -17,91 +17,50 @@
 package actions
 
 import config.{AppConfig, ErrorHandler}
-import javax.inject.Inject
-import models.{AuthorisationRequest, IncomeTaxUserData, OptionalUserPriorDataRequest, UserPriorDataRequest, UserSessionDataRequest}
+import models._
+import models.employment.EmploymentType
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import utils.InYearUtil
+import utils.{InYearUtil, RedirectsMatcherUtils}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-
 
 class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 employmentSessionService: EmploymentSessionService,
                                 errorHandler: ErrorHandler,
-                                inYearUtil: InYearUtil
-                               )(implicit ec: ExecutionContext, appConfig: AppConfig) {
+                                inYearUtil: InYearUtil,
+                                redirectsMatcherUtils: RedirectsMatcherUtils,
+                                appConfig: AppConfig
+                               )(implicit ec: ExecutionContext) {
 
-  def inYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] =
+  def endOfYearWithSessionData(taxYear: Int,
+                               employmentId: String,
+                               employmentType: EmploymentType,
+                               controllerName: String): ActionBuilder[UserSessionDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear))
-      .andThen(inYearActionBuilder(taxYear))
+      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
+      .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
+      .andThen(UserSessionDataRequestRefinerAction(taxYear, employmentId, employmentType, employmentSessionService, errorHandler, appConfig))
+      .andThen(RedirectsFilterAction(redirectsMatcherUtils, controllerName, taxYear, employmentId))
 
-  def notInYear(taxYear: Int): ActionBuilder[AuthorisationRequest, AnyContent] =
-    authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear))
-      .andThen(notInYearActionBuilder(taxYear))
-
-  def notInYearWithSessionData(taxYear: Int, employmentId: String): ActionBuilder[UserSessionDataRequest, AnyContent] =
-    authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear))
-      .andThen(notInYearActionBuilder(taxYear))
-      .andThen(employmentUserDataAction(taxYear, employmentId))
-
+  // TODO: Refactor
   def notInYearWithPriorData(taxYear: Int, overrideRedirect: Option[Result] = None): ActionBuilder[UserPriorDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear))
-      .andThen(notInYearActionBuilder(taxYear))
+      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
+      .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
       .andThen(employmentPriorDataAction(taxYear, overrideRedirect))
 
+  // TODO: Refactor
   def authenticatedPriorDataAction(taxYear: Int): ActionBuilder[OptionalUserPriorDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear))
+      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
       .andThen(optionalEmploymentPriorDataAction(taxYear))
 
-  private def notInYearActionBuilder(taxYear: Int): ActionFilter[AuthorisationRequest] = new ActionFilter[AuthorisationRequest] {
-    override protected def executionContext: ExecutionContext = ec
-
-    override protected def filter[A](request: AuthorisationRequest[A]): Future[Option[Result]] = Future.successful {
-      if (inYearUtil.inYear(taxYear) || !appConfig.employmentEOYEnabled) {
-        Some(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-      } else {
-        None
-      }
-    }
-  }
-
-  private def inYearActionBuilder(taxYear: Int): ActionFilter[AuthorisationRequest] = new ActionFilter[AuthorisationRequest] {
-    override protected def executionContext: ExecutionContext = ec
-
-    override protected def filter[A](request: AuthorisationRequest[A]): Future[Option[Result]] = Future.successful {
-      if (!inYearUtil.inYear(taxYear)) {
-        Some(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-      } else {
-        None
-      }
-    }
-  }
-
-  private def employmentUserDataAction(taxYear: Int, employmentId: String)
-                                      (implicit ec: ExecutionContext): ActionRefiner[AuthorisationRequest, UserSessionDataRequest] = {
-    new ActionRefiner[AuthorisationRequest, UserSessionDataRequest] {
-      override protected def executionContext: ExecutionContext = ec
-
-      override protected def refine[A](input: AuthorisationRequest[A]): Future[Either[Result, UserSessionDataRequest[A]]] = {
-
-        employmentSessionService.getSessionData(taxYear, employmentId)(input).map {
-          case Left(_) => Left(errorHandler.internalServerError()(input))
-          case Right(None) => Left(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          case Right(Some(employmentUserData)) => Right(UserSessionDataRequest(employmentUserData, input.user, input.request))
-        }
-      }
-    }
-  }
-
+  // TODO: Refactor
   private def employmentPriorDataAction(taxYear: Int, overrideRedirect: Option[Result])
                                        (implicit ec: ExecutionContext): ActionRefiner[AuthorisationRequest, UserPriorDataRequest] = {
     new ActionRefiner[AuthorisationRequest, UserPriorDataRequest] {
@@ -120,6 +79,7 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
     }
   }
 
+  // TODO: Refactor
   private def optionalEmploymentPriorDataAction(taxYear: Int)
                                                (implicit ec: ExecutionContext): ActionRefiner[AuthorisationRequest, OptionalUserPriorDataRequest] = {
     new ActionRefiner[AuthorisationRequest, OptionalUserPriorDataRequest] {

@@ -16,7 +16,9 @@
 
 package controllers.employment
 
+import actions.ActionsProvider
 import common.SessionValues
+import config.AppConfig
 import controllers.employment.routes.{EmployerNameController, EmploymentSummaryController}
 import forms.employment.EmployerNameForm.employerName
 import forms.employment.SelectEmployerForm
@@ -27,8 +29,8 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockActionsProvider, MockEmploymentSessionService, MockErrorHandler, MockUnignoreEmploymentService}
-import utils.UnitTest
+import support.mocks._
+import utils.{InYearUtil, UnitTest}
 import views.html.employment.SelectEmployerView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,13 +39,25 @@ class SelectEmployerControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockUnignoreEmploymentService
   with MockErrorHandler
-  with MockActionsProvider {
+  with MockActionsProvider
+  with MockRedirectsMatcherUtils {
 
   private lazy val view: SelectEmployerView = app.injector.instanceOf[SelectEmployerView]
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+  private val actionsProvider = {
+    val mockAppConfig: AppConfig = new MockAppConfig().config()
+    new ActionsProvider(
+      mockAuthorisedAction,
+      mockEmploymentSessionService,
+      mockErrorHandler,
+      new InYearUtil()(mockAppConfig),
+      mockRedirectsMatcherUtils,
+      mockAppConfig
+    )
+  }
 
   private lazy val controller = new SelectEmployerController(
-    mockActionsProvider,
+    actionsProvider,
     view,
     mockUnignoreEmploymentService,
     mockEmploymentSessionService,
@@ -160,7 +174,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(Left(()))
-        mockInternalServerError
+        mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
@@ -177,7 +191,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(Left(()), clearCya = false)
-        mockInternalServerError
+        mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)

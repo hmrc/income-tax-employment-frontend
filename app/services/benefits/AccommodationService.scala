@@ -16,22 +16,22 @@
 
 package services.benefits
 
-import javax.inject.Inject
 import models.User
 import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccommodationService @Inject()(employmentSessionService: EmploymentSessionService,
                                      implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(user: User,
-                            taxYear: Int,
-                            employmentId: String,
-                            originalEmploymentUserData: EmploymentUserData,
-                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
+  def saveSectionQuestion(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val accommodationRelocation = cya.employmentBenefits.flatMap(_.accommodationRelocationModel)

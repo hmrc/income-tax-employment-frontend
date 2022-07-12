@@ -36,9 +36,10 @@ import play.api.mvc.{Call, Result}
 
 import scala.concurrent.Future
 
+// TODO: This should have been a class to allow for easy testing. This implementation is more a utils than a service.
+// Corresponding serive is created, i.e. RedirectsService. All methods should be moved there.
 //scalastyle:off
 object RedirectService extends Logging {
-
   //ALL PAGES
   def commonBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     val benefitsReceived = cya.employmentBenefits.map(_.isBenefitsReceived)
@@ -150,9 +151,9 @@ object RedirectService extends Logging {
   }
 
   def accommodationRelocationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    commonBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel()).isFinished(taxYear, employmentId).map(ConditionalRedirect(_))
-    ).flatten
+    val carVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
+    commonBenefitsRedirects(cya, taxYear, employmentId) ++
+      Seq(carVanFuelModel.isFinished(taxYear, employmentId).map(ConditionalRedirect(_))).flatten
   }
 
   //ALL ACCOMMODATION PAGES
@@ -706,9 +707,7 @@ object RedirectService extends Logging {
   def redirectBasedOnCurrentAnswers(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType)
                                    (cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect])
                                    (block: EmploymentUserData => Future[Result]): Future[Result] = {
-    val redirect = calculateRedirect(taxYear, employmentId, data, employmentType, cyaConditions)
-
-    redirect match {
+    calculateRedirect(taxYear, employmentId, data, employmentType, cyaConditions) match {
       case Left(redirect) => Future.successful(redirect)
       case Right(cya) => block(cya)
     }
@@ -718,9 +717,7 @@ object RedirectService extends Logging {
                                 cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect]): Either[Result, EmploymentUserData] = {
     data match {
       case Some(cya) =>
-
         val possibleRedirects = cyaConditions(cya.employment)
-
         val redirect = possibleRedirects.collectFirst {
           case ConditionalRedirect(condition, result, Some(hasPriorBenefits)) if condition && hasPriorBenefits == cya.hasPriorBenefits => Redirect(result)
           case ConditionalRedirect(condition, result, None) if condition => Redirect(result)

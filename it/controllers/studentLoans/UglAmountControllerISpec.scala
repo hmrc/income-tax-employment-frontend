@@ -28,7 +28,8 @@ import play.api.test.Helpers.route
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithStudentLoans
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{fullUrl, pglAmountUrl, studentLoansCyaPage, studentLoansUglAmountUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -68,7 +69,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             studentLoans = Some(StudentLoansCYAModel(
               uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
           )))
-        insertCyaData(anEmploymentUserDataWithStudentLoans(aStudentLoans.toStudentLoansCYAModel()))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(studentLoans = Some(aStudentLoans.toStudentLoansCYAModel()))))
         urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
       result.status shouldBe OK

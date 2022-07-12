@@ -16,10 +16,27 @@
 
 package support.mocks
 
+import models.User
+import models.mongo.EmploymentUserData
+import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import services.benefits.AccommodationService
+
+import scala.concurrent.Future
 
 trait MockAccommodationService extends MockFactory {
 
   protected val mockAccommodationService: AccommodationService = mock[AccommodationService]
+
+  def mockSaveSectionQuestion(user: User,
+                              taxYear: Int,
+                              employmentId: String,
+                              originalEmploymentUserData: EmploymentUserData,
+                              questionValue: Boolean,
+                              result: Either[Unit, EmploymentUserData]
+                             ): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAccommodationService.saveSectionQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
 }

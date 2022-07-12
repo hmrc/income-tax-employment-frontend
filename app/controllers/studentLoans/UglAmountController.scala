@@ -46,7 +46,7 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataOld(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
           optionCyaData match {

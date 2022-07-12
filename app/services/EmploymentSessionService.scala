@@ -24,7 +24,7 @@ import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
 import models.mongo._
-import models.{AuthorisationRequest, CommonAuthorisationRequest, IncomeTaxUserData, User}
+import models.{AuthorisationRequest, IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
@@ -84,8 +84,15 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def getSessionData(taxYear: Int, employmentId: String)
-                    (implicit request: AuthorisationRequest[_]): Future[Either[Result, Option[EmploymentUserData]]] = {
+  def getSessionData(taxYear: Int,
+                     employmentId: String,
+                     user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
+    employmentUserDataRepository.find(taxYear, employmentId, user)
+  }
+
+  @deprecated("use taxYear: Int, employmentId: String, user: User instead")
+  def getSessionDataOld(taxYear: Int, employmentId: String)
+                       (implicit request: AuthorisationRequest[_]): Future[Either[Result, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId, request.user).map {
       case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       case Right(value) => Right(value)
@@ -402,7 +409,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                   (block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
                   (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
-      optionalCya <- getSessionData(taxYear, employmentId)
+      optionalCya <- getSessionDataOld(taxYear, employmentId)
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
@@ -428,7 +435,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
 
     val result = for {
-      optionalCya <- getSessionData(taxYear, employmentId)
+      optionalCya <- getSessionDataOld(taxYear, employmentId)
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
@@ -537,8 +544,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def clear(user: User, taxYear: Int, employmentId: String, clearCYA: Boolean = true)
-           (implicit hc: HeaderCarrier, request: CommonAuthorisationRequest): Future[Either[Unit, Unit]] = {
-    incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).flatMap {
+           (implicit hc: HeaderCarrier): Future[Either[Unit, Unit]] = {
+    incomeSourceConnector.put(taxYear, user.nino)(hc.withExtraHeaders("mtditid" -> user.mtditid)).flatMap {
       case Left(_) => Future.successful(Left(()))
       case _ =>
         if (clearCYA) {

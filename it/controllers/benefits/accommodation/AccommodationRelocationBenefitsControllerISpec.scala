@@ -19,14 +19,13 @@ package controllers.benefits.accommodation
 import forms.YesNoForm
 import models.benefits.AccommodationRelocationModel
 import play.api.http.HeaderNames
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, fullUrl, livingAccommodationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -46,21 +45,6 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
 
       result.status shouldBe OK
-    }
-
-    "Redirect to Check Employment Benefits page" when {
-      "there is in-session data but user has no benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
-          urlGet(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-        s"has an SEE_OTHER($SEE_OTHER) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-        }
-      }
     }
   }
 
@@ -102,8 +86,8 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
     }
 
-    "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
-      lazy val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
+    "Return BAD_REQUEST when form validation fails" which {
+      lazy val form = Map(YesNoForm.yesNo -> "")
       lazy val result = {
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
@@ -113,13 +97,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
 
       "has an SEE_OTHER(303) status and redirects to living accommodation page" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      "updates only accommodationRelocationQuestion to yes" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).get shouldBe AccommodationRelocationModel(Some(true))
+        result.status shouldBe BAD_REQUEST
       }
     }
   }

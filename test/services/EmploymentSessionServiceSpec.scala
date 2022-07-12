@@ -30,6 +30,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
@@ -217,8 +218,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       await(response) shouldBe Right((None, anEmploymentUserData))
     }
-    "submit data and then clear the database and perform audits" in {
 
+    "submit data and then clear the database and perform audits" in {
       def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest, prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
         logger.info("Performing fake audits")
       }
@@ -340,7 +341,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return an internal server error if the CYA find failed" in {
-      mockFind(taxYear, "employmentId", Left(DataNotFound))
+      mockFind(taxYear, "employmentId", Left(DataNotFoundError))
       mockFindNoContent(nino, taxYear)
 
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
@@ -376,7 +377,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return an internal server error if the CYA find failed" in {
-      mockFind(taxYear, "employmentId", Left(DataNotFound))
+      mockFind(taxYear, "employmentId", Left(DataNotFoundError))
       mockFindNoContent(nino, taxYear)
 
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
@@ -404,7 +405,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return an internal server error if the CYA find failed" in {
-      mockFind(taxYear, "employmentId", Left(DataNotFound))
+      mockFind(taxYear, "employmentId", Left(DataNotFoundError))
       mockFindNoContent(nino, taxYear)
 
       val response = underTest.getAndHandle(taxYear, "employmentId")((_, _) => Future(Ok))
@@ -424,7 +425,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return an internal server error if the CYA find failed" in {
-      mockFind(taxYear, user, Left(DataNotFound))
+      mockFind(taxYear, user, Left(DataNotFoundError))
       mockFindNoContent(nino, taxYear)
 
       val response = underTest.getAndHandleExpenses(taxYear)((_, _) => Future(Ok))
@@ -1253,7 +1254,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         None
       )
 
-      mockCreateOrUpdate(employmentData, Left(DataNotUpdated))
+      mockCreateOrUpdate(employmentData, Left(DataNotUpdatedError))
 
       val response = underTest.createOrUpdateSessionData(user = user, taxYear = taxYear, employmentId = "employmentId", cyaModel = cya, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true)(Redirect("400"))(Redirect("303"))
 
@@ -1297,7 +1298,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         testClock.now()
       )
 
-      mockCreateOrUpdate(expected, Left(DataNotUpdated))
+      mockCreateOrUpdate(expected, Left(DataNotUpdatedError))
 
       val response = underTest.createOrUpdateEmploymentUserData(user, taxYear, "employmentId", expected, anEmploymentCYAModel)
 
@@ -1338,7 +1339,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         Redirect("400")
       }
 
-      mockCreateOrUpdateExpenses(expensesUserData, Left(DataNotUpdated))
+      mockCreateOrUpdateExpenses(expensesUserData, Left(DataNotUpdatedError))
 
       val response = underTest.createOrUpdateExpensesSessionData(anExpensesCYAModel, taxYear = taxYear,
         isPriorSubmission = true, hasPriorExpenses = true, user)(onFailBlock)(Redirect("303"))
@@ -1380,7 +1381,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         testClock.now()
       )
 
-      mockCreateOrUpdateExpenses(expected, Left(DataNotUpdated))
+      mockCreateOrUpdateExpenses(expected, Left(DataNotUpdatedError))
 
       val response = underTest.createOrUpdateExpensesUserData(user, taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
 
@@ -1419,7 +1420,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return internal server error when DatabaseError" in {
-      mockFind(taxYear, "employmentId", Left(DataNotUpdated))
+      mockFind(taxYear, "employmentId", Left(DataNotUpdatedError))
 
       val response = underTest.getSessionDataAndReturnResult(taxYear, "employmentId")() {
         _ => Future.successful(anyResult)
@@ -1477,10 +1478,21 @@ class EmploymentSessionServiceSpec extends UnitTest
   }
 
   ".getSessionData" should {
-    "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Left(DataNotFound))
+    "delegate to employmentUserDataRepository and return the result" in {
+      val anyTaxYear = 2022
+      val result = Right(Some(anEmploymentUserData))
 
-      val response = await(underTest.getSessionData(taxYear, "some-employment-id"))
+      mockFind(anyTaxYear, "any-employment-id", aUser, result)
+
+      underTest.getSessionData(anyTaxYear, employmentId = "any-employment-id", aUser)
+    }
+  }
+
+  ".getSessionDataOld" should {
+    "return the Internal server error result when DatabaseError" in {
+      mockFind(taxYear, "some-employment-id", Left(DataNotFoundError))
+
+      val response = await(underTest.getSessionDataOld(taxYear, "some-employment-id"))
 
       status(Future.successful(response.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
@@ -1488,7 +1500,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".getExpensesSessionDataResult" should {
     "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, user, Left(DataNotUpdated))
+      mockFind(taxYear, user, Left(DataNotUpdatedError))
 
       val response = underTest.getExpensesSessionDataResult(taxYear) {
         _ => Future.successful(anyResult)
@@ -1540,7 +1552,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".getSessionDataResult" should {
     "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Left(DataNotUpdated))
+      mockFind(taxYear, "some-employment-id", Left(DataNotUpdatedError))
 
       val response = underTest.getSessionDataResult(taxYear, "some-employment-id") {
         _ => Future.successful(anyResult)
@@ -1562,7 +1574,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".findEmploymentUserData" should {
     "returns Left() when DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Left(DataNotUpdated))
+      mockFind(taxYear, "some-employment-id", Left(DataNotUpdatedError))
 
       await(underTest.findEmploymentUserData(taxYear, "some-employment-id", user)) shouldBe Left()
     }

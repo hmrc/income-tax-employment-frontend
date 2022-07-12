@@ -18,5 +18,5 @@ package models
 
 import play.api.mvc.{Request, WrappedRequest}
 
-case class AuthorisationRequest[T](user: User, request: Request[T]) extends WrappedRequest[T](request) with CommonAuthorisationRequest
+case class AuthorisationRequest[T](user: User, request: Request[T]) extends WrappedRequest[T](request)
 
