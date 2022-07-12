@@ -17,20 +17,38 @@
 package support.mocks
 
 import actions.ActionsProvider
-import utils.InYearUtil
+import models.UserSessionDataRequest
+import models.employment.EmploymentType
+import org.scalamock.handlers.CallHandler4
+import play.api.mvc._
+import support.builders.models.UserBuilder.aUser
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MockActionsProvider extends MockAuthorisedAction
   with MockEmploymentSessionService
   with MockErrorHandler {
 
-  private implicit val mockAppConfig = new MockAppConfig().config()
 
-  val mockActionsProvider = new ActionsProvider(
-    mockAuthorisedAction,
-    mockEmploymentSessionService,
-    mockErrorHandler,
-    new InYearUtil()(mockAppConfig),
-  )
+  protected val mockActionsProvider: ActionsProvider = mock[ActionsProvider]
+
+  def mockEndOfYearWithSessionData(taxYear: Int,
+                                   employmentId: String,
+                                   employmentType: EmploymentType,
+                                   controllerName: String
+                                  ): CallHandler4[Int, String, EmploymentType, String, ActionBuilder[UserSessionDataRequest, AnyContent]] = {
+    val actionBuilder: ActionBuilder[UserSessionDataRequest, AnyContent] = new ActionBuilder[UserSessionDataRequest, AnyContent] {
+      override def parser: BodyParser[AnyContent] = BodyParser("anyContent")(_ => throw new NotImplementedError)
+
+      override def invokeBlock[A](request: Request[A], block: UserSessionDataRequest[A] => Future[Result]): Future[Result] =
+        block(UserSessionDataRequest(anEmploymentUserData.copy(employmentId = employmentId, taxYear = taxYear), aUser, request))
+
+      override protected def executionContext: ExecutionContext = ExecutionContext.Implicits.global
+    }
+
+    (mockActionsProvider.endOfYearWithSessionData(_: Int, _: String, _: EmploymentType, _: String))
+      .expects(taxYear, employmentId, employmentType, controllerName)
+      .returns(value = actionBuilder)
+  }
 }

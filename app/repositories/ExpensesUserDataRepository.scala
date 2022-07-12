@@ -96,7 +96,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
           case Some(_) => Right(())
           case None =>
             pagerDutyLog(FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, s"$start Failed to update user data.")
-            Left(DataNotUpdated)
+            Left(DataNotUpdatedError)
         }.recover {
           case exception: Exception =>
             pagerDutyLog(FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, s"$start Failed to update expenses user data. Exception: ${exception.getMessage}")

@@ -28,6 +28,19 @@ trait MockEmploymentUserDataRepository extends MockFactory {
 
   val mockEmploymentUserDataRepository: EmploymentUserDataRepository = mock[EmploymentUserDataRepository]
 
+
+  def mockFind(taxYear: Int,
+               id: String,
+               user: User,
+               repositoryResponse: Either[DatabaseError, Option[EmploymentUserData]]
+              ): CallHandler3[Int, String, User, Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
+    (mockEmploymentUserDataRepository.find(_: Int, _: String, _: User))
+      .expects(taxYear, id, user)
+      .returns(Future.successful(repositoryResponse))
+      .anyNumberOfTimes()
+  }
+
+  @deprecated("mockFind with the full parameter list should be used nod wild card")
   def mockFind(taxYear: Int,
                id: String,
                repositoryResponse: Either[DatabaseError, Option[EmploymentUserData]]

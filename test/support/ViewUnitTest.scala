@@ -21,7 +21,8 @@ import models.AuthorisationRequest
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.AnyContent
-import play.api.test.{FakeRequest, Injecting}
+import play.api.test.Injecting
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.UserBuilder.aUser
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -32,18 +33,17 @@ trait ViewUnitTest extends UnitTest
   with ViewHelper
   with GuiceOneAppPerSuite
   with Injecting
-  with TestTaxYearHelper{
+  with TestTaxYearHelper
+  with FakeRequestHelper {
 
-  private val fakeRequest = FakeRequest().withHeaders("X-Session-ID" -> aUser.sessionId)
+  private lazy val individualUserRequest: AuthorisationRequest[AnyContent] = anAuthorisationRequest.copy[AnyContent](request = fakeIndividualRequest)
+  private lazy val agentUserRequest: AuthorisationRequest[AnyContent] = anAuthorisationRequest.copy[AnyContent](aUser.copy(arn = Some("arn"), affinityGroup = AffinityGroup.Agent.toString))
 
   protected implicit val mockAppConfig: AppConfig = new MockAppConfig().config()
   protected implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
 
-  protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+  protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest)
   protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
-
-  protected lazy val individualUserRequest = new AuthorisationRequest[AnyContent](aUser, fakeRequest)
-  protected lazy val agentUserRequest = new AuthorisationRequest[AnyContent](aUser.copy(arn = Some("arn"), affinityGroup = AffinityGroup.Agent.toString), fakeRequest)
 
   protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 

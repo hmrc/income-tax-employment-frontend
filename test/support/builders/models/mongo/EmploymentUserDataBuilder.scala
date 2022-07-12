@@ -17,7 +17,6 @@
 package support.builders.models.mongo
 
 import models.benefits.BenefitsViewModel
-import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -32,10 +31,12 @@ object EmploymentUserDataBuilder extends TestTaxYearHelper {
     taxYear = taxYearEOY,
     employmentId = "employmentId",
     isPriorSubmission = true,
-    hasPriorBenefits = true, hasPriorStudentLoans = true,
+    hasPriorBenefits = true,
+    hasPriorStudentLoans = true,
     employment = anEmploymentCYAModel
   )
 
+  // TODO: This should be deleted and the default one used
   def anEmploymentUserDataWithBenefits(benefits: BenefitsViewModel,
                                        isPriorSubmission: Boolean = true,
                                        hasPriorBenefits: Boolean = true): EmploymentUserData = {
@@ -46,6 +47,7 @@ object EmploymentUserDataBuilder extends TestTaxYearHelper {
     )
   }
 
+  // TODO: This should be deleted and the default one used
   def anEmploymentUserDataWithDetails(employmentDetails: EmploymentDetails,
                                       isPriorSubmission: Boolean = true,
                                       hasPriorBenefits: Boolean = true): EmploymentUserData = {
@@ -53,16 +55,6 @@ object EmploymentUserDataBuilder extends TestTaxYearHelper {
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
       employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)
-    )
-  }
-
-  def anEmploymentUserDataWithStudentLoans(studentLoans: StudentLoansCYAModel,
-                                           isPriorSubmission: Boolean = true,
-                                           hasPriorBenefits: Boolean = true): EmploymentUserData = {
-    anEmploymentUserData.copy(
-      isPriorSubmission = isPriorSubmission,
-      hasPriorBenefits = hasPriorBenefits,
-      employment = anEmploymentCYAModel.copy(studentLoans = Some(studentLoans))
     )
   }
 }

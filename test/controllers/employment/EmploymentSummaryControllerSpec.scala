@@ -16,18 +16,24 @@
 
 package controllers.employment
 
+import actions.ActionsProvider
 import common.SessionValues
+import config.AppConfig
 import models.OptionalUserPriorDataRequest
 import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{AnyContent, Result}
-import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService}
-import utils.UnitTest
+import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService, MockRedirectsMatcherUtils}
+import utils.{InYearUtil, UnitTest}
 import views.html.employment.EmploymentSummaryView
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessionService with MockActionsProvider {
+class EmploymentSummaryControllerSpec extends UnitTest
+  with MockEmploymentSessionService
+  with MockActionsProvider
+  with MockRedirectsMatcherUtils {
 
   object FullModel {
 
@@ -110,12 +116,24 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
 
   private val employmentSummaryView = app.injector.instanceOf[EmploymentSummaryView]
 
+  private val actionsProvider = {
+    val mockAppConfig: AppConfig = new MockAppConfig().config()
+    new ActionsProvider(
+      mockAuthorisedAction,
+      mockEmploymentSessionService,
+      mockErrorHandler,
+      new InYearUtil()(mockAppConfig),
+      mockRedirectsMatcherUtils,
+      mockAppConfig
+    )
+  }
+
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController(
     employmentSummaryView,
     mockEmploymentSessionService,
     inYearAction,
     mockErrorHandler,
-    mockActionsProvider
+    actionsProvider
   )(mockMessagesControllerComponents, new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   ".addNewEmployment" should {
@@ -174,11 +192,11 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
       }
-      s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
 
+      s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
         mockClear(Left())
-        mockInternalServerError
+        mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(
           SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
@@ -189,7 +207,6 @@ class EmploymentSummaryControllerSpec extends UnitTest with MockEmploymentSessio
   }
 
   ".show" should {
-
     implicit val request: OptionalUserPriorDataRequest[AnyContent] = OptionalUserPriorDataRequest(
       Some(FullModel.oneEmploymentSourceData), authorisationRequest.user, authorisationRequest.request
     )

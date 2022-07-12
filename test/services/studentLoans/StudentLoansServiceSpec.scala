@@ -17,7 +17,8 @@
 package services.studentLoans
 
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
-import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithStudentLoans}
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
 
@@ -32,7 +33,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
       "passed false" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
         val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(uglDeduction = false, uglDeductionAmount = None)
-        val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+        val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+        val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
@@ -43,7 +45,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
       "passed true" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
         val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(uglDeduction = true)
-        val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+        val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+        val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
@@ -57,7 +60,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
       "passed false" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
         val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(pglDeduction = false, pglDeductionAmount = None)
-        val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+        val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+        val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
@@ -68,7 +72,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
       "passed true" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
         val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(pglDeduction = true)
-        val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+        val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+        val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
@@ -81,7 +86,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
     "set UglDeductionsAmount" in {
       val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
       val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(uglDeductionAmount = Some(500.00))
-      val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+      val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+      val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
@@ -93,7 +99,8 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
     "set pglDeductionsAmount" in {
       val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
       val expectedStudentLoans = aStudentLoans.toStudentLoansCYAModel().copy(pglDeductionAmount = Some(500.00))
-      val expectedEmploymentUserData = anEmploymentUserDataWithStudentLoans(expectedStudentLoans).copy(isPriorSubmission = false, hasPriorBenefits = false)
+      val employmentCYAModel = anEmploymentCYAModel.copy(studentLoans = Some(expectedStudentLoans))
+      val expectedEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel)
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 

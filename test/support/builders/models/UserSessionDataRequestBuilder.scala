@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package support.builders.models
 
-import models.mongo.EmploymentUserData
-import play.api.mvc.{Request, WrappedRequest}
+import models.UserSessionDataRequest
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
+import support.builders.models.UserBuilder.aUser
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-case class UserSessionDataRequest[T](employmentUserData: EmploymentUserData,
-                                     user: User,
-                                     request: Request[T]) extends WrappedRequest[T](request)
+object UserSessionDataRequestBuilder {
+
+  val aUserSessionDataRequest: UserSessionDataRequest[AnyContentAsEmpty.type] = UserSessionDataRequest(
+    employmentUserData = anEmploymentUserData,
+    user = aUser,
+    request = FakeRequest()
+  )
+}

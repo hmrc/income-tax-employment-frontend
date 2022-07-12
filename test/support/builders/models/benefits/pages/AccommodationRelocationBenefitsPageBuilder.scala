@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package support.builders.models.benefits.pages
 
-import models.mongo.EmploymentUserData
-import play.api.mvc.{Request, WrappedRequest}
+import forms.benefits.accommodation.AccommodationFormsProvider
+import models.benefits.pages.AccommodationRelocationBenefitsPage
+import support.TaxYearUtils
 
-case class UserSessionDataRequest[T](employmentUserData: EmploymentUserData,
-                                     user: User,
-                                     request: Request[T]) extends WrappedRequest[T](request)
+object AccommodationRelocationBenefitsPageBuilder {
+
+  val anAccommodationRelocationBenefitsPage: AccommodationRelocationBenefitsPage = AccommodationRelocationBenefitsPage(
+    taxYear = TaxYearUtils.taxYearEOY,
+    employmentId = "employmentId",
+    isAgent = false,
+    form = new AccommodationFormsProvider().accommodationRelocationForm(isAgent = false)
+  )
+}

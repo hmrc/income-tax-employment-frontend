@@ -16,178 +16,102 @@
 
 package controllers.benefits.accommodation
 
-import common.SessionValues
-import controllers.errors.routes.UnauthorisedUserErrorController
+import controllers.benefits.accommodation.routes.LivingAccommodationBenefitsController
+import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
+import forms.YesNoForm
 import forms.benefits.accommodation.AccommodationFormsProvider
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
-import play.api.mvc.AnyContentAsEmpty
-import play.api.mvc.Results.{BadRequest, InternalServerError, Redirect}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, contentType, status}
+import models.employment.EmploymentBenefitsType
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK}
+import play.api.mvc.Result
+import play.api.mvc.Results.InternalServerError
+import play.api.test.Helpers.{contentType, status}
+import sttp.model.Method.POST
 import support.builders.models.UserBuilder.aUser
-import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAccommodationService, MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler}
+import support.mocks._
 import support.{ControllerUnitTest, ViewHelper}
 import utils.InYearUtil
 import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
 class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest with ViewHelper
   with MockAuthorisedAction
+  with MockActionsProvider
   with MockAccommodationService
   with MockEmploymentSessionService
+  with MockRedirectsService
   with MockErrorHandler {
 
-  private val employmentId = "employment-id"
-  private val agentUser = aUser.copy(arn = Some("0987654321"), affinityGroup = "Agent")
-
-  private val yesRadioButtonCssSelector = ".govuk-radios__item > input#value"
-  private val noRadioButtonCssSelector = ".govuk-radios__item > input#value-no"
-
-  private val fakeIndividualRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    .withHeaders("X-Session-ID" -> aUser.sessionId)
-
-  private val fakeAgentRequest: FakeRequest[AnyContentAsEmpty.type] = fakeIndividualRequest
-    .withHeaders("X-Session-ID" -> aUser.sessionId)
-    .withSession(SessionValues.CLIENT_MTDITID -> "1234567890", SessionValues.CLIENT_NINO -> "AA123456A")
-
+  private val employmentId = "employmentId"
   private val pageView = inject[AccommodationRelocationBenefitsView]
   private val formsProvider = new AccommodationFormsProvider()
 
   private lazy val underTest = new AccommodationRelocationBenefitsController(
     mockAuthorisedAction,
+    mockActionsProvider,
     inYearAction = new InYearUtil(),
     pageView: AccommodationRelocationBenefitsView,
     mockAccommodationService,
     mockEmploymentSessionService,
+    mockRedirectsService,
     mockErrorHandler,
     formsProvider)
 
   ".show" should {
-    "redirect to UnauthorisedUserErrorController when authentication fails" in {
-      mockFailToAuthenticate()
+    "return successful response" in {
+      mockEndOfYearWithSessionData(taxYearEOY, employmentId, EmploymentBenefitsType, controllerName = "AccommodationRelocationBenefitsController")
 
-      await(underTest.show(taxYear = taxYearEOY, employmentId = employmentId)(fakeIndividualRequest)) shouldBe
-        Redirect(UnauthorisedUserErrorController.show)
-    }
+      val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
 
-    "redirect to Overview page when in year" in {
-      mockAuthAsIndividual(Some("AA123456A"))
-      mockFindEmploymentUserData(taxYear, employmentId, aUser, Right(Some(anEmploymentUserData)))
-
-      await(underTest.show(taxYear = taxYear, employmentId = employmentId)(fakeIndividualRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))) shouldBe
-        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
-
-    "return internal server error when find employment returns Left" in {
-      mockAuthAsIndividual(Some("AA123456A"))
-      mockFindEmploymentUserData(taxYearEOY, employmentId, aUser, Left())
-      mockHandleError(INTERNAL_SERVER_ERROR, InternalServerError)
-
-      await(underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)) shouldBe InternalServerError
-    }
-
-    "return result for individual" which {
-      "has empty form when accommodation model is None" in {
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-        val employmentUserDataWithEmptyAccommodation = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits =
-          Some(benefitsViewModel)))
-
-        mockAuthAsIndividual(Some("AA123456A"))
-        mockFindEmploymentUserData(taxYearEOY, employmentId, aUser, Right(Some(employmentUserDataWithEmptyAccommodation)))
-
-        val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
-
-        status(result) shouldBe OK
-        contentType(result) shouldBe Some("text/html")
-
-        implicit val document: Document = Jsoup.parse(contentAsString(result))
-
-        document.select(yesRadioButtonCssSelector).hasAttr("checked") shouldBe false
-        document.select(noRadioButtonCssSelector).hasAttr("checked") shouldBe false
-      }
-
-      "has yes selected when accommodation section question is true" in {
-        mockAuthAsIndividual(Some("AA123456A"))
-        mockFindEmploymentUserData(taxYearEOY, employmentId, aUser, Right(Some(anEmploymentUserData)))
-
-        val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
-
-        status(result) shouldBe OK
-        contentType(result) shouldBe Some("text/html")
-
-        implicit val document: Document = Jsoup.parse(contentAsString(result))
-
-        document.select(yesRadioButtonCssSelector).hasAttr("checked") shouldBe true
-        document.select(noRadioButtonCssSelector).hasAttr("checked") shouldBe false
-      }
-    }
-
-    "return result for Agent" which {
-      "has empty form when accommodation model is None" in {
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-        val employmentUserDataWithEmptyAccommodation = anEmploymentUserData
-          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
-
-        mockAuthAsAgent()
-        mockFindEmploymentUserData(taxYearEOY, employmentId, agentUser, Right(Some(employmentUserDataWithEmptyAccommodation)))
-
-        val result = underTest.show(taxYearEOY, employmentId).apply(fakeAgentRequest)
-
-        status(result) shouldBe OK
-        contentType(result) shouldBe Some("text/html")
-
-        implicit val document: Document = Jsoup.parse(contentAsString(result))
-
-        document.select(yesRadioButtonCssSelector).hasAttr("checked") shouldBe false
-        document.select(noRadioButtonCssSelector).hasAttr("checked") shouldBe false
-      }
-
-      "has yes selected when accommodation section question is true" in {
-        mockAuthAsAgent()
-        mockFindEmploymentUserData(taxYearEOY, employmentId, agentUser, Right(Some(anEmploymentUserData)))
-
-        val result = underTest.show(taxYearEOY, employmentId).apply(fakeAgentRequest)
-
-        status(result) shouldBe OK
-        contentType(result) shouldBe Some("text/html")
-
-        implicit val document: Document = Jsoup.parse(contentAsString(result))
-
-        document.select(yesRadioButtonCssSelector).hasAttr("checked") shouldBe true
-        document.select(noRadioButtonCssSelector).hasAttr("checked") shouldBe false
-      }
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some("text/html")
     }
   }
 
   ".submit" should {
-    "redirect to UnauthorisedUserErrorController when authentication fails" in {
-      mockFailToAuthenticate()
+    "render page with error when validation of form fails" in {
+      mockEndOfYearWithSessionData(taxYearEOY, employmentId, EmploymentBenefitsType, controllerName = "AccommodationRelocationBenefitsController")
 
-      await(underTest.submit(taxYear = taxYearEOY, employmentId = employmentId)(fakeIndividualRequest.withFormUrlEncodedBody("value" -> "true"))) shouldBe
-        Redirect(UnauthorisedUserErrorController.show)
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "")
+      val result = underTest.submit(taxYearEOY, employmentId).apply(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentType(result) shouldBe Some("text/html")
     }
 
-    "redirect to Overview page when in year" in {
-      mockAuthAsIndividual(Some("AA123456A"))
-      mockGetSessionDataResult(taxYear, employmentId, Redirect("/any-url"))
+    "handle internal server error when save operation fails with database error" in {
+      mockEndOfYearWithSessionData(taxYearEOY, employmentId, EmploymentBenefitsType, controllerName = "AccommodationRelocationBenefitsController")
+      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
+      mockInternalServerError(InternalServerError)
 
-      val request = fakeIndividualRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString).withFormUrlEncodedBody("value" -> "true")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
+      val result = underTest.submit(taxYearEOY, employmentId)(request)
 
-      await(underTest.submit(taxYear = taxYear, employmentId = employmentId)(request)) shouldBe
-        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "return BadRequest when getSessionData returns BadRequest" in {
-      val request = fakeIndividualRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString).withFormUrlEncodedBody("value" -> "true")
+    "Should save section question and return correct result when question value is true" in {
+      val result: Result = mock[Result]
 
-      mockAuthAsIndividual(Some("AA123456A"))
-      mockGetSessionDataResult(taxYearEOY, employmentId, BadRequest)
+      mockEndOfYearWithSessionData(taxYearEOY, employmentId, EmploymentBenefitsType, controllerName = "AccommodationRelocationBenefitsController")
+      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(taxYearEOY, employmentId, anEmploymentCYAModel, LivingAccommodationBenefitsController.show(taxYearEOY, employmentId), result)
 
-      await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe BadRequest
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
+
+      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
+    }
+
+    "Should save section question and return correct result when question value is false" in {
+      val result: Result = mock[Result]
+
+      mockEndOfYearWithSessionData(taxYearEOY, employmentId, EmploymentBenefitsType, controllerName = "AccommodationRelocationBenefitsController")
+      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(taxYearEOY, employmentId, anEmploymentCYAModel, TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), result)
+
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
+
+      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
     }
   }
 }

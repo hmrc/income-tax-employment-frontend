@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package models
+package support
 
-import play.api.mvc.Request
+trait TaxYearProvider {
 
-trait CommonAuthorisationRequest {
-  val user: User
-  val request: Request[_]
+  protected val taxYear: Int = TaxYearUtils.taxYear
+  protected val taxYearEOY: Int = TaxYearUtils.taxYearEOY
+
+  protected val taxYearEndOfYearMinusOne: Int = taxYearEOY - 1
+
+  protected val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
+  protected val validTaxYearList: Seq[Int] = Seq(taxYearEndOfYearMinusOne, taxYearEOY, taxYear)
 }

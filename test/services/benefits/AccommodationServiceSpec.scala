@@ -29,7 +29,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
   private val underTest = new AccommodationService(mockEmploymentSessionService, mockExecutionContext)
 
-  "updateSectionQuestion" should {
+  "saveSectionQuestion" should {
     "update accommodation relocation model and set section question to true when true value passed" in {
       val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(sectionQuestion = Some(false))))
       val employmentUserDataWithFalseSectionQuestion = anEmploymentUserDataWithBenefits(benefitsViewModel).copy(hasPriorBenefits = false)
@@ -37,7 +37,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, anEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
+      await(underTest.saveSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -48,7 +48,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
+      await(underTest.saveSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -59,7 +59,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithNoAccommodationRelocationModel, questionValue = false)) shouldBe
+      await(underTest.saveSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithNoAccommodationRelocationModel, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }

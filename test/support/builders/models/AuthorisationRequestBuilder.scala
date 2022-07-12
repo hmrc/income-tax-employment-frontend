@@ -16,43 +16,15 @@
 
 package support.builders.models
 
-import models.{AuthorisationRequest, User}
-import play.api.mvc.AnyContent
+import models.AuthorisationRequest
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.builders.models.UserBuilder.aUser
 
 object AuthorisationRequestBuilder {
 
-  val anAuthorisationRequest: AuthorisationRequest[AnyContent] = AuthorisationRequest(
-    User(
-      mtditid = anEmploymentUserData.mtdItId,
-      arn = None,
-      nino = anEmploymentUserData.nino,
-      sessionId = anEmploymentUserData.sessionId,
-      affinityGroup = "affinityGroup"
-    ),
-    FakeRequest()
-  )
-
-  val anIndividualRequest: AuthorisationRequest[AnyContent] = AuthorisationRequest(
-    User(
-      mtditid = anEmploymentUserData.mtdItId,
-      arn = None,
-      nino = anEmploymentUserData.nino,
-      sessionId = anEmploymentUserData.sessionId,
-      affinityGroup = "Individual"
-    ),
-    FakeRequest()
-  )
-
-  val anAgentRequest: AuthorisationRequest[AnyContent] = AuthorisationRequest(
-    User(
-      mtditid = anEmploymentUserData.mtdItId,
-      arn = None,
-      nino = anEmploymentUserData.nino,
-      sessionId = anEmploymentUserData.sessionId,
-      affinityGroup = "Agent"
-    ),
-    FakeRequest()
+  val anAuthorisationRequest: AuthorisationRequest[AnyContentAsEmpty.type] = AuthorisationRequest(
+    user = aUser,
+    request = FakeRequest()
   )
 }

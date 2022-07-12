@@ -17,11 +17,9 @@
 package support.mocks
 
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import models.CommonAuthorisationRequest
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Writes
-import play.api.mvc.Request
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 

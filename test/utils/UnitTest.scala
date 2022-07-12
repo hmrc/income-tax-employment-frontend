@@ -40,6 +40,7 @@ import views.html.errors.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
+@deprecated("Use UnitTest in support package for unit tests")
 trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TestTaxYearHelper
   with MockAuthorisedAction {
 
