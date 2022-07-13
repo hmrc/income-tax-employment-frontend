@@ -109,7 +109,11 @@
             messages(msgKeyGeneric + ".payeRef"),
             employmentDetails.employerRef,
             PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
+            if (employmentDetails.employerRef.isDefined) {
+                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
+            } else {
+                messages(s"$msgKeyGeneric.hiddenText.payeRef.add")
+            }
         )
 
         val didYouLeave = EmploymentDataForView(
@@ -131,7 +135,12 @@
                 messages(s"$msgKeyGeneric.startDate"),
                 employmentDetails.startDate.flatMap(dateFormatter),
                 EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
+                if (employmentDetails.startDate.isDefined) {
+                    messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
+                } else {
+                    messages(s"$msgKeyGeneric.hiddenText.startDate.add")
+                }
+
             )
         }
 
@@ -146,14 +155,14 @@
             messages(msgKeyGeneric + ".payReceived"),
             employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
             EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", request.user.isAgent), employmentDetails.employerName)
+            messages(s"$msgKeyGeneric.hiddenText.payReceived")
         )
 
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
             EmploymentTaxController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", request.user.isAgent))
+            messages(s"$msgKeyGeneric.hiddenText.totalTaxToDate")
         )
 
         val employmentDataFields = Seq(

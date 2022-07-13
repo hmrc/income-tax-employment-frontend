@@ -184,21 +184,23 @@ employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rÙl y cyfa
 employment.employmentDetails.hiddenText.employer = Newidiwch enwír cyflogwr hwn
 employment.employmentDetails.hiddenText.payeRef.agent = Newidiwch gyfeirnod TWE eich cleient
 employment.employmentDetails.hiddenText.payeRef.individual = Newidiwch eich cyfeirnod TWE
+employment.employmentDetails.hiddenText.payeRef.add = Ychwanegu cyfeirnod TWE
+
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Newidiwch os cafodd eich cleient daliadau sydd ddim ar ei P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Newidiwch os cawsoch daliadau sydd ddim ar eich P60
-employment.employmentDetails.hiddenText.payReceived.agent = Newidiwch swm y t‚l gafodd eich cleient o {0}
-employment.employmentDetails.hiddenText.payReceived.individual = Newidiwch swm y t‚l a gawsoch o {0}
+employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwyd
 employment.employmentDetails.hiddenText.payrollId = Newidiwch ID y gyflogres am y gyflogaeth hon
 employment.employmentDetails.hiddenText.startDate.agent = Newidiwch ddyddiad dechrau eich cleient ar gyfer {0}
 employment.employmentDetails.hiddenText.startDate.individual = Newidiwch eich dyddiad dechrau ar gyfer {0}
+employment.employmentDetails.hiddenText.startDate.add = Ychwanegu dyddiad dechrau’r gyflogaeth
+
 employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gadawodd eich cleient {0} yn y flwyddyn dreth
 employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael {0} yn y flwyddyn dreth
 employment.employmentDetails.hiddenText.employmentDates.agent = Newidiwch ddyddiadau cyflogaeth eich cleient
 employment.employmentDetails.hiddenText.employmentDates.individual = Newidiwch ddyddiadauích cyflogaeth chi
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = Newidiwch swm y taliadau nad oeddent ar P60 eich cleient
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.individual = Newidiwch swm y taliadau nad oeddent ar eich P60
-employment.employmentDetails.hiddenText.totalTaxToDate.agent = Newidiwch swm y dreth a dalodd eich cleient
-employment.employmentDetails.hiddenText.totalTaxToDate.individual = Newidiwch swm y dreth a daloch
+employment.employmentDetails.hiddenText.totalTaxToDate = Newidiwyd y swm o dreth y DU a dynnwyd oddi wrth eich cyflog
 employment.employmentDetails.insetText.agent = Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill {0}.
 employment.employmentDetails.insetText.individual = Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill {0}.
 employment.employmentDetails.payeRef = Cyfeirnod TWE
