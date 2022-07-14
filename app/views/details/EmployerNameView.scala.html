@@ -1,0 +1,69 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.InputTextAlt
+@import utils.ViewUtils._
+
+@this(
+    layout: Layout,
+    heading: Heading,
+    errorSummary: ErrorSummary,
+    formWithCsrf: FormWithCSRF,
+    inputText: InputTextAlt,
+    button: Button
+)
+
+@(form: Form[String], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+
+@pageTitle = @{messages(getAgentDynamicContent("employment.employerName.heading", request.user.isAgent))}
+
+@headingForUse = @{(pageTitle)}
+
+@layout(pageTitle = pageTitle, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+
+    @errorSummary(form.errors)
+
+    @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
+    <p class="govuk-body">@messages("employment.employerName.paragraph")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("common.letters.case")</li>
+        <li>@messages("common.numbers")</li>
+        <li>@messages("employment.employerName.bullet.three")</li>
+    </ul>
+
+    @formWithCsrf(controllers.details.routes.EmployerNameController.submit(taxYear, employmentId)) {
+        @inputText(
+            form,
+            id = "name",
+            name = "name",
+            label = headingForUse,
+            hint = Some(messages("employment.employerName.hint")),
+            labelHidden = true,
+            classes = Some("govuk-input--width-20")
+        )
+
+        @button()
+    }
+}
+
+@{
+    // $COVERAGE-OFF$
+}

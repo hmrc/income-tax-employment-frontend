@@ -19,8 +19,9 @@ package controllers.employment
 import actions.ActionsProvider
 import common.SessionValues
 import config.AppConfig
-import controllers.employment.routes.{EmployerNameController, EmploymentSummaryController}
-import forms.employment.EmployerNameForm.employerName
+import controllers.details.routes.EmployerNameController
+import controllers.employment.routes.EmploymentSummaryController
+import forms.details.EmployerNameForm.employerName
 import forms.employment.SelectEmployerForm
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
@@ -96,7 +97,7 @@ class SelectEmployerControllerSpec extends UnitTest
         ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(controllers.employment.routes.EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
+        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status when there is no ignored employments and an id in session" in new TestWithAuth {
@@ -108,7 +109,7 @@ class SelectEmployerControllerSpec extends UnitTest
         ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(controllers.employment.routes.EmployerNameController.show(taxYearEOY, "id").url)
+        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url)
       }
     }
   }

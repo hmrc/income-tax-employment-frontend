@@ -144,7 +144,7 @@ class EmploymentSummaryControllerSpec extends UnitTest
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is no session data and some prior employment" which {
@@ -154,7 +154,7 @@ class EmploymentSummaryControllerSpec extends UnitTest
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is session data and some prior employment" which {
@@ -167,7 +167,7 @@ class EmploymentSummaryControllerSpec extends UnitTest
           SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
           SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=")
+        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to select employer page when there is no session data and an ignored hmrc employment" which {

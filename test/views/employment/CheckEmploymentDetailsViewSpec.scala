@@ -16,6 +16,7 @@
 
 package views.employment
 
+import controllers.details.routes._
 import controllers.employment.routes._
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
