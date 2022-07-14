@@ -18,58 +18,45 @@
 @import play.api.data.FormError
 
 @this(
-        govukDateInput : GovukDateInput,
-        headingHelper: Heading
+    govukDateInput : GovukDateInput,
+    headingHelper: Heading
 )
 
 @(
-        form: Form[_],
-        id: String,
-        name: String,
-        heading: String,
-        isPageHeading: Boolean,
-        legendAsHeading: Boolean = false,
-        headingMessageArgs: Seq[String] = Seq(),
-        hint: Option[Html] = None,
-        classes: String = "govuk-fieldset__legend--xl",
-        inline: Boolean = false,
-        subheading: Option[String] = None,
-        headingClasses: String = "govuk-!-margin-bottom-2",
-        content: Option[Html] = None,
-        multiple: Boolean = false
+    form: Form[_],
+    id: String,
+    name: String,
+    legendHidden: Boolean = false,
+    legendAsHeading: Boolean = false,
+    hint: Option[String] = None,
+    classes: Option[String] = None,
+    autocomplete: Option[String] = None,
+    inputType: String = "text",
+    legendHeading: Option[Html] = None,
+    isPageHeading: Boolean = false
 )(implicit messages: Messages)
 
 @contentHtml = {
-    @if(!multiple) {
-        @if(subheading.isDefined) {
-            @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
-        } else {
-            @messages(heading, headingMessageArgs:_*)
-        }
-    }
-    @content
+    @legendHeading
 }
 
 @errorMessage = @{
     if(form.errors.isEmpty){
         None
-    }
-    else {
+    } else {
         if(id == "startAmount") {
             if(!form.errors.filter(_.key.contains("startAmount")).isEmpty){
                 Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("startAmount"))))))
             } else {
                 None
             }
-        }
-        else if(id == "endAmount") {
+        } else if(id == "endAmount") {
             if(!form.errors.filter(_.key.contains("endAmount")).isEmpty){
                 Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("endAmount"))))))
             } else {
                 None
             }
-        }
-        else {
+        } else {
             Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors))))
         }
     }
@@ -85,47 +72,44 @@
 
 @errorHtml(errors: Seq[FormError]) = {
     @errors.map{ error =>
-        <span id= @{s"${error.key}-error"} class="govuk-error-message">
-         @messages(error.message, error.args: _*)
-        </span>
+        <span id= @{s"${error.key}-error"} class="govuk-error-message">@messages(error.message, error.args: _*)</span>
     }
 }
 
-@govukDateInput(DateInput(
-    id,
-    Some(name),
-    hint = hint.map(hintHtml => Hint(
-    content = HtmlContent(hintHtml)
-    )),
-    fieldset = Some(Fieldset(
-        legend = Some(Legend(
-        content = HtmlContent(contentHtml),
-        isPageHeading = false,
-        classes = classes
-        ))
-    )),
-    items = Seq(
-        InputItem(
-            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyDay").error, form("emptyDayMonth").error, form("emptyDayYear").error, form("emptyAll").error))}",
-            name = "day",
-            label = Some(messages("date.input.day")),
-            value = form(s"$name-day").value,
-            id = s"$name-day"
+@govukDateInput(
+    DateInput(
+        id,
+        Some(name),
+        hint = hint.map(hintHtml => Hint(content = HtmlContent(hintHtml))),
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+                content = HtmlContent(contentHtml),
+                isPageHeading = isPageHeading,
+                classes = if(legendAsHeading) "govuk-label--l" else if (legendHidden) "govuk-visually-hidden" else ""
+            ))
+        )),
+        items = Seq(
+            InputItem(
+                classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyDay").error, form("emptyDayMonth").error, form("emptyDayYear").error, form("emptyAll").error))}",
+                name = "day",
+                label = Some(messages("date.input.day")),
+                value = form(s"$name-day").value,
+                id = s"$name-day"
+            ),
+            InputItem(
+                classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyMonth").error, form("emptyDayMonth").error, form("emptyMonthYear").error, form("emptyAll").error))}",
+                name = "month",
+                label = Some(messages("date.input.month")),
+                value = form(s"$name-month").value,
+                id = s"$name-month"
+            ),
+            InputItem(
+                classes = s"govuk-input--width-4 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyYear").error, form("emptyMonthYear").error, form("emptyDayYear").error, form("emptyAll").error))}",
+                name = "year",
+                label = Some(messages("date.input.year")),
+                value = form(s"$name-year").value,
+                id = s"$name-year"
+            )
         ),
-        InputItem(
-            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyMonth").error, form("emptyDayMonth").error, form("emptyMonthYear").error, form("emptyAll").error))}",
-            name = "month",
-            label = Some(messages("date.input.month")),
-            value = form(s"$name-month").value,
-            id = s"$name-month"
-        ),
-        InputItem(
-            classes = s"govuk-input--width-4 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyYear").error, form("emptyMonthYear").error, form("emptyDayYear").error, form("emptyAll").error))}",
-            name = "year",
-            label = Some(messages("date.input.year")),
-            value = form(s"$name-year").value,
-            id = s"$name-year"
-        )
-    ),
     errorMessage = errorMessage
 ))

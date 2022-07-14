@@ -16,46 +16,32 @@
 
 @import utils.ViewUtils.bigDecimalCurrency
 
-@this(govukInput: GovukInput, headingHelper: Heading)
+@this(govukInput: GovukInput)
 
-@(
-    form: Form[_],
+@(form: Form[_],
     id: String,
     name: String,
-    heading: String,
-    isPageHeading: Boolean,
-    headingMessageArgs: Seq[String] = Seq(),
-    hint: Option[Html] = None,
+    label: String,
+    labelHidden: Boolean = false,
+    isPageHeading: Boolean = false,
+    hint: Option[String] = None,
     classes: Option[String] = None,
-    labelClasses: Option[String] = None,
     autocomplete: Option[String] = None,
     inputType: String = "text",
-    currency: Boolean = false,
-    subheading: Option[String] = None,
-    headingClasses: String = "",
-    content: Option[Html] = None
+    currency: Boolean = false
 )(implicit messages: Messages)
-
-@contentHtml = {
-    @if(subheading.isDefined) {
-            @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
-        } else {
-            <div>@messages(heading, headingMessageArgs:_*)</div>
-        }
-    @content
-}
 
 @govukInput(Input(
     id,
     name,
     classes = if(currency) "govuk-input--width-10 " + classes.fold("")(x => x) else classes.fold("")(x => x),
     label = Label(
-    content = HtmlContent(contentHtml),
-    isPageHeading = isPageHeading,
-    classes = if(isPageHeading) "govuk-label--xl " + labelClasses.fold("")(cls => cls) else labelClasses.fold("")(cls => cls)
+        content = Text(messages(label)),
+        isPageHeading = isPageHeading,
+        classes = if(isPageHeading) "govuk-label--l" else if (labelHidden) "govuk-visually-hidden" else ""
     ),
-    hint = hint.map(hintHtml => Hint(
-        content = HtmlContent(hintHtml)
+    hint = hint.map(hintKey => Hint(
+        content = HtmlContent(messages(hintKey))
     )),
     value = if(currency && form.errors(id).isEmpty) form(name).value.map(bigDecimalCurrency(_, "")) else form(name).value,
     autocomplete = autocomplete.map(value => value),
@@ -64,3 +50,7 @@
     prefix = if(currency) Some(PrefixOrSuffix(content = Text("£"))) else None,
     attributes = Map("maxlength" -> "500")
 ))
+
+@{
+//$COVERAGE-OFF$
+}

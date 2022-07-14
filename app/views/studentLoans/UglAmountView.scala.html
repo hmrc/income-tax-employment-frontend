@@ -15,7 +15,7 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputTextAlt}
+@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputText}
 
 @this(
     layout: Layout,
@@ -23,7 +23,7 @@
     errorSummary: ErrorSummary,
     button: Button,
     heading: Heading,
-    inputText: InputTextAlt
+    inputText: InputText
 )
 @(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 

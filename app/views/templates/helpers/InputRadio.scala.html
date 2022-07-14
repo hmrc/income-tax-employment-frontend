@@ -15,32 +15,25 @@
  *@
 
 @this(
-        govukRadios: GovukRadios,
-        headingHelper: Heading
+    govukRadios: GovukRadios,
+    headingHelper: Heading
 )
 
 @(
-        form: Form[_],
-        heading: String,
-        items: Seq[RadioItem] = Seq(),
-        legendAsHeading: Boolean = false,
-        headingMessageArgs: Seq[String] = Seq(),
-        hint: Option[Html] = None,
-        classes: String = "govuk-fieldset__legend--xl",
-        inline: Boolean = false,
-        subheading: Option[String] = None,
-        headingClasses: String = "govuk-!-margin-bottom-2",
-        name: String = "value",
-        content: Option[Html] = None
+    form: Form[_],
+    items: Seq[RadioItem] = Seq(),
+    legendHidden: Boolean = false,
+    legendAsHeading: Boolean = false,
+    hint: Option[Html] = None,
+    classes: Option[String] = None,
+    inline: Boolean = false,
+    name: String = "value",
+    legendHeading: Option[Html] = None
 )(implicit messages: Messages)
 
+
 @contentHtml = {
-    @if(subheading.isDefined) {
-        @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
-    } else {
-        @messages(heading, headingMessageArgs:_*)
-    }
-    @content
+    @legendHeading
 }
 
 @govukRadios(Radios(
@@ -50,7 +43,7 @@
         legend = Some(Legend(
             content = HtmlContent(contentHtml),
             isPageHeading = legendAsHeading,
-            classes = classes
+            classes = if(legendAsHeading) "govuk-label--l" else if (legendHidden) "govuk-visually-hidden" else ""
         ))
     )),
     hint = hint.map(hintHtml => Hint(
