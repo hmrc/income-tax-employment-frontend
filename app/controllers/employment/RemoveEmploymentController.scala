@@ -48,9 +48,8 @@ class RemoveEmploymentController @Inject()(cc: MessagesControllerComponents,
         allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, isCustomerData)) =>
             val employerName = source.employerName
-            val startDate = source.startDate.getOrElse("")
             val isHmrcEmployment = !isCustomerData
-            Ok(pageView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment, isHmrcEmployment, startDate))
+            Ok(pageView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment, isHmrcEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
