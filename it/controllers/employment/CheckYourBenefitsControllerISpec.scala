@@ -95,8 +95,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         unauthorisedAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
+
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED
       }

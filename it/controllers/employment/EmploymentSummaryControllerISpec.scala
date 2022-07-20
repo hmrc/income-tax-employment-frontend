@@ -85,7 +85,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     "returns an action when auth call fails" which {
       lazy val result: WSResponse = {
         unauthorisedAgentOrIndividual(isAgent = true)
-        urlGet(fullUrl(employmentSummaryUrl(taxYear)))
+        urlGet(fullUrl(employmentSummaryUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED

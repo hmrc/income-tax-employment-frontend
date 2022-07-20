@@ -36,7 +36,7 @@ trait ViewHelpers {
   val ENGLISH = "English"
   val WELSH = "Welsh"
 
-  def errorPrefix(isWelsh: Boolean): String = if (!isWelsh){
+  def errorPrefix(isWelsh: Boolean): String = if (!isWelsh) {
     "Error: "
   } else {
     "Gwall: "
@@ -60,7 +60,6 @@ trait ViewHelpers {
   lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
 
   def urlGet(url: String, welsh: Boolean = false, follow: Boolean = true, headers: Seq[(String, String)] = Seq())(implicit wsClient: WSClient): WSResponse = {
-
     val newHeaders = if (welsh) Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headers else headers
     await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).get())
   }
@@ -87,7 +86,7 @@ trait ViewHelpers {
 
   def titleCheck(title: String, isWelsh: Boolean)(implicit document: () => Document): Unit = {
     s"has a title of $title" in {
-      document().title() shouldBe s"$title - ${if(isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
+      document().title() shouldBe s"$title - ${if (isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
     }
   }
 

@@ -101,7 +101,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   "redirect to Unauthorised user error page when user is unauthorised" which {
     lazy val result: WSResponse = {
       unauthorisedAgentOrIndividual(isAgent = true)
-      urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)))
+      urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
     }
     "has an UNAUTHORIZED(401) status" in {
       result.status shouldBe UNAUTHORIZED

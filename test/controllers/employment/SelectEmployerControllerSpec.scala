@@ -27,6 +27,7 @@ import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import sttp.model.Method.POST
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -116,7 +117,6 @@ class SelectEmployerControllerSpec extends UnitTest
 
   ".submit" should {
     s"return a SEE_OTHER($SEE_OTHER) status" when {
-
       s"form is submitted" in new TestWithAuth {
         private val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
@@ -124,10 +124,9 @@ class SelectEmployerControllerSpec extends UnitTest
         mockClear(clearCya = false)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
-          .withSession(
-            SessionValues.TAX_YEAR -> taxYearEOY.toString
-          ))
+          .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
@@ -140,6 +139,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockClear()
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
           .withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString,
@@ -160,6 +160,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockHandleError(INTERNAL_SERVER_ERROR, InternalServerError)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
           .withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString
@@ -178,6 +179,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
           .withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString,
@@ -195,9 +197,9 @@ class SelectEmployerControllerSpec extends UnitTest
         mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
-          .withSession(
-            SessionValues.TAX_YEAR -> taxYearEOY.toString))
+          .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -211,6 +213,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockClear(Right(()))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> anEmploymentSource.employmentId)
           .withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString,
@@ -227,10 +230,9 @@ class SelectEmployerControllerSpec extends UnitTest
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> "employmentId")
-          .withSession(
-            SessionValues.TAX_YEAR -> taxYearEOY.toString
-          ))
+          .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
@@ -242,10 +244,9 @@ class SelectEmployerControllerSpec extends UnitTest
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> SessionValues.ADD_A_NEW_EMPLOYER)
-          .withSession(
-            SessionValues.TAX_YEAR -> taxYearEOY.toString
-          ))
+          .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
@@ -257,6 +258,7 @@ class SelectEmployerControllerSpec extends UnitTest
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
+          .withMethod(POST.method)
           .withFormUrlEncodedBody("value" -> "12345678945678567")
           .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
