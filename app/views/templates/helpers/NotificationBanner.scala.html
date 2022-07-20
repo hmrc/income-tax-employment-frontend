@@ -18,8 +18,13 @@
 
 @this(govukNotificationBanner : GovukNotificationBanner)
 
-@(html: Html)
+@(html: Html)(implicit messages: Messages)
+
+@title = {
+  <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">@messages("common.important")</h2>
+}
 
 @govukNotificationBanner(NotificationBanner(
-    content = HtmlContent(html)
+  title = HtmlContent(title),
+  content = HtmlContent(html)
 ))

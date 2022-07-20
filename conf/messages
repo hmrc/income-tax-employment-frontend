@@ -32,6 +32,7 @@ common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.fullStop = .
 common.help.getHelpWithThisPage = Get help with this page
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
+common.important = Important
 common.letters.case = upper and lower case letters (a to z)
 common.no = No
 common.numbers = numbers
