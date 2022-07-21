@@ -32,6 +32,7 @@ common.error.invalid_number = Nodwch swm gan ddefnyddio’r rhifau 0 i 9
 common.fullStop = .
 common.help.getHelpWithThisPage = Help gyda’r dudalen hon
 common.ifItWasNot = Rhowch wybod y swm cywir os nad oedd yn {0}.
+common.important = Pwysig
 common.letters.case = llythrennau mawr a bach (a i z)
 common.no = Na
 common.numbers = rhifau
