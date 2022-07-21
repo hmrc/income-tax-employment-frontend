@@ -154,7 +154,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       lazy val result: WSResponse = {
         dropExpensesDB()
         unauthorisedAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(checkYourExpensesUrl(taxYear)))
+        urlGet(fullUrl(checkYourExpensesUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED

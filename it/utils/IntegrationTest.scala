@@ -222,6 +222,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   )
 
   def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty, validTaxYears: Seq[Int] = validTaxYearList): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
+    SessionKeys.authToken -> "mock-bearer-token",
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionKeys.sessionId -> defaultUser.sessionId,
     SessionValues.VALID_TAX_YEARS -> validTaxYears.mkString(","),
