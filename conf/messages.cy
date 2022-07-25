@@ -1405,3 +1405,8 @@ tailoring.title.individual = A gawsoch incwm o gyflogaeth TWE?
 tailoring.title.agent = A gafodd eich cleient incwm o gyflogaeth TWE?
 tailoring.empty.error.individual = Dewiswch ‘Iawn’ os cawsoch incwm o gyflogaeth TWE
 tailoring.empty.error.agent = Dewiswch ‘Iawn’ os cafodd incwm o gyflogaeth TWE
+
+#####################    Cannot Update employment messages    #####################
+employment.cannot.update.text = Ni allwch ddiweddaru gwybodaeth am Gyflogaeth TAW tan 6 Ebrill {0}
+
+

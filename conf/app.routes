@@ -71,7 +71,7 @@ POST        /:taxYear/benefits/company-benefits                                 
 
 #################       Employment cannot update pages      #############################
 
-GET         /:taxYear/employment/cannot-update                                       controllers.employment.CannotUpdateEmploymentController.show(taxYear:Int)
+GET         /:taxYear/cannot-edit                                                    controllers.employment.CannotUpdateEmploymentController.show(taxYear:Int)
 
 
 #################       Car van fuel benefits pages      ###########################
