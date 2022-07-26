@@ -50,14 +50,11 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
-          val form = fillFormFromPriorAndCYA(formsProvider.taxableCostsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.taxableExpenses))
-          )
-
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.taxableCostsAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -69,8 +66,7 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.taxableCostsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.taxableExpenses)
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount))
         }

@@ -44,7 +44,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   ".show" should {
     "render 'How much do you want to claim for buying other equipment?' page with the correct content and" +
       " no pre-filled amount when no user data" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(otherAndCapitalAllowances = None)))))
@@ -56,6 +56,25 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render 'How much do you want to claim for buying other equipment?' page with the correct content and" +
+      " pre-filled amount when no user data" which {
+      implicit lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val employmentData = anAllEmploymentData
+        userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
+        urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "600"
         result.status shouldBe OK
       }
     }

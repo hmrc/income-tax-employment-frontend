@@ -32,8 +32,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val poundPrefixText = "£"
-  private val amountInputName = "amount"
   private val employmentId = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
@@ -44,8 +42,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
   private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
   ".show" should {
-    "render the other services amount page" which {
-      lazy val result: WSResponse = {
+    "render the other services amount page without a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(service = None)))
@@ -55,6 +53,22 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the other services amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "400"
         result.status shouldBe OK
       }
     }

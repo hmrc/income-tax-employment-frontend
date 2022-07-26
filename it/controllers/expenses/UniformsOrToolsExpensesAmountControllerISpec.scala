@@ -42,7 +42,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   ".show" should {
     "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with the correct content and" +
       " no pre-filled amount no values pre-filled when no user data" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
@@ -51,6 +51,23 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render 'How much do you want to claim for uniforms, work clothes, or tools?' page with the correct content and" +
+      " pre-filled amount no values pre-filled when no user data" which {
+      implicit lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = Some(100)))))
+        urlGet(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

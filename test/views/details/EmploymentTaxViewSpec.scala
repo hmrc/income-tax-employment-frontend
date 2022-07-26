@@ -42,7 +42,6 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
     val expectedCaption: Int => String
     val hint: String
     val continue: String
-    val expectedPTextWithData: String
     val expectedErrorInvalidFormat: String
     val expectedErrorMaxLimit: String
   }
@@ -59,7 +58,6 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hint: String = "For example, £193.52"
     val continue: String = "Continue"
-    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
     val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
     val expectedErrorMaxLimit = "The amount of UK tax must be less than £100,000,000,000"
   }
@@ -68,7 +66,6 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
     val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val hint: String = "Er enghraifft, £193.52"
     val continue: String = "Yn eich blaen"
-    val expectedPTextWithData: String = s"Os na chafodd £200 ei thynnu fel treth y DU, rhowch wybod i ni beth ywír swm cywir."
     val expectedErrorInvalidFormat = "Nodwch y swm o dreth y DU yn y fformat cywir"
     val expectedErrorMaxLimit = "Maeín rhaid iír swm o dreth y DU fod yn llai na £100,000,000,000"
   }
@@ -125,7 +122,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, employmentId, employerName, formProvider.employmentTaxAmountForm(user.isAgent), Some(200))
+        val htmlFormat = underTest(taxYearEOY, employmentId, employerName, formProvider.employmentTaxAmountForm(user.isAgent))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -133,7 +130,6 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         h1Check(user.specificExpectedResults.get.expectedH1)
         captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
         welshToggleCheck(user.isWelsh)
-        textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
         buttonCheck(user.commonExpectedResults.continue, continueButton)
         textOnPageCheck(user.commonExpectedResults.hint, hintText)
         inputFieldValueCheck(amountInputName, inputAmountField, "")
@@ -143,7 +139,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, employmentId, employerName, formProvider.employmentTaxAmountForm(user.isAgent), None)
+        val htmlFormat = underTest(taxYearEOY, employmentId, employerName, formProvider.employmentTaxAmountForm(user.isAgent))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -162,7 +158,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val htmlFormat = underTest(taxYearEOY, employmentId, employerName,
-          formProvider.employmentTaxAmountForm(user.isAgent).fill(200), Some(200))
+          formProvider.employmentTaxAmountForm(user.isAgent).fill(200))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -170,7 +166,6 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         h1Check(get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         welshToggleCheck(user.isWelsh)
-        textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
         buttonCheck(continue, continueButton)
         textOnPageCheck(hint, hintText)
         inputFieldValueCheck(amountInputName, inputAmountField, "200")
@@ -181,14 +176,13 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val htmlFormat = underTest(taxYearEOY, employmentId, employerName,
-          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "")), Some(200))
+          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
         h1Check(user.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
         buttonCheck(user.commonExpectedResults.continue, continueButton)
         textOnPageCheck(user.commonExpectedResults.hint, hintText)
         inputFieldValueCheck(amountInputName, inputAmountField, "")
@@ -203,14 +197,13 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val htmlFormat = underTest(taxYearEOY, employmentId, employerName,
-          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "abc123")), Some(200))
+          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "abc123")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
         h1Check(user.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
         buttonCheck(user.commonExpectedResults.continue, continueButton)
         textOnPageCheck(user.commonExpectedResults.hint, hintText)
         inputFieldValueCheck(amountInputName, inputAmountField, "abc123")
@@ -225,14 +218,13 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val htmlFormat = underTest(taxYearEOY, employmentId, employerName,
-          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "9999999999999999999999999999")), Some(200))
+          formProvider.employmentTaxAmountForm(user.isAgent).bind(Map("amount" -> "9999999999999999999999999999")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(user.specificExpectedResults.get.expectedErrorTitle, user.isWelsh)
         h1Check(user.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(user.commonExpectedResults.expectedPTextWithData, pText)
         buttonCheck(user.commonExpectedResults.continue, continueButton)
         textOnPageCheck(user.commonExpectedResults.hint, hintText)
         inputFieldValueCheck(amountInputName, inputAmountField, "9999999999999999999999999999")

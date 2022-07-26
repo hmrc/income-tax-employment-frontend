@@ -39,8 +39,8 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the telephone employment benefits amount page" which {
-      lazy val result: WSResponse = {
+    "render the telephone employment benefits amount page with no pre-filled form" which {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephone = None)))
@@ -50,6 +50,22 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the telephone employment benefits amount page  with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

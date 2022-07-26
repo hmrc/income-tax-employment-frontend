@@ -24,7 +24,7 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -67,6 +67,22 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "should render How much was your company car fuel benefit? page with no value when theres is cya data" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

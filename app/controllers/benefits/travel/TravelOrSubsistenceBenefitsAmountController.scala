@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TravelOrSubsistenceBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                             inYearAction: InYearUtil,
-                                                            travelOrSubsistenceBenefitsAmountView: TravelOrSubsistenceBenefitsAmountView,
+                                                            pageView: TravelOrSubsistenceBenefitsAmountView,
                                                             employmentSessionService: EmploymentSessionService,
                                                             travelService: TravelService,
                                                             formsProvider: TravelFormsProvider,
@@ -50,15 +50,11 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(authAction: Authoris
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence))
-          val form = fillFormFromPriorAndCYA(formsProvider.travelOrSubsistenceBenefitsAmountForm(
-            request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.travelAndSubsistence))
-          }
-
-          Future.successful(Ok(travelOrSubsistenceBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.travelOrSubsistenceBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -70,8 +66,7 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(authAction: Authoris
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.travelOrSubsistenceBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).flatMap(_.travelAndSubsistence)
-              Future.successful(BadRequest(travelOrSubsistenceBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

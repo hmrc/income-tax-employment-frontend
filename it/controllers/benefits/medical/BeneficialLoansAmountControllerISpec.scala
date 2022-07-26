@@ -41,12 +41,27 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoan = Some(18.00))))
+          insertCyaData(anEmploymentUserData)
+          urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe "400"
+          result.status shouldBe OK
+        }
+      }
+      "the prior amount and cya amount is empty" which {
+        implicit lazy val result: WSResponse = {
+          authoriseAgentOrIndividual(isAgent = false)
+          dropEmploymentDB()
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoan = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe ""
           result.status shouldBe OK
         }
       }

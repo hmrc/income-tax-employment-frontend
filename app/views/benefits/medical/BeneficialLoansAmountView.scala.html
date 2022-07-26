@@ -23,17 +23,10 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
     messages(s"benefits.beneficialLoansAmount.title.${if(request.user.isAgent) "agent" else "individual"}")
-}
-
-@contentHtml = {
-    @if(preAmount.isDefined) {
-        <p class="govuk-body">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
-    }
-    <p class="govuk-body">@messages(s"benefits.beneficialLoansAmount.youCanFind.${if(request.user.isAgent) "agent" else "individual"}")</p>
 }
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
@@ -42,9 +35,6 @@
 
     @heading(titleText, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(preAmount.isDefined) {
-        <p class="govuk-body">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
-    }
     <p class="govuk-body">@messages(s"benefits.beneficialLoansAmount.youCanFind.${if(request.user.isAgent) "agent" else "individual"}")</p>
 
     @formWithCsrf(controllers.benefits.medical.routes.BeneficialLoansAmountController.submit(taxYear, empId)) {

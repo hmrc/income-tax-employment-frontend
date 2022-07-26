@@ -42,8 +42,8 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the entertainment benefits amount page" which {
-      lazy val result: WSResponse = {
+    "render the entertainment benefits amount page without pre-filled form" which {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertaining = None)))
@@ -53,6 +53,22 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the entertainment benefits amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "300"
         result.status shouldBe OK
       }
     }

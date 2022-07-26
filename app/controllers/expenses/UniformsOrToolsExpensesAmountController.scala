@@ -49,14 +49,12 @@ class UniformsOrToolsExpensesAmountController @Inject()(authAction: AuthorisedAc
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.flatRateJobExpenses
           val isAgent = request.user.isAgent
-          val form = fillExpensesFormFromPriorAndCYA(formsProvider.uniformsWorkClothesToolsAmountForm(isAgent), prior, cyaAmount) { employmentExpenses =>
-            employmentExpenses.expenses.flatMap(_.flatRateJobExpenses)
-          }
-          Future(Ok(pageView(taxYear, form, cyaAmount)))
+          val form = fillForm(formsProvider.uniformsWorkClothesToolsAmountForm(isAgent), cyaAmount)
+          Future(Ok(pageView(taxYear, form)))
         }
       })
     }
@@ -69,8 +67,7 @@ class UniformsOrToolsExpensesAmountController @Inject()(authAction: AuthorisedAc
 
           formsProvider.uniformsWorkClothesToolsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = data.expensesCya.expenses.flatRateJobExpenses
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors)))
             },
             amount => handleSuccessForm(taxYear, data, amount)
           )

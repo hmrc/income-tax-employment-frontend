@@ -30,7 +30,6 @@ import views.html.expenses.OtherEquipmentAmountView
 class OtherEquipmentAmountViewSpec extends ViewUnitTest {
 
   private val poundPrefixText = "£"
-  private val newAmount: BigDecimal = 250
   private val amountField = "#amount"
   private val amountFieldName = "amount"
 
@@ -47,9 +46,6 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
 
     val expectedTitle: String
     val expectedHeading: String
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String
-
     val expectedErrorTitle: String
     val expectedNoEntryErrorMessage: String
     val expectedInvalidFormatErrorMessage: String
@@ -67,8 +63,6 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "How much do you want to claim for buying other equipment?"
     val expectedHeading = "How much do you want to claim for buying other equipment?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment. Tell us if this has changed."
-
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for buying other equipment in the correct format"
@@ -78,8 +72,6 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer prynu offer eraill?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer prynu offer eraill?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer prynu offer eraill. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill"
@@ -147,7 +139,7 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None)
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -168,14 +160,13 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), Some(250))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(userScenario.commonExpectedResults.expectedCaption)
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
           buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
@@ -189,14 +180,13 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), Some(600))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(userScenario.commonExpectedResults.expectedCaption)
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(600), wantToClaimSelector)
           buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(totalAmountParagraph, totalAmountParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)

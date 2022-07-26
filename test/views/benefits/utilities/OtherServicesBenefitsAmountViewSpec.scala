@@ -19,7 +19,6 @@ package views.benefits.utilities
 import forms.AmountForm
 import forms.benefits.utilities.UtilitiesFormsProvider
 import models.AuthorisationRequest
-import models.benefits.BenefitsViewModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -49,7 +48,6 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedCaption: String
     val amountHint: String
     val continue: String
-    val previousExpectedContent: String
   }
 
   trait SpecificExpectedResults {
@@ -65,14 +63,12 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
     override val amountHint: String = "For example, £193.52"
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £400, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continue = "Yn eich blaen"
-    val previousExpectedContent: String = "Rhowch wybod y swm cywir os nad oedd yn £400."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -111,8 +107,6 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val maxAmountErrorText: String = "Maeín rhaid iír swm a gafodd eich cleient ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
   }
 
-  private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -132,7 +126,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -152,14 +146,13 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(400), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(400), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(previousExpectedContent, contentSelector)
         textOnPageCheck(amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "400")
@@ -172,14 +165,13 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(400), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(400), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(previousExpectedContent, contentSelector)
         textOnPageCheck(amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "400")
@@ -193,14 +185,13 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.commonExpectedResults.previousExpectedContent, contentSelector)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -216,14 +207,13 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "abc")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "abc")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.commonExpectedResults.previousExpectedContent, contentSelector)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "abc")
@@ -240,14 +230,13 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "9999999999999999999999999999")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "9999999999999999999999999999")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.commonExpectedResults.previousExpectedContent, contentSelector)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")

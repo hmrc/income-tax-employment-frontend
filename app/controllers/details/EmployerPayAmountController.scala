@@ -55,14 +55,12 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
         cya match {
           case Some(cya) =>
             val cyaAmount = cya.employment.employmentDetails.taxablePayToDate
-            val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
             lazy val unfilledForm = formsProvider.employerPayAmountForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else formsProvider.employerPayAmountForm(request.user.isAgent).fill(cyaPay))
+              cyaPay => formsProvider.employerPayAmountForm(request.user.isAgent).fill(cyaPay))
 
             Future.successful(Ok(pageView(taxYear, form,
-              cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
+              cya.employment.employmentDetails.employerName, employmentId)))
 
           case None => Future.successful(
             Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -76,7 +74,7 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
         formsProvider.employerPayAmountForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors,
-            data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId))),
+            data.employment.employmentDetails.employerName, employmentId))),
           amount => handleSuccessForm(taxYear, employmentId, data, amount)
         )
       }

@@ -29,7 +29,7 @@
     button: Button
 )
 
-@(taxYear: Int, employmentId:String, employerName: String, form: Form[BigDecimal], amount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId:String, employerName: String, form: Form[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"employment.employmentTax.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
@@ -41,11 +41,7 @@
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(amount.isDefined){
-        <p class="govuk-body">@messages(s"employment.employmentTax.preFill.amount", amount.get)</p>
-    } else {
-        <p class="govuk-body">@messages(s"employment.employmentTax.formLabel.${if(request.user.isAgent) "agent" else "individual"}")</p>
-    }
+    <p class="govuk-body">@messages(s"employment.employmentTax.formLabel.${if(request.user.isAgent) "agent" else "individual"}")</p>
 
     @formWithCsrf(action = controllers.details.routes.EmploymentTaxController.submit(taxYear, employmentId)) {
         @inputText(

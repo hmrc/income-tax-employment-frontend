@@ -52,7 +52,6 @@ class PayeRefViewSpec extends ViewUnitTest {
   trait CommonExpectedResults {
     val expectedCaption: String
     val expectedH1: String
-    val expectedContent: String
     val continueButtonText: String
     val hintText: String
     val emptyErrorText: String
@@ -64,7 +63,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
-    val expectedContent: String = "If the PAYE reference is not 123/AA12345, tell us the correct reference."
     val emptyErrorText: String = "Enter a PAYE reference"
     val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
   }
@@ -74,7 +72,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedH1: String = "Beth yw cyfeirnod TWE maggie?"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, 123/AB456"
-    val expectedContent: String = "Rhowch wybod i ni beth ywír cyfeirnod TWE cywir os yw 123/AA12345 yn anghywir."
     val emptyErrorText: String = "Nodwch gyfeirnod TWE"
     val wrongFormatErrorText: String = "Nodwch gyfeirnod TWE yn y fformat cywir"
   }
@@ -125,14 +122,13 @@ class PayeRefViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form.fill(value = payeRefValue), taxYear = taxYearEOY, employerName, Some(payeRefValue), employmentId)
+        val htmlFormat = underTest(form.fill(value = payeRefValue), taxYear = taxYearEOY, employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(expectedContent, contentSelector)
         textOnPageCheck(hintText, hintTestSelector)
         inputFieldValueCheck(InputFieldName, inputSelector, payeRefValue)
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -144,7 +140,7 @@ class PayeRefViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form, taxYear = taxYearEOY, employerName, None, employmentId)
+        val htmlFormat = underTest(form, taxYear = taxYearEOY, employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -163,7 +159,7 @@ class PayeRefViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form.bind(Map(payeRef -> "")), taxYear = taxYearEOY, employerName, None, employmentId)
+        val htmlFormat = underTest(form.bind(Map(payeRef -> "")), taxYear = taxYearEOY, employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -180,7 +176,7 @@ class PayeRefViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val invalidPaye = "123/abc " + employmentId + "<Q>"
-        val htmlFormat = underTest(form.bind(Map(payeRef -> invalidPaye)), taxYear = taxYearEOY, employerName, None, employmentId)
+        val htmlFormat = underTest(form.bind(Map(payeRef -> invalidPaye)), taxYear = taxYearEOY, employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

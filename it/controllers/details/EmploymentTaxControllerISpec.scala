@@ -16,6 +16,7 @@
 
 package controllers.details
 
+import models.details.EmploymentDetails
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import play.api.http.HeaderNames
@@ -63,6 +64,24 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe "200"
+        result.status shouldBe OK
+      }
+    }
+
+    "for end of year return a page with no prior data" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val employmentDetails: EmploymentDetails = cya().employment.employmentDetails.copy(totalTaxToDate = None)
+        insertCyaData(cya().copy(employment = cya().employment.copy(employmentDetails = employmentDetails)))
+
+        urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe ""
         result.status shouldBe OK
       }
     }

@@ -53,7 +53,6 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedHeading: String
     val expectedErrorTitle: String
     val expectedDoNotClaim: String
-    val expectedReplay: Int => String
     val expectedNoEntryError: String
     val expectedFormatError: String
     val expectedOverMaxError: String
@@ -78,8 +77,6 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedHeading = "How much do you want to claim for business travel and overnight stays?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedDoNotClaim = "Do not claim any amount your employer has paid you for."
-    val expectedReplay: Int => String = amount =>
-      s"You told us you want to claim £$amount for other business travel and overnight stays. Tell us if this has changed."
     val expectedNoEntryError = "Enter the amount you want to claim for business travel and overnight stays"
     val expectedFormatError = "Enter the amount you want to claim for business travel and overnight stays in the correct format"
     val expectedOverMaxError = "The amount you want to claim for business travel and overnight stays must be less than £100,000,000,000"
@@ -90,8 +87,6 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi."
-    val expectedReplay: Int => String = amount =>
-      s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos. Rhowch wybod i ni os yw hyn wedi newid."
     val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos"
     val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos yn y fformat cywir"
     val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000"
@@ -103,8 +98,6 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes to claim for your client’s travel and overnight stays"
     val expectedDoNotClaim = "Do not claim any amount your client’s employer has paid them for."
-    val expectedReplay: Int => String = amount =>
-      s"You told us you want to claim £$amount for your client’s other business travel and overnight stays. Tell us if this has changed."
     val expectedNoEntryError = "Enter the amount you want to claim for your client’s business travel and overnight stays"
     val expectedFormatError = "Enter the amount you want to claim for business travel and overnight stays for your client in the correct format"
     val expectedOverMaxError = "The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000"
@@ -116,8 +109,6 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
     val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo."
-    val expectedReplay: Int => String = amount =>
-      s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer costau teithio busnes ac aros dros nos eich cleient . Rhowch wybod i ni os yw hyn wedi newid."
     val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient"
     val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient yn y fformat cywir"
     val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000"
@@ -142,7 +133,7 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -162,16 +153,15 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 25), Some(25))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 25))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(index = 2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 2))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 3))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, newAmount.toString)
         buttonCheck(buttonText, continueButtonSelector)
@@ -183,16 +173,15 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(200))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
         buttonCheck(buttonText, continueButtonSelector)
@@ -207,16 +196,15 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(200))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "123.33.33")
         buttonCheck(buttonText, continueButtonSelector)
@@ -231,16 +219,15 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(200))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplay(200), paragraphSelector(index = 3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 4))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "100,000,000,000")
         buttonCheck(buttonText, continueButtonSelector)

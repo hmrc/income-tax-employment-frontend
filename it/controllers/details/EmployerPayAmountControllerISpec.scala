@@ -16,6 +16,7 @@
 
 package controllers.details
 
+import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
@@ -39,7 +40,22 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     )
 
   ".show" should {
-    "should render How much did xxx pay you? page" which {
+    "should render How much did xxx pay you? page with no pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val employmentDetails: EmploymentDetails = cya().employment.employmentDetails.copy(taxablePayToDate = None)
+        insertCyaData(cya().copy(employment = cya().employment.copy(employmentDetails = employmentDetails)))
+        urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+      "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "should render How much did xxx pay you? page with a pre-filled form" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -48,6 +64,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
         urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

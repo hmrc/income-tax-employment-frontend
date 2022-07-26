@@ -62,8 +62,6 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorNoEntry: String
     val expectedErrorIncorrectFormat: String
     val expectedErrorOverMaximum: String
-
-    def expectedReplayText(amount: BigDecimal): String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -89,8 +87,6 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorNoEntry = "Enter the amount you want to claim for professional fees and subscriptions"
     val expectedErrorIncorrectFormat = "Enter the amount you want to claim for professional fees and subscriptions in the correct format"
     val expectedErrorOverMaximum = "The amount you want to claim for professional fees and subscriptions must be less than £100,000,000,000"
-
-    def expectedReplayText(amount: BigDecimal): String = s"You told us you want to claim £$amount for professional fees and subscriptions. Tell us if this has changed."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -100,9 +96,6 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorNoEntry = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
     val expectedErrorIncorrectFormat = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol yn y fformat cywir"
     val expectedErrorOverMaximum = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
-
-    def expectedReplayText(amount: BigDecimal): String = s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer ffioedd a thanysgrifiadau proffesiynol. " +
-      "Rhowch wybod i ni os yw hyn wedi newid."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,7 +106,6 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorIncorrectFormat = "Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format"
     val expectedErrorOverMaximum = "The amount you want to claim for your client’s professional fees and subscriptions must be less than £100,000,000,000"
 
-    def expectedReplayText(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s professional fees and subscriptions. Tell us if this has changed."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -124,8 +116,6 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorIncorrectFormat = "Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient yn y fformat cywir"
     val expectedErrorOverMaximum = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient fod yn llai na £100,000,000,000"
 
-    def expectedReplayText(amount: BigDecimal): String = s"Dywedoch wrthym eich bod chi am hawlio £$amount ar gyfer ffioedd a thanysgrifiadau " +
-      "proffesiynol eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -148,7 +138,7 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None)
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -170,14 +160,13 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), Some(100))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplayText(newAmount), replayTextSelector)
           textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, newAmount.toString())
@@ -191,14 +180,13 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "400")), Some(400))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "400")))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
           textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
@@ -212,14 +200,13 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(400))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
           textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
@@ -234,14 +221,13 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "abc")), Some(400))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "abc")))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
           textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "abc")
@@ -256,14 +242,13 @@ class ProfFeesAndSubscriptionsExpensesAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(400))
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(userScenario.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
           textOnPageCheck(expectedTotalAmountParagraph, totalAmountTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, maxLimit)

@@ -46,8 +46,6 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
   trait CommonExpectedResults {
     val expectedCaption: String
 
-    def ifItWasNotText(amount: BigDecimal): String
-
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -66,8 +64,6 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -75,8 +71,6 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-
-    def ifItWasNotText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
@@ -142,7 +136,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -164,15 +158,14 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), Some(18.00), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amount = 18), paragraphTextSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(2))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -186,15 +179,14 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amount = 400), paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -211,15 +203,14 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amount = 400), paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "123.33.33")
@@ -236,15 +227,14 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")),employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amount = 400), paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "100,000,000,000")

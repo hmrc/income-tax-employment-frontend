@@ -37,7 +37,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
 
   ".show" should {
     "render the company van fuel benefits amount page without pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData)), nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanFuel = None)))
@@ -47,6 +47,22 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the company van fuel benefits amount page with pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData)), nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "400"
         result.status shouldBe OK
       }
     }

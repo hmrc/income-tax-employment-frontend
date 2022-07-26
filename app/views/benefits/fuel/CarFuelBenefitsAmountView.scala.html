@@ -30,7 +30,7 @@
     button: Button
 )
 
-@(taxYear: Int, form: Form[BigDecimal], empId: String, previousAmount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], empId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{messages(s"benefits.carFuelAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
@@ -38,15 +38,13 @@
 
 @paragraphText = @{messages(s"benefits.carFuelAmount.paragraph.${if (request.user.isAgent) "agent" else "individual"}")}
 
-@optionalText = @{if(previousAmount.isDefined){messages("common.ifItWasNot", bigDecimalCurrency(previousAmount.get.toString))}}
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
     @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-
-    @if(previousAmount.isDefined){<p class="govuk-body">@optionalText</p>}
+    
     <p class="govuk-body">@paragraphText</p>
 
     @formWithCsrf(controllers.benefits.fuel.routes.CarFuelBenefitsAmountController.submit(taxYear, empId)) {

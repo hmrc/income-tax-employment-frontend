@@ -30,7 +30,7 @@
     button: Button
 )
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{messages(s"expenses.businessTravelAndOvernightAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
@@ -42,9 +42,6 @@
 
     @heading(headingForUse, Some(messages("expenses.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(preAmount.isDefined) {
-        <p class="govuk-body">@messages(s"expenses.businessTravelAndOvernightAmount.replay.${if(request.user.isAgent) "agent" else "individual"}", bigDecimalCurrency(preAmount.get.toString))</p>
-    }
     <p class="govuk-body">@messages(s"expenses.businessTravelAndOvernightAmount.doNotClaim.${if(request.user.isAgent) "agent" else "individual"}")</p>
 
     <p id="total-amount-paragraph" class="govuk-body govuk-!-margin-bottom-1">@messages("common.expenses.totalForAllEmployers")</p>

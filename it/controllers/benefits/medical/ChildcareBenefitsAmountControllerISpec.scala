@@ -46,6 +46,22 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       }
 
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the childcare benefits amount page with filled data" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

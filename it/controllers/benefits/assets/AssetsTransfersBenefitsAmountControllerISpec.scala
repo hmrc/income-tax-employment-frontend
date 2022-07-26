@@ -47,6 +47,22 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
       }
 
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the assets amount page with pre-filled data" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

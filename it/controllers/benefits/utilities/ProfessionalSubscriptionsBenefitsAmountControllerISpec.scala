@@ -17,8 +17,6 @@
 package controllers.benefits.utilities
 
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -42,7 +40,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
   ".show" should {
     "render the professional subscriptions benefits amount page with no pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptions = None)))
@@ -53,6 +51,23 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the professional subscriptions benefits amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "300"
         result.status shouldBe OK
       }
     }
@@ -110,10 +125,6 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
         urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> ""))
       }
-
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
 
       "has an BAD_REQUEST status" in {
         result.status shouldBe BAD_REQUEST

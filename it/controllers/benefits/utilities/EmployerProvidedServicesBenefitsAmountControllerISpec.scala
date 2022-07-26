@@ -40,7 +40,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
 
   ".show" should {
     "render the employer provided services benefits amount page without pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedServices = None)))
@@ -51,6 +51,23 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the employer provided services benefits amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

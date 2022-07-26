@@ -31,7 +31,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
   private val employmentId = "001"
 
   object Selectors {
-    val paragraph1Selector = "p.govuk-body:nth-child(2)"
+    val paragraph0Selector = "#main-content > div > div > p.govuk-body:first-of-type"
     val paragraph2Selector = "p.govuk-body:nth-child(3)"
     val paragraph3Selector = "p.govuk-body:nth-child(4)"
     val paragraph4Selector = "p.govuk-body:nth-child(5)"
@@ -63,7 +63,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val bullet1: String
     val bullet2: String
     val bullet3: String
-    val previousParagraph: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -73,7 +72,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val bullet1: String = "upper and lower case letters (a to z)"
     val bullet2: String = "numbers"
     val bullet3: String = "the special characters: .,-()/=!\"%&*;<>'+:\\?"
-    val previousParagraph: String = "If the payroll ID is not 123456, tell us the correct ID."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -83,7 +81,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val bullet1: String = "llythrennau mawr a bach (a i z)"
     val bullet2: String = "rhifau"
     val bullet3: String = "y cymeriadau arbennig: .,-()/=!\"%&*;<>'+:\\?"
-    val previousParagraph: String = "Os nad 123456 ywír ID cyflogres, rhowch wybod i ni beth ywír ID cywir."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -150,14 +147,14 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent), taxYear = taxYearEOY, employmentId, None)
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph1Selector)
+        textOnPageCheck(get.paragraph1, paragraph0Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
@@ -173,19 +170,18 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).fill(value = "123456"), taxYear = taxYearEOY, employmentId, Some("123456"))
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).fill(value = "123456"), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(previousParagraph, paragraph1Selector)
-        textOnPageCheck(get.paragraph1, paragraph2Selector)
+        textOnPageCheck(get.paragraph1, paragraph0Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph4Selector)
+        textOnPageCheck(get.paragraph2, paragraph3Selector)
         textOnPageCheck(hintText, hintTextSelector)
         inputFieldValueCheck(inputName, inputSelector, "123456")
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -197,7 +193,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> "")), taxYear = taxYearEOY, employmentId,None)
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> "")), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -224,7 +220,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val payrollId = "123456789012345678901234567890123456789"
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId, None)
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -251,7 +247,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val payrollId = "$11223"
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId, None)
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

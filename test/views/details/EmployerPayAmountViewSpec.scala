@@ -49,7 +49,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String
     val expectedTitle: String
     val expectedErrorTitle: String
-    val expectedContent: String
     val expectedContentNewAccount: String
     val emptyErrorText: String
   }
@@ -82,7 +81,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "How much did maggie pay you?"
     val expectedTitle: String = "How much did your employer pay you?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = s"If you were not paid £$amount, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
     val emptyErrorText: String = "Enter the amount you were paid"
   }
@@ -91,7 +89,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "How much did maggie pay your client?"
     val expectedTitle: String = "How much did your client’s employer pay them?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £100, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
     val emptyErrorText: String = "Enter the amount your client was paid"
   }
@@ -100,7 +97,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "Faint y gwnaeth maggie ei dalu i chi?"
     val expectedTitle: String = "Faint y gwnaeth eich cyflogwr ei dalu i chi?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = s"Os na chafodd £$amount ei dalu i chi, rhowch wybod i ni beth ywír swm cywir."
     val expectedContentNewAccount: String = "Nodwch y swm gros. Mae hwn iíw weld fel arfer ar eich P60."
     val emptyErrorText: String = "Nodwch swm a dalwyd i chi"
   }
@@ -109,7 +105,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "Faint y gwnaeth maggie ei dalu iích cleient?"
     val expectedTitle: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu iddo?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Os na chafodd £100 ei dalu iích cleient, rhowch wybod i ni beth ywír swm cywir."
     val expectedContentNewAccount: String = "Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient."
     val emptyErrorText: String = "Nodwch y swm a dalwyd iích cleient"
   }
@@ -135,7 +130,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent), None, employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -156,7 +151,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent), Some(amount), employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -165,7 +160,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, contentSelector)
         textOnPageCheck(hintText, hintTestSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -177,7 +171,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).fill(amount), Some(amount), employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).fill(amount), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -186,7 +180,6 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, contentSelector)
         textOnPageCheck(hintText, hintTestSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "100")
@@ -198,7 +191,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> "")), None, employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> "")), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -222,7 +215,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> "abc123")), None, employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> "abc123")), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -247,7 +240,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val overMaxAmount = "100,000,000,000"
-        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> overMaxAmount)), None, employerName, employmentId)
+        val htmlFormat = underTest(taxYearEOY, formProvider.employerPayAmountForm(user.isAgent).bind(Map("amount" -> overMaxAmount)), employerName, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

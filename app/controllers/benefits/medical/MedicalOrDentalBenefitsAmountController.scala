@@ -49,13 +49,11 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance))
-          val form = fillFormFromPriorAndCYA(formsProvider.medicalOrAmountForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.medicalInsurance))
-          }
-          Future(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.medicalOrAmountForm(request.user.isAgent), cyaAmount)
+          Future(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -69,8 +67,7 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
           formsProvider.medicalOrAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel).flatMap(_.medicalInsurance)
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

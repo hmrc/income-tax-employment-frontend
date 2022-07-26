@@ -46,6 +46,21 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the how much of your client’s Income Tax did their employer pay?' page with filled data" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "255"
         result.status shouldBe OK
       }
     }

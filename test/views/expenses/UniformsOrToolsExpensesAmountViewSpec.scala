@@ -49,8 +49,6 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedTitle: String
     val expectedHeading: String
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String
-
     val expectedErrorTitle: String
     val expectedNoEntryErrorMessage: String
     val expectedInvalidFormatErrorMessage: String
@@ -69,8 +67,6 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for uniform, work clothes, or tools. Tell us if this has changed."
-
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format"
@@ -80,8 +76,6 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Dywedoch eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
@@ -93,8 +87,6 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "How much do you want to claim for uniforms, work clothes, or tools for your client?"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for your client’s uniform, work clothes, or tools. Tell us if this has changed."
-
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format"
@@ -104,9 +96,6 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String =
-      s"Dywedoch wrthym eich bod am hawlio £$amount ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient. Rhowch wybod i ni os yw hyn wedi newid."
 
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
@@ -149,7 +138,7 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -171,14 +160,13 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 250), Some(250))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 250))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(newAmount), wantToClaimSelector)
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
         textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
@@ -193,14 +181,13 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), Some(300))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
         textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
@@ -215,14 +202,13 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(300))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
         textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
@@ -240,14 +226,13 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(300))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(300), wantToClaimSelector)
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
         textOnPageCheck(totalAmountText, totalAmountParagraphSelector)
@@ -264,14 +249,13 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(300))
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedPreAmountParagraph(amount = 300), wantToClaimSelector)
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
         textOnPageCheck(userScenario.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
         textOnPageCheck(totalAmountText, totalAmountParagraphSelector)

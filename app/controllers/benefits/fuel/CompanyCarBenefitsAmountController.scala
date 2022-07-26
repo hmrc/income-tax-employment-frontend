@@ -39,7 +39,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
-                                                   companyCarBenefitsAmountView: CompanyCarBenefitsAmountView,
+                                                   pageView: CompanyCarBenefitsAmountView,
                                                    inYearAction: InYearUtil,
                                                    employmentSessionService: EmploymentSessionService,
                                                    fuelService: FuelService,
@@ -50,15 +50,12 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
-          val form = fillFormFromPriorAndCYA(formsProvider.companyCarAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.car))
-          )
-
-          Future.successful(Ok(companyCarBenefitsAmountView(form, taxYear, employmentId, cyaAmount)))
+          val form = fillForm(formsProvider.companyCarAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(form, taxYear, employmentId)))
         }
       }
     }
@@ -72,8 +69,7 @@ class CompanyCarBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.companyCarAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
-              Future.successful(BadRequest(companyCarBenefitsAmountView(formWithErrors, taxYear, employmentId, cyaCarAmount)))
+              Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

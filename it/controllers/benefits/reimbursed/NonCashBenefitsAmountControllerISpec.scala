@@ -25,7 +25,7 @@ import support.builders.models.AuthorisationRequestBuilder.anAuthorisationReques
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, fullUrl, nonCashBenefitsAmountUrl, otherBenefitsUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -43,12 +43,30 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = Some(25.00))))
+          val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(nonCashBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe ""
+          result.status shouldBe OK
+        }
+      }
+    }
+
+    "render the non-cash benefits amount page with an non-empty amount field" when {
+      "the prior amount and cya amount are the same" which {
+        implicit lazy val result: WSResponse = {
+          authoriseAgentOrIndividual(isAgent = false)
+          dropEmploymentDB()
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertCyaData(anEmploymentUserData)
+          urlGet(fullUrl(nonCashBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe "400"
           result.status shouldBe OK
         }
       }

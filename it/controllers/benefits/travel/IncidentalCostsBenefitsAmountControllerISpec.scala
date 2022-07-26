@@ -40,7 +40,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the 'incidental overnight expenses amount' page" which {
+    "render the 'incidental overnight expenses amount' page without pre-filled form" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -51,6 +51,22 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
 
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the 'incidental overnight expenses amount' page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

@@ -38,7 +38,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
-                                               mileageBenefitAmountView: MileageBenefitAmountView,
+                                               pageView: MileageBenefitAmountView,
                                                inYearAction: InYearUtil,
                                                employmentSessionService: EmploymentSessionService,
                                                fuelService: FuelService,
@@ -49,15 +49,12 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
-          val form = fillFormFromPriorAndCYA(formsProvider.mileageAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
-          )
-
-          Future.successful(Ok(mileageBenefitAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.mileageAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -70,8 +67,7 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           formsProvider.mileageAmountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(mileageBenefitAmountView(taxYear, formWithErrors,
-              cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)), employmentId))),
+            formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId))),
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }

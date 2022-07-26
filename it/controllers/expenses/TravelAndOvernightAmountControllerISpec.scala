@@ -40,14 +40,14 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
-  private def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
-    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
+  private def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None, jobExpenses: Option[BigDecimal] = None): ExpensesViewModel =
+    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion, jobExpenses = jobExpenses)
 
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
-    "display the 'Business travel and Overnight stays Amount' page with correct content" which {
-      lazy val result: WSResponse = {
+    "display the 'Business travel and Overnight stays Amount' page with correct content and with no pre-filled form" which {
+      implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(jobExpenses = None)))))
@@ -57,6 +57,23 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "display the 'Business travel and Overnight stays Amount' page with correct content and with pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val employmentData = anAllEmploymentData
+        userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expensesViewModel(Some(true), Some(100)))))
+        urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

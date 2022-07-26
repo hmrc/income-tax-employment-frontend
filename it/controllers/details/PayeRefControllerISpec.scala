@@ -16,6 +16,7 @@
 
 package controllers.details
 
+import models.details.EmploymentDetails
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import play.api.http.HeaderNames
@@ -58,6 +59,23 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       }
 
       "has an OK status" in {
+        getInputFieldValue("#payeRef") shouldBe "123/AA12345"
+        result.status shouldBe OK
+      }
+    }
+
+    "render What's the PAYE reference of xxx? page when there is no cya data" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val employmentDetails: EmploymentDetails = cya().employment.employmentDetails.copy(employerRef = None)
+        insertCyaData(cya().copy(employment = cya().employment.copy(employmentDetails = employmentDetails)))
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue("#payeRef") shouldBe ""
         result.status shouldBe OK
       }
     }
