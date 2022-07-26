@@ -19,6 +19,7 @@ package services
 import common.EmploymentSection
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
+import models.details.EmploymentDetails
 import models.employment._
 import models.employment.createUpdate._
 import models.expenses.Expenses
@@ -607,7 +608,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                   Some(
                     EmploymentBenefits(
                       "",
-                      employmentDataFull.employment.employmentBenefits.map(_.toBenefits)
+                      employmentDataFull.employment.employmentBenefits.map(_.asBenefits)
                     )
                   )
                 )),
@@ -690,7 +691,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 Some(
                   EmploymentBenefits(
                     "",
-                    employmentDataFull.employment.employmentBenefits.map(_.toBenefits)
+                    employmentDataFull.employment.employmentBenefits.map(_.asBenefits)
                   )
                 )
               )
@@ -743,7 +744,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                 Some(
                   EmploymentBenefits(
                     "",
-                    employmentDataFull.employment.employmentBenefits.map(_.toBenefits)
+                    employmentDataFull.employment.employmentBenefits.map(_.asBenefits)
                   )
                 )
               )
@@ -1065,7 +1066,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                     )), None
                   )),
                   employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                    Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                    Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
                 )), None
               )
             ), None, Seq(), None
@@ -1158,7 +1159,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                   )), None
                 )),
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
             ), None
           )
@@ -1198,7 +1199,7 @@ class EmploymentSessionServiceSpec extends UnitTest
                   )), None
                 )),
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
             ), None
           )

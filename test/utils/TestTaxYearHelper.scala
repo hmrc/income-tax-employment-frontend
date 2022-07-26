@@ -18,6 +18,7 @@ package utils
 
 import java.time.LocalDate
 
+@deprecated("Use TaxYearProvider instead")
 trait TestTaxYearHelper {
 
   private val dateNow: LocalDate = LocalDate.now()

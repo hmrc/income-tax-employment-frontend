@@ -17,7 +17,7 @@
 package services.employment
 
 import models.employment.EmploymentDate
-import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import support.mocks.MockEmploymentSessionService
 import utils.UnitTest
@@ -57,7 +57,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
     "set startDate and keep cessationDate" when {
       "cessationDate defined and on or after startDate" in {
-        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"), startDate = Some(s"${taxYearEOY-1}-01-01"))
+        val givenEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"), startDate = Some(s"${taxYearEOY - 1}-01-01"))
         val givenEmploymentUserData = anEmploymentUserDataWithDetails(givenEmploymentDetails, isPriorSubmission = false, hasPriorBenefits = false)
         val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"), startDate = Some(s"$taxYearEOY-01-02"))
         val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)

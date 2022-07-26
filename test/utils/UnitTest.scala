@@ -32,6 +32,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
+import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
@@ -109,8 +110,8 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     await(awaitable).session
   }
 
-  val nino = "AA123456A"
-  val mtditid = "1234567890"
+  val nino: String = aUser.nino
+  val mtditid: String = aUser.mtditid
 
   val userData: IncomeTaxUserData = IncomeTaxUserData(
     Some(employmentsModel)
@@ -129,7 +130,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
       dateIgnored = Some(s"${taxYearEOY - 1}-04-04T01:01:01Z"),
       submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
       employmentData = Some(EmploymentData(
-        submittedOn = (s"${taxYearEOY - 1}-02-12"),
+        submittedOn = s"${taxYearEOY - 1}-02-12",
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),

@@ -16,16 +16,16 @@
 
 package support.builders.models.mongo
 
-import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import EmploymentDetailsBuilder.anEmploymentDetails
-import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import models.mongo.EmploymentCYAModel
+import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 
 object EmploymentCYAModelBuilder {
 
   val anEmploymentCYAModel: EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = anEmploymentDetails,
     employmentBenefits = Some(aBenefitsViewModel),
-    studentLoans = Some(aStudentLoans.toStudentLoansCYAModel())
+    studentLoans = Some(aStudentLoans.toStudentLoansCYAModel)
   )
 }

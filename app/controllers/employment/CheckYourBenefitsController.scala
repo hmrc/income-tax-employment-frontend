@@ -90,7 +90,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                         taxYear,
                         employmentId,
                         cya.employment.employmentDetails.employerName,
-                        benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
+                        benefits.asBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
                         isUsingCustomerData = benefits.isUsingCustomerData,
                         isInYear = false,
                         showNotification = false

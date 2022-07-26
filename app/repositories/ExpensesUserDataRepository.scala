@@ -25,30 +25,29 @@ import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import play.api.Logging
-import services.EncryptionService
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_EXPENSES_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
+import utils.SecureGCMCipher
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 @Singleton
-class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
-                                               appConfig: AppConfig,
-                                               encryptionService: EncryptionService)
-                                              (implicit ec: ExecutionContext) extends PlayMongoRepository[EncryptedExpensesUserData](
-  mongoComponent = mongo,
-  collectionName = "expensesUserData",
-  domainFormat = EncryptedExpensesUserData.format,
-  indexes = ExpensesUserDataIndexes.indexes(appConfig)
-) with Repository with ExpensesUserDataRepository with Logging {
+class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)
+                                              (implicit ec: ExecutionContext, secureGCMCipher: SecureGCMCipher)
+  extends PlayMongoRepository[EncryptedExpensesUserData](
+    mongoComponent = mongo,
+    collectionName = "expensesUserData",
+    domainFormat = EncryptedExpensesUserData.format,
+    indexes = ExpensesUserDataIndexes.indexes(appConfig)
+  ) with Repository with ExpensesUserDataRepository with Logging {
 
-  def find[T](taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
+  def find(taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
 
     lazy val start = "[ExpensesUserDataRepositoryImpl][find]"
 
@@ -71,7 +70,10 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
       case Left(error) => Left(error)
       case Right(encryptedData) =>
         Try {
-          encryptedData.map(encryptionService.decryptExpenses)
+          encryptedData.map { encryptedExpensesUserData: EncryptedExpensesUserData =>
+            implicit val textAndKey: TextAndKey = TextAndKey(encryptedExpensesUserData.mtdItId, appConfig.encryptionKey)
+            encryptedExpensesUserData.decrypted
+          }
         }.toEither match {
           case Left(t: Throwable) => handleEncryptionDecryptionException(t.asInstanceOf[Exception], start)
           case Right(decryptedData) => Right(decryptedData)
@@ -79,11 +81,12 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def createOrUpdate[T](expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]] = {
+  def createOrUpdate(expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]] = {
     lazy val start = "[ExpensesUserDataRepositoryImpl][update]"
 
     Try {
-      encryptionService.encryptExpenses(expensesUserData)
+      implicit val textAndKey: TextAndKey = TextAndKey(expensesUserData.mtdItId, appConfig.encryptionKey)
+      expensesUserData.encrypted
     }.toEither match {
       case Left(t: Throwable) => Future.successful(handleEncryptionDecryptionException(t.asInstanceOf[Exception], start))
       case Right(encryptedData) =>
@@ -105,7 +108,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def clear[T](taxYear: Int, user: User): Future[Boolean] =
+  def clear(taxYear: Int, user: User): Future[Boolean] =
     collection.deleteOne(filterExpenses(user.sessionId, user.mtditid, user.nino, taxYear))
       .toFutureOption()
       .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EXPENSES_DATA, user))
@@ -128,9 +131,9 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
 }
 
 trait ExpensesUserDataRepository {
-  def createOrUpdate[T](expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]]
+  def createOrUpdate(expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]]
 
-  def find[T](taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]]
+  def find(taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]]
 
-  def clear[T](taxYear: Int, user: User): Future[Boolean]
+  def clear(taxYear: Int, user: User): Future[Boolean]
 }

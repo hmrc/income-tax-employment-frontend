@@ -18,8 +18,14 @@ package models.mongo
 
 import models.expenses.{EncryptedExpensesViewModel, Expenses, ExpensesViewModel}
 import play.api.libs.json.{Json, OFormat}
+import utils.SecureGCMCipher
 
-case class ExpensesCYAModel(expenses: ExpensesViewModel)
+case class ExpensesCYAModel(expenses: ExpensesViewModel) {
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
+    expenses = expenses.encrypted
+  )
+}
 
 object ExpensesCYAModel {
   implicit val format: OFormat[ExpensesCYAModel] = Json.format[ExpensesCYAModel]
@@ -28,7 +34,11 @@ object ExpensesCYAModel {
     ExpensesCYAModel(expenses = expenses.toExpensesViewModel(isUsingCustomerData, submittedOn))
 }
 
-case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel)
+case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
+    ExpensesCYAModel(expenses = expenses.decrypted)
+}
 
 object EncryptedExpensesCYAModel {
   implicit val format: OFormat[EncryptedExpensesCYAModel] = Json.format[EncryptedExpensesCYAModel]

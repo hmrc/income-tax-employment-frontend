@@ -17,8 +17,9 @@
 package controllers.studentLoans
 
 import models.IncomeTaxUserData
+import models.details.EmploymentDetails
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -69,7 +70,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             studentLoans = Some(StudentLoansCYAModel(
               uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
           )))
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(studentLoans = Some(aStudentLoans.toStudentLoansCYAModel()))))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(studentLoans = Some(aStudentLoans.toStudentLoansCYAModel))))
         urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
       result.status shouldBe OK
@@ -96,7 +97,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -129,7 +130,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
 
         urlGet(url(taxYearEOY), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -154,7 +155,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
       "the submission is successful" in {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(false)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
             sessionId,
             mtditid,
@@ -195,7 +196,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
       "the submission is successful" in {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(false)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
             sessionId,
             mtditid,

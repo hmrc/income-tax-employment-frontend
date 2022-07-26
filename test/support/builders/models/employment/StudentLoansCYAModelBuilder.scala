@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package support
+package support.builders.models.employment
 
-trait TaxYearProvider {
+import models.employment.StudentLoansCYAModel
 
-  protected val taxYear: Int = TaxYearUtils.taxYear
-  protected val taxYearEOY: Int = TaxYearUtils.taxYearEOY
+object StudentLoansCYAModelBuilder {
 
-  protected val taxYearEndOfYearMinusOne: Int = taxYearEOY - 1
-
-  protected val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
-  protected val validTaxYearList: Seq[Int] = Seq(taxYearEndOfYearMinusOne, taxYearEOY, taxYear)
+  val aStudentLoansCYAModel: StudentLoansCYAModel = StudentLoansCYAModel(
+    uglDeduction = true,
+    uglDeductionAmount = Some(500.00),
+    pglDeduction = true,
+    pglDeductionAmount = Some(500.00)
+  )
 }

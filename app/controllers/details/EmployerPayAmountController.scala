@@ -22,7 +22,8 @@ import controllers.details.routes.EmploymentTaxController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
-import models.mongo.{EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -42,7 +43,7 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
                                             employmentService: EmploymentService,
                                             errorHandler: ErrorHandler,
                                             formsProvider: EmploymentDetailsFormsProvider)
-                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig)
+                                           (implicit cc: MessagesControllerComponents, appConfig: AppConfig)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   private implicit val executionContext: ExecutionContext = cc.executionContext

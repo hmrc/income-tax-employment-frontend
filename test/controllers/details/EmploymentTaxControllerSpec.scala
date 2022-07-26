@@ -21,7 +21,8 @@ import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
 import play.api.mvc.Result

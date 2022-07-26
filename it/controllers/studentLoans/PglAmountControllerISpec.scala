@@ -17,8 +17,9 @@
 package controllers.studentLoans
 
 import models.IncomeTaxUserData
+import models.details.EmploymentDetails
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -59,7 +60,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "render the postgraduate amount page when there is no prior or cya data" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -90,7 +91,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "render the Postgraduate amount page when there is prior data and no cya data" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -121,7 +122,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "render the postgraduate amount page when there is cya data for student loans but no prior data" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -153,7 +154,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to student loans cya page when there is no student loans data" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -184,7 +185,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to student loans cya page when there is no employment user data returned" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
 
         urlGet(url(taxYearEOY), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -216,7 +217,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
       "the submission is successful" in {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(false)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
             sessionId,
             mtditid,
@@ -255,7 +256,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "render the postgraduate loans repayment amount page with an error when there is no entry in the amount field" when {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -295,7 +296,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "render the postgraduate loans repayment amount page when there is an invalid format entry in the amount field" when {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,

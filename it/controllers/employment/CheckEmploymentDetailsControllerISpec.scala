@@ -38,7 +38,7 @@ import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmplo
 import support.builders.models.employment.PayBuilder.aPay
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}

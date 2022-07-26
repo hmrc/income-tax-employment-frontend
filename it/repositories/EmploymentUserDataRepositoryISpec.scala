@@ -19,6 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.benefits._
+import models.details.EmploymentDetails
 import models.mongo._
 import models.{AuthorisationRequest, User}
 import org.joda.time.{DateTime, DateTimeZone}
@@ -28,24 +29,25 @@ import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteExce
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.mongo.MongoUtils
-import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
+import utils.{IntegrationTest, SecureGCMCipher}
 
 import scala.concurrent.Future
 
 class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
   private val employmentRepo: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
-  private val encryptionService = app.injector.instanceOf[EncryptionService]
+  private implicit val secureGCMCipher: SecureGCMCipher = app.injector.instanceOf[SecureGCMCipher]
 
-  private def count = await(employmentRepo.collection.countDocuments().toFuture())
+  private def count: Long = await(employmentRepo.collection.countDocuments().toFuture())
 
-  private def find(employmentUserData: EmploymentUserData)(implicit authorisationRequest: AuthorisationRequest[_]): Future[Option[EncryptedEmploymentUserData]] = {
+  private def find(employmentUserData: EmploymentUserData)
+                  (implicit authorisationRequest: AuthorisationRequest[_]): Future[Option[EncryptedEmploymentUserData]] = {
     employmentRepo.collection
-      .find(filter = Repository.filter(authorisationRequest.user.sessionId, authorisationRequest.user.mtditid, authorisationRequest.user.nino, employmentUserData.taxYear, employmentUserData.employmentId))
+      .find(filter = Repository.filter(authorisationRequest.user.sessionId, authorisationRequest.user.mtditid, authorisationRequest.user.nino,
+        employmentUserData.taxYear, employmentUserData.employmentId))
       .toFuture()
       .map(_.headOption)
   }
@@ -90,7 +92,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(IncomeTaxAndCostsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
     Some(ReimbursedCostsVouchersAndNonCashModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(AssetsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
-    Some(s"${taxYearEOY-1}-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
+    Some(s"${taxYearEOY - 1}-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
     sessionIdOne,
@@ -104,7 +106,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       EmploymentDetails(
         employerName = "Name",
         employerRef = Some("Ref"),
-        startDate = Some(s"${taxYearEOY-1}-01-10"),
+        startDate = Some(s"${taxYearEOY - 1}-01-10"),
         payrollId = Some("12345"),
         didYouLeaveQuestion = Some(false),
         cessationDate = Some(s"$taxYearEOY-01-01"),
@@ -155,8 +157,9 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   "find with invalid encryption" should {
     "fail to find data" in new EmptyDatabase {
+      implicit val textAndKey: TextAndKey = TextAndKey(employmentUserDataOne.mtdItId, appConfig.encryptionKey)
       countFromOtherDatabase mustBe 0
-      await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptUserData(employmentUserDataOne)).toFuture())
+      await(repoWithInvalidEncryption.collection.insertOne(employmentUserDataOne.encrypted).toFuture())
       countFromOtherDatabase mustBe 1
       private val res = await(repoWithInvalidEncryption.find(employmentUserDataOne.taxYear, employmentIdOne, authRequestOne.user))
       res mustBe Left(EncryptionDecryptionError(
@@ -237,7 +240,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       count mustBe 2
       private val maybeData: Option[EncryptedEmploymentUserData] = await(find(employmentUserDataTwo)(authRequestTwo))
-      encryptionService.decryptUserData(maybeData.get) mustBe employmentUserDataTwo
+      implicit val textAndKey: TextAndKey = TextAndKey(maybeData.get.mtdItId, appConfig.encryptionKey)
+      maybeData.get.decrypted mustBe employmentUserDataTwo
     }
 
     "create a new document when the same documents exists but the sessionId is different" in new EmptyDatabase {
@@ -277,17 +281,18 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
-      val taxYear = taxYearEOY
+      val taxYear: Int = taxYearEOY
       await(employmentRepo.find(taxYear, "employmentId", authRequestOne.user)) mustBe Right(None)
     }
   }
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
+      implicit val textAndKey: TextAndKey = TextAndKey(employmentUserDataOne.mtdItId, appConfig.encryptionKey)
       await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
       count mustBe 1
 
-      private val encryptedEmploymentUserData: EncryptedEmploymentUserData = encryptionService.encryptUserData(employmentUserDataOne)
+      private val encryptedEmploymentUserData: EncryptedEmploymentUserData = employmentUserDataOne.encrypted
 
       private val caught = intercept[MongoWriteException](await(employmentRepo.collection.insertOne(encryptedEmploymentUserData).toFuture()))
 

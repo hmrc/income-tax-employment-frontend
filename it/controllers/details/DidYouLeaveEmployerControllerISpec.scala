@@ -17,7 +17,8 @@
 package controllers.details
 
 import forms.YesNoForm
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse

@@ -18,8 +18,8 @@ package models.employment
 
 import common.EmploymentToRemove.{all, hmrcHeld}
 import models.benefits.BenefitsViewModel
+import models.details.EmploymentDetails
 import models.employment.createUpdate.CreateUpdateEmployment
-import models.mongo.EmploymentDetails
 import org.joda.time.DateTime
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}

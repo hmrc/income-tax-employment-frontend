@@ -20,7 +20,7 @@ import com.codahale.metrics.SharedMetricRegistries
 import models.benefits._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class EmploymentBenefitsModelSpec extends UnitTest {
   SharedMetricRegistries.clear()
@@ -41,8 +41,8 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     Some(UtilitiesAndServicesModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(MedicalChildcareEducationModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(IncomeTaxAndCostsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
-    Some(ReimbursedCostsVouchersAndNonCashModel(Some(true),Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount))),
-    Some(AssetsModel(Some(true),Some(true),Some(amount), Some(true),Some(amount))),
+    Some(ReimbursedCostsVouchersAndNonCashModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(AssetsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
     None, isUsingCustomerData = true, isBenefitsReceived = true)
 
   val jsonModel: JsValue = Json.obj(
@@ -92,7 +92,7 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     }
 
     "parse from a benefitsView model to a benefits model" in {
-      val modelToBenefitsModel: Benefits = benefitsViewModel.toBenefits
+      val modelToBenefitsModel: Benefits = benefitsViewModel.asBenefits
       modelToBenefitsModel mustBe model
     }
   }

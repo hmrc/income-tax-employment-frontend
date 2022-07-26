@@ -28,8 +28,9 @@ import controllers.benefits.utilities.routes._
 import controllers.details.routes._
 import controllers.employment.routes._
 import models.benefits._
+import models.details.EmploymentDetails
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.Logging
 import play.api.mvc.Results.Redirect

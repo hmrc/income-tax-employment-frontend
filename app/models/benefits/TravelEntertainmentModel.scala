@@ -18,9 +18,14 @@ package models.benefits
 
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
                                     travelAndSubsistenceQuestion: Option[Boolean] = None,
@@ -28,8 +33,7 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
                                     personalIncidentalExpensesQuestion: Option[Boolean] = None,
                                     personalIncidentalExpenses: Option[BigDecimal] = None,
                                     entertainingQuestion: Option[Boolean] = None,
-                                    entertaining: Option[BigDecimal] = None
-                                   ) {
+                                    entertaining: Option[BigDecimal] = None) {
 
   def travelSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     travelAndSubsistenceQuestion match {
@@ -39,7 +43,6 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  //scalastyle:off
   def personalIncidentalSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     personalIncidentalExpensesQuestion match {
       case Some(true) => if (personalIncidentalExpenses.isDefined) None else Some(IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
@@ -48,6 +51,7 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
+  //scalastyle:off
   def entertainingSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     entertainingQuestion match {
       case Some(true) => if (entertaining.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO update to entertaining amount page
@@ -70,6 +74,16 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
       case None => Some(TravelOrEntertainmentBenefitsController.show(taxYear, employmentId))
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedTravelEntertainmentModel = EncryptedTravelEntertainmentModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.encrypted),
+    travelAndSubsistence = travelAndSubsistence.map(_.encrypted),
+    personalIncidentalExpensesQuestion = personalIncidentalExpensesQuestion.map(_.encrypted),
+    personalIncidentalExpenses = personalIncidentalExpenses.map(_.encrypted),
+    entertainingQuestion = entertainingQuestion.map(_.encrypted),
+    entertaining = entertaining.map(_.encrypted)
+  )
 }
 
 object TravelEntertainmentModel {
@@ -84,7 +98,19 @@ case class EncryptedTravelEntertainmentModel(sectionQuestion: Option[EncryptedVa
                                              personalIncidentalExpensesQuestion: Option[EncryptedValue] = None,
                                              personalIncidentalExpenses: Option[EncryptedValue] = None,
                                              entertainingQuestion: Option[EncryptedValue] = None,
-                                             entertaining: Option[EncryptedValue] = None)
+                                             entertaining: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): TravelEntertainmentModel = TravelEntertainmentModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.decrypted[Boolean]),
+    travelAndSubsistence = travelAndSubsistence.map(_.decrypted[BigDecimal]),
+    personalIncidentalExpensesQuestion = personalIncidentalExpensesQuestion.map(_.decrypted[Boolean]),
+    personalIncidentalExpenses = personalIncidentalExpenses.map(_.decrypted[BigDecimal]),
+    entertainingQuestion = entertainingQuestion.map(_.decrypted[Boolean]),
+    entertaining = entertaining.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedTravelEntertainmentModel {
   implicit val formats: OFormat[EncryptedTravelEntertainmentModel] = Json.format[EncryptedTravelEntertainmentModel]

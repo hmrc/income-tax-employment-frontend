@@ -242,10 +242,10 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
   ".sendViewStudentLoansDeductionsAudit" should {
     "send the audit event" in {
       mockAuditSendEvent(ViewStudentLoansDeductionsAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.toDeductions
+        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.asDeductions
       ).toAuditModel)
 
-      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, taxYearEOY, validModel.toDeductions)) shouldBe AuditResult.Success
+      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, taxYearEOY, validModel.asDeductions)) shouldBe AuditResult.Success
     }
   }
 

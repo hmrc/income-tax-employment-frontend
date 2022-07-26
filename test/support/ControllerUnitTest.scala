@@ -29,7 +29,7 @@ trait ControllerUnitTest extends UnitTest
   with FutureAwaits with DefaultAwaitTimeout
   with GuiceOneAppPerSuite
   with Injecting
-  with TaxYearProvider
+  with TaxYearHelper
   with FakeRequestHelper {
 
   protected implicit val cc: MessagesControllerComponents = stubMessagesControllerComponents()

@@ -28,8 +28,9 @@ import controllers.benefits.utilities.routes._
 import controllers.details.routes._
 import controllers.employment.routes._
 import models.benefits._
+import models.details.EmploymentDetails
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
@@ -38,12 +39,12 @@ import services.RedirectService._
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import support.{TaxYearProvider, UnitTest}
+import support.{TaxYearHelper, UnitTest}
 
 import scala.concurrent.Future
 
 class RedirectServiceSpec extends UnitTest
-  with TaxYearProvider {
+  with TaxYearHelper {
 
   private val cyaModel: EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
 

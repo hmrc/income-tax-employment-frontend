@@ -16,26 +16,32 @@
 
 package models.employment
 
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class StudentLoansCYAModel(uglDeduction: Boolean,
                                 uglDeductionAmount: Option[BigDecimal] = None,
                                 pglDeduction: Boolean,
                                 pglDeductionAmount: Option[BigDecimal] = None) {
 
-  def toDeductions: Option[Deductions] = {
+  lazy val asDeductions: Option[Deductions] =
     if (uglDeductionAmount.isDefined || pglDeductionAmount.isDefined) {
-      Some(Deductions(Some(
-        StudentLoans(
-          uglDeductionAmount,
-          pglDeductionAmount
-        )
-      )))
+      Some(Deductions(Some(StudentLoans(uglDeductionAmount, pglDeductionAmount))))
     } else {
       None
     }
-  }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedStudentLoansCYAModel = EncryptedStudentLoansCYAModel(
+    uglDeduction = uglDeduction.encrypted,
+    uglDeductionAmount = uglDeductionAmount.map(_.encrypted),
+    pglDeduction = pglDeduction.encrypted,
+    pglDeductionAmount = pglDeductionAmount.map(_.encrypted)
+  )
 }
 
 
@@ -44,9 +50,17 @@ object StudentLoansCYAModel {
 }
 
 case class EncryptedStudentLoansCYAModel(uglDeduction: EncryptedValue,
-                                         uglDeductionAmount: Option[EncryptedValue],
+                                         uglDeductionAmount: Option[EncryptedValue] = None,
                                          pglDeduction: EncryptedValue,
-                                         pglDeductionAmount: Option[EncryptedValue])
+                                         pglDeductionAmount: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): StudentLoansCYAModel = StudentLoansCYAModel(
+    uglDeduction = uglDeduction.decrypted[Boolean],
+    uglDeductionAmount = uglDeductionAmount.map(_.decrypted[BigDecimal]),
+    pglDeduction = pglDeduction.decrypted[Boolean],
+    pglDeductionAmount = pglDeductionAmount.map(_.decrypted[BigDecimal])
+  )
+}
 
 
 object EncryptedStudentLoansCYAModel {

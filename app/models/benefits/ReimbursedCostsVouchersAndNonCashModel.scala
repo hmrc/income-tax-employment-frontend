@@ -17,9 +17,14 @@
 package models.benefits
 
 import controllers.benefits.reimbursed.routes._
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolean] = None,
                                                   expensesQuestion: Option[Boolean] = None,
@@ -90,6 +95,21 @@ case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolea
       case None => Some(OtherBenefitsController.show(taxYear, employmentId))
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = EncryptedReimbursedCostsVouchersAndNonCashModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    expensesQuestion = expensesQuestion.map(_.encrypted),
+    expenses = expenses.map(_.encrypted),
+    taxableExpensesQuestion = taxableExpensesQuestion.map(_.encrypted),
+    taxableExpenses = taxableExpenses.map(_.encrypted),
+    vouchersAndCreditCardsQuestion = vouchersAndCreditCardsQuestion.map(_.encrypted),
+    vouchersAndCreditCards = vouchersAndCreditCards.map(_.encrypted),
+    nonCashQuestion = nonCashQuestion.map(_.encrypted),
+    nonCash = nonCash.map(_.encrypted),
+    otherItemsQuestion = otherItemsQuestion.map(_.encrypted),
+    otherItems = otherItems.map(_.encrypted)
+  )
 }
 
 object ReimbursedCostsVouchersAndNonCashModel {
@@ -108,7 +128,23 @@ case class EncryptedReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Opti
                                                            nonCashQuestion: Option[EncryptedValue] = None,
                                                            nonCash: Option[EncryptedValue] = None,
                                                            otherItemsQuestion: Option[EncryptedValue] = None,
-                                                           otherItems: Option[EncryptedValue] = None)
+                                                           otherItems: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    expensesQuestion = expensesQuestion.map(_.decrypted[Boolean]),
+    expenses = expenses.map(_.decrypted[BigDecimal]),
+    taxableExpensesQuestion = taxableExpensesQuestion.map(_.decrypted[Boolean]),
+    taxableExpenses = taxableExpenses.map(_.decrypted[BigDecimal]),
+    vouchersAndCreditCardsQuestion = vouchersAndCreditCardsQuestion.map(_.decrypted[Boolean]),
+    vouchersAndCreditCards = vouchersAndCreditCards.map(_.decrypted[BigDecimal]),
+    nonCashQuestion = nonCashQuestion.map(_.decrypted[Boolean]),
+    nonCash = nonCash.map(_.decrypted[BigDecimal]),
+    otherItemsQuestion = otherItemsQuestion.map(_.decrypted[Boolean]),
+    otherItems = otherItems.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedReimbursedCostsVouchersAndNonCashModel {
   implicit val formats: OFormat[EncryptedReimbursedCostsVouchersAndNonCashModel] = Json.format[EncryptedReimbursedCostsVouchersAndNonCashModel]

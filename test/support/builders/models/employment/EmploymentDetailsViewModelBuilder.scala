@@ -17,7 +17,7 @@
 package support.builders.models.employment
 
 import models.employment.EmploymentDetailsViewModel
-import support.builders.models.employment.HmrcEmploymentSourceBuilder.taxYearEOY
+import support.TaxYearUtils.taxYearEOY
 import support.builders.models.employment.PayBuilder.aPay
 
 object EmploymentDetailsViewModelBuilder {

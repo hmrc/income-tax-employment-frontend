@@ -27,7 +27,7 @@ import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmployme
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}

@@ -27,20 +27,19 @@ import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteExce
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.mongo.MongoUtils
-import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
+import utils.{IntegrationTest, SecureGCMCipher}
 
 import scala.concurrent.Future
 
 class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
   private val repo: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
-  private val encryptionService = app.injector.instanceOf[EncryptionService]
+  private implicit val secureGCMCipher: SecureGCMCipher = app.injector.instanceOf[SecureGCMCipher]
 
-  private def count = await(repo.collection.countDocuments().toFuture())
+  private def count: Long = await(repo.collection.countDocuments().toFuture())
 
   class EmptyDatabase {
     await(repo.collection.drop().toFuture())
@@ -96,7 +95,8 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   implicit val request: FakeRequest[AnyContent] = FakeRequest()
 
-  private val authorisationRequestOne = AuthorisationRequest(User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString), request)
+  private val authorisationRequestOne = AuthorisationRequest(User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino,
+    expensesUserDataOne.sessionId, AffinityGroup.Individual.toString), request)
 
   private val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
 
@@ -111,8 +111,9 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   "find with invalid encryption" should {
     "fail to find data" in new EmptyDatabase {
+      implicit val textAndKey: TextAndKey = TextAndKey(expensesUserDataOne.mtdItId, appConfig.encryptionKey)
       countFromOtherDatabase mustBe 0
-      await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptExpenses(expensesUserDataOne)).toFuture())
+      await(repoWithInvalidEncryption.collection.insertOne(expensesUserDataOne.encrypted).toFuture())
       countFromOtherDatabase mustBe 1
       private val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear, authorisationRequestOne.user))
       res mustBe Left(EncryptionDecryptionError(
@@ -202,10 +203,11 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
+      implicit val textAndKey: TextAndKey = TextAndKey(expensesUserDataOne.mtdItId, appConfig.encryptionKey)
       await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
       count mustBe 1
 
-      private val encryptedExpensesUserData: EncryptedExpensesUserData = encryptionService.encryptExpenses(expensesUserDataOne)
+      private val encryptedExpensesUserData: EncryptedExpensesUserData = expensesUserDataOne.encrypted
 
       private val caught = intercept[MongoWriteException](await(repo.collection.insertOne(encryptedExpensesUserData).toFuture()))
 

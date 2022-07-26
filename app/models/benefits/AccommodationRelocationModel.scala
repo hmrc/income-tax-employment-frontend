@@ -17,9 +17,14 @@
 package models.benefits
 
 import controllers.benefits.accommodation.routes._
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
                                         accommodationQuestion: Option[Boolean] = None,
@@ -38,7 +43,6 @@ case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  //scalastyle:off
   def accommodationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     accommodationQuestion match {
       case Some(true) => if (accommodation.isDefined) None else Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
@@ -47,9 +51,10 @@ case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
+  //scalastyle:off
   def nonQualifyingRelocationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nonQualifyingRelocationExpensesQuestion match {
-      case Some(true) => if (nonQualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) // TODO non qual relocation amount page
+      case Some(true) => if (nonQualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) // TODO non qualifying relocation amount page
       case Some(false) => None
       case None => Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
     }
@@ -69,6 +74,17 @@ case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
       case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): EncryptedAccommodationRelocationModel = EncryptedAccommodationRelocationModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    accommodationQuestion = accommodationQuestion.map(_.encrypted),
+    accommodation = accommodation.map(_.encrypted),
+    qualifyingRelocationExpensesQuestion = qualifyingRelocationExpensesQuestion.map(_.encrypted),
+    qualifyingRelocationExpenses = qualifyingRelocationExpenses.map(_.encrypted),
+    nonQualifyingRelocationExpensesQuestion = nonQualifyingRelocationExpensesQuestion.map(_.encrypted),
+    nonQualifyingRelocationExpenses = nonQualifyingRelocationExpenses.map(_.encrypted)
+  )
 }
 
 object AccommodationRelocationModel {
@@ -84,8 +100,19 @@ case class EncryptedAccommodationRelocationModel(sectionQuestion: Option[Encrypt
                                                  qualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
                                                  qualifyingRelocationExpenses: Option[EncryptedValue] = None,
                                                  nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
-                                                 nonQualifyingRelocationExpenses: Option[EncryptedValue] = None
-                                                )
+                                                 nonQualifyingRelocationExpenses: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): AccommodationRelocationModel = AccommodationRelocationModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    accommodationQuestion = accommodationQuestion.map(_.decrypted[Boolean]),
+    accommodation = accommodation.map(_.decrypted[BigDecimal]),
+    qualifyingRelocationExpensesQuestion = qualifyingRelocationExpensesQuestion.map(_.decrypted[Boolean]),
+    qualifyingRelocationExpenses = qualifyingRelocationExpenses.map(_.decrypted[BigDecimal]),
+    nonQualifyingRelocationExpensesQuestion = nonQualifyingRelocationExpensesQuestion.map(_.decrypted[Boolean]),
+    nonQualifyingRelocationExpenses = nonQualifyingRelocationExpenses.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedAccommodationRelocationModel {
   implicit val formats: OFormat[EncryptedAccommodationRelocationModel] = Json.format[EncryptedAccommodationRelocationModel]

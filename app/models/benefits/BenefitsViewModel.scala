@@ -16,8 +16,13 @@
 
 package models.benefits
 
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{booleanDecryptor, stringDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{booleanEncryptor, stringEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
                              accommodationRelocationModel: Option[AccommodationRelocationModel] = None,
@@ -29,71 +34,82 @@ case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
                              assetsModel: Option[AssetsModel] = None,
                              submittedOn: Option[String] = None,
                              isUsingCustomerData: Boolean,
-                             isBenefitsReceived: Boolean = false
-                            ) {
+                             isBenefitsReceived: Boolean = false) {
 
-  val vehicleDetailsPopulated: Boolean =
+  lazy val vehicleDetailsPopulated: Boolean =
     carVanFuelModel.flatMap(_.car).isDefined ||
       carVanFuelModel.flatMap(_.carFuel).isDefined ||
       carVanFuelModel.flatMap(_.van).isDefined ||
       carVanFuelModel.flatMap(_.vanFuel).isDefined ||
       carVanFuelModel.flatMap(_.mileage).isDefined
 
-  val accommodationDetailsPopulated: Boolean =
+  lazy val accommodationDetailsPopulated: Boolean =
     accommodationRelocationModel.flatMap(_.accommodation).isDefined ||
       accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).isDefined ||
       accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).isDefined
 
-  val travelDetailsPopulated: Boolean =
+  lazy val travelDetailsPopulated: Boolean =
     travelEntertainmentModel.flatMap(_.travelAndSubsistence).isDefined ||
       travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).isDefined ||
       travelEntertainmentModel.flatMap(_.entertaining).isDefined
 
-  val utilitiesDetailsPopulated: Boolean =
+  lazy val utilitiesDetailsPopulated: Boolean =
     utilitiesAndServicesModel.flatMap(_.telephone).isDefined ||
       utilitiesAndServicesModel.flatMap(_.employerProvidedServices).isDefined ||
       utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).isDefined ||
       utilitiesAndServicesModel.flatMap(_.service).isDefined
 
-  val medicalDetailsPopulated: Boolean =
+  lazy val medicalDetailsPopulated: Boolean =
     medicalChildcareEducationModel.flatMap(_.medicalInsurance).isDefined ||
       medicalChildcareEducationModel.flatMap(_.nurseryPlaces).isDefined ||
       medicalChildcareEducationModel.flatMap(_.beneficialLoan).isDefined ||
       medicalChildcareEducationModel.flatMap(_.educationalServices).isDefined
 
-  val incomeTaxDetailsPopulated: Boolean =
+  lazy val incomeTaxDetailsPopulated: Boolean =
     incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).isDefined ||
       incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).isDefined
 
-  val reimbursedDetailsPopulated: Boolean =
+  lazy val reimbursedDetailsPopulated: Boolean =
     reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).isDefined
 
-  val assetsDetailsPopulated: Boolean =
+  lazy val assetsDetailsPopulated: Boolean =
     assetsModel.flatMap(_.assets).isDefined ||
       assetsModel.flatMap(_.assetTransfer).isDefined
 
-  def toBenefits: Benefits = {
-    Benefits(
-      accommodationRelocationModel.flatMap(_.accommodation), assetsModel.flatMap(_.assets), assetsModel.flatMap(_.assetTransfer),
-      medicalChildcareEducationModel.flatMap(_.beneficialLoan),
-      carVanFuelModel.flatMap(_.car), carVanFuelModel.flatMap(_.carFuel), medicalChildcareEducationModel.flatMap(_.educationalServices),
-      travelEntertainmentModel.flatMap(_.entertaining), reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses),
-      medicalChildcareEducationModel.flatMap(_.medicalInsurance),
-      utilitiesAndServicesModel.flatMap(_.telephone), utilitiesAndServicesModel.flatMap(_.service),
-      reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses), carVanFuelModel.flatMap(_.van),
-      carVanFuelModel.flatMap(_.vanFuel), carVanFuelModel.flatMap(_.mileage), accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses),
-      medicalChildcareEducationModel.flatMap(_.nurseryPlaces), reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems),
-      incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf),
-      travelEntertainmentModel.flatMap(_.personalIncidentalExpenses), accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses),
-      utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions), utilitiesAndServicesModel.flatMap(_.employerProvidedServices),
-      incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector), travelEntertainmentModel.flatMap(_.travelAndSubsistence),
-      reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards), reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)
-    )
-  }
+  lazy val asBenefits: Benefits = Benefits(
+    accommodationRelocationModel.flatMap(_.accommodation), assetsModel.flatMap(_.assets), assetsModel.flatMap(_.assetTransfer),
+    medicalChildcareEducationModel.flatMap(_.beneficialLoan),
+    carVanFuelModel.flatMap(_.car), carVanFuelModel.flatMap(_.carFuel), medicalChildcareEducationModel.flatMap(_.educationalServices),
+    travelEntertainmentModel.flatMap(_.entertaining), reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses),
+    medicalChildcareEducationModel.flatMap(_.medicalInsurance),
+    utilitiesAndServicesModel.flatMap(_.telephone), utilitiesAndServicesModel.flatMap(_.service),
+    reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses), carVanFuelModel.flatMap(_.van),
+    carVanFuelModel.flatMap(_.vanFuel), carVanFuelModel.flatMap(_.mileage), accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses),
+    medicalChildcareEducationModel.flatMap(_.nurseryPlaces), reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems),
+    incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf),
+    travelEntertainmentModel.flatMap(_.personalIncidentalExpenses), accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses),
+    utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions), utilitiesAndServicesModel.flatMap(_.employerProvidedServices),
+    incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector), travelEntertainmentModel.flatMap(_.travelAndSubsistence),
+    reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards), reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)
+  )
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedBenefitsViewModel = EncryptedBenefitsViewModel(
+    carVanFuelModel = carVanFuelModel.map(_.encrypted),
+    accommodationRelocationModel = accommodationRelocationModel.map(_.encrypted),
+    travelEntertainmentModel = travelEntertainmentModel.map(_.encrypted),
+    utilitiesAndServicesModel = utilitiesAndServicesModel.map(_.encrypted),
+    medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.encrypted),
+    incomeTaxAndCostsModel = incomeTaxAndCostsModel.map(_.encrypted),
+    reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.encrypted),
+    assetsModel = assetsModel.map(_.encrypted),
+    submittedOn = submittedOn.map(_.encrypted),
+    isUsingCustomerData = isUsingCustomerData.encrypted,
+    isBenefitsReceived = isBenefitsReceived.encrypted
+  )
 }
 
 object BenefitsViewModel {
@@ -115,7 +131,22 @@ case class EncryptedBenefitsViewModel(carVanFuelModel: Option[EncryptedCarVanFue
                                       assetsModel: Option[EncryptedAssetsModel] = None,
                                       submittedOn: Option[EncryptedValue] = None,
                                       isUsingCustomerData: EncryptedValue,
-                                      isBenefitsReceived: EncryptedValue)
+                                      isBenefitsReceived: EncryptedValue) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): BenefitsViewModel = BenefitsViewModel(
+    carVanFuelModel = carVanFuelModel.map(_.decrypted),
+    accommodationRelocationModel = accommodationRelocationModel.map(_.decrypted),
+    travelEntertainmentModel = travelEntertainmentModel.map(_.decrypted),
+    utilitiesAndServicesModel = utilitiesAndServicesModel.map(_.decrypted),
+    medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.decrypted),
+    incomeTaxAndCostsModel = incomeTaxAndCostsModel.map(_.decrypted),
+    reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.decrypted),
+    assetsModel = assetsModel.map(_.decrypted),
+    submittedOn = submittedOn.map(_.decrypted[String]),
+    isUsingCustomerData = isUsingCustomerData.decrypted[Boolean],
+    isBenefitsReceived = isBenefitsReceived.decrypted[Boolean]
+  )
+}
 
 object EncryptedBenefitsViewModel {
   implicit val format: OFormat[EncryptedBenefitsViewModel] = Json.format[EncryptedBenefitsViewModel]

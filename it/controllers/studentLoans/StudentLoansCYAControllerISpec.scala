@@ -18,9 +18,10 @@ package controllers.studentLoans
 
 import common.SessionValues
 import models.IncomeTaxUserData
+import models.details.EmploymentDetails
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status.{CREATED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json.Json

@@ -18,9 +18,14 @@ package models.benefits
 
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
                                      telephoneQuestion: Option[Boolean] = None,
@@ -48,7 +53,7 @@ case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  //scalastyle:off
+
   def telephoneSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     telephoneQuestion match {
       case Some(true) => if (telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
@@ -67,7 +72,8 @@ case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
 
   def employerProvidedProfessionalSubscriptionsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     employerProvidedProfessionalSubscriptionsQuestion match {
-      case Some(true) => if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) =>
+        if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
     }
@@ -80,7 +86,18 @@ case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
       case None => Some(OtherServicesBenefitsController.show(taxYear, employmentId))
     }
   }
-  //scalastyle:on
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedUtilitiesAndServicesModel = EncryptedUtilitiesAndServicesModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    telephoneQuestion = telephoneQuestion.map(_.encrypted),
+    telephone = telephone.map(_.encrypted),
+    employerProvidedServicesQuestion = employerProvidedServicesQuestion.map(_.encrypted),
+    employerProvidedServices = employerProvidedServices.map(_.encrypted),
+    employerProvidedProfessionalSubscriptionsQuestion = employerProvidedProfessionalSubscriptionsQuestion.map(_.encrypted),
+    employerProvidedProfessionalSubscriptions = employerProvidedProfessionalSubscriptions.map(_.encrypted),
+    serviceQuestion = serviceQuestion.map(_.encrypted),
+    service = service.map(_.encrypted)
+  )
 }
 
 object UtilitiesAndServicesModel {
@@ -98,7 +115,20 @@ case class EncryptedUtilitiesAndServicesModel(sectionQuestion: Option[EncryptedV
                                               employerProvidedProfessionalSubscriptionsQuestion: Option[EncryptedValue] = None,
                                               employerProvidedProfessionalSubscriptions: Option[EncryptedValue] = None,
                                               serviceQuestion: Option[EncryptedValue] = None,
-                                              service: Option[EncryptedValue] = None)
+                                              service: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): UtilitiesAndServicesModel = UtilitiesAndServicesModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    telephoneQuestion = telephoneQuestion.map(_.decrypted[Boolean]),
+    telephone = telephone.map(_.decrypted[BigDecimal]),
+    employerProvidedServicesQuestion = employerProvidedServicesQuestion.map(_.decrypted[Boolean]),
+    employerProvidedServices = employerProvidedServices.map(_.decrypted[BigDecimal]),
+    employerProvidedProfessionalSubscriptionsQuestion = employerProvidedProfessionalSubscriptionsQuestion.map(_.decrypted[Boolean]),
+    employerProvidedProfessionalSubscriptions = employerProvidedProfessionalSubscriptions.map(_.decrypted[BigDecimal]),
+    serviceQuestion = serviceQuestion.map(_.decrypted[Boolean]),
+    service = service.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedUtilitiesAndServicesModel {
   implicit val formats: OFormat[EncryptedUtilitiesAndServicesModel] = Json.format[EncryptedUtilitiesAndServicesModel]

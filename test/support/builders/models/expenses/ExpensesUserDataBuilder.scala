@@ -16,12 +16,13 @@
 
 package support.builders.models.expenses
 
-import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import utils.TestTaxYearHelper
+import org.joda.time.{DateTime, DateTimeZone}
+import support.TaxYearUtils.taxYearEOY
+import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 
-object ExpensesUserDataBuilder extends TestTaxYearHelper {
+object ExpensesUserDataBuilder {
 
   val anExpensesUserData: ExpensesUserData = ExpensesUserData(
     sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe",
@@ -30,11 +31,13 @@ object ExpensesUserDataBuilder extends TestTaxYearHelper {
     taxYear = taxYearEOY,
     isPriorSubmission = true,
     hasPriorExpenses = true,
-    expensesCya = anExpensesCYAModel
+    expensesCya = anExpensesCYAModel,
+    lastUpdated = DateTime.now(DateTimeZone.UTC)
   )
 
+  // TODO: This should be removed and relevant object created where needed from the base above.
   def anExpensesUserDataWithBenefits(expensesViewModel: ExpensesViewModel,
-                                       isPriorSubmission: Boolean = true): ExpensesUserData = {
+                                     isPriorSubmission: Boolean = true): ExpensesUserData = {
     anExpensesUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorExpenses = isPriorSubmission,

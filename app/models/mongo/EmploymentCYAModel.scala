@@ -17,26 +17,32 @@
 package models.mongo
 
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
+import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment.{EmploymentDetailsViewModel, EmploymentSource, EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
 import play.api.libs.json.{Json, OFormat}
+import utils.SecureGCMCipher
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
                               studentLoans: Option[StudentLoansCYAModel] = None) {
 
-  def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
-    EmploymentDetailsViewModel(
-      employmentDetails.employerName,
-      employmentDetails.employerRef,
-      employmentDetails.payrollId,
-      employmentId,
-      employmentDetails.startDate,
-      employmentDetails.didYouLeaveQuestion,
-      employmentDetails.cessationDate,
-      employmentDetails.taxablePayToDate,
-      employmentDetails.totalTaxToDate,
-      isUsingCustomerData)
-  }
+  def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = EmploymentDetailsViewModel(
+    employmentDetails.employerName,
+    employmentDetails.employerRef,
+    employmentDetails.payrollId,
+    employmentId,
+    employmentDetails.startDate,
+    employmentDetails.didYouLeaveQuestion,
+    employmentDetails.cessationDate,
+    employmentDetails.taxablePayToDate,
+    employmentDetails.totalTaxToDate,
+    isUsingCustomerData)
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
+    employmentDetails = employmentDetails.encrypted,
+    employmentBenefits = employmentBenefits.map(_.encrypted),
+    studentLoansCYAModel = studentLoans.map(_.encrypted)
+  )
 }
 
 object EmploymentCYAModel {
@@ -51,7 +57,14 @@ object EmploymentCYAModel {
 
 case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
-                                       studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel])
+                                       studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentCYAModel = EmploymentCYAModel(
+    employmentDetails = employmentDetails.decrypted,
+    employmentBenefits = employmentBenefits.map(_.decrypted),
+    studentLoans = studentLoansCYAModel.map(_.decrypted)
+  )
+}
 
 object EncryptedEmploymentCYAModel {
   implicit val format: OFormat[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]
