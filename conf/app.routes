@@ -69,6 +69,11 @@ POST        /:taxYear/select-employer                                           
 GET         /:taxYear/benefits/company-benefits                                      controllers.benefits.ReceiveAnyBenefitsController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/benefits/company-benefits                                      controllers.benefits.ReceiveAnyBenefitsController.submit(taxYear: Int, employmentId: String)
 
+#################       Employment cannot update pages      #############################
+
+GET         /:taxYear/cannot-edit                                                    controllers.employment.CannotUpdateEmploymentController.show(taxYear:Int)
+
+
 #################       Car van fuel benefits pages      ###########################
 
 GET         /:taxYear/benefits/car-van-fuel                                          controllers.benefits.fuel.CarVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
@@ -345,5 +350,4 @@ GET         /error/you-need-client-authorisation                                
 GET         /error/not-authorised-to-use-service                                     controllers.errors.UnauthorisedUserErrorController.show
 
 GET         /error/you-need-agent-services-account                                   controllers.errors.YouNeedAgentServicesController.show
-
 
