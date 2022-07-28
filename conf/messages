@@ -1406,8 +1406,3 @@ tailoring.title.agent = Did your client get income from PAYE employment?
 tailoring.empty.error.individual = Select yes if you got income from PAYE employment
 tailoring.empty.error.agent = Select yes if your client got income from PAYE employment
 
-
-#####################    Cannot Update employment messages    #####################
-employment.cannot.update.text = you cannot update PAYE employment information until 6 April {0}
-
-
