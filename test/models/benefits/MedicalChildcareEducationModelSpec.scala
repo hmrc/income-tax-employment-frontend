@@ -18,13 +18,33 @@ package models.benefits
 
 import controllers.benefits.medical.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import utils.UnitTest
+import models.mongo.TextAndKey
+import org.scalamock.scalatest.MockFactory
+import support.UnitTest
+import support.builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
+import utils.TypeCaster.Converter
+import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
 
-class MedicalChildcareEducationModelSpec extends UnitTest {
+class MedicalChildcareEducationModelSpec extends UnitTest
+  with TaxYearHelper
+  with MockFactory {
 
   private val employmentId = "some-employment-id"
 
-  "medicalInsuranceSectionFinished" should {
+  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
+  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+
+  private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
+  private val encryptedMedicalInsuranceQuestion = EncryptedValue("encryptedMedicalInsuranceQuestion", "some-nonce")
+  private val encryptedMedicalInsurance = EncryptedValue("encryptedMedicalInsurance", "some-nonce")
+  private val encryptedNurseryPlacesQuestion = EncryptedValue("encryptedNurseryPlacesQuestion", "some-nonce")
+  private val encryptedNurseryPlaces = EncryptedValue("encryptedNurseryPlaces", "some-nonce")
+  private val encryptedEducationalServicesQuestion = EncryptedValue("encryptedEducationalServicesQuestion", "some-nonce")
+  private val encryptedEducationalServices = EncryptedValue("encryptedEducationalServices", "some-nonce")
+  private val encryptedBeneficialLoanQuestion = EncryptedValue("encryptedBeneficialLoanQuestion", "some-nonce")
+  private val encryptedBeneficialLoan = EncryptedValue("encryptedBeneficialLoan", "some-nonce")
+
+  "MedicalChildcareEducationModel.medicalInsuranceSectionFinished" should {
     "return None when medicalInsuranceQuestion is true and medicalInsurance amount is defined" in {
       val underTest = MedicalChildcareEducationModel(medicalInsuranceQuestion = Some(true), medicalInsurance = Some(1))
       underTest.medicalInsuranceSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -46,7 +66,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
   }
 
-  "childcareSectionFinished" should {
+  "MedicalChildcareEducationModel.childcareSectionFinished" should {
     "return None when childcareQuestion is true and childcare amount is defined" in {
       val underTest = MedicalChildcareEducationModel(nurseryPlacesQuestion = Some(true), nurseryPlaces = Some(1))
       underTest.childcareSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -68,7 +88,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
   }
 
-  "educationalServicesSectionFinished" should {
+  "MedicalChildcareEducationModel.educationalServicesSectionFinished" should {
     "return None when educationalServicesQuestion is true and educationalServices amount is defined" in {
       val underTest = MedicalChildcareEducationModel(educationalServicesQuestion = Some(true), educationalServices = Some(1))
       underTest.educationalServicesSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -92,7 +112,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
   }
 
-  "beneficialLoanSectionFinished" should {
+  "MedicalChildcareEducationModel.beneficialLoanSectionFinished" should {
     "return None when beneficialLoansQuestion is true and beneficialLoans amount is defined" in {
       val underTest = MedicalChildcareEducationModel(beneficialLoanQuestion = Some(true), beneficialLoan = Some(1))
       underTest.beneficialLoanSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -114,7 +134,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
   }
 
-  "isFinished" should {
+  "MedicalChildcareEducationModel.isFinished" should {
     "return result of medicalInsuranceSectionFinished when medicalChildcareEducationQuestion is true and medicalInsuranceQuestion is not None" in {
       val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true), medicalInsuranceQuestion = None)
 
@@ -171,7 +191,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
   }
 
-  "clear" should {
+  "MedicalChildcareEducationModel.clear" should {
     "return empty MedicalChildcareEducationModel with main question set to false" in {
       MedicalChildcareEducationModel.clear shouldBe MedicalChildcareEducationModel(
         sectionQuestion = Some(false),
@@ -184,6 +204,72 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
         beneficialLoanQuestion = None,
         beneficialLoan = None
       )
+    }
+  }
+
+  "MedicalChildcareEducationModel.encrypted" should {
+    "return EncryptedMedicalChildcareEducationModel instance" in {
+      val underTest = aMedicalChildcareEducationModel
+
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.medicalInsuranceQuestion.get, textAndKey).returning(encryptedMedicalInsuranceQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.medicalInsurance.get, textAndKey).returning(encryptedMedicalInsurance)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.nurseryPlacesQuestion.get, textAndKey).returning(encryptedNurseryPlacesQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.nurseryPlaces.get, textAndKey).returning(encryptedNurseryPlaces)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.educationalServicesQuestion.get, textAndKey).returning(encryptedEducationalServicesQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.educationalServices.get, textAndKey).returning(encryptedEducationalServices)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.beneficialLoanQuestion.get, textAndKey).returning(encryptedBeneficialLoanQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.beneficialLoan.get, textAndKey).returning(encryptedBeneficialLoan)
+
+      underTest.encrypted shouldBe EncryptedMedicalChildcareEducationModel(
+        sectionQuestion = Some(encryptedSectionQuestion),
+        medicalInsuranceQuestion = Some(encryptedMedicalInsuranceQuestion),
+        medicalInsurance = Some(encryptedMedicalInsurance),
+        nurseryPlacesQuestion = Some(encryptedNurseryPlacesQuestion),
+        nurseryPlaces = Some(encryptedNurseryPlaces),
+        educationalServicesQuestion = Some(encryptedEducationalServicesQuestion),
+        educationalServices = Some(encryptedEducationalServices),
+        beneficialLoanQuestion = Some(encryptedBeneficialLoanQuestion),
+        beneficialLoan = Some(encryptedBeneficialLoan)
+      )
+    }
+  }
+
+  "EncryptedMedicalChildcareEducationModel.decrypted" should {
+    "return MedicalChildcareEducationModel instance" in {
+      val underTest = EncryptedMedicalChildcareEducationModel(
+        sectionQuestion = Some(encryptedSectionQuestion),
+        medicalInsuranceQuestion = Some(encryptedMedicalInsuranceQuestion),
+        medicalInsurance = Some(encryptedMedicalInsurance),
+        nurseryPlacesQuestion = Some(encryptedNurseryPlacesQuestion),
+        nurseryPlaces = Some(encryptedNurseryPlaces),
+        educationalServicesQuestion = Some(encryptedEducationalServicesQuestion),
+        educationalServices = Some(encryptedEducationalServices),
+        beneficialLoanQuestion = Some(encryptedBeneficialLoanQuestion),
+        beneficialLoan = Some(encryptedBeneficialLoan)
+      )
+
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.sectionQuestion.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedMedicalInsuranceQuestion.value, encryptedMedicalInsuranceQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.medicalInsuranceQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedMedicalInsurance.value, encryptedMedicalInsurance.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.medicalInsurance.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedNurseryPlacesQuestion.value, encryptedNurseryPlacesQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.nurseryPlacesQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedNurseryPlaces.value, encryptedNurseryPlaces.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.nurseryPlaces.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedEducationalServicesQuestion.value, encryptedEducationalServicesQuestion.nonce, textAndKey, *)
+        .returning(value = aMedicalChildcareEducationModel.educationalServicesQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedEducationalServices.value, encryptedEducationalServices.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.educationalServices.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedBeneficialLoanQuestion.value, encryptedBeneficialLoanQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.beneficialLoanQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedBeneficialLoan.value, encryptedBeneficialLoan.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.beneficialLoan.get)
+
+      underTest.decrypted shouldBe aMedicalChildcareEducationModel
     }
   }
 }

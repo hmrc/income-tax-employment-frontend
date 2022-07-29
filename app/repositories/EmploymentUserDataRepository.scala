@@ -25,30 +25,29 @@ import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import play.api.Logging
-import services.EncryptionService
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
+import utils.SecureGCMCipher
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 @Singleton
-class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
-                                                 appConfig: AppConfig,
-                                                 encryptionService: EncryptionService)
-                                                (implicit ec: ExecutionContext) extends PlayMongoRepository[EncryptedEmploymentUserData](
-  mongoComponent = mongo,
-  collectionName = "employmentUserData",
-  domainFormat = EncryptedEmploymentUserData.formats,
-  indexes = EmploymentUserDataIndexes.indexes(appConfig)
-) with Repository with EmploymentUserDataRepository with Logging {
+class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)
+                                                (implicit ec: ExecutionContext, secureGCMCipher: SecureGCMCipher)
+  extends PlayMongoRepository[EncryptedEmploymentUserData](
+    mongoComponent = mongo,
+    collectionName = "employmentUserData",
+    domainFormat = EncryptedEmploymentUserData.formats,
+    indexes = EmploymentUserDataIndexes.indexes(appConfig)
+  ) with Repository with EmploymentUserDataRepository with Logging {
 
-  def find[T](taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
+  def find(taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
     lazy val start = "[EmploymentUserDataRepositoryImpl][find]"
 
     val queryFilter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
@@ -65,7 +64,10 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
       case Left(error) => Left(error)
       case Right(encryptedData) =>
         Try {
-          encryptedData.map(encryptionService.decryptUserData)
+          encryptedData.map { encryptedEmploymentUserData =>
+            implicit val textAndKey: TextAndKey = TextAndKey(encryptedEmploymentUserData.mtdItId, appConfig.encryptionKey)
+            encryptedEmploymentUserData.decrypted
+          }
         }.toEither match {
           case Left(t: Throwable) => handleEncryptionDecryptionException(t.asInstanceOf[Exception], start)
           case Right(decryptedData) => Right(decryptedData)
@@ -73,12 +75,13 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def createOrUpdate[T](userData: EmploymentUserData): Future[Either[DatabaseError, Unit]] = {
+  def createOrUpdate(userData: EmploymentUserData): Future[Either[DatabaseError, Unit]] = {
 
     lazy val start = "[EmploymentUserDataRepositoryImpl][update]"
 
     Try {
-      encryptionService.encryptUserData(userData)
+      implicit val textAndKey: TextAndKey = TextAndKey(userData.mtdItId, appConfig.encryptionKey)
+      userData.encrypted
     }.toEither match {
       case Left(t: Throwable) => Future.successful(handleEncryptionDecryptionException(t.asInstanceOf[Exception], start))
       case Right(encryptedData) =>
@@ -100,7 +103,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def clear[T](taxYear: Int, employmentId: String, user: User): Future[Boolean] =
+  def clear(taxYear: Int, employmentId: String, user: User): Future[Boolean] =
     collection.deleteOne(filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId))
       .toFutureOption()
       .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EMPLOYMENT_DATA, user))
@@ -123,9 +126,9 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
 }
 
 trait EmploymentUserDataRepository {
-  def createOrUpdate[T](userData: EmploymentUserData): Future[Either[DatabaseError, Unit]]
+  def createOrUpdate(userData: EmploymentUserData): Future[Either[DatabaseError, Unit]]
 
-  def find[T](taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]]
+  def find(taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]]
 
-  def clear[T](taxYear: Int, employmentId: String, user: User): Future[Boolean]
+  def clear(taxYear: Int, employmentId: String, user: User): Future[Boolean]
 }

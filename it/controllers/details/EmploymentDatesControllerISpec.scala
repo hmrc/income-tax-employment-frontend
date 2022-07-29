@@ -23,12 +23,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, employmentDatesUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-//scalastyle:off
 class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
@@ -41,19 +40,13 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
       payrollId = Some("payrollId"))))
 
   ".show" should {
-
     "render the 'employment dates' page with the correct content" which {
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentDetailsWithCessationDate)
         urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
 
       "has an OK status" in {
         result.status shouldBe OK
@@ -74,7 +67,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   ".submit" should {
-
     s"return a BAD_REQUEST($BAD_REQUEST) status" when {
       "there is an invalid input" which {
         lazy val form: Map[String, String] = Map(EmploymentDatesForm.startAmountDay -> "",

@@ -22,6 +22,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.Call
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
+import utils.SecureGCMCipher
 
 case class EmploymentUserData(sessionId: String,
                               mtdItId: String,
@@ -32,7 +33,21 @@ case class EmploymentUserData(sessionId: String,
                               hasPriorBenefits: Boolean,
                               hasPriorStudentLoans: Boolean,
                               employment: EmploymentCYAModel,
-                              lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+                              lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentUserData = EncryptedEmploymentUserData(
+    sessionId = sessionId,
+    mtdItId = mtdItId,
+    nino = nino,
+    taxYear = taxYear,
+    employmentId = employmentId,
+    isPriorSubmission = isPriorSubmission,
+    hasPriorBenefits = hasPriorBenefits,
+    hasPriorStudentLoans = hasPriorStudentLoans,
+    employment = employment.encrypted,
+    lastUpdated = lastUpdated
+  )
+}
 
 object EmploymentUserData extends MongoJodaFormats {
 
@@ -59,7 +74,21 @@ case class EncryptedEmploymentUserData(sessionId: String,
                                        hasPriorBenefits: Boolean,
                                        hasPriorStudentLoans: Boolean,
                                        employment: EncryptedEmploymentCYAModel,
-                                       lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+                                       lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentUserData = EmploymentUserData(
+    sessionId = sessionId,
+    mtdItId = mtdItId,
+    nino = nino,
+    taxYear = taxYear,
+    employmentId = employmentId,
+    isPriorSubmission = isPriorSubmission,
+    hasPriorBenefits = hasPriorBenefits,
+    hasPriorStudentLoans = hasPriorStudentLoans,
+    employment = employment.decrypted,
+    lastUpdated = lastUpdated
+  )
+}
 
 object EncryptedEmploymentUserData extends MongoJodaFormats {
 

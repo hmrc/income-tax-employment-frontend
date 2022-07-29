@@ -17,12 +17,13 @@
 package support.builders.models.mongo
 
 import models.benefits.BenefitsViewModel
-import models.mongo.{EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.EmploymentUserData
+import support.TaxYearUtils.taxYearEOY
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import utils.TestTaxYearHelper
 
-object EmploymentUserDataBuilder extends TestTaxYearHelper {
+object EmploymentUserDataBuilder {
 
   val anEmploymentUserData: EmploymentUserData = EmploymentUserData(
     sessionId = aUser.sessionId,

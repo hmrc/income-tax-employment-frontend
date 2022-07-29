@@ -20,11 +20,11 @@ import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsControlle
 import play.api.mvc.Result
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.mocks.MockBenefitsRedirectService
-import support.{TaxYearProvider, UnitTest}
+import support.{TaxYearHelper, UnitTest}
 
 class RedirectsServiceSpec extends UnitTest
   with MockBenefitsRedirectService
-  with TaxYearProvider {
+  with TaxYearHelper {
 
   private val employmentId = "employmentId"
 

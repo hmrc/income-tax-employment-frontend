@@ -17,38 +17,35 @@
 package support.builders.models.employment
 
 import models.employment.HmrcEmploymentSource
+import support.TaxYearUtils.taxYearEOY
 import support.builders.models.employment.EmploymentFinancialDataBuilder.{aCustomerEmploymentFinancialData, aHmrcEmploymentFinancialData}
-import utils.TestTaxYearHelper
 
-object HmrcEmploymentSourceBuilder extends TestTaxYearHelper {
+// TODO: Should only have one default method
+object HmrcEmploymentSourceBuilder {
+
   val aHmrcEmploymentSource: HmrcEmploymentSource = HmrcEmploymentSource(
     employmentId = "employmentId",
     employerName = "maggie",
     employerRef = Some("223/AB12399"),
     payrollId = Some("12345678"),
     startDate = Some("2019-04-21"),
-    cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+    cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
     dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
-    hmrcEmploymentFinancialData = Some(
-      aHmrcEmploymentFinancialData
-    ),
+    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
+    hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData),
     None
   )
+
   val aHmrcEmploymentSourceWithCustomerAndHmrcFinancials: HmrcEmploymentSource = HmrcEmploymentSource(
     employmentId = "employmentId",
     employerName = "maggie",
     employerRef = Some("223/AB12399"),
     payrollId = Some("12345678"),
     startDate = Some("2019-04-21"),
-    cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+    cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
     dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
-    hmrcEmploymentFinancialData = Some(
-      aHmrcEmploymentFinancialData
-    ),
-    customerEmploymentFinancialData = Some(
-      aCustomerEmploymentFinancialData
-    )
+    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
+    hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData),
+    customerEmploymentFinancialData = Some(aCustomerEmploymentFinancialData)
   )
 }

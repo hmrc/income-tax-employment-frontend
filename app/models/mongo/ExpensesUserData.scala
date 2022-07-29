@@ -19,6 +19,7 @@ package models.mongo
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
+import utils.SecureGCMCipher
 
 case class ExpensesUserData(sessionId: String,
                             mtdItId: String,
@@ -27,7 +28,19 @@ case class ExpensesUserData(sessionId: String,
                             isPriorSubmission: Boolean,
                             hasPriorExpenses: Boolean,
                             expensesCya: ExpensesCYAModel,
-                            lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+                            lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
+    sessionId = sessionId,
+    mtdItId = mtdItId,
+    nino = nino,
+    taxYear = taxYear,
+    isPriorSubmission = isPriorSubmission,
+    hasPriorExpenses = hasPriorExpenses,
+    expensesCya = expensesCya.encrypted,
+    lastUpdated = lastUpdated
+  )
+}
 
 object ExpensesUserData extends MongoJodaFormats {
 
@@ -43,7 +56,19 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      isPriorSubmission: Boolean,
                                      hasPriorExpenses: Boolean,
                                      expensesCya: EncryptedExpensesCYAModel,
-                                     lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+                                     lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
+    sessionId = sessionId,
+    mtdItId = mtdItId,
+    nino = nino,
+    taxYear = taxYear,
+    isPriorSubmission = isPriorSubmission,
+    hasPriorExpenses = hasPriorExpenses,
+    expensesCya = expensesCya.decrypted,
+    lastUpdated = lastUpdated
+  )
+}
 
 object EncryptedExpensesUserData extends MongoJodaFormats {
 

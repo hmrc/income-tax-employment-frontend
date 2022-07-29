@@ -351,8 +351,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get //.get on purpose to provoke no such element exception and route them to finish journey.
     )
 
-    lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.toBenefits)
-    lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.toDeductions)
+    lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.asBenefits)
+    lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.asDeductions)
 
     lazy val createUpdateEmploymentData = {
       section match {
@@ -372,7 +372,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
           if (appConfig.mimicEmploymentAPICalls) {
             CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
           } else {
-            CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.toDeductions))
+            CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.asDeductions))
           }
       }
     }

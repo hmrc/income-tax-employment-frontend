@@ -21,8 +21,8 @@ import config.{AppConfig, ErrorHandler}
 import controllers.details.routes.EmployerPayrollIdController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDatesForm
+import models.details.EmploymentDetails
 import models.employment.{EmploymentDate, EmploymentDates}
-import models.mongo.EmploymentDetails
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}

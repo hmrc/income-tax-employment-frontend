@@ -18,9 +18,14 @@ package models.benefits
 
 import controllers.benefits.assets.routes._
 import controllers.employment.routes.CheckYourBenefitsController
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class AssetsModel(sectionQuestion: Option[Boolean] = None,
                        assetsQuestion: Option[Boolean] = None,
@@ -56,6 +61,14 @@ case class AssetsModel(sectionQuestion: Option[Boolean] = None,
       case None => Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedAssetsModel = EncryptedAssetsModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    assetsQuestion = assetsQuestion.map(_.encrypted),
+    assets = assets.map(_.encrypted),
+    assetTransferQuestion = assetTransferQuestion.map(_.encrypted),
+    assetTransfer = assetTransfer.map(_.encrypted)
+  )
 }
 
 object AssetsModel {
@@ -68,7 +81,16 @@ case class EncryptedAssetsModel(sectionQuestion: Option[EncryptedValue] = None,
                                 assetsQuestion: Option[EncryptedValue] = None,
                                 assets: Option[EncryptedValue] = None,
                                 assetTransferQuestion: Option[EncryptedValue] = None,
-                                assetTransfer: Option[EncryptedValue] = None)
+                                assetTransfer: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): AssetsModel = AssetsModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    assetsQuestion = assetsQuestion.map(_.decrypted[Boolean]),
+    assets = assets.map(_.decrypted[BigDecimal]),
+    assetTransferQuestion = assetTransferQuestion.map(_.decrypted[Boolean]),
+    assetTransfer = assetTransfer.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedAssetsModel {
   implicit val formats: OFormat[EncryptedAssetsModel] = Json.format[EncryptedAssetsModel]

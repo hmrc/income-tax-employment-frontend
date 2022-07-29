@@ -17,9 +17,14 @@
 package models.benefits
 
 import controllers.benefits.fuel.routes._
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
                            carQuestion: Option[Boolean] = None,
@@ -31,8 +36,8 @@ case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
                            vanFuelQuestion: Option[Boolean] = None,
                            vanFuel: Option[BigDecimal] = None,
                            mileageQuestion: Option[Boolean] = None,
-                           mileage: Option[BigDecimal] = None
-                          ) {
+                           mileage: Option[BigDecimal] = None) {
+
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     sectionQuestion match {
       case Some(true) =>
@@ -102,6 +107,20 @@ case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
       case None => Some(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedCarVanFuelModel = EncryptedCarVanFuelModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    carQuestion = carQuestion.map(_.encrypted),
+    car = car.map(_.encrypted),
+    carFuelQuestion = carFuelQuestion.map(_.encrypted),
+    carFuel = carFuel.map(_.encrypted),
+    vanQuestion = vanQuestion.map(_.encrypted),
+    van = van.map(_.encrypted),
+    vanFuelQuestion = vanFuelQuestion.map(_.encrypted),
+    vanFuel = vanFuel.map(_.encrypted),
+    mileageQuestion = mileageQuestion.map(_.encrypted),
+    mileage = mileage.map(_.encrypted)
+  )
 }
 
 object CarVanFuelModel {
@@ -120,7 +139,22 @@ case class EncryptedCarVanFuelModel(sectionQuestion: Option[EncryptedValue] = No
                                     vanFuelQuestion: Option[EncryptedValue] = None,
                                     vanFuel: Option[EncryptedValue] = None,
                                     mileageQuestion: Option[EncryptedValue] = None,
-                                    mileage: Option[EncryptedValue] = None)
+                                    mileage: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): CarVanFuelModel = CarVanFuelModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    carQuestion = carQuestion.map(_.decrypted[Boolean]),
+    car = car.map(_.decrypted[BigDecimal]),
+    carFuelQuestion = carFuelQuestion.map(_.decrypted[Boolean]),
+    carFuel = carFuel.map(_.decrypted[BigDecimal]),
+    vanQuestion = vanQuestion.map(_.decrypted[Boolean]),
+    van = van.map(_.decrypted[BigDecimal]),
+    vanFuelQuestion = vanFuelQuestion.map(_.decrypted[Boolean]),
+    vanFuel = vanFuel.map(_.decrypted[BigDecimal]),
+    mileageQuestion = mileageQuestion.map(_.decrypted[Boolean]),
+    mileage = mileage.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedCarVanFuelModel {
   implicit val formats: OFormat[EncryptedCarVanFuelModel] = Json.format[EncryptedCarVanFuelModel]

@@ -23,8 +23,9 @@ import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDateForm
 import EmploymentDateForm.employmentStartDateForm
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.employment.EmploymentDate
-import models.mongo.{EmploymentDetails, EmploymentUserData}
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._

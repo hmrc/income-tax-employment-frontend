@@ -19,8 +19,9 @@ package views.details
 import controllers.details.routes.EmployerStartDateController
 import forms.details.EmploymentDateForm
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.employment.EmploymentDate
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages

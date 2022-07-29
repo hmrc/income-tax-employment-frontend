@@ -19,9 +19,10 @@ package controllers.employment
 import common.SessionValues
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.benefits.{Benefits, BenefitsViewModel}
+import models.details.EmploymentDetails
 import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{Deductions, EmploymentBenefits}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
@@ -265,7 +266,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
             )
           )
         )
@@ -301,7 +302,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
             )
           )
         )
@@ -340,7 +341,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -375,7 +376,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -414,7 +415,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 34786788.77, 35553311.89
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = Some(anEmploymentCYAModel.employmentBenefits.get.toBenefits)
+              benefitsInKind = Some(anEmploymentCYAModel.employmentBenefits.get.asBenefits)
             )
           )
         )

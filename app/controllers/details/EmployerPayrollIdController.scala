@@ -22,7 +22,8 @@ import controllers.details.routes.EmployerPayAmountController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmployerPayrollIdForm
 import models.AuthorisationRequest
-import models.mongo.{EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.EmploymentSessionService

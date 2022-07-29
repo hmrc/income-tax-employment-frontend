@@ -50,7 +50,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled) {
       service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, showNotification) =>
-        service.sendViewStudentLoansDeductionsAudit(request.user, taxYear, cya.toDeductions)
+        service.sendViewStudentLoansDeductionsAudit(request.user, taxYear, cya.asDeductions)
         Ok(studentLoansCYAView(taxYear, employmentId, cya, isCustomer, inYearAction.inYear(taxYear), showNotification))
       }
     } else {

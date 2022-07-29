@@ -16,11 +16,16 @@
 
 package models.expenses
 
+import controllers.expenses.routes._
+import models.mongo.TextAndKey
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 import play.api.mvc.Call
-import utils.EncryptedValue
-import controllers.expenses.routes._
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor, stringDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor, stringEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
                              jobExpensesQuestion: Option[Boolean] = None,
@@ -38,6 +43,7 @@ case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
                              submittedOn: Option[String] = None,
                              isUsingCustomerData: Boolean) {
 
+  // TODO: Needs testing
   def toExpenses: Expenses = {
     Expenses(
       businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
@@ -45,6 +51,7 @@ case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
     )
   }
 
+  // TODO: Needs testing
   def expensesIsFinished(implicit taxYear: Int): Option[Call] = {
     if (claimingEmploymentExpenses) {
       (jobExpensesSectionFinished, flatRateSectionFinished, professionalSubscriptionsSectionFinished, otherAndCapitalAllowancesSectionFinished) match {
@@ -59,40 +66,58 @@ case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
     }
   }
 
+  // TODO: Needs testing
   def jobExpensesSectionFinished(implicit taxYear: Int): Option[Call] = {
     jobExpensesQuestion match {
-      case Some(true) => if(jobExpenses.isDefined) None else Some(TravelAndOvernightAmountController.show(taxYear))
+      case Some(true) => if (jobExpenses.isDefined) None else Some(TravelAndOvernightAmountController.show(taxYear))
       case Some(false) => None
       case None => Some(BusinessTravelOvernightExpensesController.show(taxYear))
     }
   }
 
+  // TODO: Needs testing
   def flatRateSectionFinished(implicit taxYear: Int): Option[Call] = {
     flatRateJobExpensesQuestion match {
-      case Some(true) => if(flatRateJobExpenses.isDefined) None else Some(UniformsOrToolsExpensesAmountController.show(taxYear))
+      case Some(true) => if (flatRateJobExpenses.isDefined) None else Some(UniformsOrToolsExpensesAmountController.show(taxYear))
       case Some(false) => None
       case None => Some(UniformsOrToolsExpensesController.show(taxYear))
     }
   }
 
+  // TODO: Needs testing
   def professionalSubscriptionsSectionFinished(implicit taxYear: Int): Option[Call] = {
     professionalSubscriptionsQuestion match {
-      case Some(true) => if(professionalSubscriptions.isDefined) None else Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
+      case Some(true) => if (professionalSubscriptions.isDefined) None else Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
       case Some(false) => None
       case None => Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
     }
   }
 
+  // TODO: Needs testing
   def otherAndCapitalAllowancesSectionFinished(implicit taxYear: Int): Option[Call] = {
     otherAndCapitalAllowancesQuestion match {
-      case Some(true) => if(otherAndCapitalAllowances.isDefined) None else Some(OtherEquipmentAmountController.show(taxYear))
+      case Some(true) => if (otherAndCapitalAllowances.isDefined) None else Some(OtherEquipmentAmountController.show(taxYear))
       case Some(false) => None
       case None => Some(OtherEquipmentController.show(taxYear))
     }
   }
 
-
-
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesViewModel = EncryptedExpensesViewModel(
+    claimingEmploymentExpenses = claimingEmploymentExpenses.encrypted,
+    jobExpensesQuestion = jobExpensesQuestion.map(_.encrypted),
+    jobExpenses = jobExpenses.map(_.encrypted),
+    flatRateJobExpensesQuestion = flatRateJobExpensesQuestion.map(_.encrypted),
+    flatRateJobExpenses = flatRateJobExpenses.map(_.encrypted),
+    professionalSubscriptionsQuestion = professionalSubscriptionsQuestion.map(_.encrypted),
+    professionalSubscriptions = professionalSubscriptions.map(_.encrypted),
+    otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion.map(_.encrypted),
+    otherAndCapitalAllowances = otherAndCapitalAllowances.map(_.encrypted),
+    businessTravelCosts = businessTravelCosts.map(_.encrypted),
+    hotelAndMealExpenses = hotelAndMealExpenses.map(_.encrypted),
+    vehicleExpenses = vehicleExpenses.map(_.encrypted),
+    mileageAllowanceRelief = mileageAllowanceRelief.map(_.encrypted),
+    submittedOn = submittedOn.map(_.encrypted),
+    isUsingCustomerData = isUsingCustomerData.encrypted)
 }
 
 object ExpensesViewModel {
@@ -157,23 +182,40 @@ object ExpensesViewModel {
   }
 }
 
-case class EncryptedExpensesViewModel(
-                                       businessTravelCosts: Option[EncryptedValue] = None,
-                                       jobExpenses: Option[EncryptedValue] = None,
-                                       flatRateJobExpenses: Option[EncryptedValue] = None,
-                                       professionalSubscriptions: Option[EncryptedValue] = None,
-                                       hotelAndMealExpenses: Option[EncryptedValue] = None,
-                                       otherAndCapitalAllowances: Option[EncryptedValue] = None,
-                                       vehicleExpenses: Option[EncryptedValue] = None,
-                                       mileageAllowanceRelief: Option[EncryptedValue] = None,
-                                       jobExpensesQuestion: Option[EncryptedValue] = None,
-                                       flatRateJobExpensesQuestion: Option[EncryptedValue] = None,
-                                       professionalSubscriptionsQuestion: Option[EncryptedValue] = None,
-                                       otherAndCapitalAllowancesQuestion: Option[EncryptedValue] = None,
-                                       submittedOn: Option[EncryptedValue],
-                                       isUsingCustomerData: EncryptedValue,
-                                       claimingEmploymentExpenses: EncryptedValue
-                                     )
+case class EncryptedExpensesViewModel(claimingEmploymentExpenses: EncryptedValue,
+                                      jobExpensesQuestion: Option[EncryptedValue] = None,
+                                      jobExpenses: Option[EncryptedValue] = None,
+                                      flatRateJobExpensesQuestion: Option[EncryptedValue] = None,
+                                      flatRateJobExpenses: Option[EncryptedValue] = None,
+                                      professionalSubscriptionsQuestion: Option[EncryptedValue] = None,
+                                      professionalSubscriptions: Option[EncryptedValue] = None,
+                                      otherAndCapitalAllowancesQuestion: Option[EncryptedValue] = None,
+                                      otherAndCapitalAllowances: Option[EncryptedValue] = None,
+                                      businessTravelCosts: Option[EncryptedValue] = None,
+                                      hotelAndMealExpenses: Option[EncryptedValue] = None,
+                                      vehicleExpenses: Option[EncryptedValue] = None,
+                                      mileageAllowanceRelief: Option[EncryptedValue] = None,
+                                      submittedOn: Option[EncryptedValue],
+                                      isUsingCustomerData: EncryptedValue) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesViewModel = ExpensesViewModel(
+    claimingEmploymentExpenses = claimingEmploymentExpenses.decrypted[Boolean],
+    jobExpensesQuestion = jobExpensesQuestion.map(_.decrypted[Boolean]),
+    jobExpenses = jobExpenses.map(_.decrypted[BigDecimal]),
+    flatRateJobExpensesQuestion = flatRateJobExpensesQuestion.map(_.decrypted[Boolean]),
+    flatRateJobExpenses = flatRateJobExpenses.map(_.decrypted[BigDecimal]),
+    professionalSubscriptionsQuestion = professionalSubscriptionsQuestion.map(_.decrypted[Boolean]),
+    professionalSubscriptions = professionalSubscriptions.map(_.decrypted[BigDecimal]),
+    otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion.map(_.decrypted[Boolean]),
+    otherAndCapitalAllowances = otherAndCapitalAllowances.map(_.decrypted[BigDecimal]),
+    businessTravelCosts = businessTravelCosts.map(_.decrypted[BigDecimal]),
+    hotelAndMealExpenses = hotelAndMealExpenses.map(_.decrypted[BigDecimal]),
+    vehicleExpenses = vehicleExpenses.map(_.decrypted[BigDecimal]),
+    mileageAllowanceRelief = mileageAllowanceRelief.map(_.decrypted[BigDecimal]),
+    submittedOn = submittedOn.map(_.decrypted[String]),
+    isUsingCustomerData = isUsingCustomerData.decrypted[Boolean]
+  )
+}
 
 object EncryptedExpensesViewModel {
 
@@ -207,12 +249,9 @@ object EncryptedExpensesViewModel {
         otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief),
         (jobExpensesQuestion, flatRateJobExpensesQuestion, professionalSubscriptionsQuestion,
         otherAndCapitalAllowancesQuestion, submittedOn, isUsingCustomerData, claimEmploymentExpenses)
-        ) =>
-        EncryptedExpensesViewModel(
-          businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
-          otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief, jobExpensesQuestion, flatRateJobExpensesQuestion,
-          professionalSubscriptionsQuestion, otherAndCapitalAllowancesQuestion, submittedOn, isUsingCustomerData, claimEmploymentExpenses
-        )
+        ) => EncryptedExpensesViewModel(claimEmploymentExpenses, jobExpensesQuestion, jobExpenses, flatRateJobExpensesQuestion, flatRateJobExpenses,
+        professionalSubscriptionsQuestion, professionalSubscriptions, otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances, businessTravelCosts,
+        hotelAndMealExpenses, vehicleExpenses, mileageAllowanceRelief, submittedOn, isUsingCustomerData)
     }, {
       expenses =>
         (

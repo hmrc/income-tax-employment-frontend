@@ -16,15 +16,30 @@
 
 package models.benefits
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.income.routes._
-import utils.UnitTest
+import models.mongo.TextAndKey
+import org.scalamock.scalatest.MockFactory
+import support.UnitTest
+import support.builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
+import utils.TypeCaster.Converter
+import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
 
-class IncomeTaxAndCostsModelSpec extends UnitTest {
+class IncomeTaxAndCostsModelSpec extends UnitTest
+  with TaxYearHelper
+  with MockFactory {
 
   private val employmentId = "some-employment-id"
 
-  "incomeTaxPaidByDirectorSectionFinished" should {
+  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
+  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+
+  private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
+  private val encryptedIncomeTaxPaidByDirectorQuestion = EncryptedValue("encryptedIncomeTaxPaidByDirectorQuestion", "some-nonce")
+  private val encryptedIncomeTaxPaidByDirector = EncryptedValue("encryptedIncomeTaxPaidByDirector", "some-nonce")
+  private val encryptedPaymentsOnEmployeesBehalfQuestion = EncryptedValue("encryptedPaymentsOnEmployeesBehalfQuestion", "some-nonce")
+  private val encryptedPaymentsOnEmployeesBehalf = EncryptedValue("encryptedPaymentsOnEmployeesBehalf", "some-nonce")
+
+  "IncomeTaxAndCostsModel.incomeTaxPaidByDirectorSectionFinished" should {
     "return None when incomeTaxPaidByDirectorQuestion is true and incomeTaxPaidByDirector amount is defined" in {
       val underTest = IncomeTaxAndCostsModel(incomeTaxPaidByDirectorQuestion = Some(true), incomeTaxPaidByDirector = Some(1))
       underTest.incomeTaxPaidByDirectorSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -46,7 +61,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
     }
   }
 
-  "paymentsOnEmployeesBehalfSectionFinished" should {
+  "IncomeTaxAndCostsModel.paymentsOnEmployeesBehalfSectionFinished" should {
     "return None when paymentsOnEmployeesBehalfQuestion is true and paymentsOnEmployeesBehalf amount is defined" in {
       val underTest = IncomeTaxAndCostsModel(paymentsOnEmployeesBehalfQuestion = Some(true), paymentsOnEmployeesBehalf = Some(1))
       underTest.paymentsOnEmployeesBehalfSectionFinished(taxYearEOY, employmentId) shouldBe None
@@ -68,7 +83,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
     }
   }
 
-  "isFinished" should {
+  "IncomeTaxAndCostsModel.isFinished" should {
     "return result of incomeTaxPaidByDirectorSectionFinished when incomeTaxOrCostsQuestion is true and incomeTaxPaidByDirectorQuestion is not None" in {
       val underTest = IncomeTaxAndCostsModel(sectionQuestion = Some(true), incomeTaxPaidByDirectorQuestion = None)
       underTest.isFinished(taxYearEOY, employmentId) shouldBe underTest.incomeTaxPaidByDirectorSectionFinished(taxYearEOY, employmentId)
@@ -103,7 +118,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
     }
   }
 
-  "clear" should {
+  "IncomeTaxAndCostsModel.clear" should {
     "return empty IncomeTaxAndCostsModel with main question set to false" in {
       IncomeTaxAndCostsModel.clear shouldBe IncomeTaxAndCostsModel(
         sectionQuestion = Some(false),
@@ -112,6 +127,53 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
         paymentsOnEmployeesBehalfQuestion = None,
         paymentsOnEmployeesBehalf = None
       )
+    }
+  }
+
+  "IncomeTaxAndCostsModel.encrypted" should {
+    "return EncryptedIncomeTaxAndCostsModel instance" in {
+      val underTest = anIncomeTaxAndCostsModel
+
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.incomeTaxPaidByDirectorQuestion.get, textAndKey).returning(encryptedIncomeTaxPaidByDirectorQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.incomeTaxPaidByDirector.get, textAndKey).returning(encryptedIncomeTaxPaidByDirector)
+      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.paymentsOnEmployeesBehalfQuestion.get, textAndKey).returning(encryptedPaymentsOnEmployeesBehalfQuestion)
+      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.paymentsOnEmployeesBehalf.get, textAndKey).returning(encryptedPaymentsOnEmployeesBehalf)
+
+      underTest.encrypted shouldBe EncryptedIncomeTaxAndCostsModel(
+        sectionQuestion = Some(encryptedSectionQuestion),
+        incomeTaxPaidByDirectorQuestion = Some(encryptedIncomeTaxPaidByDirectorQuestion),
+        incomeTaxPaidByDirector = Some(encryptedIncomeTaxPaidByDirector),
+        paymentsOnEmployeesBehalfQuestion = Some(encryptedPaymentsOnEmployeesBehalfQuestion),
+        paymentsOnEmployeesBehalf = Some(encryptedPaymentsOnEmployeesBehalf)
+      )
+    }
+  }
+
+  "EncryptedIncomeTaxAndCostsModel.decrypted" should {
+    "return IncomeTaxAndCostsModel instance" in {
+      val underTest = EncryptedIncomeTaxAndCostsModel(
+        sectionQuestion = Some(encryptedSectionQuestion),
+        incomeTaxPaidByDirectorQuestion = Some(encryptedIncomeTaxPaidByDirectorQuestion),
+        incomeTaxPaidByDirector = Some(encryptedIncomeTaxPaidByDirector),
+        paymentsOnEmployeesBehalfQuestion = Some(encryptedPaymentsOnEmployeesBehalfQuestion),
+        paymentsOnEmployeesBehalf = Some(encryptedPaymentsOnEmployeesBehalf)
+      )
+
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.sectionQuestion.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedIncomeTaxPaidByDirectorQuestion.value, encryptedIncomeTaxPaidByDirectorQuestion.nonce, textAndKey, *)
+        .returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirectorQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedIncomeTaxPaidByDirector.value, encryptedIncomeTaxPaidByDirector.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirector.get)
+      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
+        .expects(encryptedPaymentsOnEmployeesBehalfQuestion.value, encryptedPaymentsOnEmployeesBehalfQuestion.nonce, textAndKey, *)
+        .returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalfQuestion.get)
+      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
+        .expects(encryptedPaymentsOnEmployeesBehalf.value, encryptedPaymentsOnEmployeesBehalf.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalf.get)
+
+      underTest.decrypted shouldBe anIncomeTaxAndCostsModel
     }
   }
 }

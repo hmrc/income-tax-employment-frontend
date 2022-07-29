@@ -18,9 +18,14 @@ package models.benefits
 
 import controllers.benefits.medical.routes._
 import controllers.employment.routes._
+import models.mongo.TextAndKey
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
+import utils.DecryptableSyntax.DecryptableOps
+import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
+import utils.EncryptableSyntax.EncryptableOps
+import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
+import utils.{EncryptedValue, SecureGCMCipher}
 
 case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = None,
                                           medicalInsuranceQuestion: Option[Boolean] = None,
@@ -32,7 +37,6 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
                                           beneficialLoanQuestion: Option[Boolean] = None,
                                           beneficialLoan: Option[BigDecimal] = None) {
 
-  //scalastyle:off
   def medicalInsuranceSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     medicalInsuranceQuestion match {
       case Some(true) => if (medicalInsurance.isDefined) None else Some(MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))
@@ -40,7 +44,6 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
       case None => Some(MedicalDentalBenefitsController.show(taxYear, employmentId))
     }
   }
-  //scalastyle:on
 
   def childcareSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nurseryPlacesQuestion match {
@@ -65,7 +68,6 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
       case None => Some(BeneficialLoansBenefitsController.show(taxYear, employmentId))
     }
   }
-  //scalastyle:on
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     sectionQuestion match {
@@ -80,6 +82,19 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Medical childcare education section yes/no page
     }
   }
+
+  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
+                  textAndKey: TextAndKey): EncryptedMedicalChildcareEducationModel = EncryptedMedicalChildcareEducationModel(
+    sectionQuestion = sectionQuestion.map(_.encrypted),
+    medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.encrypted),
+    medicalInsurance = medicalInsurance.map(_.encrypted),
+    nurseryPlacesQuestion = nurseryPlacesQuestion.map(_.encrypted),
+    nurseryPlaces = nurseryPlaces.map(_.encrypted),
+    educationalServicesQuestion = educationalServicesQuestion.map(_.encrypted),
+    educationalServices = educationalServices.map(_.encrypted),
+    beneficialLoanQuestion = beneficialLoanQuestion.map(_.encrypted),
+    beneficialLoan = beneficialLoan.map(_.encrypted)
+  )
 }
 
 object MedicalChildcareEducationModel {
@@ -96,7 +111,20 @@ case class EncryptedMedicalChildcareEducationModel(sectionQuestion: Option[Encry
                                                    educationalServicesQuestion: Option[EncryptedValue] = None,
                                                    educationalServices: Option[EncryptedValue] = None,
                                                    beneficialLoanQuestion: Option[EncryptedValue] = None,
-                                                   beneficialLoan: Option[EncryptedValue] = None)
+                                                   beneficialLoan: Option[EncryptedValue] = None) {
+
+  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): MedicalChildcareEducationModel = MedicalChildcareEducationModel(
+    sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
+    medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.decrypted[Boolean]),
+    medicalInsurance = medicalInsurance.map(_.decrypted[BigDecimal]),
+    nurseryPlacesQuestion = nurseryPlacesQuestion.map(_.decrypted[Boolean]),
+    nurseryPlaces = nurseryPlaces.map(_.decrypted[BigDecimal]),
+    educationalServicesQuestion = educationalServicesQuestion.map(_.decrypted[Boolean]),
+    educationalServices = educationalServices.map(_.decrypted[BigDecimal]),
+    beneficialLoanQuestion = beneficialLoanQuestion.map(_.decrypted[Boolean]),
+    beneficialLoan = beneficialLoan.map(_.decrypted[BigDecimal])
+  )
+}
 
 object EncryptedMedicalChildcareEducationModel {
   implicit val formats: OFormat[EncryptedMedicalChildcareEducationModel] = Json.format[EncryptedMedicalChildcareEducationModel]

@@ -18,13 +18,14 @@ package controllers.details
 
 import common.SessionValues
 import forms.details.EmployerNameForm
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

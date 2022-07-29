@@ -19,13 +19,13 @@ package actions
 import play.api.mvc.Results.Redirect
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.mocks.MockAppConfig
-import support.{TaxYearProvider, UnitTest}
+import support.{TaxYearHelper, UnitTest}
 import utils.InYearUtil
 
 import scala.concurrent.ExecutionContext
 
 class InYearFilterActionSpec extends UnitTest
-  with TaxYearProvider {
+  with TaxYearHelper {
 
   private val appConfig = new MockAppConfig().config()
   private val inYearUtil = new InYearUtil()(appConfig)

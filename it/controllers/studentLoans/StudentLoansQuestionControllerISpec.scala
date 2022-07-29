@@ -18,8 +18,9 @@ package controllers.studentLoans
 
 import forms.studentLoans.StudentLoanQuestionForm
 import models.IncomeTaxUserData
+import models.details.EmploymentDetails
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.mvc.Result
@@ -86,7 +87,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     "there is cya data in session with previous studentLoans" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -119,7 +120,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     "render the page" in {
       lazy val result = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(EmploymentUserData(
           sessionId,
           mtditid,
@@ -139,7 +140,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           )
         ))
 
-        urlGet(url(taxYearEOY), false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe OK
@@ -370,7 +371,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq())
         lazy val result = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(false)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
             sessionId,
             mtditid,
@@ -400,7 +401,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl", "pgl", "none"))
         lazy val result = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(false)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
             sessionId,
             mtditid,

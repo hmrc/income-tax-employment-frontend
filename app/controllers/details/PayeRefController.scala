@@ -22,7 +22,8 @@ import controllers.details.routes._
 import controllers.employment.routes._
 import forms.details.PayeRefForm
 import models.AuthorisationRequest
-import models.mongo.{EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._

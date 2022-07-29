@@ -23,7 +23,8 @@ import controllers.details.routes.PayeRefController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmployerNameForm
 import models.AuthorisationRequest
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.details.EmploymentDetails
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._

@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package support.builders.models.mongo
+package support.builders.models.details
 
-import models.mongo.EmploymentDetails
-import utils.TestTaxYearHelper
+import models.details.EmploymentDetails
+import support.TaxYearUtils.taxYearEOY
 
-object EmploymentDetailsBuilder extends TestTaxYearHelper {
+object EmploymentDetailsBuilder {
 
   val anEmploymentDetails: EmploymentDetails = EmploymentDetails(
     employerName = "Employer Name",
     employerRef = Some("123/12345"),
-    startDate = Some(s"${taxYearEOY-1}-11-11"),
+    startDate = Some(s"${taxYearEOY - 1}-11-11"),
     payrollId = Some("12345678"),
     didYouLeaveQuestion = Some(false),
-    taxablePayToDate = Some(55.99),
-    totalTaxToDate = Some(3453453.00),
+    cessationDate = None,
+    dateIgnored = None,
     employmentSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),
     employmentDetailsSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),
+    taxablePayToDate = Some(55.99),
+    totalTaxToDate = Some(3453453.00),
     currentDataIsHmrcHeld = false
   )
 }
