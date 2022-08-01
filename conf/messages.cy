@@ -31,7 +31,6 @@ common.error.invalid_currency_format = Nodwch y swm yn y fformat cywir
 common.error.invalid_number = Nodwch swm gan ddefnyddio’r rhifau 0 i 9
 common.fullStop = .
 common.help.getHelpWithThisPage = Help gyda’r dudalen hon
-common.ifItWasNot = Rhowch wybod y swm cywir os nad oedd yn {0}.
 common.important = Pwysig
 common.letters.case = llythrennau mawr a bach (a i z)
 common.no = Na
@@ -1232,8 +1231,6 @@ expenses.businessTravelAndOvernightAmount.error.noEntry.agent = Nodwch y swm ryd
 expenses.businessTravelAndOvernightAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos
 expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000
 expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000
-expenses.businessTravelAndOvernightAmount.replay.agent = Dywedoch wrthym eich bod am hawlio {0} ar gyfer costau teithio busnes ac aros dros nos eich cleient . Rhowch wybod i ni os yw hyn wedi newid.
-expenses.businessTravelAndOvernightAmount.replay.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer costau teithio busnes ac aros dros nos. Rhowch wybod i ni os yw hyn wedi newid.
 expenses.businessTravelAndOvernightAmount.title.agent = Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?
 expenses.businessTravelAndOvernightAmount.title.individual = Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?
 
@@ -1312,8 +1309,6 @@ expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.agent = Nodwch y s
 expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.individual = Nodwch y swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol
 expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.agent = Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient fod yn llai na £100,000,000,000
 expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol fod yn llai na £100,000,000,000
-expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = Dywedoch wrthym eich bod chi am hawlio {0} ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient. Rhowch wybod i ni os yw hyn wedi newid.
-expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer ffioedd a thanysgrifiadau proffesiynol. Rhowch wybod i ni os yw hyn wedi newid.
 expenses.professionalFeesAndSubscriptionsAmount.title.agent = Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?
 expenses.professionalFeesAndSubscriptionsAmount.title.individual = Faint rydych am ei hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?
 
@@ -1334,8 +1329,6 @@ expenses.otherEquipmentAmount.error.overMaximum.agent = Maeín rhaid iír swm ry
 expenses.otherEquipmentAmount.error.overMaximum.individual = Maeín rhaid iír swm rydych am ei hawlio ar gyfer prynu offer eraill fod yn llai na £100,000,000,000
 expenses.otherEquipmentAmount.title.agent = Faint rydych am ei hawlio ar gyfer prynu offer eraill ar gyfer eich cleient?
 expenses.otherEquipmentAmount.title.individual = Faint rydych am ei hawlio ar gyfer prynu offer eraill?
-expenses.otherEquipmentAmount.wantToClaim.agent = Dywedoch wrthym eich bod am hawlio {0} ar gyfer prynu offer eraill ar gyfer eich cleient. Rhowch wybod i ni os yw hyn wedi newid.
-expenses.otherEquipmentAmount.wantToClaim.individual = Dywedoch wrthym eich bod am hawlio {0} ar gyfer prynu offer eraill. Rhowch wybod i ni os yw hyn wedi newid.
 
 #################       Remove Expenses messages        ########################################
 

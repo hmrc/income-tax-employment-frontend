@@ -23,7 +23,7 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
     messages(s"benefits.assetsAmount.title.${if(request.user.isAgent) "agent" else "individual"}")
@@ -34,10 +34,7 @@
     @errorSummary(form.errors)
 
   @heading(titleText, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-
-    @if(preAmount.isDefined) {
-        <p id="previous-amount-text" class="govuk-body">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
-    }
+    
     <p id="enter-total-text" class="govuk-body">@messages("common.enterTheTotal")</p>
     <p id="you-can-text" class="govuk-body">@messages(s"benefits.assetsAmount.youCan.${if(request.user.isAgent) "agent" else "individual"}")</p>
 

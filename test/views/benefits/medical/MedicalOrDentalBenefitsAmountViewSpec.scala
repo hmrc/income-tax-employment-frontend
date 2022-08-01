@@ -31,7 +31,6 @@ import views.html.benefits.medical.MedicalOrDentalBenefitsAmountView
 class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
 
   private val employmentId = "employmentId"
-  private val insuranceAmount: BigDecimal = 100
   private val poundPrefixText = "£"
   private val amountField = "#amount"
   private val amountInputName = "amount"
@@ -48,8 +47,6 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
 
   trait CommonExpectedResults {
     def expectedCaption(taxYear: Int): String
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String
 
     val continueButtonText: String
     val hintText: String
@@ -69,16 +66,12 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val hintText = "For example, £193.52"
     val continueButtonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-
-    def expectedPreAmountParagraph(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val hintText = "Er enghraifft, £193.52"
     val continueButtonText = "Yn eich blaen"
@@ -147,7 +140,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -168,7 +161,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -176,9 +169,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.commonExpectedResults.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "100")
@@ -190,7 +182,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(300), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -198,8 +190,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(4))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)
@@ -213,7 +205,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(300), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -221,8 +213,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(index = 4))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(index = 5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(index = 4))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedWrongFormatErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)
@@ -236,7 +228,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(300), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -244,8 +236,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(4))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedMaxErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)

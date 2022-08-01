@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TelephoneBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                   inYearAction: InYearUtil,
-                                                  telephoneEmploymentBenefitsAmountView: TelephoneEmploymentBenefitsAmountView,
+                                                  pageView: TelephoneEmploymentBenefitsAmountView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   utilitiesService: UtilitiesService,
                                                   formsProvider: UtilitiesFormsProvider,
@@ -50,14 +50,11 @@ class TelephoneBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone))
-          val form = fillFormFromPriorAndCYA(formsProvider.telephoneBenefitsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.telephone))
-          }
-
-          Future.successful(Ok(telephoneEmploymentBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.telephoneBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -69,8 +66,7 @@ class TelephoneBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.telephoneBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.telephone)
-              Future.successful(BadRequest(telephoneEmploymentBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

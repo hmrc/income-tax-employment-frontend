@@ -17,8 +17,6 @@
 package controllers.benefits.accommodation
 
 import models.benefits.BenefitsViewModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -38,7 +36,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
 
   ".show" should {
     "render the non-qualifying relocation benefits amount page without pre-filled form and without replay text" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpenses = None)))
@@ -48,23 +46,22 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
         result.status shouldBe OK
       }
+
     }
 
     "render– the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benefits data" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
-
       "has an OK status" in {
+        getInputFieldValue() shouldBe "300"
         result.status shouldBe OK
       }
     }
@@ -157,10 +154,6 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
       }
 
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
-
       "has an BAD_REQUEST status" in {
         result.status shouldBe BAD_REQUEST
       }
@@ -175,10 +168,6 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
       }
 
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
-
       "has an BAD_REQUEST status" in {
         result.status shouldBe BAD_REQUEST
       }
@@ -192,10 +181,6 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
         urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
       }
-
-      lazy val document = Jsoup.parse(result.body)
-
-      implicit def documentSupplier: () => Document = () => document
 
       "has an BAD_REQUEST status" in {
         result.status shouldBe BAD_REQUEST

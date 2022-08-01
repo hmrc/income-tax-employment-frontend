@@ -23,7 +23,7 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -66,6 +66,22 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the company car benefits amount page with prefilled amount box" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

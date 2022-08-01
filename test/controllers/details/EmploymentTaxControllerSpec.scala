@@ -72,7 +72,7 @@ class EmploymentTaxControllerSpec extends UnitTest
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockGetAndHandle(taxYearEOY, Ok(view(
-            taxYearEOY, "001", "Dave", AmountForm.amountForm(""), None)
+            taxYearEOY, "001", "Dave", AmountForm.amountForm(""))
           ))
 
           controller.show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(

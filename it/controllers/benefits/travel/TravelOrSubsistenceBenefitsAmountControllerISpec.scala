@@ -39,8 +39,8 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the travel or subsistence benefits amount page" which {
-      lazy val result: WSResponse = {
+    "render the travel or subsistence benefits amount page without pre-filled form" which {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(travelAndSubsistence = None)))
@@ -50,6 +50,22 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the travel or subsistence benefits amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(travelSubsistenceBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

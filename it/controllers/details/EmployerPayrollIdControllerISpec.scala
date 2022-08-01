@@ -43,7 +43,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     )
 
   ".show" when {
-    "should render the What's your payrollId? page" which {
+    "should render the What's your payrollId? page with no pre-filled form" which {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -53,6 +53,24 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "has an OK status" in {
+        getInputFieldValue("#payrollId") shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "should render the What's your payrollId? page with pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val employmentDetails: EmploymentDetails = cya().employment.employmentDetails.copy(payrollId = Some("123456789"))
+        insertCyaData(cya().copy(employment = cya().employment.copy(employmentDetails = employmentDetails)))
+
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue("#payrollId") shouldBe "123456789"
         result.status shouldBe OK
       }
     }

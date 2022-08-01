@@ -26,7 +26,7 @@
     button: Button
 )
 
-@(form: Form[String], taxYear: Int, employmentId: String, previousPayRollId: Option[String])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"employment.payrollId.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
@@ -38,9 +38,6 @@
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(previousPayRollId.isDefined){
-        <p class="govuk-body">@messages(s"employment.payrollId.previous.paragraph", previousPayRollId.get)</p>
-    }
     <p class="govuk-body">@messages(s"employment.payrollId.paragraph1.${if(request.user.isAgent) "agent" else "individual"}")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>@messages("common.letters.case")</li>

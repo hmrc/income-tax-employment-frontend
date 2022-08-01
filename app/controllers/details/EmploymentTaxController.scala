@@ -49,16 +49,14 @@ class EmploymentTaxController @Inject()(mcc: MessagesControllerComponents,
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, _) =>
         cya match {
           case Some(cya) =>
             val cyaTax = cya.employment.employmentDetails.totalTaxToDate
-            val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
             lazy val unfilledForm = formsProvider.employmentTaxAmountForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else formsProvider.employmentTaxAmountForm(request.user.isAgent).fill(cyaTaxed))
-            Future.successful(Ok(pageView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
+              cyaTaxed => formsProvider.employmentTaxAmountForm(request.user.isAgent).fill(cyaTaxed))
+            Future.successful(Ok(pageView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form)))
 
           case None => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -75,7 +73,7 @@ class EmploymentTaxController @Inject()(mcc: MessagesControllerComponents,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         formsProvider.employmentTaxAmountForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(pageView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
-            formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
+            formWithErrors))),
           completeForm => handleSuccessForm(taxYear, employmentId, cya, completeForm)
         )
       }

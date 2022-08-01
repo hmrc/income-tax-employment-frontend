@@ -49,8 +49,6 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
   trait CommonExpectedResults {
     val expectedCaption: String
 
-    def optionalParagraphText(amount: BigDecimal): String
-
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -70,7 +68,6 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
     val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
@@ -80,8 +77,6 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-
-    def optionalParagraphText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val expectedHintText = "Er enghraifft, £193.52"
     val currencyPrefix = "£"
@@ -148,7 +143,7 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -170,14 +165,13 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 100), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 100), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
         textOnPageCheck(enterTotalText, enterTotalSelector)
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedYouCanText, youCanSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
@@ -194,14 +188,13 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(100), employmentId)
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -220,14 +213,13 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(100), employmentId)
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -246,14 +238,13 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(100), employmentId)
+          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
-          textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)

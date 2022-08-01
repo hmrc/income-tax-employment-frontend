@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QualifyingRelocationBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                              inYearAction: InYearUtil,
-                                                             qualifyingRelocationBenefitsAmountView: QualifyingRelocationBenefitsAmountView,
+                                                             pageView: QualifyingRelocationBenefitsAmountView,
                                                              employmentSessionService: EmploymentSessionService,
                                                              accommodationService: AccommodationService,
                                                              errorHandler: ErrorHandler,
@@ -49,14 +49,12 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-          val form = fillFormFromPriorAndCYA(formsProvider.qualifyingRelocationAmountForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.qualifyingRelocationExpenses))
-          }
+          val form = fillForm(formsProvider.qualifyingRelocationAmountForm(request.user.isAgent), cyaAmount)
 
-          Future.successful(Ok(qualifyingRelocationBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -68,8 +66,7 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.qualifyingRelocationAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpenses)
-              Future.successful(BadRequest(qualifyingRelocationBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

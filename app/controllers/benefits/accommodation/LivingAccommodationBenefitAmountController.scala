@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LivingAccommodationBenefitAmountController @Inject()(authAction: AuthorisedAction,
                                                            inYearAction: InYearUtil,
-                                                           livingAccommodationBenefitAmountView: LivingAccommodationBenefitsAmountView,
+                                                           pageView: LivingAccommodationBenefitsAmountView,
                                                            employmentSessionService: EmploymentSessionService,
                                                            accommodationService: AccommodationService,
                                                            errorHandler: ErrorHandler,
@@ -50,13 +50,11 @@ class LivingAccommodationBenefitAmountController @Inject()(authAction: Authorise
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
-          val form = fillFormFromPriorAndCYA(formsProvider.livingAccommodationAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation))
-          )
-          Future(Ok(livingAccommodationBenefitAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.livingAccommodationAmountForm(request.user.isAgent), cyaAmount)
+          Future(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -70,8 +68,7 @@ class LivingAccommodationBenefitAmountController @Inject()(authAction: Authorise
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.livingAccommodationAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaLivingAccommodationAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
-              Future.successful(BadRequest(livingAccommodationBenefitAmountView(taxYear, formWithErrors, cyaLivingAccommodationAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

@@ -49,15 +49,13 @@ class AssetsTransfersBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetTransfer))
 
-          val form = fillFormFromPriorAndCYA(formsProvider.assetTransfersAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.assetTransfer))
-          )
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.assetTransfersAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -70,8 +68,7 @@ class AssetsTransfersBenefitsAmountController @Inject()(authAction: AuthorisedAc
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.assetTransfersAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaAmount = cya.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetTransfer))
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

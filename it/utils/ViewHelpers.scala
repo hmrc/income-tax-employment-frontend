@@ -18,6 +18,7 @@ package utils
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import helpers.WireMockHelper
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -219,13 +220,8 @@ trait ViewHelpers {
     }
   }
 
-  def inputFieldValueCheck(name: String, selector: String, value: String)(implicit document: () => Document): Unit = {
-    s"'$selector' has a name of '$name'" in {
-      document().select(selector).attr("name") shouldBe name
-    }
-    s"'$selector' has a value of '$value'" in {
-      document().select(selector).attr("value") shouldBe value
-    }
+  def getInputFieldValue(selector: String = "#amount")(implicit result: WSResponse): String = {
+    Jsoup.parse(result.body).select(selector).attr("value")
   }
 
   def errorSummaryCheck(text: String, href: String)(implicit document: () => Document): Unit = {

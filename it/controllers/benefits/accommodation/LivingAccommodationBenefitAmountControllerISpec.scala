@@ -18,8 +18,6 @@ package controllers.benefits.accommodation
 
 import forms.AmountForm
 import models.benefits.AccommodationRelocationModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -29,7 +27,8 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
+  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -49,8 +48,23 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
+      getInputFieldValue() shouldBe ""
       result.status shouldBe OK
     }
+
+    "should render How much was your total living accommodation benefit? page and show the previous amount" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      getInputFieldValue() shouldBe "100"
+      result.status shouldBe OK
+    }
+
 
     "redirect to the overview page when the tax year isn't valid for EOY" which {
       lazy val result: WSResponse = {

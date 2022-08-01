@@ -49,14 +49,11 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
           val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
-          val form = fillExpensesFormFromPriorAndCYA(formsProvider.otherEquipmentAmountForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
-            employmentExpenses.expenses.flatMap(_.otherAndCapitalAllowances)
-          }
-
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount)))
+          val form = fillForm(formsProvider.otherEquipmentAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form)))
         }
       })
     }
@@ -68,8 +65,7 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
           formsProvider.otherEquipmentAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = data.expensesCya.expenses.otherAndCapitalAllowances
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors)))
             },
             amount => handleSuccessForm(taxYear, data, amount)
           )

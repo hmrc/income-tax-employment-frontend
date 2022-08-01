@@ -49,7 +49,6 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
 
     val hintText: String
     val continueButtonText: String
-    val optionalText: String
   }
 
   trait SpecificExpectedResults {
@@ -67,7 +66,6 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
 
     val hintText = "For example, £193.52"
     val continueButtonText = "Continue"
-    val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -75,7 +73,6 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
 
     val hintText = "Er enghraifft, £193.52"
     val continueButtonText = "Yn eich blaen"
-    val optionalText = s"Rhowch wybod y swm cywir os nad oedd yn £$carAmount."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -136,7 +133,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId, None)
+        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -155,15 +152,14 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), taxYearEOY, employmentId, Some(100))
+        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.commonExpectedResults.optionalText, paragraphTextSelector(index = 2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
         textOnPageCheck(userScenario.commonExpectedResults.hintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -176,7 +172,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), taxYearEOY, employmentId, Some(100))
+          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), taxYearEOY, employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -193,7 +189,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), taxYearEOY, employmentId, Some(100))
+          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), taxYearEOY, employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -210,7 +206,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), taxYearEOY, employmentId, Some(100))
+          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), taxYearEOY, employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

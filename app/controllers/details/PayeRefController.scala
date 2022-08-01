@@ -53,13 +53,12 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
         cya match {
           case Some(cya) =>
             val cyaRef = cya.employment.employmentDetails.employerRef
-            val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorRef = priorEmployment.headOption.flatMap(_.employerRef)
+
             lazy val unfilledForm = PayeRefForm.payeRefForm //TODO - unit tests unfilled forms and pre-filled forms conditions
             val form: Form[String] = cyaRef.fold(unfilledForm)(
-              cyaPaye => if (priorRef.exists(_.equals(cyaPaye))) unfilledForm else PayeRefForm.payeRefForm.fill(cyaPaye))
+              cyaPaye => PayeRefForm.payeRefForm.fill(cyaPaye))
             val employerName = cya.employment.employmentDetails.employerName
-            Future.successful(Ok(pageView(form, taxYear, employerName, cyaRef, employmentId)))
+            Future.successful(Ok(pageView(form, taxYear, employerName, employmentId)))
 
           case _ => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -75,9 +74,8 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
         PayeRefForm.payeRefForm.bindFromRequest().fold(
           formWithErrors => {
-            val payeRef = data.employment.employmentDetails.employerRef
             val employerName = data.employment.employmentDetails.employerName
-            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, payeRef, employmentId)))
+            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, employmentId)))
           },
           payeRef => handleSuccessForm(taxYear, employmentId, data, payeRef)
         )

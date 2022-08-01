@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                         inYearAction: InYearUtil,
-                                                        incidentalCostsBenefitsAmountView: IncidentalCostsBenefitsAmountView,
+                                                        pageView: IncidentalCostsBenefitsAmountView,
                                                         employmentSessionService: EmploymentSessionService,
                                                         travelService: TravelService,
                                                         formsProvider: TravelFormsProvider,
@@ -51,14 +51,12 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
-          val form = fillFormFromPriorAndCYA(formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses))
-          )
-          Future.successful(Ok(incidentalCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -72,8 +70,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
-              Future.successful(BadRequest(incidentalCostsBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

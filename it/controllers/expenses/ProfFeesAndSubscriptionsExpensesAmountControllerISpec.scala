@@ -19,8 +19,6 @@ package controllers.expenses
 import forms.AmountForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-//import org.jsoup.Jsoup
-//import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -56,6 +54,23 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       }
 
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the professional fees and subscriptions expenses amount page with an non-empty amount field" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropExpensesDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          ExpensesCYAModel(expensesViewModel(profFeesAndSubscriptions = Some(200)))))
+        urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

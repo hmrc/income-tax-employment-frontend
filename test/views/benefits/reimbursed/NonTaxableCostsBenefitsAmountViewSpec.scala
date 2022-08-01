@@ -34,7 +34,6 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
   private val amountInModel: BigDecimal = 100
   private val amountInputName = "amount"
   private val amountFieldHref = "#amount"
-  private val newAmount: BigDecimal = 500.55
 
   object Selectors {
     val ifItWasNotTextSelector = "#previous-amount-text"
@@ -48,8 +47,6 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
 
   trait CommonExpectedResults {
     val expectedCaption: String
-
-    def ifItWasNotText(amount: BigDecimal): String
 
     val enterTotalText: String
     val expectedHintText: String
@@ -69,8 +66,6 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
-    def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val enterTotalText = "Enter the total."
     val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
@@ -79,8 +74,6 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-
-    def ifItWasNotText(amount: BigDecimal): String = s"Rhowch wybod y swm cywir os nad oedd yn £$amount."
 
     val enterTotalText = "Nodwch y cyfanswm."
     val expectedHintText = "Er enghraifft, £193.52"
@@ -143,7 +136,7 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -165,14 +158,13 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
         textOnPageCheck(enterTotalText, enterTotalSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -187,14 +179,13 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
         textOnPageCheck(enterTotalText, enterTotalSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -212,14 +203,13 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
         textOnPageCheck(enterTotalText, enterTotalSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -237,14 +227,13 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(100), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
         textOnPageCheck(enterTotalText, enterTotalSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)

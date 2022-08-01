@@ -50,14 +50,12 @@ class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash))
-          val form = fillFormFromPriorAndCYA(formsProvider.nonCashAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nonCash))
-          )
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.nonCashAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -72,8 +70,7 @@ class NonCashBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
           formsProvider.nonCashAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash))
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

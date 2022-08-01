@@ -38,7 +38,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   ".show" should {
     "render the mileage amount page with no pre-filled amount" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileage = None)))
@@ -48,6 +48,23 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the mileage amount page with pre-filled amount" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "500"
         result.status shouldBe OK
       }
     }

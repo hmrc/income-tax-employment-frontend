@@ -43,7 +43,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
   ".show" should {
     "render the 'Amount for taxable costs reimbursed by employer' page without pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(taxableExpenses = None)))
@@ -53,6 +53,22 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the 'Amount for taxable costs reimbursed by employer' page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(anEmploymentUserData)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(taxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

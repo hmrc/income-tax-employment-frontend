@@ -49,15 +49,13 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
 
-          val form = fillFormFromPriorAndCYA(formsProvider.beneficialLoansAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.beneficialLoan))
-          )
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.beneficialLoansAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -70,8 +68,7 @@ class BeneficialLoansAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.beneficialLoansAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

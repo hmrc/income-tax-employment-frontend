@@ -48,6 +48,22 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the assets amount page with pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an OK($OK) status" in {
+        getInputFieldValue() shouldBe "100"
         result.status shouldBe OK
       }
     }

@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                                   inYearAction: InYearUtil,
-                                                                  professionalSubscriptionBenefitsView: ProfessionalSubscriptionsBenefitsAmountView,
+                                                                  pageView: ProfessionalSubscriptionsBenefitsAmountView,
                                                                   employmentSessionService: EmploymentSessionService,
                                                                   utilitiesService: UtilitiesService,
                                                                   formsProvider: UtilitiesFormsProvider,
@@ -50,16 +50,12 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions))
-          val form = fillFormFromPriorAndCYA(formsProvider.professionalSubscriptionsBenefitsAmountForm(
-            request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.employerProvidedProfessionalSubscriptions))
-          }
-
-          Future.successful(Ok(professionalSubscriptionBenefitsView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.professionalSubscriptionsBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -73,8 +69,7 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(authAction: Au
 
           formsProvider.professionalSubscriptionsBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.employerProvidedProfessionalSubscriptions)
-              Future.successful(BadRequest(professionalSubscriptionBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

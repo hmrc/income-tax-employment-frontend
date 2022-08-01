@@ -29,7 +29,7 @@
     button: Button
 )
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{messages(s"benefits.mileageBenefitAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
@@ -41,7 +41,6 @@
 
     @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(preAmount.isDefined){<p class="govuk-body">@messages("common.ifItWasNot", "£" + preAmount.get)</p>}
     <p class="govuk-body">@messages(s"benefits.mileageBenefitAmount.paragraph.${if (request.user.isAgent) "agent" else "individual"}")</p>
 
     @formWithCsrf(controllers.benefits.fuel.routes.MileageBenefitAmountController.submit(taxYear, empId)) {

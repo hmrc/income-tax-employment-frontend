@@ -81,7 +81,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £500, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -92,7 +92,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gawsoch am ddefnyddio eich car eich hun"
     val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
-    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500. Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
+    val expectedParagraphWithPrefill: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
     val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gawsoch chi yn y fformat cywir"
     val expectedMaxErrorMessage: String = "Maeín rhaid iích buddiant milltiroedd fod yn llai na £100,000,000,000"
   }
@@ -103,7 +103,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £500, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }
@@ -114,7 +114,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient am ddefnyddio ei gar ei hun"
     val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
-    val expectedParagraphWithPrefill: String = "Rhowch wybod y swm cywir os nad oedd yn £500. Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
+    val expectedParagraphWithPrefill: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
     val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient yn y fformat cywir"
     val expectedMaxErrorMessage: String = "Maeín rhaid i fuddiant milltiroedd eich cleient fod yn llai na £100,000,000,000"
   }
@@ -138,7 +138,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), None, employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -158,7 +158,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "500")), Some(500), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "500")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -178,7 +178,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), Some(500), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -195,7 +195,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), Some(500), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -213,7 +213,7 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), Some(400), employmentId)
+        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

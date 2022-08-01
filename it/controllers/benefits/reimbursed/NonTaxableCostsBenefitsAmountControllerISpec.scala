@@ -43,12 +43,30 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(expenses = Some(22.00))))
+          val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(expenses = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe ""
+          result.status shouldBe OK
+        }
+      }
+    }
+
+    "render the non-taxable costs benefits amount page with an non-empty amount field" when {
+      "the prior amount and cya amount are the same" which {
+        implicit lazy val result: WSResponse = {
+          authoriseAgentOrIndividual(isAgent = false)
+          dropEmploymentDB()
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertCyaData(anEmploymentUserData)
+          urlGet(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        s"has an OK($OK) status" in {
+          getInputFieldValue() shouldBe "100"
           result.status shouldBe OK
         }
       }

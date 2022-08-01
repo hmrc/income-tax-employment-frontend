@@ -48,14 +48,12 @@ class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.jobExpenses
 
-          val form = fillExpensesFormFromPriorAndCYA(formsProvider.businessTravelAndOvernightAmountForm(request.user.isAgent), prior, cyaAmount)(
-            expenses => expenses.expenses.flatMap(_.jobExpenses)
-          )
-          Future.successful(Ok(pageView(taxYear, form, cyaAmount)))
+          val form = fillForm(formsProvider.businessTravelAndOvernightAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form)))
         }
       })
     }
@@ -67,7 +65,7 @@ class TravelAndOvernightAmountController @Inject()(authAction: AuthorisedAction,
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
           formsProvider.businessTravelAndOvernightAmountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors, data.expensesCya.expenses.jobExpenses))),
+            formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors))),
             amount => handleSuccessForm(taxYear, data, amount)
           )
         }

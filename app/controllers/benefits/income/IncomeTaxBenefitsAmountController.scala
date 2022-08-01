@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeTaxBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                   inYearAction: InYearUtil,
-                                                  incomeTaxBenefitsAmountView: IncomeTaxBenefitsAmountView,
+                                                  pageView: IncomeTaxBenefitsAmountView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   incomeService: IncomeService,
                                                   errorHandler: ErrorHandler,
@@ -52,14 +52,12 @@ class IncomeTaxBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector))
-          val form = fillFormFromPriorAndCYA(formsProvider.incomeTaxAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.incomeTaxPaidByDirector))
-          )
-          Future.successful(Ok(incomeTaxBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          val form = fillForm(formsProvider.incomeTaxAmountForm(request.user.isAgent), cyaAmount)
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -73,8 +71,7 @@ class IncomeTaxBenefitsAmountController @Inject()(authAction: AuthorisedAction,
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.incomeTaxAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector))
-              Future.successful(BadRequest(incomeTaxBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )

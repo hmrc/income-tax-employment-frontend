@@ -48,15 +48,13 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
           val cyaAmount = cyaData.expensesCya.expenses.professionalSubscriptions
           val agent = request.user.isAgent
-          val form = fillExpensesFormFromPriorAndCYA(formsProvider.professionalFeesAndSubscriptionsAmountForm(agent), prior, cyaAmount) { employmentExpenses =>
-            employmentExpenses.expenses.flatMap(_.professionalSubscriptions)
-          }
-          Future(Ok(pageView(taxYear, form, cyaAmount)))
+          val form = fillForm(formsProvider.professionalFeesAndSubscriptionsAmountForm(agent), cyaAmount)
+          Future(Ok(pageView(taxYear, form)))
         }
       })
     }
@@ -69,8 +67,7 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
 
           formsProvider.professionalFeesAndSubscriptionsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = data.expensesCya.expenses.professionalSubscriptions
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors)))
             },
             amount => handleSuccessForm(taxYear, data, amount)
           )

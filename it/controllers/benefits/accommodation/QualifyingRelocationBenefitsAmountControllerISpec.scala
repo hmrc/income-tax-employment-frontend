@@ -35,7 +35,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
   ".show" should {
     "render the qualifying relocation benefits amount page without pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)))
@@ -45,6 +45,22 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the qualifying relocation benefits amount page with pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "200"
         result.status shouldBe OK
       }
     }

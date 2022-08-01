@@ -43,7 +43,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
   ".show" should {
     "render the vouchers benefits amount page without pre-filled form" which {
-      lazy val result: WSResponse = {
+      implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCards = None)))
@@ -53,6 +53,22 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       "has an OK status" in {
+        getInputFieldValue() shouldBe ""
+        result.status shouldBe OK
+      }
+    }
+
+    "render the vouchers benefits amount page with a pre-filled form" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(anEmploymentUserData)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(vouchersOrCreditCardsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        getInputFieldValue() shouldBe "300"
         result.status shouldBe OK
       }
     }

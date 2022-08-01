@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class NonQualifyingRelocationBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                                 inYearAction: InYearUtil,
-                                                                nonQualifyingRelocationBenefitsView: NonQualifyingRelocationBenefitsAmountView,
+                                                                pageView: NonQualifyingRelocationBenefitsAmountView,
                                                                 employmentSessionService: EmploymentSessionService,
                                                                 accommodationService: AccommodationService,
                                                                 errorHandler: ErrorHandler,
@@ -54,12 +54,9 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(authAction: Auth
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
+          val form = fillForm(formsProvider.nonQualifyingRelocationAmountForm(request.user.isAgent), cyaAmount)
 
-          val form = fillFormFromPriorAndCYA(formsProvider.nonQualifyingRelocationAmountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
-            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nonQualifyingRelocationExpenses))
-          )
-
-          Future.successful(Ok(nonQualifyingRelocationBenefitsView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
     }
@@ -74,8 +71,7 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(authAction: Auth
           EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           formsProvider.nonQualifyingRelocationAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.nonQualifyingRelocationExpenses)
-              Future.successful(BadRequest(nonQualifyingRelocationBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
+              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
             },
             amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
