@@ -54,10 +54,7 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined
 
-      employmentData match {
-        case Seq() if isInYear && !doExpensesExist => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        case _ => Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent))
-      }
+      Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent))
     }
   }
 

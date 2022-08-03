@@ -71,7 +71,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
 
     val addExpensesSelector = s"#add-expenses"
 
-    def addEmployerSelector(n: Int = 3): String = s"#main-content > div > div > p:nth-child($n) > a"
+    def addEmployerSelector = "#main-content > div > div > p.govuk-body > a"
 
     val addSelector = "#main-content > div > div > dl:nth-child(7) > div > dd > a"
     val cannotAddSelector = "#main-content > div > div > p:nth-child(7)"
@@ -267,7 +267,6 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           linkCheck(s"$change$change $employerName2", changeEmployerSelector(2), EmployerInformationController.show(taxYearEOY, employmentId2).url)
           linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), RemoveEmploymentController.show(taxYearEOY, employmentId2).url)
           linkCheck(addAnother, addAnotherSelector, EmploymentSummaryController.addNewEmployment(taxYearEOY).url, isExactUrlMatch = false)
-          textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
           linkCheck(addExpenses, addExpensesSelector, EmploymentExpensesController.show(taxYearEOY).url)
           buttonCheck(returnToOverview)
         }
@@ -319,8 +318,6 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           linkCheck(s"$view$view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
           linkCheck(s"$view$view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
-          textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
-          textOnPageCheck(specific.cannotAdd, cannotAddSelector)
           buttonCheck(returnToOverview)
         }
       }
@@ -338,11 +335,25 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         h1Check(expectedH1)
         textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
         captionCheck(expectedCaption(taxYear))
-        textOnPageCheck(employers, employersSelector)
         textOnPageCheck(thisIsATotal, thisIsATotalSelector)
-        textOnPageCheck(noEmployers, noEmployersSelector)
         textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
         textOnPageCheck(expenses, expensesLineSelector(true), "as a line item")
+        buttonCheck(returnToOverview)
+      }
+
+      "show the summary page when no data is in session and in year" which {
+        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        welshToggleCheck(userScenario.isWelsh)
+        titleCheck(expectedTitle, userScenario.isWelsh)
+        h1Check(expectedH1)
+        captionCheck(expectedCaption(taxYear))
+        textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
         buttonCheck(returnToOverview)
       }
 
@@ -355,10 +366,11 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         welshToggleCheck(userScenario.isWelsh)
-        textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
-        linkCheck(addExpenses, addExpensesSelector, EmploymentExpensesController.show(taxYearEOY).url)
-        textOnPageCheck(employers, employersSelector, "as a heading")
-        linkCheck(addEmployer, addEmployerSelector(), EmploymentSummaryController.addNewEmployment(taxYearEOY).url)
+        titleCheck(expectedTitle, userScenario.isWelsh)
+        h1Check(expectedH1)
+        captionCheck(expectedCaption(taxYearEOY))
+        linkCheck(addEmployer, addEmployerSelector, EmploymentSummaryController.addNewEmployment(taxYearEOY).url, isExactUrlMatch = false)
+        buttonCheck(returnToOverview)
       }
     }
   }

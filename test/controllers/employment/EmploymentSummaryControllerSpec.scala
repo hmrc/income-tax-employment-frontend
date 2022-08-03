@@ -242,14 +242,13 @@ class EmploymentSummaryControllerSpec extends UnitTest
       }
     }
 
-    "redirect the User to the Overview page no data in session" which {
+    "render summary view when no data in session" which {
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, None)
 
         val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
-        status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        status(result) shouldBe OK
       }
     }
   }

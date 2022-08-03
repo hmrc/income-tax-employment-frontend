@@ -56,7 +56,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       }
     }
 
-    "redirect when there is employment data returned but no hmrc employment data" which {
+    "render page when there is employment data returned but no hmrc employment data" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(anEmploymentSource), None))), nino, taxYear)
@@ -64,11 +64,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "status OK" in {
-        result.status shouldBe SEE_OTHER
+        result.status shouldBe OK
       }
     }
 
-    "redirect the User to the Overview page no data in session" which {
+    "render page when no data in session" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(IncomeTaxUserData(), nino, taxYear)
@@ -76,8 +76,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
+        result.status shouldBe OK
       }
 
     }
