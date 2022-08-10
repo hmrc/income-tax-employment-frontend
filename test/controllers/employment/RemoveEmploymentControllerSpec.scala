@@ -52,7 +52,7 @@ class RemoveEmploymentControllerSpec extends UnitTest
   ".show" should {
     "return a result" which {
       s"has an OK($OK) status when there is employment data" in new TestWithAuth {
-        mockFind(taxYearEOY, Ok(view(taxYearEOY, employmentId, employerName, lastEmployment = false, isHmrcEmployment = false)))
+        mockFind(taxYearEOY, Ok(view(taxYearEOY, employmentId, employerName, isHmrcEmployment = false, startDate = "")))
 
         val result: Future[Result] = controller.show(taxYearEOY, employmentId)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> taxYearEOY.toString

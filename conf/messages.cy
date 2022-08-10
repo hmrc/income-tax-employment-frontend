@@ -157,13 +157,17 @@ employment.noEmployers = Dim cyflogwyr
 #################       Remove employment messages        ########################################
 
 employment.removeEmployment.title = A ydych yn si?r eich bod am dynnuír gyflogaeth hon?
-employment.removeEmployment.heading = A ydych yn si?r eich bod am dynnu {0}?
-employment.removeEmployment.remove-all-paragraph = Bydd hyn hefyd yn dileu unrhyw fuddiannau a threuliau ar gyfer y cyflogwr hwn.
-employment.removeEmployment.remove-paragraph = Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth.
-employment.removeEmployment.remove-paragraph.sl = Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu unrhyw fuddiannau cyflogaeth a benthyciadau myfyrwyr.
+employment.removeEmployment.heading = Dileu’r cyfnod hwn o gyflogaeth?
+employment.removeEmployment.started.date = Dechreuwyd {0}
+employment.removeEmployment.inset = Dyma’r wybodaeth sydd eisoes gennym amdanoch. Os yw’r wybodaeth yn anghywir, cysylltwch â’r cyflogwr.
+employment.removeEmployment.inset.agent = Dyma’r wybodaeth sydd eisoes gennym am eich cleient. Os yw’r wybodaeth yn anghywir, cysylltwch â’r cyflogwr.
+employment.removeEmployment.remove-paragraph = Os byddwch yn dileu’r cyfnod hwn o gyflogaeth, byddwch hefyd yn dileu
 employment.removeEmployment.removeExpenses = Mae’n rhaid i chi dynnu unrhyw dreuliau o’r adran treuliau ar wahân.
-employment.removeEmployment.inset = Dyma’r wybodaeth sydd gennym amdanoch. Os yw’r wybodaeth yn anghywir, mae angen i chi gysylltu â’r cyflogwr
-employment.removeEmployment.button = Dileu’r cyflogwr
+employment.removeEmployment.benefits = buddiannau cyflogaeth
+employment.removeEmployment.studentLoans = benthyciadau myfyrwyr
+employment.removeEmployment.anyChanges = unrhyw newidiadau a wnaed i’r wybodaeth sydd gennym
+employment.removeEmployment.button = Dileu’r cyfnod o gyflogaeth
+
 
 #################       Select employer messages        ########################################
 

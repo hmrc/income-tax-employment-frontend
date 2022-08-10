@@ -18,7 +18,6 @@ package audit
 
 import models.benefits.Benefits
 import models.employment.{Deductions, EmploymentDetailsViewModel}
-import models.expenses.Expenses
 import play.api.libs.json.{JsNull, JsNumber, JsValue, Json, Writes}
 
 import utils.JsonUtils.jsonObjNoNulls
@@ -29,20 +28,12 @@ case class DeleteEmploymentAudit(taxYear: Int,
                                  mtditid: String,
                                  employmentData: EmploymentDetailsViewModel,
                                  benefits: Option[Benefits],
-                                 expenses: Option[Expenses],
                                  deductions: Option[Deductions]) {
 
   private def name = "DeleteEmployment"
 
   def toAuditModel: AuditModel[DeleteEmploymentAudit] = {
-    val maybeExpenses = expenses.map(_.copy(
-      businessTravelCosts = None,
-      hotelAndMealExpenses = None,
-      vehicleExpenses = None,
-      mileageAllowanceRelief = None
-    ))
-
-    AuditModel(name, name, this.copy(expenses = maybeExpenses))
+    AuditModel(name, name, this)
   }
 }
 
@@ -57,15 +48,6 @@ object DeleteEmploymentAudit {
       jsonObjNoNulls("employmentData" -> audit.employmentData)
     ).++(
       jsonObjNoNulls("benefits" -> audit.benefits)
-    ).++(
-      jsonObjNoNulls(
-        "expenses" -> jsonObjNoNulls(
-          "jobExpenses" -> audit.expenses.map(_.jobExpenses),
-          "flatRateJobExpenses" -> audit.expenses.map(_.flatRateJobExpenses),
-          "professionalSubscriptions" -> audit.expenses.map(_.professionalSubscriptions),
-          "otherAndCapitalAllowances" -> audit.expenses.map(_.otherAndCapitalAllowances)
-        )
-      )
     ).++(
       {
         val studentLoans = audit.deductions.flatMap(_.studentLoans)

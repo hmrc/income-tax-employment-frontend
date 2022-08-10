@@ -88,7 +88,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val allEmploymentData = data.copy(customerEmploymentData = Seq())
           val hmrcDataSource = data.hmrcEmploymentData.find(_.employmentId.equals(employmentId)).get
           val employmentDetailsViewModel: EmploymentDetailsViewModel = hmrcDataSource.toEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
-          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
+          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -111,7 +111,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val allEmploymentData = data.copy(hmrcEmploymentData = Seq())
           val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
           val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
+          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -148,7 +148,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
       "the connector throws a Left" in {
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
+        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
         val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
@@ -169,7 +169,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val allEmploymentData = data.copy(hmrcEmploymentData = Seq())
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None, None)
+        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
         verifySubmitEvent(DecodedDeleteEmploymentPayload(
