@@ -212,8 +212,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "has an OK status" in {
-        result.status shouldBe OK
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
       }
     }
 
