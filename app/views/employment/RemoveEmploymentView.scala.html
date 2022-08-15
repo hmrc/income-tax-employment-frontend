@@ -14,10 +14,13 @@
  * limitations under the License.
  *@
 
+@import java.time.LocalDate
 @import controllers.employment.routes.EmploymentSummaryController
 @import controllers.employment.routes.RemoveEmploymentController
 @import views.html.templates.Layout
 @import views.html.templates.helpers.{Heading, Link}
+@import utils.ViewUtils.dateFormatter
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 
 @this(
     layout: Layout,
@@ -27,7 +30,7 @@
     govukInsetText: GovukInsetText,
     govUkButton: GovukButton
 )
-@(taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean, isHmrcEmployment: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId:String, employerName: String, isHmrcEmployment: Boolean, startDate: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{
     messages("employment.removeEmployment.title")
@@ -41,19 +44,28 @@
     @formWithCsrf(action = RemoveEmploymentController.submit(taxYear, employmentId)) {
         @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
-        @if(lastEmployment) {
-            <p class="govuk-body">@messages("employment.removeEmployment.remove-all-paragraph")</p>
-        } else {
+        <div class="govuk-inset-text">
+            <h2  class="govuk-heading-m">
+                @{messages(employerName)} <br/>
+                @if(startDate.nonEmpty) {
+                    <span class="govuk-body-l">@{messages("employment.removeEmployment.started.date", dateFormatter(startDate).get)}</span>
+                }else {
+                    <span class="govuk-body-l">@{messages("common.started.date.missing")}</span>
+                }
+            </h2>
+        </div>
 
-            @if(isHmrcEmployment){
-                @govukInsetText(InsetText(
-                content = Text(messages("employment.removeEmployment.inset"))
-                ))
-            }
-
-            <p class="govuk-body">@messages(s"employment.removeEmployment.remove-paragraph${if(appConfig.studentLoansEnabled)".sl"else""}")</p>
-            <p class="govuk-body">@messages(s"employment.removeEmployment.removeExpenses")</p>
+        @if(isHmrcEmployment){
+            <p id="remove-info-id" class="govuk-body">@messages(s"employment.removeEmployment.inset${if(request.user.isAgent)".agent"else""}")</p>
         }
+
+        <p class="govuk-body">@messages("employment.removeEmployment.remove-paragraph")</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@{messages(s"employment.removeEmployment.benefits")}</li>
+            <li>@{messages(s"employment.removeEmployment.studentLoans")}</li>
+            <li>@{messages(s"employment.removeEmployment.anyChanges")}</li>
+        </ul>
+        <p class="govuk-body">@messages("employment.removeEmployment.removeExpenses")</p>
 
         <div class="govuk-button-group">
             @govUkButton(Button(

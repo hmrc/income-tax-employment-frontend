@@ -157,13 +157,16 @@ employment.noEmployers = No employers
 #################       Remove employment messages        ########################################
 
 employment.removeEmployment.title = Are you sure you want to remove this employment?
-employment.removeEmployment.heading = Are you sure you want to remove {0}?
-employment.removeEmployment.remove-all-paragraph = This will also remove any benefits and expenses for this employer.
-employment.removeEmployment.remove-paragraph = If you remove this period of employment, you’ll also remove any employment benefits.
-employment.removeEmployment.remove-paragraph.sl = If you remove this period of employment, you’ll also remove any employment benefits and student loans.
+employment.removeEmployment.heading = Remove this period of employment?
+employment.removeEmployment.started.date = Started {0}
+employment.removeEmployment.inset = This is information we already hold about you. If the information is incorrect, contact the employer.
+employment.removeEmployment.inset.agent = This is information we already hold about your client. If the information is incorrect, contact the employer.
+employment.removeEmployment.remove-paragraph = If you remove this period of employment, you’ll also remove
 employment.removeEmployment.removeExpenses = You must remove any expenses from the separate expenses section.
-employment.removeEmployment.inset = This is information we hold about you. If the information is incorrect, you need to contact the employer
-employment.removeEmployment.button = Remove employer
+employment.removeEmployment.benefits = employment benefits
+employment.removeEmployment.studentLoans = student loans
+employment.removeEmployment.anyChanges = any changes made to the information we hold
+employment.removeEmployment.button = Remove employment period
 
 #################       Select employer messages        ########################################
 

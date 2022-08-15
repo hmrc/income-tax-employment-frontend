@@ -18,7 +18,6 @@ package audit
 
 import models.benefits.Benefits
 import models.employment.{Deductions, EmploymentDetailsViewModel, StudentLoans}
-import models.expenses.Expenses
 import play.api.libs.json.Json
 import utils.{TestTaxYearHelper, UnitTest}
 
@@ -75,12 +74,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -131,16 +124,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           deductions = Some(Deductions(
             Some(StudentLoans(
@@ -195,12 +178,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -252,16 +229,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
           )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
-          )),
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -292,12 +259,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -320,16 +281,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             isUsingCustomerData = false
           ),
           None,
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
-          )),
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -360,12 +311,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "totalTaxToDate": 6782.92,
              |    "isUsingCustomerData": false
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -388,16 +333,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             isUsingCustomerData = false
           ),
           Some(Benefits()),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
-          )),
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -440,12 +375,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "taxableExpenses": 1300,
              |    "van": 1400
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -482,16 +411,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             service = Some(1200),
             taxableExpenses = Some(1300),
             van = Some(1400)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           deductions = Some(Deductions(
             Some(StudentLoans(
@@ -605,7 +524,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
           )),
-          None,
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -717,7 +635,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
           )),
-          Some(Expenses()),
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -774,10 +691,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100,
@@ -828,10 +741,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            jobExpenses = Some(150.00),
-            otherAndCapitalAllowances = Some(350.00)
           )),
           deductions = Some(Deductions(
             Some(StudentLoans(
@@ -940,12 +849,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
           )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            hotelAndMealExpenses = Some(300.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
-          )),
           deductions = Some(Deductions(
             Some(StudentLoans(
               Some(100),
@@ -1007,12 +910,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "travelAndSubsistence": 2600,
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
-             |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
              |  }
              |}""".stripMargin)
 
@@ -1058,16 +955,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           deductions = None
         )
@@ -1123,12 +1010,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "travelAndSubsistence": 2600,
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
-             |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
              |  }
              |}""".stripMargin)
 
@@ -1174,16 +1055,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           deductions = Some(Deductions(
             studentLoans = None
@@ -1241,12 +1112,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "travelAndSubsistence": 2600,
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
-             |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
              |  }
              |}""".stripMargin)
 
@@ -1292,16 +1157,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           deductions = Some(Deductions(
             studentLoans = Some(StudentLoans(pglDeductionAmount = None, uglDeductionAmount = None))
@@ -1360,12 +1215,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "postgraduateLoanDeductionAmount": 100
@@ -1415,16 +1264,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           Some(Deductions(
             Some(StudentLoans(pglDeductionAmount = Some(100), uglDeductionAmount = None))
@@ -1483,12 +1322,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
              |    "vouchersAndCreditCards": 2700,
              |    "nonCash": 2800
              |  },
-             |  "expenses": {
-             |    "jobExpenses": 150,
-             |    "flatRateJobExpenses": 200,
-             |    "professionalSubscriptions": 250,
-             |    "otherAndCapitalAllowances": 350
-             |  },
              |  "deductions": {
              |    "studentLoans": {
              |      "undergraduateLoanDeductionAmount": 100
@@ -1538,16 +1371,6 @@ class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
             travelAndSubsistence = Some(2600),
             vouchersAndCreditCards = Some(2700),
             nonCash = Some(2800)
-          )),
-          Some(Expenses(
-            businessTravelCosts = Some(100.00),
-            jobExpenses = Some(150.00),
-            flatRateJobExpenses = Some(200.00),
-            professionalSubscriptions = Some(250.00),
-            hotelAndMealExpenses = Some(300.00),
-            otherAndCapitalAllowances = Some(350.00),
-            vehicleExpenses = Some(400.00),
-            mileageAllowanceRelief = Some(450.00)
           )),
           Some(Deductions(
             Some(StudentLoans(pglDeductionAmount = None, uglDeductionAmount = Some(100)))
