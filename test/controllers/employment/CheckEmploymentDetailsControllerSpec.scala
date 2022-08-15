@@ -88,7 +88,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTest
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
               isUsingCustomerData = false
-            ), taxYear, isInYear = true, showNotification = true
+            ), taxYear, isInYear = true
           )))
           controller().show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString

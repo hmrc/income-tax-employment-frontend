@@ -21,6 +21,7 @@ import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
+import controllers.details.routes.EmployerNameController
 import models.AuthorisationRequest
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
@@ -54,7 +55,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-            Ok(pageView(viewModel, taxYear, isInYear = true, showNotification = false))
+            Ok(pageView(viewModel, taxYear, isInYear = true))
           case None =>
             logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
               s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
@@ -70,16 +71,11 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
             Future.successful(employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
           } else {
             prior match {
-              case Some(_) => Future.successful {
+              case Some(_) if !cya.employment.employmentDetails.isSubmittable => Future.successful { Redirect(EmployerNameController.show(taxYear, employmentId)) }
+              case _ => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                val showNotification = !cya.employment.employmentDetails.isSubmittable
-                Ok(pageView(viewModel, taxYear, isInYear = false, showNotification))
-              }
-              case None => Future.successful {
-                val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
-                checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                Ok(pageView(viewModel, taxYear, isInYear = false, showNotification = false))
+                Ok(pageView(viewModel, taxYear, isInYear = false))
               }
             }
           }
@@ -181,8 +177,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       )(errorHandler.internalServerError())({
         val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
         checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-        val showNotification = !source.employmentDetailsSubmittable
-        Ok(pageView(viewModel, taxYear, isInYear = false, showNotification))
+        Ok(pageView(viewModel, taxYear, isInYear = false))
       })
       case None =>
         logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +

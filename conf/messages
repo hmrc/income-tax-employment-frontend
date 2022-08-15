@@ -187,7 +187,6 @@ employment.employmentDetails.directorCeasedDate =  Director role end date
 employment.employmentDetails.hiddenText.employer = Change the name of this employer
 employment.employmentDetails.hiddenText.payeRef.agent = Change your client’s PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.individual = Change your PAYE reference number
-employment.employmentDetails.hiddenText.payeRef.add = Add PAYE reference
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Change if your client got payments that are not on their P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Change if you got payments that are not on your P60
@@ -195,7 +194,6 @@ employment.employmentDetails.hiddenText.payReceived = Change the amount of pay r
 employment.employmentDetails.hiddenText.payrollId = Change the payroll ID for this employment
 employment.employmentDetails.hiddenText.startDate.agent = Change your client’s start date for {0}
 employment.employmentDetails.hiddenText.startDate.individual = Change your start date for {0}
-employment.employmentDetails.hiddenText.startDate.add = Add employment start date
 
 employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left {0} in the tax year
 employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left {0} in the tax year

@@ -188,7 +188,6 @@ employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rÙl y cyfa
 employment.employmentDetails.hiddenText.employer = Newidiwch enwír cyflogwr hwn
 employment.employmentDetails.hiddenText.payeRef.agent = Newidiwch gyfeirnod TWE eich cleient
 employment.employmentDetails.hiddenText.payeRef.individual = Newidiwch eich cyfeirnod TWE
-employment.employmentDetails.hiddenText.payeRef.add = Ychwanegu cyfeirnod TWE
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Newidiwch os cafodd eich cleient daliadau sydd ddim ar ei P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Newidiwch os cawsoch daliadau sydd ddim ar eich P60
@@ -196,7 +195,6 @@ employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwy
 employment.employmentDetails.hiddenText.payrollId = Newidiwch ID y gyflogres am y gyflogaeth hon
 employment.employmentDetails.hiddenText.startDate.agent = Newidiwch ddyddiad dechrau eich cleient ar gyfer {0}
 employment.employmentDetails.hiddenText.startDate.individual = Newidiwch eich dyddiad dechrau ar gyfer {0}
-employment.employmentDetails.hiddenText.startDate.add = Ychwanegu dyddiad dechrau’r gyflogaeth
 
 employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gadawodd eich cleient {0} yn y flwyddyn dreth
 employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael {0} yn y flwyddyn dreth
