@@ -50,11 +50,11 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
 
     def employerNameEOYSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dt"
 
-    def viewEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(5) > div:nth-child($id) > dd > a"
+    def viewEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(5) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
 
-    def changeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__value > a"
+    def changeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
 
-    def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
+    def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
 
     val expensesHeadingSelector = "#expenses-h2"
 
@@ -62,12 +62,14 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
 
     val thisIsATotalSelector = s"#total-of-expenses"
     val noEmployersSelector = "#main-content > div > div > p:nth-child(4)"
-    val viewExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd > a"
+    val viewExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd.govuk-summary-list__actions > a"
     val addAnotherSelector = "#main-content > div > div > p:nth-child(5) > a"
 
-    def changeExpensesSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__value > a"
+    def changeExpensesSelector(expensesOnly: Boolean = false): String =
+      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
 
-    def removeExpensesSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > a"
+    def removeExpensesSelector(expensesOnly: Boolean = false): String =
+      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
 
     val addExpensesSelector = s"#add-expenses"
 
@@ -232,16 +234,16 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           textOnPageCheck(employers, employersSelector)
           textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
-          linkCheck(s"$change$change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
+          linkCheck(s"$change $change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
           linkCheck(s"$remove $remove $name", removeEmployerSelector(1), RemoveEmploymentController.show(taxYearEOY, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 2))
-          linkCheck(s"$change$change $employerName2", changeEmployerSelector(2), EmployerInformationController.show(taxYearEOY, employmentId2).url)
+          linkCheck(s"$change $change $employerName2", changeEmployerSelector(2), EmployerInformationController.show(taxYearEOY, employmentId2).url)
           linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), RemoveEmploymentController.show(taxYearEOY, employmentId2).url)
           linkCheck(addAnother, addAnotherSelector, EmploymentSummaryController.addNewEmployment(taxYearEOY).url, isExactUrlMatch = false)
           textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
           textOnPageCheck(thisIsATotal, thisIsATotalSelector)
           textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-          linkCheck(s"$change$change $expenses", changeExpensesSelector(), ExpensesInterruptPageController.show(taxYearEOY).url)
+          linkCheck(s"$change $change $expenses", changeExpensesSelector(), ExpensesInterruptPageController.show(taxYearEOY).url)
           linkCheck(s"$remove $remove $expenses", removeExpensesSelector(), RemoveExpensesController.show(taxYearEOY).url)
           buttonCheck(returnToOverview)
         }
@@ -261,10 +263,10 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           textOnPageCheck(employers, employersSelector)
           textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
-          linkCheck(s"$change$change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
+          linkCheck(s"$change $change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
           linkCheck(s"$remove $remove $name", removeEmployerSelector(1), RemoveEmploymentController.show(taxYearEOY, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 2))
-          linkCheck(s"$change$change $employerName2", changeEmployerSelector(2), EmployerInformationController.show(taxYearEOY, employmentId2).url)
+          linkCheck(s"$change $change $employerName2", changeEmployerSelector(2), EmployerInformationController.show(taxYearEOY, employmentId2).url)
           linkCheck(s"$remove $remove $employerName2", removeEmployerSelector(2), RemoveEmploymentController.show(taxYearEOY, employmentId2).url)
           linkCheck(addAnother, addAnotherSelector, EmploymentSummaryController.addNewEmployment(taxYearEOY).url, isExactUrlMatch = false)
           linkCheck(addExpenses, addExpensesSelector, EmploymentExpensesController.show(taxYearEOY).url)
@@ -289,13 +291,13 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           textOnPageCheck(employers, employersSelector)
           textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
-          linkCheck(s"$view$view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
+          linkCheck(s"$view $view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
-          linkCheck(s"$view$view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
+          linkCheck(s"$view $view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
           textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
           textOnPageCheck(thisIsATotal, thisIsATotalSelector)
           textOnPageCheck(expenses, expensesLineSelector(), "as a line item")
-          linkCheck(s"$view$view $expenses", viewExpensesSelector, ExpensesInterruptPageController.show(taxYear).url)
+          linkCheck(s"$view $view $expenses", viewExpensesSelector, ExpensesInterruptPageController.show(taxYear).url)
           buttonCheck(returnToOverview)
         }
 
@@ -315,9 +317,9 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           textOnPageCheck(employers, employersSelector)
           textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
-          linkCheck(s"$view$view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
+          linkCheck(s"$view $view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
-          linkCheck(s"$view$view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
+          linkCheck(s"$view $view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
           buttonCheck(returnToOverview)
         }
       }
