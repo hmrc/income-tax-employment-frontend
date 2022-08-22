@@ -87,14 +87,14 @@
             messages(msgKeyGeneric + ".payeRef"),
             employmentDetails.employerRef,
             PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
+            messages(s"$msgKeyGeneric.hiddenText.payeRef")
         )
 
         val didYouLeave = EmploymentDataForView(
             messages(s"$msgKeyGeneric.didYouLeave"),
             Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
             controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent), employmentDetails.employerName)
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent))
         )
 
         val employmentDates = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
@@ -109,7 +109,7 @@
                 messages(s"$msgKeyGeneric.startDate"),
                 employmentDetails.startDate.flatMap(dateFormatter),
                 EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
+                messages(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent)
             )
         }
 
