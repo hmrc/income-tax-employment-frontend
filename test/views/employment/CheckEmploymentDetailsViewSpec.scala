@@ -55,12 +55,9 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val expectedInsetText: String
     val changeEmploymentStartDateHiddenText: String => String
     val changeEmploymentDatesHiddenText: String
+    val didYouLeaveHiddenText: String
 
-    def changeLeftEmployerHiddenText(name: String): String
-
-    val changePAYERefHiddenText: String
     val changePayReceivedHiddenText: String
-    val taxTakenFromPayHiddenText: String
     val employmentStartDateAddHiddenText: String
   }
 
@@ -76,8 +73,14 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payReceivedField3: String
     val taxField4: String
     val payrollIdField: String
+
+    val employerHiddenText: String
+    val payeRefHiddenText: String
+    val startDateHiddenText: String
     val payrollIdHiddenText: String
-    val changeEmployerNameHiddenText: String
+    val payReceivedHiddenText: String
+    val totalTaxToDateHiddenText: String
+
     val returnToEmployerText: String
     val employmentStartDate: String
     val employmentEndDate: String
@@ -106,9 +109,16 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
-    val changeEmployerNameHiddenText: String = "Change the name of this employer"
     val payrollIdField: String = "Payroll ID"
+
+    val employerHiddenText: String = "Change the name of this employer"
+    val payeRefHiddenText: String = "Change the PAYE reference number"
+    val startDateHiddenText: String = "Change the employment start date"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
+    val payReceivedHiddenText: String = "Change the amount of pay received"
+    val totalTaxToDateHiddenText: String = "Change the amount of UK tax taken from pay"
+
+
     val returnToEmployerText: String = "Return to employer"
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = s"11 March ${taxYearEOY - 1}"
@@ -129,9 +139,15 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payeReferenceField2 = "Cyfeirnod TWE"
     val payReceivedField3 = "Tal a gafwyd"
     val taxField4 = "Treth y DU a dynnwyd oír cyflog"
-    val changeEmployerNameHiddenText: String = "Newidiwch enwír cyflogwr hwn"
     val payrollIdField: String = "ID y gyflogres"
-    val payrollIdHiddenText: String = "Newidiwch ID y gyflogres am y gyflogaeth hon"
+
+    val employerHiddenText: String = "Newid enw’r cyflogwr hwn"
+    val payeRefHiddenText: String = "Newid y cyfeirnod TWE"
+    val startDateHiddenText: String = "Newid dyddiad dechrau’r gyflogaeth"
+    val payrollIdHiddenText: String = "Newid ID y gyflogres ar gyfer y gyflogaeth hon"
+    val payReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
+    val totalTaxToDateHiddenText: String = "Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog"
+
     val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
     val employmentStartDate = "21 Ebrill 2019"
     val employmentEndDate = s"11 Mawrth ${taxYearEOY - 1}"
@@ -150,12 +166,10 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your start date for $employerName"
     val changeEmploymentDatesHiddenText = "Change your employment dates"
-    val changePAYERefHiddenText: String = "Change your PAYE reference number"
     val changePayReceivedHiddenText: String = "Change the amount of pay received"
-    val taxTakenFromPayHiddenText: String = "Changed the amount of UK tax taken from pay"
     val employmentStartDateAddHiddenText = "Add employment start date"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if you left $name in the tax year"
+    val didYouLeaveHiddenText: String = "Change if you left the employer in this tax year"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -165,12 +179,10 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
     val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Change your client’s start date for $employerName"
     val changeEmploymentDatesHiddenText = "Change your client’s employment dates"
-    val changePAYERefHiddenText: String = "Change your client’s PAYE reference number"
     val changePayReceivedHiddenText: String  = "Change the amount of pay received"
-    val taxTakenFromPayHiddenText: String = "Changed the amount of UK tax taken from pay"
     val employmentStartDateAddHiddenText = "Add employment start date"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Change if your client left $name in the tax year"
+    val didYouLeaveHiddenText: String = "Change if your client left the employer in this tax year"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -180,12 +192,10 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val expectedInsetText = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
     val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch eich dyddiad dechrau ar gyfer $employerName"
     val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadauích cyflogaeth chi"
-    val changePAYERefHiddenText: String = "Newidiwch eich cyfeirnod TWE"
     val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
-    val taxTakenFromPayHiddenText: String = "Newidiwyd y swm o dreth y DU a dynnwyd oddi wrth eich cyflog"
     val employmentStartDateAddHiddenText = "Ychwanegu dyddiad dechrau’r gyflogaeth"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gwnaethoch adael $name yn y flwyddyn dreth"
+    val didYouLeaveHiddenText: String = "Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -196,12 +206,11 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val employeeFieldName7 = "Taliadau sydd ddim ar P60 eich cleient"
     val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch ddyddiad dechrau eich cleient ar gyfer $employerName"
     val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadau cyflogaeth eich cleient"
-    val changePAYERefHiddenText: String = "Newidiwch gyfeirnod TWE eich cleient"
+
     val changePayReceivedHiddenText: String  = "Newid swm y cyflog a gafwyd"
-    val taxTakenFromPayHiddenText: String = "Newidiwyd y swm o dreth y DU a dynnwyd oddi wrth eich cyflog"
     val employmentStartDateAddHiddenText = "Ychwanegu dyddiad dechrau’r gyflogaeth"
 
-    def changeLeftEmployerHiddenText(name: String): String = s"Newidiwch os gadawodd eich cleient $name yn y flwyddyn dreth"
+    val didYouLeaveHiddenText: String = "Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon"
   }
 
 
@@ -298,13 +307,13 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
         textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-        linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(1)))
+        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(1)))
         textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
         textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-        linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), PayeRefController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(2)))
+        linkCheck(s"${common.changeLinkExpected} ${common.payeRefHiddenText}", cyaChangeLink(2), PayeRefController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(2)))
         textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
         textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldAmountSelector(3))
-        linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText("maggie")}", cyaChangeLink(3),
+        linkCheck(s"${common.changeLinkExpected} ${specific.didYouLeaveHiddenText}", cyaChangeLink(3),
           DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(3)))
         textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
         textOnPageCheck(common.employmentDates, summaryListRowFieldAmountSelector(4))
@@ -319,7 +328,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
           cyaChangeLink(6), EmployerPayAmountController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(6)))
         textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-        linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), EmploymentTaxController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(7)))
+        linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(7), EmploymentTaxController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(7)))
       }
 
       "for end of year return a fully populated page, with change links when minimum data is returned" which {
@@ -379,13 +388,13 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
         textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(anEmploymentDetailsViewModel.employerName, summaryListRowFieldAmountSelector(1))
-        linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url)
+        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url)
         textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
         textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(2), "paye ref")
 
         textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
         textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldAmountSelector(3))
-        linkCheck(s"${common.changeLinkExpected} ${specific.changeLeftEmployerHiddenText(anEmploymentDetailsViewModel.employerName)}",
+        linkCheck(s"${common.changeLinkExpected} ${specific.didYouLeaveHiddenText}",
           cyaChangeLink(3), DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url)
         textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
         textOnPageCheck(common.notProvided, summaryListRowFieldAmountSelector(4), "employment start date")

@@ -184,24 +184,24 @@ employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.content.agent = Your client’s employment details are based on the details we already hold about them.
 employment.employmentDetails.content.individual = Your employment details are based on the details we already hold about you.
 employment.employmentDetails.directorCeasedDate =  Director role end date
+
 employment.employmentDetails.hiddenText.employer = Change the name of this employer
-employment.employmentDetails.hiddenText.payeRef.agent = Change your client’s PAYE reference number
-employment.employmentDetails.hiddenText.payeRef.individual = Change your PAYE reference number
+employment.employmentDetails.hiddenText.payeRef = Change the PAYE reference number
+employment.employmentDetails.hiddenText.startDate = Change the employment start date
+employment.employmentDetails.hiddenText.payrollId = Change the payroll ID for this employment
+employment.employmentDetails.hiddenText.payReceived = Change the amount of pay received
+employment.employmentDetails.hiddenText.totalTaxToDate = Change the amount of UK tax taken from pay
+employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left the employer in this tax year
+employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left the employer in this tax year
+
+employment.employmentDetails.hiddenText.employmentDates.agent = Change your client’s employment dates
+employment.employmentDetails.hiddenText.employmentDates.individual = Change your employment dates
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Change if your client got payments that are not on their P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Change if you got payments that are not on your P60
-employment.employmentDetails.hiddenText.payReceived = Change the amount of pay received
-employment.employmentDetails.hiddenText.payrollId = Change the payroll ID for this employment
-employment.employmentDetails.hiddenText.startDate.agent = Change your client’s start date for {0}
-employment.employmentDetails.hiddenText.startDate.individual = Change your start date for {0}
 
-employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left {0} in the tax year
-employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left {0} in the tax year
-employment.employmentDetails.hiddenText.employmentDates.agent = Change your client’s employment dates
-employment.employmentDetails.hiddenText.employmentDates.individual = Change your employment dates
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = Change the amount of payments that were not on your client’s P60
 employment.employmentDetails.hiddenText.tipsAndOtherPayments.individual = Change the amount of payments that were not on your P60
-employment.employmentDetails.hiddenText.totalTaxToDate = Changed the amount of UK tax taken from pay
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.payeRef =  PAYE reference
