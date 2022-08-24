@@ -427,7 +427,6 @@ object RedirectService extends Logging {
     childcareRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(childcareQuestion.isEmpty, ChildcareBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Educational services yes/no page
         ConditionalRedirect(childcareQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
         ConditionalRedirect(childcareQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(true))
       )
@@ -449,7 +448,6 @@ object RedirectService extends Logging {
 
     educationalServicesRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Educational services yes/no page
         ConditionalRedirect(educationalServicesQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(educationalServicesQuestion.contains(false), BeneficialLoansBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
         ConditionalRedirect(educationalServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(true))
