@@ -57,13 +57,6 @@ object ViewUtils {
     date.getDayOfMonth + " " + translatedMonth + " " + date.getYear
   }
 
-  // TODO: This method should not return Option value as we always have returned value of Some
-  def employmentDatesFormatter(startDate: Option[String], endDate: Option[String])(implicit messages: Messages): Option[String] = {
-    val startDateString = startDate.map(date => translatedDateFormatter(LocalDate.parse(date))).getOrElse("")
-    val endDateString = endDate.map(date => translatedDateFormatter(LocalDate.parse(date))).getOrElse("")
-    Some(messages("common.dateRange", startDateString, endDateString))
-  }
-
   def getAgentDynamicContent(msgKey: String, isAgent: Boolean): String = {
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
   }
