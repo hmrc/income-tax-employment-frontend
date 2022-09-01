@@ -64,4 +64,21 @@ class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
       ViewUtils.translatedDateFormatter(LocalDate.parse("2021-04-01"))(getMessages(isWelsh = false)) shouldBe "1 April 2021"
     }
   }
+
+  "employmentDatesFormatter" should {
+    "return date in Welsh or English" in {
+      ViewUtils.employmentDatesFormatter(Some("2022-02-01"),
+        Some("2023-04-03"))(getMessages(isWelsh = false)) shouldBe Some("1 February 2022 to 3 April 2023")
+      ViewUtils.employmentDatesFormatter(Some("2022-05-02"),
+        Some("2023-06-04"))(getMessages(isWelsh = true)) shouldBe Some("2 Mai 2022 i 4 Mehefin 2023")
+    }
+
+    "return a string when start date is not defined" in {
+      ViewUtils.employmentDatesFormatter(None, Some("2022-03-04")) shouldBe Some(" to 4 March 2022")
+    }
+
+    "return a string when end date is not defined" in {
+      ViewUtils.employmentDatesFormatter(Some("2022-10-01"), None) shouldBe Some("1 October 2022 to ")
+    }
+  }
 }

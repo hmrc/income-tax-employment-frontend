@@ -28,7 +28,6 @@
 @import views.html.templates.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import utils.ViewUtils._
-@import java.time.LocalDate
 
 @this(
     layout: Layout,
@@ -99,16 +98,9 @@
         )
 
         val employmentDates = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
-            //TODO: when dates are empty, this page will have issues with date range message messages.
-            val startDate = if(employmentDetails.startDate.isEmpty) ""
-                            else translatedDateFormatter(LocalDate.parse(employmentDetails.startDate.get))
-            val endDate   = if(employmentDetails.cessationDate.isEmpty) ""
-                            else translatedDateFormatter(LocalDate.parse(employmentDetails.cessationDate.get))
-            val dateRangeMessage = messages("common.dateRange", startDate, endDate)
-
             EmploymentDataForView(
                 messages(s"$msgKeyGeneric.employmentDates"),
-                Some(dateRangeMessage),
+                employmentDatesFormatter(employmentDetails.startDate, employmentDetails.cessationDate),
                 EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
                 messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent))
             )
