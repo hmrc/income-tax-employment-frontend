@@ -36,8 +36,8 @@ trait MockActionsProvider extends MockAuthorisedAction
   def mockEndOfYearWithSessionData(taxYear: Int,
                                    employmentId: String,
                                    employmentType: EmploymentType,
-                                   controllerName: String
-                                  ): CallHandler4[Int, String, EmploymentType, String, ActionBuilder[UserSessionDataRequest, AnyContent]] = {
+                                   clazz: Class[_]
+                                  ): CallHandler4[Int, String, EmploymentType, Class[_], ActionBuilder[UserSessionDataRequest, AnyContent]] = {
     val actionBuilder: ActionBuilder[UserSessionDataRequest, AnyContent] = new ActionBuilder[UserSessionDataRequest, AnyContent] {
       override def parser: BodyParser[AnyContent] = BodyParser("anyContent")(_ => throw new NotImplementedError)
 
@@ -47,8 +47,8 @@ trait MockActionsProvider extends MockAuthorisedAction
       override protected def executionContext: ExecutionContext = ExecutionContext.Implicits.global
     }
 
-    (mockActionsProvider.endOfYearWithSessionData(_: Int, _: String, _: EmploymentType, _: String))
-      .expects(taxYear, employmentId, employmentType, controllerName)
+    (mockActionsProvider.endOfYearWithSessionData(_: Int, _: String, _: EmploymentType, _: Class[_]))
+      .expects(taxYear, employmentId, employmentType, clazz)
       .returns(value = actionBuilder)
   }
 }

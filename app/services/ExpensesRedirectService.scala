@@ -26,6 +26,7 @@ import play.api.mvc.{Call, Result}
 
 import scala.concurrent.Future
 
+// TODO: This should be made a class to allow for easier testing
 object ExpensesRedirectService extends Logging {
 
   def commonExpensesRedirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {

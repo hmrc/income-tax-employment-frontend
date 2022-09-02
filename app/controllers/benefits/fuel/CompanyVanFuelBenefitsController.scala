@@ -26,9 +26,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
 import services.benefits.FuelService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.fuel.CompanyVanFuelBenefitsView
@@ -41,6 +40,7 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
                                                  companyVanFuelBenefitsView: CompanyVanFuelBenefitsView,
                                                  employmentSessionService: EmploymentSessionService,
                                                  fuelService: FuelService,
+                                                 redirectService: RedirectService,
                                                  errorHandler: ErrorHandler,
                                                  formsProvider: FuelFormsProvider)
                                                 (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -49,8 +49,8 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
           val vanFuelBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
           val isAgent = request.user.isAgent
           vanFuelBenefitQuestion match {
@@ -69,8 +69,8 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
-          EmploymentBenefitsType)(vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
+          EmploymentBenefitsType)(redirectService.vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
           formsProvider.companyVanFuelForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -92,7 +92,7 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
           } else {
             ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
           }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

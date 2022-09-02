@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package services.benefits
+package utils
 
+import controllers.benefits.accommodation.AccommodationRelocationBenefitsController
 import models.mongo.EmploymentCYAModel
-import play.api.mvc.{Call, Result}
+import models.redirects.ConditionalRedirect
 import services.RedirectService
 
 import javax.inject.{Inject, Singleton}
 
-// TODO: Test should be probably copied and reviewed from RedirectServiceSpec.
-// TODO: Copy and refactor implementation
 @Singleton
-class BenefitsRedirectService @Inject()() {
+class RedirectsMapper @Inject()(redirectService: RedirectService) {
 
-  def benefitsSubmitRedirect(taxYear: Int,
-                             employmentId: String,
-                             employmentCYAModel: EmploymentCYAModel,
-                             nextPage: Call): Result = {
-    RedirectService.benefitsSubmitRedirect(employmentCYAModel, nextPage)(taxYear, employmentId)
+  def mapToRedirects(clazz: Class[_],
+                     taxYear: Int,
+                     employmentId: String,
+                     employmentCYAModel: EmploymentCYAModel): Seq[ConditionalRedirect] = clazz match {
+    case _: Class[AccommodationRelocationBenefitsController] =>
+      redirectService.accommodationRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ => throw new IllegalArgumentException(s"${clazz.toString} could not be matched with redirects.")
   }
 }

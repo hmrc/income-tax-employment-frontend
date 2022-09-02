@@ -25,9 +25,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, commonReimbursedCostsVouchersAndNonCashModelRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.ReimbursedService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.NonTaxableCostsBenefitsView
@@ -40,6 +39,7 @@ class NonTaxableCostsBenefitsController @Inject()(authAction: AuthorisedAction,
                                                   pageView: NonTaxableCostsBenefitsView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   reimbursedService: ReimbursedService,
+                                                  redirectService: RedirectService,
                                                   errorHandler: ErrorHandler,
                                                   formsProvider: ReimbursedFormsProvider)
                                                  (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -49,8 +49,8 @@ class NonTaxableCostsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(commonReimbursedCostsVouchersAndNonCashModelRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.commonReimbursedCostsVouchersAndNonCashModelRedirects(_, taxYear, employmentId)) { cya =>
 
           val isAgent = request.user.isAgent
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion)) match {
@@ -67,8 +67,8 @@ class NonTaxableCostsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(commonReimbursedCostsVouchersAndNonCashModelRedirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.commonReimbursedCostsVouchersAndNonCashModelRedirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.nonTaxableCostsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
@@ -89,7 +89,7 @@ class NonTaxableCostsBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           TaxableCostsBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

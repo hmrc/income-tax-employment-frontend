@@ -68,6 +68,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -80,7 +81,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
           welshToggleCheck(user.isWelsh)
           h1Check(h1Expected, "xl")
 
-          textOnPageCheck(p1Expected,p1Selector)
+          textOnPageCheck(p1Expected, p1Selector)
           buttonCheck(buttonExpectedText, buttonSelector)
           formGetLinkCheck(startUrl(taxYear), formSelector)
         }

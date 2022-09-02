@@ -27,15 +27,15 @@ import utils.{TestTaxYearHelper, UnitTest}
 
 class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
 
+  private val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
   implicit lazy val cc: MessagesApi = mockControllerComponents.messagesApi
 
   def taxYearAction(taxYear: Int, reset: Boolean = true): TaxYearAction = new TaxYearAction(taxYear, reset)
 
   "TaxYearAction.refine" should {
-
     "return a Right(request)" when {
-
       "the tax year is within the list of valid tax years, and matches that in session if the feature switch is on" in {
         lazy val userRequest = AuthorisationRequest(
           User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString),

@@ -27,6 +27,7 @@ import play.api.http.Status._
 import play.api.i18n.Messages
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
+import services.DefaultRedirectService
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -52,6 +53,7 @@ class CheckYourBenefitsControllerSpec extends UnitTest
     mockEmploymentSessionService,
     mockCheckYourBenefitsService,
     mockAuditService,
+    new DefaultRedirectService(),
     inYearAction,
     mockErrorHandler
   )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), authorisedAction)

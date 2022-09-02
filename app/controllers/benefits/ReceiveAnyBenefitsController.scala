@@ -25,9 +25,8 @@ import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.benefitsSubmitRedirect
 import services.benefits.BenefitsService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.ReceiveAnyBenefitsView
@@ -40,6 +39,7 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
                                              receiveAnyBenefitsView: ReceiveAnyBenefitsView,
                                              employmentSessionService: EmploymentSessionService,
                                              benefitsService: BenefitsService,
+                                             redirectService: RedirectService,
                                              benefitsFormsProvider: BenefitsFormsProvider,
                                              errorHandler: ErrorHandler)
                                             (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -77,7 +77,7 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
     benefitsService.updateIsBenefitsReceived(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => if (questionValue) {
-        benefitsSubmitRedirect(employmentUserData.employment, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
       } else {
         Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }

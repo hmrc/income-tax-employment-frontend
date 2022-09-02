@@ -27,9 +27,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, nonQualifyingRelocationBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.AccommodationService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.accommodation.NonQualifyingRelocationBenefitsView
@@ -42,6 +41,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
                                                           nonQualifyingRelocationBenefitsView: NonQualifyingRelocationBenefitsView,
                                                           employmentSessionService: EmploymentSessionService,
                                                           accommodationService: AccommodationService,
+                                                          redirectService: RedirectService,
                                                           errorHandler: ErrorHandler,
                                                           formsProvider: AccommodationFormsProvider)
                                                          (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -51,7 +51,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           val isAgent = request.user.isAgent
           cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion)) match {
@@ -68,7 +68,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.nonQualifyingRelocationForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(nonQualifyingRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -89,11 +89,11 @@ class NonQualifyingRelocationBenefitsController @Inject()(authAction: Authorised
         } else {
           TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
+    redirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

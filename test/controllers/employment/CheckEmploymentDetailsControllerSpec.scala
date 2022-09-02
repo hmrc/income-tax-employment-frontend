@@ -24,6 +24,7 @@ import play.api.http.Status._
 import play.api.i18n.Messages
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
+import services.DefaultRedirectService
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
@@ -47,6 +48,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTest
     inYearAction,
     mockEmploymentSessionService,
     mockCheckEmploymentDetailsService,
+    new DefaultRedirectService(),
     mockErrorHandler
   )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), authorisedAction)
 

@@ -26,9 +26,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{beneficialLoansRedirects, benefitsSubmitRedirect, redirectBasedOnCurrentAnswers}
 import services.benefits.MedicalService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.medical.BeneficialLoansBenefitsView
@@ -41,6 +40,7 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
                                                   pageView: BeneficialLoansBenefitsView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   medicalService: MedicalService,
+                                                  redirectService: RedirectService,
                                                   errorHandler: ErrorHandler,
                                                   formsProvider: MedicalFormsProvider)
                                                  (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
@@ -50,8 +50,8 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(beneficialLoansRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.beneficialLoansRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) match {
             case Some(questionResult) =>
@@ -67,8 +67,8 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(beneficialLoansRedirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.beneficialLoansRedirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.beneficialLoansForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
@@ -89,7 +89,7 @@ class BeneficialLoansBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

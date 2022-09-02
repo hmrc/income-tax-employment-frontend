@@ -22,21 +22,23 @@ import play.api.mvc.Results.Redirect
 import support.UnitTest
 import support.builders.models.UserSessionDataRequestBuilder.aUserSessionDataRequest
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.mocks.MockRedirectsMatcherUtils
+import support.mocks.MockRedirectsMapper
 
 import scala.concurrent.ExecutionContext
 
 class RedirectsFilterActionSpec extends UnitTest
-  with MockRedirectsMatcherUtils {
+  with MockRedirectsMapper {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "any-employment-id"
 
   private val executionContext = ExecutionContext.global
 
+  private val someClass = classOf[String]
+
   ".executionContext" should {
     "return the given execution context" in {
-      val underTest = RedirectsFilterAction(mockRedirectsMatcherUtils, controllerName = "some-controller-name", anyTaxYear, anyEmploymentId)(executionContext)
+      val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
       underTest.executionContext shouldBe executionContext
     }
@@ -47,9 +49,9 @@ class RedirectsFilterActionSpec extends UnitTest
       val redirectCall = CarVanFuelBenefitsController.show(anyTaxYear, anyEmploymentId)
       val resultRedirects: Seq[ConditionalRedirect] = Seq(ConditionalRedirect(condition = true, redirect = redirectCall, hasPrior = None))
 
-      mockMatchToRedirects(controllerName = "some-controller-name", anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
 
-      val underTest = RedirectsFilterAction(mockRedirectsMatcherUtils, controllerName = "some-controller-name", anyTaxYear, anyEmploymentId)(executionContext)
+      val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
       await(underTest.filter(aUserSessionDataRequest)) shouldBe Some(Redirect(redirectCall))
     }
@@ -58,17 +60,17 @@ class RedirectsFilterActionSpec extends UnitTest
       val redirectCall = CarVanFuelBenefitsController.show(anyTaxYear, anyEmploymentId)
       val resultRedirects: Seq[ConditionalRedirect] = Seq(ConditionalRedirect(condition = true, redirect = redirectCall, hasPrior = Some(true)))
 
-      mockMatchToRedirects(controllerName = "some-controller-name", anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
 
-      val underTest = RedirectsFilterAction(mockRedirectsMatcherUtils, controllerName = "some-controller-name", anyTaxYear, anyEmploymentId)(executionContext)
+      val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
       await(underTest.filter(aUserSessionDataRequest)) shouldBe Some(Redirect(redirectCall))
     }
 
     "None when no conditional redirects" in {
-      mockMatchToRedirects(controllerName = "some-controller-name", anyTaxYear, anyEmploymentId, anEmploymentCYAModel, Seq.empty)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, Seq.empty)
 
-      val underTest = RedirectsFilterAction(mockRedirectsMatcherUtils, controllerName = "some-controller-name", anyTaxYear, anyEmploymentId)(executionContext)
+      val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
       await(underTest.filter(aUserSessionDataRequest)) shouldBe None
     }

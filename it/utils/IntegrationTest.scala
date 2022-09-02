@@ -24,9 +24,9 @@ import config.AppConfig
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData
-import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.NO_CONTENT
 import play.api.i18n.{Lang, Messages, MessagesApi}
@@ -40,6 +40,7 @@ import play.api.{Application, Environment, Mode}
 import services.AuthService
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.services.RedirectServiceStub
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
@@ -50,7 +51,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
-  with WiremockStubHelpers with BeforeAndAfterAll with TaxYearHelper {
+  with WiremockStubHelpers with BeforeAndAfterAll with BeforeAndAfterEach with TaxYearHelper {
 
   val nino: String = anEmploymentUserData.nino
   val mtditid: String = anEmploymentUserData.mtdItId
@@ -119,16 +120,20 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "metrics.enabled" -> "false"
   )
 
-  def configContentFeatureSwitchOff: Map[String, String] = config() +
-    ("feature-switch.studentLoans" -> "false",
-      "feature-switch.tailoringEnabled" -> "false")
+  def configContentFeatureSwitchOff: Map[String, String] = config() + (
+    "feature-switch.studentLoans" -> "false",
+    "feature-switch.tailoringEnabled" -> "false"
+  )
 
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
+  protected val redirectService = RedirectServiceStub
+
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config())
+    //    .overrides(bind[RedirectService].toInstance(redirectService))
     .build
 
   lazy val appWithFakeExternalCall: Application = new GuiceApplicationBuilder()
@@ -160,6 +165,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   override def afterAll(): Unit = {
     stopWiremock()
     super.afterAll()
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    redirectService.clearRedirects()
   }
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status

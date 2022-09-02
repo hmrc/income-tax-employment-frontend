@@ -220,6 +220,7 @@ trait ViewHelpers {
     }
   }
 
+  // TODO: "Remove this method once the things it is tested are moved to Unit tests"
   def getInputFieldValue(selector: String = "#amount")(implicit result: WSResponse): String = {
     Jsoup.parse(result.body).select(selector).attr("value")
   }
@@ -307,5 +308,4 @@ trait ViewHelpers {
       }
     }
   }
-
 }

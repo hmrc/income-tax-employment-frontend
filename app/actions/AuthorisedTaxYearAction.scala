@@ -21,6 +21,7 @@ import config.AppConfig
 import models.AuthorisationRequest
 import play.api.mvc.{ActionBuilder, AnyContent}
 
+// TODO: This is obsolete, further it is not tested. Should be deleted
 object AuthorisedTaxYearAction {
   def authorisedTaxYearAction(taxYear: Int)(
     implicit authAction: AuthorisedAction, appConfig: AppConfig

@@ -26,9 +26,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, incurredCostsPaidByEmployerRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.IncomeService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.income.IncurredCostsBenefitsView
@@ -41,6 +40,7 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
                                                 pageView: IncurredCostsBenefitsView,
                                                 employmentSessionService: EmploymentSessionService,
                                                 incomeService: IncomeService,
+                                                redirectService: RedirectService,
                                                 errorHandler: ErrorHandler,
                                                 formsProvider: IncomeFormsProvider)
                                                (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
@@ -52,7 +52,7 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion)) match {
             case Some(questionResult) =>
@@ -68,7 +68,7 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.incurredCostsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
@@ -89,11 +89,11 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)
+    redirectService.incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)
   }
 }

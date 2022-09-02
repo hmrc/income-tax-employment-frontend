@@ -33,9 +33,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.getUnfinishedRedirects
 import services.employment.CheckYourBenefitsService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.CheckYourBenefitsView
@@ -47,6 +46,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                                             employmentSessionService: EmploymentSessionService,
                                             checkYourBenefitsService: CheckYourBenefitsService,
                                             auditService: AuditService,
+                                            redirectService: RedirectService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler)
                                            (implicit mcc: MessagesControllerComponents, ec: ExecutionContext, appConf: AppConfig, authAction: AuthorisedAction)
@@ -85,7 +85,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                 cya.employment.employmentBenefits match {
                   case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
                   case Some(benefits: BenefitsViewModel) =>
-                    getUnfinishedRedirects(cya.employment, taxYear, employmentId).headOption.fold(
+                    redirectService.getUnfinishedRedirects(cya.employment, taxYear, employmentId).headOption.fold(
                       Future(Ok(pageView(
                         taxYear,
                         employmentId,
