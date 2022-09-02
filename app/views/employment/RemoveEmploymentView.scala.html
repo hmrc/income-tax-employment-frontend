@@ -19,7 +19,7 @@
 @import controllers.employment.routes.RemoveEmploymentController
 @import views.html.templates.Layout
 @import views.html.templates.helpers.{Heading, Link}
-@import utils.ViewUtils.dateFormatter
+@import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 
 @this(
@@ -45,14 +45,13 @@
         @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
         <div class="govuk-inset-text">
-            <h2  class="govuk-heading-m">
-                @{messages(employerName)} <br/>
+                <strong> @{messages(employerName)} </strong>
+                <br/>
                 @if(startDate.nonEmpty) {
-                    <span class="govuk-body-l">@{messages("employment.removeEmployment.started.date", dateFormatter(startDate).get)}</span>
+                    @{messages("employment.removeEmployment.started.date", translatedDateFormatter(LocalDate.parse(startDate)))}
                 }else {
-                    <span class="govuk-body-l">@{messages("common.started.date.missing")}</span>
+                    @{messages("common.started.date.missing")}
                 }
-            </h2>
         </div>
 
         @if(isHmrcEmployment){
