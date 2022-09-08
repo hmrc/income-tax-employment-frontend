@@ -27,9 +27,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService._
 import services.benefits.FuelService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.fuel.MileageBenefitAmountView
@@ -42,6 +41,7 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
                                                inYearAction: InYearUtil,
                                                employmentSessionService: EmploymentSessionService,
                                                fuelService: FuelService,
+                                               redirectService: RedirectService,
                                                errorHandler: ErrorHandler,
                                                formsProvider: FuelFormsProvider)
                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -51,7 +51,7 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
           val form = fillForm(formsProvider.mileageAmountForm(request.user.isAgent), cyaAmount)
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
@@ -64,7 +64,7 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           formsProvider.mileageAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId))),
@@ -81,11 +81,11 @@ class MileageBenefitAmountController @Inject()(authAction: AuthorisedAction,
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = AccommodationRelocationBenefitsController.show(taxYear, employmentId)
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    mileageBenefitsAmountRedirects(cya, taxYear, employmentId)
+    redirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)
   }
 }

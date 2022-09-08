@@ -16,7 +16,7 @@
 
 package controllers.benefits.accommodation
 
-import actions.{ActionsProvider, AuthorisedAction}
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
@@ -27,22 +27,19 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc._
+import services.RedirectService
 import services.benefits.AccommodationService
-import services.{EmploymentSessionService, RedirectsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccommodationRelocationBenefitsController @Inject()(authAction: AuthorisedAction,
-                                                          actionsProvider: ActionsProvider,
-                                                          inYearAction: InYearUtil,
+class AccommodationRelocationBenefitsController @Inject()(actionsProvider: ActionsProvider,
                                                           pageView: AccommodationRelocationBenefitsView,
                                                           accommodationService: AccommodationService,
-                                                          employmentSessionService: EmploymentSessionService,
-                                                          redirectsService: RedirectsService,
+                                                          redirectService: RedirectService,
                                                           errorHandler: ErrorHandler,
                                                           formsProvider: AccommodationFormsProvider)
                                                          (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -52,7 +49,7 @@ class AccommodationRelocationBenefitsController @Inject()(authAction: Authorised
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    controllerName = this.getClass.getSimpleName
+    clazz = classOf[AccommodationRelocationBenefitsController]
   ).async { implicit request =>
     val form = formsProvider.accommodationRelocationForm(request.user.isAgent)
     Future.successful(Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData))))
@@ -62,7 +59,7 @@ class AccommodationRelocationBenefitsController @Inject()(authAction: Authorised
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    controllerName = this.getClass.getSimpleName
+    clazz = classOf[AccommodationRelocationBenefitsController]
   ).async { implicit request =>
     formsProvider.accommodationRelocationForm(request.user.isAgent).bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
@@ -84,7 +81,7 @@ class AccommodationRelocationBenefitsController @Inject()(authAction: Authorised
         } else {
           TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
         }
-        redirectsService.benefitsSubmitRedirect(taxYear, employmentId, employmentUserData.employment, nextPage)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

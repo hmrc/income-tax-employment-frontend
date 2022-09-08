@@ -17,22 +17,22 @@
 package support.mocks
 
 import models.mongo.EmploymentCYAModel
+import models.redirects.ConditionalRedirect
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.{Call, Result}
-import services.benefits.BenefitsRedirectService
+import utils.RedirectsMapper
 
-trait MockBenefitsRedirectService extends MockFactory {
+trait MockRedirectsMapper extends MockFactory {
 
-  protected val mockBenefitsRedirectService: BenefitsRedirectService = mock[BenefitsRedirectService]
+  protected val mockRedirectsMapper: RedirectsMapper = mock[RedirectsMapper]
 
-  def mockBenefitsSubmitRedirect(taxYear: Int,
-                                 employmentId: String,
-                                 employmentCYAModel: EmploymentCYAModel,
-                                 nextPage: Call,
-                                 result: Result): CallHandler4[Int, String, EmploymentCYAModel, Call, Result] = {
-    (mockBenefitsRedirectService.benefitsSubmitRedirect(_: Int, _: String, _: EmploymentCYAModel, _: Call))
-      .expects(taxYear, employmentId, employmentCYAModel, nextPage)
+  def mockMatchToRedirects(clazz: Class[_],
+                           taxYear: Int,
+                           employmentId: String,
+                           employmentCYAModel: EmploymentCYAModel,
+                           result: Seq[ConditionalRedirect]): CallHandler4[Class[_], Int, String, EmploymentCYAModel, Seq[ConditionalRedirect]] = {
+    (mockRedirectsMapper.mapToRedirects(_: Class[_], _: Int, _: String, _: EmploymentCYAModel))
+      .expects(clazz, taxYear, employmentId, employmentCYAModel)
       .returns(result)
   }
 }

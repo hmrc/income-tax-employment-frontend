@@ -34,7 +34,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
   with MockNrsService
   with MockDeleteOrIgnoreExpensesService {
 
-  private val service: RemoveEmploymentService = new RemoveEmploymentService(
+  private val underTest: RemoveEmploymentService = new RemoveEmploymentService(
     mockDeleteOrIgnoreEmploymentConnector,
     mockIncomeSourceConnector,
     mockDeleteOrIgnoreExpensesService,
@@ -88,7 +88,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val allEmploymentData = data.copy(customerEmploymentData = Seq())
           val hmrcDataSource = data.hmrcEmploymentData.find(_.employmentId.equals(employmentId)).get
           val employmentDetailsViewModel: EmploymentDetailsViewModel = hmrcDataSource.toEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
-          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
+          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -98,11 +98,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
             deductions = None
           ).toNrsPayloadModel)
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, employmentId, "HMRC-HELD")
           mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, aUser.copy(sessionId = sessionId))) shouldBe Right()
+          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, aUser.copy(sessionId = aUser.sessionId))) shouldBe Right()
         }
       }
 
@@ -111,7 +111,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val allEmploymentData = data.copy(hmrcEmploymentData = Seq())
           val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
           val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
+          val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
           verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -120,11 +120,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
             expenses = None,
             deductions = None
           ).toNrsPayloadModel)
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, "002", "CUSTOMER")
           mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-          await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser.copy(sessionId = sessionId))) shouldBe Right()
+          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser.copy(sessionId = aUser.sessionId))) shouldBe Right()
         }
       }
     }
@@ -133,22 +133,22 @@ class RemoveEmploymentServiceSpec extends UnitTest
       "there is no hmrc or customer data" in {
         val allEmploymentData = data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = Seq())
 
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId = "002", toRemove = "CUSTOMER")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, employmentId = "002", toRemove = "CUSTOMER")
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser)) shouldBe Right()
+        await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser)) shouldBe Right()
       }
 
       "there is no employment data for that employment id" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
 
-        await(service.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId, aUser)) shouldBe Right()
+        await(underTest.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId, aUser)) shouldBe Right()
       }
 
       "the connector throws a Left" in {
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
+        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
         val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
@@ -158,18 +158,18 @@ class RemoveEmploymentServiceSpec extends UnitTest
           expenses = None,
           deductions = None
         ).toNrsPayloadModel)
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        mockDeleteOrIgnoreEmploymentLeft(aUser.nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002", aUser)) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))
+        await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002", aUser)) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))
       }
 
       "incomeSourceConnector returns error" in {
         val allEmploymentData = data.copy(hmrcEmploymentData = Seq())
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
-        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
+        val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
         verifySubmitEvent(DecodedDeleteEmploymentPayload(
@@ -178,12 +178,12 @@ class RemoveEmploymentServiceSpec extends UnitTest
           expenses = None,
           deductions = None
         ).toNrsPayloadModel)
-        mockRefreshIncomeSourceResponseError(taxYear, nino)
-        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
+        mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
+        mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(authorisationRequest, allEmploymentData, taxYear)
 
-        await(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002",
-          aUser.copy(sessionId = sessionId))) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
+        await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002",
+          aUser.copy(sessionId = aUser.sessionId))) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
     }
   }
@@ -201,8 +201,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
       ).toNrsPayloadModel
       )
 
-      await(service.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right()
-
+      await(underTest.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right()
     }
   }
 }

@@ -31,13 +31,13 @@ import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler, MockRedirectsMatcherUtils}
+import support.mocks.{MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler, MockRedirectsMapper}
 import utils.InYearUtil
 
 class ActionsProviderSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockEmploymentSessionService
-  with MockRedirectsMatcherUtils
+  with MockRedirectsMapper
   with MockErrorHandler {
 
   private val employmentId = "employmentId"
@@ -48,12 +48,14 @@ class ActionsProviderSpec extends ControllerUnitTest
 
   private val anyBlock = (_: Request[AnyContent]) => Ok("any-result")
 
+  private val someClass = classOf[String]
+
   private val actionsProvider = new ActionsProvider(
     mockAuthorisedAction,
     mockEmploymentSessionService,
     mockErrorHandler,
     new InYearUtil,
-    mockRedirectsMatcherUtils,
+    mockRedirectsMapper,
     appConfig
   )
 
@@ -61,7 +63,7 @@ class ActionsProviderSpec extends ControllerUnitTest
     "redirect to UnauthorisedUserErrorController when authentication fails" in {
       mockFailToAuthenticate()
 
-      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, controllerName = "some-controller-name")(anyBlock)
+      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
       await(underTest(fakeIndividualRequest(taxYearEOY))) shouldBe Redirect(UnauthorisedUserErrorController.show)
     }
@@ -69,7 +71,7 @@ class ActionsProviderSpec extends ControllerUnitTest
     "redirect to Income Tax Submission Overview when in year" in {
       mockAuthAsIndividual(Some(aUser.nino))
 
-      val underTest = actionsProvider.endOfYearWithSessionData(taxYear, employmentId, EmploymentDetailsType, controllerName = "some-controller-name")(anyBlock)
+      val underTest = actionsProvider.endOfYearWithSessionData(taxYear, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
       await(underTest(fakeIndividualRequest(taxYear))) shouldBe Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
@@ -79,9 +81,9 @@ class ActionsProviderSpec extends ControllerUnitTest
 
       mockAuthAsIndividual(Some(aUser.nino))
       mockGetSessionData(taxYearEOY, employmentId, aUser, result = Right(Some(anEmploymentUserData)))
-      mockMatchToRedirects(controllerName = "some-controller-name", taxYearEOY, employmentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel, resultRedirects)
 
-      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, controllerName = "some-controller-name")(anyBlock)
+      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
       await(underTest(fakeIndividualRequest(taxYearEOY))) shouldBe Redirect(CarVanFuelBenefitsController.show(taxYearEOY, employmentId))
     }
@@ -89,9 +91,9 @@ class ActionsProviderSpec extends ControllerUnitTest
     "return successful response" in {
       mockAuthAsIndividual(Some(aUser.nino))
       mockGetSessionData(taxYearEOY, employmentId, aUser, result = Right(Some(anEmploymentUserData)))
-      mockMatchToRedirects(controllerName = "some-controller-name", taxYearEOY, employmentId, anEmploymentCYAModel, Seq.empty)
+      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel, Seq.empty)
 
-      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, controllerName = "some-controller-name")(anyBlock)
+      val underTest = actionsProvider.endOfYearWithSessionData(taxYearEOY, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
       status(underTest(fakeIndividualRequest(taxYearEOY))) shouldBe OK
     }

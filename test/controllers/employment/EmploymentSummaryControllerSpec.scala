@@ -19,12 +19,11 @@ package controllers.employment
 import actions.ActionsProvider
 import common.SessionValues
 import config.AppConfig
-import models.OptionalUserPriorDataRequest
 import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.mvc.Result
 import play.api.mvc.Results.InternalServerError
-import play.api.mvc.{AnyContent, Result}
-import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService, MockRedirectsMatcherUtils}
+import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService, MockRedirectsMapper}
 import utils.{InYearUtil, UnitTest}
 import views.html.employment.EmploymentSummaryView
 
@@ -33,7 +32,7 @@ import scala.concurrent.Future
 class EmploymentSummaryControllerSpec extends UnitTest
   with MockEmploymentSessionService
   with MockActionsProvider
-  with MockRedirectsMatcherUtils {
+  with MockRedirectsMapper {
 
   object FullModel {
 
@@ -123,7 +122,7 @@ class EmploymentSummaryControllerSpec extends UnitTest
       mockEmploymentSessionService,
       mockErrorHandler,
       new InYearUtil()(mockAppConfig),
-      mockRedirectsMatcherUtils,
+      mockRedirectsMapper,
       mockAppConfig
     )
   }
@@ -207,10 +206,6 @@ class EmploymentSummaryControllerSpec extends UnitTest
   }
 
   ".show" should {
-    implicit val request: OptionalUserPriorDataRequest[AnyContent] = OptionalUserPriorDataRequest(
-      Some(FullModel.oneEmploymentSourceData), authorisationRequest.user, authorisationRequest.request
-    )
-
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
         mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))

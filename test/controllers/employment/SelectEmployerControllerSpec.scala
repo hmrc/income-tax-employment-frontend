@@ -42,7 +42,7 @@ class SelectEmployerControllerSpec extends UnitTest
   with MockUnignoreEmploymentService
   with MockErrorHandler
   with MockActionsProvider
-  with MockRedirectsMatcherUtils {
+  with MockRedirectsMapper {
 
   private lazy val view: SelectEmployerView = app.injector.instanceOf[SelectEmployerView]
   implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -53,7 +53,7 @@ class SelectEmployerControllerSpec extends UnitTest
       mockEmploymentSessionService,
       mockErrorHandler,
       new InYearUtil()(mockAppConfig),
-      mockRedirectsMatcherUtils,
+      mockRedirectsMapper,
       mockAppConfig
     )
   }

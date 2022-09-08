@@ -27,6 +27,7 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTest
 import views.html.details.EmploymentTaxView
@@ -47,7 +48,7 @@ class EmploymentTaxControllerSpec extends UnitTest
       currentDataIsHmrcHeld = true
     )
     val employmentCyaModel: EmploymentCYAModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false,
+    val employmentUserData: EmploymentUserData = EmploymentUserData(aUser.sessionId, aUser.mtditid, aUser.nino, taxYear, employmentId, isPriorSubmission = false,
       hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
   }
 
@@ -56,7 +57,7 @@ class EmploymentTaxControllerSpec extends UnitTest
   private lazy val view = app.injector.instanceOf[EmploymentTaxView]
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
-  private lazy val controller = new EmploymentTaxController(
+  private lazy val underTest = new EmploymentTaxController(
     mockMessagesControllerComponents,
     authorisedAction,
     view,
@@ -75,7 +76,7 @@ class EmploymentTaxControllerSpec extends UnitTest
             taxYearEOY, "001", "Dave", AmountForm.amountForm(""))
           ))
 
-          controller.show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
+          underTest.show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }
@@ -86,7 +87,6 @@ class EmploymentTaxControllerSpec extends UnitTest
   }
 
   ".submit" should {
-
     "return a result when " which {
       s"Has a $SEE_OTHER status when cya in session" in new TestWithAuth {
         val result: Future[Result] = {
@@ -96,7 +96,7 @@ class EmploymentTaxControllerSpec extends UnitTest
           (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
             _: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_])).expects(taxYearEOY, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
-          controller.submit(taxYearEOY, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
+          underTest.submit(taxYearEOY, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
             SessionValues.TAX_YEAR -> taxYearEOY.toString
           ))
         }

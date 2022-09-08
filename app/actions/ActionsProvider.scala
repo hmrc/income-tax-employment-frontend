@@ -24,7 +24,7 @@ import play.api.mvc._
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import utils.{InYearUtil, RedirectsMatcherUtils}
+import utils.{InYearUtil, RedirectsMapper}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,19 +33,19 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 employmentSessionService: EmploymentSessionService,
                                 errorHandler: ErrorHandler,
                                 inYearUtil: InYearUtil,
-                                redirectsMatcherUtils: RedirectsMatcherUtils,
+                                redirectsMapper: RedirectsMapper,
                                 appConfig: AppConfig
                                )(implicit ec: ExecutionContext) {
 
   def endOfYearWithSessionData(taxYear: Int,
                                employmentId: String,
                                employmentType: EmploymentType,
-                               controllerName: String): ActionBuilder[UserSessionDataRequest, AnyContent] =
+                               clazz: Class[_]): ActionBuilder[UserSessionDataRequest, AnyContent] =
     authAction
       .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
       .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
       .andThen(UserSessionDataRequestRefinerAction(taxYear, employmentId, employmentType, employmentSessionService, errorHandler, appConfig))
-      .andThen(RedirectsFilterAction(redirectsMatcherUtils, controllerName, taxYear, employmentId))
+      .andThen(RedirectsFilterAction(redirectsMapper, clazz, taxYear, employmentId))
 
   // TODO: Refactor
   def notInYearWithPriorData(taxYear: Int, overrideRedirect: Option[Result] = None): ActionBuilder[UserPriorDataRequest, AnyContent] =

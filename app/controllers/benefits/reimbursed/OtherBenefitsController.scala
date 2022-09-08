@@ -26,9 +26,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, otherItemsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.ReimbursedService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.OtherBenefitsView
@@ -41,6 +40,7 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
                                         pageView: OtherBenefitsView,
                                         employmentSessionService: EmploymentSessionService,
                                         reimbursedService: ReimbursedService,
+                                        redirectService: RedirectService,
                                         errorHandler: ErrorHandler,
                                         formsProvider: ReimbursedFormsProvider)
                                        (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -50,8 +50,8 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(otherItemsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.otherItemsRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion)) match {
             case Some(questionResult) =>
@@ -67,8 +67,8 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(otherItemsRedirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.otherItemsRedirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.otherBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
@@ -90,7 +90,7 @@ class OtherBenefitsController @Inject()(authAction: AuthorisedAction,
           } else {
             AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
           }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

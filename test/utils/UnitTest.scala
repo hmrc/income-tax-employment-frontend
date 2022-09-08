@@ -20,10 +20,10 @@ import akka.actor.ActorSystem
 import com.codahale.metrics.SharedMetricRegistries
 import common.SessionValues
 import config.AppConfig
+import models.AuthorisationRequest
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
-import models.{AuthorisationRequest, IncomeTaxUserData}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -32,7 +32,6 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
-import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
@@ -60,22 +59,19 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
-  val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
-
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
-    .withHeaders("X-Session-ID" -> sessionId)
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+
   val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
     SessionValues.CLIENT_NINO -> "AA123456A",
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
-  ).withHeaders("X-Session-ID" -> sessionId)
-  val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+  ).withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
-    SessionValues.CLIENT_NINO -> "AA123456A"
-  )
-  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
+  val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(SessionValues.CLIENT_NINO -> "AA123456A")
+  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")))
   val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
 
   implicit val mockAppConfig: AppConfig = new MockAppConfig().config()
@@ -85,7 +81,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
-    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString), fakeRequest)
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString), fakeRequest)
 
   protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
@@ -109,13 +105,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   def getSession(awaitable: Future[Result]): Session = {
     await(awaitable).session
   }
-
-  val nino: String = aUser.nino
-  val mtditid: String = aUser.mtditid
-
-  val userData: IncomeTaxUserData = IncomeTaxUserData(
-    Some(employmentsModel)
-  )
 
   lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),

@@ -23,6 +23,8 @@ import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import services.DefaultRedirectService
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockFuelService}
 import utils.UnitTest
@@ -38,9 +40,9 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
   private val employmentId = "223/AB12399"
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
   private lazy val employmentUserData = new EmploymentUserData(
-    sessionId,
-    mtditid,
-    nino,
+    aUser.sessionId,
+    aUser.mtditid,
+    aUser.nino,
     taxYearEOY,
     employmentId,
     true,
@@ -49,9 +51,9 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
   )
 
   private lazy val employmentUserDataWithoutBenefits = new EmploymentUserData(
-    sessionId,
-    mtditid,
-    nino,
+    aUser.sessionId,
+    aUser.mtditid,
+    aUser.nino,
     taxYearEOY,
     employmentId,
     isPriorSubmission = false,
@@ -66,6 +68,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
     view,
     mockEmploymentSessionService,
     mockFuelService,
+    new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
   )(mockMessagesControllerComponents, mockAppConfig)
@@ -99,7 +102,6 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
     }
 
     "render page" when {
-
       "with non empty form when there are benefits" in {
         val result = controller.handleShow(taxYearEOY, employmentId, Some(employmentUserData))
 

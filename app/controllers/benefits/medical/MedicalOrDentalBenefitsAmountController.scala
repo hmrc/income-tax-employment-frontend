@@ -27,7 +27,6 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.RedirectService.{medicalInsuranceAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.MedicalService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -42,6 +41,7 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
                                                         pageView: MedicalOrDentalBenefitsAmountView,
                                                         employmentSessionService: EmploymentSessionService,
                                                         medicalService: MedicalService,
+                                                        redirectService: RedirectService,
                                                         errorHandler: ErrorHandler,
                                                         formsProvider: MedicalFormsProvider)
                                                        (implicit appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
@@ -50,7 +50,7 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance))
           val form = fillForm(formsProvider.medicalOrAmountForm(request.user.isAgent), cyaAmount)
           Future(Ok(pageView(taxYear, form, employmentId)))
@@ -63,7 +63,7 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           formsProvider.medicalOrAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
@@ -82,11 +82,11 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = ChildcareBenefitsController.show(taxYear, employmentId)
-        RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    medicalInsuranceAmountRedirects(cya, taxYear, employmentId)
+    redirectService.medicalInsuranceAmountRedirects(cya, taxYear, employmentId)
   }
 }

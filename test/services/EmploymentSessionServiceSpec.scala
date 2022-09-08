@@ -51,8 +51,6 @@ class EmploymentSessionServiceSpec extends UnitTest
   with MockExpensesUserDataRepository
   with Logging {
 
-  private val user: User = authorisationRequest.user
-
   private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
   private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
@@ -182,7 +180,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   }
 
   private val employmentDataFull: EmploymentUserData = {
-    EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+    EmploymentUserData(aUser.sessionId, "1234567890", aUser.nino, taxYear, "employmentId", isPriorSubmission = true,
       hasPriorBenefits = true,
       hasPriorStudentLoans = true, employmentCYA, testClock.now())
   }
@@ -208,16 +206,14 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   "submitAndClear" should {
     "submit data and then clear the database" in {
-
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = true)
 
-      val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
-
-      await(response) shouldBe Right((None, anEmploymentUserData))
+      await(underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))) shouldBe
+        Right((None, anEmploymentUserData))
     }
 
     "submit data and then clear the database and perform audits" in {
@@ -226,9 +222,9 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = true)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData), Some(
@@ -237,45 +233,44 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       await(response) shouldBe Right((None, anEmploymentUserData))
     }
-    "return an error from the create call" in {
 
+    "return an error from the create call" in {
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
 
       status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
+
     "return an error from the clear call" in {
-
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = false)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
 
       status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
+
     "submit data and then clear the database with an employment id" in {
-
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-      mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(Some("id")))
 
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(Some("id")))
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = true)
 
-      val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))
-
-      await(response) shouldBe Right((Some("id"), anEmploymentUserData))
+      await(underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))) shouldBe
+        Right((Some("id"), anEmploymentUserData))
     }
   }
 
   "getCYAAndPriorForEndOfYear" should {
     "return a redirect when in year" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getCYAAndPriorForEndOfYear(taxYear, "employmentId")
 
       status(response.map(_.left.get)) shouldBe SEE_OTHER
@@ -283,7 +278,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return cya data and prior" in {
       mockFind(taxYear - 1, "employmentId", Right(Some(anEmploymentUserData)))
-      mockFind(nino, taxYear - 1, anIncomeTaxUserData)
+      mockFind(aUser.nino, taxYear - 1, anIncomeTaxUserData)
       val response = underTest.getCYAAndPriorForEndOfYear(taxYear - 1, "employmentId")
 
       await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData, Some(anAllEmploymentData)))
@@ -293,14 +288,15 @@ class EmploymentSessionServiceSpec extends UnitTest
   "getOptionalCYAAndPriorForEndOfYear" should {
     "return a redirect when in year" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getOptionalCYAAndPriorForEndOfYear(taxYear, "employmentId")
 
       status(response.map(_.left.get)) shouldBe SEE_OTHER
     }
+
     "return optional data" in {
       mockFind(taxYear - 1, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear - 1)
+      mockFindNoContent(aUser.nino, taxYear - 1)
       val response = underTest.getOptionalCYAAndPriorForEndOfYear(taxYear - 1, "employmentId")
 
       await(response) shouldBe Right(OptionalCyaAndPrior(None, None))
@@ -310,7 +306,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   "getOptionalCYAAndPrior" should {
     "return optional data" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
       await(response) shouldBe Right(OptionalCyaAndPrior(None, None))
@@ -318,7 +314,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return cya data and prior" in {
       mockFind(taxYear, "employmentId", Right(Some(anEmploymentUserData)))
-      mockFind(nino, taxYear, anIncomeTaxUserData)
+      mockFind(aUser.nino, taxYear, anIncomeTaxUserData)
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
       await(response) shouldBe Right(OptionalCyaAndPrior(Some(anEmploymentUserData), Some(anAllEmploymentData)))
@@ -326,7 +322,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return a left with a redirect" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId", redirectWhenNoPrior = true)
 
       status(response.map(_.left.get)) shouldBe SEE_OTHER
@@ -334,7 +330,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an error if the call failed" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindFail(nino, taxYear)
+      mockFindFail(aUser.nino, taxYear)
 
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
@@ -343,7 +339,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an internal server error if the CYA find failed" in {
       mockFind(taxYear, "employmentId", Left(DataNotFoundError))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
 
       val response = underTest.getOptionalCYAAndPrior(taxYear, "employmentId")
 
@@ -354,7 +350,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   "getCYAAndPrior" should {
     "return a redirect if no data" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
 
       status(response.map(_.left.get)) shouldBe SEE_OTHER
@@ -362,7 +358,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return cya data and prior" in {
       mockFind(taxYear, "employmentId", Right(Some(anEmploymentUserData)))
-      mockFind(nino, taxYear, anIncomeTaxUserData)
+      mockFind(aUser.nino, taxYear, anIncomeTaxUserData)
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
 
       await(response) shouldBe Right(CyaAndPrior(anEmploymentUserData, Some(anAllEmploymentData)))
@@ -370,7 +366,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an error if the call failed" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindFail(nino, taxYear)
+      mockFindFail(aUser.nino, taxYear)
 
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
 
@@ -379,7 +375,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an internal server error if the CYA find failed" in {
       mockFind(taxYear, "employmentId", Left(DataNotFoundError))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
 
       val response = underTest.getCYAAndPrior(taxYear, "employmentId")
 
@@ -390,7 +386,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   "getAndHandle" should {
     "redirect if no data and redirect is set to true" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getAndHandle(taxYear, "employmentId", redirectWhenNoPrior = true)((_, _) => Future(Ok))
 
       status(response) shouldBe SEE_OTHER
@@ -398,7 +394,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an error if the call failed" in {
       mockFind(taxYear, "employmentId", Right(None))
-      mockFindFail(nino, taxYear)
+      mockFindFail(aUser.nino, taxYear)
 
       val response = underTest.getAndHandle(taxYear, "employmentId")((_, _) => Future(Ok))
 
@@ -407,7 +403,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     "return an internal server error if the CYA find failed" in {
       mockFind(taxYear, "employmentId", Left(DataNotFoundError))
-      mockFindNoContent(nino, taxYear)
+      mockFindNoContent(aUser.nino, taxYear)
 
       val response = underTest.getAndHandle(taxYear, "employmentId")((_, _) => Future(Ok))
 
@@ -417,8 +413,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   "getAndHandleExpenses" should {
     "return an error if the call failed" in {
-      mockFindFail(nino, taxYear)
-      mockFind(taxYear, user, Right(None))
+      mockFindFail(aUser.nino, taxYear)
+      mockFind(taxYear, authorisationRequest.user, Right(None))
 
       val response = underTest.getAndHandleExpenses(taxYear)((_, _) => Future(Ok))
 
@@ -426,8 +422,8 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return an internal server error if the CYA find failed" in {
-      mockFind(taxYear, user, Left(DataNotFoundError))
-      mockFindNoContent(nino, taxYear)
+      mockFind(taxYear, authorisationRequest.user, Left(DataNotFoundError))
+      mockFindNoContent(aUser.nino, taxYear)
 
       val response = underTest.getAndHandleExpenses(taxYear)((_, _) => Future(Ok))
 
@@ -437,10 +433,10 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   "findPreviousEmploymentUserData" should {
     "return an error if the call failed" in {
-      mockFindFail(nino, taxYear)
+      mockFindFail(aUser.nino, taxYear)
 
       val response = underTest.findPreviousEmploymentUserData(
-        User(mtditid = mtditid, arn = None, nino = nino, sessionId = sessionId, AffinityGroup.Individual.toString),
+        User(mtditid = aUser.mtditid, arn = None, nino = aUser.nino, sessionId = aUser.sessionId, AffinityGroup.Individual.toString),
         taxYear)(_ => Ok)
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
@@ -451,7 +447,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     "use the request model to make the api call and return the response" when {
       "request has no employmentId" in {
         val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
-        mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
+        mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
         val response = underTest.createOrUpdateEmploymentResult(taxYear, requestWithoutEmploymentId)
 
@@ -460,7 +456,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       "request has employmentId" in {
         val requestWithEmploymentId = createUpdateEmploymentRequest.copy(employmentId = Some("some-employment-id"))
-        mockCreateUpdateEmploymentData(nino, taxYear, requestWithEmploymentId)(Right(Some("some-employment-id")))
+        mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithEmploymentId)(Right(Some("some-employment-id")))
 
         val response = underTest.createOrUpdateEmploymentResult(taxYear, requestWithEmploymentId)
 
@@ -469,7 +465,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "use the request model to make the api call  and handle an error" in {
-      mockCreateUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, createUpdateEmploymentRequest)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
 
       val response = underTest.createOrUpdateEmploymentResult(taxYear, createUpdateEmploymentRequest)
 
@@ -1236,14 +1232,29 @@ class EmploymentSessionServiceSpec extends UnitTest
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+
+    val employmentData: EmploymentUserData = EmploymentUserData(
+      sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe",
+      "1234567890",
+      aUser.nino,
+      taxYear,
+      "employmentId",
+      isPriorSubmission = true,
       hasPriorBenefits = true,
       hasPriorStudentLoans = true, cya, testClock.now())
 
     "return SEE_OTHER(303) status when createOrUpdate succeeds" in {
       mockCreateOrUpdate(employmentData, Right())
 
-      val response = underTest.createOrUpdateSessionData(user, taxYear, "employmentId", cya, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true)(Redirect("400"))(Redirect("303"))
+      val response = underTest.createOrUpdateSessionData(
+        authorisationRequest.user,
+        taxYear,
+        "employmentId",
+        cya,
+        isPriorSubmission = true,
+        hasPriorBenefits = true,
+        hasPriorStudentLoans = true
+      )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -1257,7 +1268,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       mockCreateOrUpdate(employmentData, Left(DataNotUpdatedError))
 
-      val response = underTest.createOrUpdateSessionData(user = user, taxYear = taxYear, employmentId = "employmentId", cyaModel = cya, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true)(Redirect("400"))(Redirect("303"))
+      val response = underTest.createOrUpdateSessionData(user = authorisationRequest.user, taxYear = taxYear, employmentId = "employmentId", cyaModel = cya, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true)(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "400"
@@ -1267,9 +1278,9 @@ class EmploymentSessionServiceSpec extends UnitTest
   ".createOrUpdateEmploymentUserData" should {
     "create EmploymentUserData in repository end return successful result" in {
       val expected = EmploymentUserData(
-        user.sessionId,
-        user.mtditid,
-        user.nino,
+        authorisationRequest.user.sessionId,
+        authorisationRequest.user.mtditid,
+        authorisationRequest.user.nino,
         taxYear,
         "employmentId",
         isPriorSubmission = true,
@@ -1280,16 +1291,16 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       mockCreateOrUpdate(expected, Right())
 
-      val response = underTest.createOrUpdateEmploymentUserData(user, taxYear, "employmentId", expected, anEmploymentCYAModel)
+      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel)
 
       await(response) shouldBe Right(expected)
     }
 
     "return Left when repository createOrUpdate fails" in {
       val expected = EmploymentUserData(
-        user.sessionId,
-        user.mtditid,
-        user.nino,
+        authorisationRequest.user.sessionId,
+        authorisationRequest.user.mtditid,
+        authorisationRequest.user.nino,
         taxYear,
         "employmentId",
         isPriorSubmission = true,
@@ -1301,7 +1312,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       mockCreateOrUpdate(expected, Left(DataNotUpdatedError))
 
-      val response = underTest.createOrUpdateEmploymentUserData(user, taxYear, "employmentId", expected, anEmploymentCYAModel)
+      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel)
 
       await(response) shouldBe Left()
     }
@@ -1311,9 +1322,9 @@ class EmploymentSessionServiceSpec extends UnitTest
     val isPriorSubmission = true
     val hasPriorExpenses = true
     val expensesUserData = ExpensesUserData(
-      user.sessionId,
-      user.mtditid,
-      user.nino,
+      authorisationRequest.user.sessionId,
+      authorisationRequest.user.mtditid,
+      authorisationRequest.user.nino,
       taxYear,
       isPriorSubmission,
       hasPriorExpenses,
@@ -1329,7 +1340,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockCreateOrUpdateExpenses(expensesUserData, Right())
 
       val response = underTest.createOrUpdateExpensesSessionData(anExpensesCYAModel, taxYear,
-        isPriorSubmission, hasPriorExpenses, user)(Redirect("400"))(onSuccessBlock)
+        isPriorSubmission, hasPriorExpenses, authorisationRequest.user)(Redirect("400"))(onSuccessBlock)
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -1343,7 +1354,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockCreateOrUpdateExpenses(expensesUserData, Left(DataNotUpdatedError))
 
       val response = underTest.createOrUpdateExpensesSessionData(anExpensesCYAModel, taxYear = taxYear,
-        isPriorSubmission = true, hasPriorExpenses = true, user)(onFailBlock)(Redirect("303"))
+        isPriorSubmission = true, hasPriorExpenses = true, authorisationRequest.user)(onFailBlock)(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "400"
@@ -1353,9 +1364,9 @@ class EmploymentSessionServiceSpec extends UnitTest
   ".createOrUpdateExpensesUserData" should {
     "create EmploymentUserData in repository end return successful result" in {
       val expected = ExpensesUserData(
-        user.sessionId,
-        user.mtditid,
-        user.nino,
+        authorisationRequest.user.sessionId,
+        authorisationRequest.user.mtditid,
+        authorisationRequest.user.nino,
         taxYear,
         isPriorSubmission = true,
         hasPriorExpenses = false,
@@ -1365,16 +1376,16 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       mockCreateOrUpdateExpenses(expected, Right())
 
-      val response = underTest.createOrUpdateExpensesUserData(user, taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
+      val response = underTest.createOrUpdateExpensesUserData(authorisationRequest.user, taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
 
       await(response) shouldBe Right(expected)
     }
 
     "return Left when repository createOrUpdate fails" in {
       val expected = ExpensesUserData(
-        user.sessionId,
-        user.mtditid,
-        user.nino,
+        authorisationRequest.user.sessionId,
+        authorisationRequest.user.mtditid,
+        authorisationRequest.user.nino,
         taxYear,
         isPriorSubmission = true,
         hasPriorExpenses = false,
@@ -1384,7 +1395,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       mockCreateOrUpdateExpenses(expected, Left(DataNotUpdatedError))
 
-      val response = underTest.createOrUpdateExpensesUserData(user, taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
+      val response = underTest.createOrUpdateExpensesUserData(authorisationRequest.user, taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
 
       await(response) shouldBe Left()
     }
@@ -1395,7 +1406,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+    val employmentData: EmploymentUserData = EmploymentUserData(aUser.sessionId, "1234567890", aUser.nino, taxYear, "employmentId", isPriorSubmission = true,
       hasPriorBenefits = true, hasPriorStudentLoans = false, cya, testClock.now())
 
     "redirect when data is retrieved" in {
@@ -1433,33 +1444,33 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".clear" should {
     "redirect when the record in the database has been removed" in {
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = true)
 
-      await(underTest.clear(user, taxYear, "employmentId")) shouldBe Right()
+      await(underTest.clear(authorisationRequest.user, taxYear, "employmentId")) shouldBe Right()
     }
 
     "redirect to error when the record in the database has not been removed" in {
-      mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = false)
 
-      await(underTest.clear(user, taxYear, "employmentId")) shouldBe Left()
+      await(underTest.clear(authorisationRequest.user, taxYear, "employmentId")) shouldBe Left()
     }
 
     "error when incomeSourceConnector returns error" in {
-      mockRefreshIncomeSourceResponseError(taxYear, nino)
+      mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
       mockClear(taxYear, "employmentId", response = true)
 
-      await(underTest.clear(user, taxYear, "employmentId")) shouldBe Left()
+      await(underTest.clear(authorisationRequest.user, taxYear, "employmentId")) shouldBe Left()
     }
   }
 
   ".findPreviousEmploymentUserData" should {
     "return the ok result" in {
-      mockFind(nino, taxYear, userData)
+      mockFind(aUser.nino, taxYear, anIncomeTaxUserData)
 
       val response = underTest.findPreviousEmploymentUserData(
-        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81", AffinityGroup.Individual.toString),
+        User(mtditid = "1234567890", arn = None, nino = aUser.nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81", AffinityGroup.Individual.toString),
         taxYear,
       )(result)
 
@@ -1467,10 +1478,10 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return the a redirect when no data" in {
-      mockFind(nino, taxYear, userData.copy(employment = None))
+      mockFind(aUser.nino, taxYear, anIncomeTaxUserData.copy(employment = None))
 
       val response = underTest.findPreviousEmploymentUserData(
-        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81", AffinityGroup.Individual.toString),
+        User(mtditid = "1234567890", arn = None, nino = aUser.nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81", AffinityGroup.Individual.toString),
         taxYear,
       )(result)
 
@@ -1501,7 +1512,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   ".getExpensesSessionDataResult" should {
     "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, user, Left(DataNotUpdatedError))
+      mockFind(taxYear, authorisationRequest.user, Left(DataNotUpdatedError))
 
       val response = underTest.getExpensesSessionDataResult(taxYear) {
         _ => Future.successful(anyResult)
@@ -1512,8 +1523,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
     ".clearExpenses" should {
       "redirect when the record in the database has been removed" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        mockClear(taxYear, user, response = true)
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        mockClear(taxYear, authorisationRequest.user, response = true)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("303"))
 
@@ -1522,8 +1533,8 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       "redirect to error when the record in the database has not been removed" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        mockClear(taxYear, user, response = false)
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        mockClear(taxYear, authorisationRequest.user, response = false)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("303"))
 
@@ -1531,8 +1542,8 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       "error when incomeSourceConnector returns error" in {
-        mockRefreshIncomeSourceResponseError(taxYear, nino)
-        mockClear(taxYear, user, response = true)
+        mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
+        mockClear(taxYear, authorisationRequest.user, response = true)
 
         val response = underTest.clearExpenses(taxYear)(Redirect("500"))
 
@@ -1541,7 +1552,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     }
 
     "return the given result when no DatabaseError" in {
-      mockFind(taxYear, user, Right(None))
+      mockFind(taxYear, authorisationRequest.user, Right(None))
 
       val response = underTest.getExpensesSessionDataResult(taxYear) {
         _ => Future.successful(anyResult)
@@ -1577,13 +1588,13 @@ class EmploymentSessionServiceSpec extends UnitTest
     "returns Left() when DatabaseError" in {
       mockFind(taxYear, "some-employment-id", Left(DataNotUpdatedError))
 
-      await(underTest.findEmploymentUserData(taxYear, "some-employment-id", user)) shouldBe Left()
+      await(underTest.findEmploymentUserData(taxYear, "some-employment-id", authorisationRequest.user)) shouldBe Left()
     }
 
     "return the given result when no DatabaseError" in {
       mockFind(taxYear, "some-employment-id", Right(Some(anEmploymentUserData)))
 
-      await(underTest.findEmploymentUserData(taxYear, "some-employment-id", user)) shouldBe Right(Some(anEmploymentUserData))
+      await(underTest.findEmploymentUserData(taxYear, "some-employment-id", authorisationRequest.user)) shouldBe Right(Some(anEmploymentUserData))
     }
   }
 }

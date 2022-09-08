@@ -20,8 +20,8 @@ import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
 import controllers.details.routes.EmployerNameController
+import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
 import models.AuthorisationRequest
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
@@ -29,9 +29,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import services.employment.CheckEmploymentDetailsService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
@@ -43,6 +42,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
                                                  inYearAction: InYearUtil,
                                                  employmentSessionService: EmploymentSessionService,
                                                  checkEmploymentDetailsService: CheckEmploymentDetailsService,
+                                                 redirectService: RedirectService,
                                                  errorHandler: ErrorHandler)
                                                 (implicit cc: MessagesControllerComponents, ec: ExecutionContext,
                                                  appConf: AppConfig, authAction: AuthorisedAction)
@@ -68,10 +68,10 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
-            Future.successful(employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
+            Future.successful(redirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId))
           } else {
             prior match {
-              case Some(_) if !cya.employment.employmentDetails.isSubmittable => Future.successful { Redirect(EmployerNameController.show(taxYear, employmentId)) }
+              case Some(_) if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
               case _ => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)

@@ -28,9 +28,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, taxableExpensesAmountRedirects}
 import services.benefits.ReimbursedService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.TaxableCostsBenefitsAmountView
@@ -43,6 +42,7 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
                                                      pageView: TaxableCostsBenefitsAmountView,
                                                      employmentSessionService: EmploymentSessionService,
                                                      reimbursedService: ReimbursedService,
+                                                     redirectService: RedirectService,
                                                      errorHandler: ErrorHandler,
                                                      formsProvider: ReimbursedFormsProvider)
                                                     (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -51,7 +51,7 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
           val form = fillForm(formsProvider.taxableCostsAmountForm(request.user.isAgent), cyaAmount)
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
@@ -63,7 +63,7 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           formsProvider.taxableCostsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
@@ -80,11 +80,11 @@ class TaxableCostsBenefitsAmountController @Inject()(authAction: AuthorisedActio
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = VouchersBenefitsController.show(taxYear, employmentId)
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    taxableExpensesAmountRedirects(cya, taxYear, employmentId)
+    redirectService.taxableExpensesAmountRedirects(cya, taxYear, employmentId)
   }
 }

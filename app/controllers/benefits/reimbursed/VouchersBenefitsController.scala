@@ -25,9 +25,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, vouchersAndCreditCardsRedirects}
 import services.benefits.ReimbursedService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.VouchersBenefitsView
@@ -40,6 +39,7 @@ class VouchersBenefitsController @Inject()(authAction: AuthorisedAction,
                                            pageView: VouchersBenefitsView,
                                            employmentSessionService: EmploymentSessionService,
                                            reimbursedService: ReimbursedService,
+                                           redirectService: RedirectService,
                                            errorHandler: ErrorHandler,
                                            formsProvider: ReimbursedFormsProvider)
                                           (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -49,8 +49,8 @@ class VouchersBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(vouchersAndCreditCardsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.vouchersAndCreditCardsRedirects(_, taxYear, employmentId)) { cya =>
 
           val isAgent = request.user.isAgent
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion)) match {
@@ -65,8 +65,8 @@ class VouchersBenefitsController @Inject()(authAction: AuthorisedAction,
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(vouchersAndCreditCardsRedirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.vouchersAndCreditCardsRedirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.vouchersForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
@@ -88,7 +88,7 @@ class VouchersBenefitsController @Inject()(authAction: AuthorisedAction,
           NonCashBenefitsController.show(taxYear, employmentId)
         }
 
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

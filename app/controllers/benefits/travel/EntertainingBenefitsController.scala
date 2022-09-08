@@ -27,9 +27,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, entertainmentBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.TravelService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.travel.EntertainingBenefitsView
@@ -42,6 +41,7 @@ class EntertainingBenefitsController @Inject()(authAction: AuthorisedAction,
                                                entertainingBenefitsView: EntertainingBenefitsView,
                                                employmentSessionService: EmploymentSessionService,
                                                travelService: TravelService,
+                                               redirectService: RedirectService,
                                                formsProvider: TravelFormsProvider,
                                                errorHandler: ErrorHandler)
                                               (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -51,7 +51,7 @@ class EntertainingBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) match {
             case Some(yesNo) => Future.successful(Ok(entertainingBenefitsView(
@@ -67,7 +67,7 @@ class EntertainingBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.entertainingBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(entertainingBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -88,11 +88,11 @@ class EntertainingBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    entertainmentBenefitsRedirects(cya, taxYear, employmentId)
+    redirectService.entertainmentBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

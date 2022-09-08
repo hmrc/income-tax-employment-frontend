@@ -25,9 +25,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, commonUtilitiesAndServicesBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.UtilitiesService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.utilities.TelephoneBenefitsView
@@ -40,6 +39,7 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
                                             telephoneBenefitsView: TelephoneBenefitsView,
                                             employmentSessionService: EmploymentSessionService,
                                             utilitiesService: UtilitiesService,
+                                            redirectService: RedirectService,
                                             formsProvider: UtilitiesFormsProvider,
                                             errorHandler: ErrorHandler)
                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -49,8 +49,8 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(telephoneBenefitsView(formsProvider.telephoneBenefitsForm(
@@ -66,8 +66,8 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.commonUtilitiesAndServicesBenefitsRedirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.telephoneBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(telephoneBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -88,7 +88,7 @@ class TelephoneBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           EmployerProvidedServicesBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

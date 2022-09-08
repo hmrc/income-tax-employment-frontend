@@ -26,9 +26,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, commonAssetsModelRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.AssetsService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.assets.AssetsBenefitsView
@@ -41,6 +40,7 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
                                          assetsBenefitsView: AssetsBenefitsView,
                                          employmentSessionService: EmploymentSessionService,
                                          assetsService: AssetsService,
+                                         redirectService: RedirectService,
                                          errorHandler: ErrorHandler,
                                          formsProvider: AssetsFormsProvider)
                                         (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -50,7 +50,7 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) match {
             case Some(questionResult) =>
@@ -66,7 +66,7 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           formsProvider.assetsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(assetsBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -87,11 +87,11 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
         } else {
           AssetTransfersBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    commonAssetsModelRedirects(cya, taxYear, employmentId)
+    redirectService.commonAssetsModelRedirects(cya, taxYear, employmentId)
   }
 }

@@ -23,19 +23,16 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import services.ExpensesRedirectService._
+import support.builders.models.UserBuilder.aUser
 import utils.UnitTest
 
 import scala.concurrent.Future
 
 class ExpensesRedirectServiceSpec extends UnitTest {
 
-  private val cyaModel: ExpensesCYAModel = ExpensesCYAModel(expenses = ExpensesViewModel(isUsingCustomerData = true))
-
   private val result = Future.successful(Ok("OK"))
 
-  private val emptyExpensesViewModel = ExpensesViewModel(
-    claimingEmploymentExpenses = false,
-    isUsingCustomerData = false)
+  private val emptyExpensesViewModel = ExpensesViewModel(isUsingCustomerData = false)
 
   private val fullExpensesViewModel = ExpensesViewModel(
     claimingEmploymentExpenses = true,
@@ -51,15 +48,21 @@ class ExpensesRedirectServiceSpec extends UnitTest {
     hotelAndMealExpenses = None,
     vehicleExpenses = None,
     mileageAllowanceRelief = None,
-    submittedOn = Some(s"${taxYearEOY-1}-11-11"),
+    submittedOn = Some(s"${taxYearEOY - 1}-11-11"),
     isUsingCustomerData = true
   )
 
   private def expensesCYAModel(expensesModel: ExpensesViewModel) = ExpensesCYAModel(expenses = expensesModel)
 
   private val expensesUserData = ExpensesUserData(
-    sessionId, mtditid, nino, taxYearEOY, isPriorSubmission = false, hasPriorExpenses = false, expensesCya = ExpensesCYAModel(fullExpensesViewModel))
-
+    aUser.sessionId,
+    aUser.mtditid,
+    aUser.nino,
+    taxYearEOY,
+    isPriorSubmission = false,
+    hasPriorExpenses = false,
+    expensesCya = ExpensesCYAModel(fullExpensesViewModel)
+  )
 
   "expensesSubmitRedirect" should {
     "redirect to the CYA page if the journey is finished" in {

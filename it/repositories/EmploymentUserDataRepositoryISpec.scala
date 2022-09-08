@@ -177,7 +177,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
 
       await(employmentRepo.clear(taxYear, employmentUserDataOne.employmentId, authRequestOne.user)) mustBe true
@@ -197,7 +197,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       count mustBe 0
 
       private val res = await(employmentRepo.createOrUpdate(employmentUserDataOne))
-      res mustBe Right()
+      res mustBe Right(())
       count mustBe 1
 
       private val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890")))
@@ -206,37 +206,37 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
     }
 
     "create a document in collection with all fields present" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataFull)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataFull)) mustBe Right(())
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
 
       private val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
       private val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
       private val updatedEmploymentUserData = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
 
-      await(employmentRepo.createOrUpdate(updatedEmploymentUserData)) mustBe Right()
+      await(employmentRepo.createOrUpdate(updatedEmploymentUserData)) mustBe Right(())
       count mustBe 1
     }
 
     "update a single document when one already exists and collection has multiple documents" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
-      await(employmentRepo.createOrUpdate(employmentUserDataTwo)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
+      await(employmentRepo.createOrUpdate(employmentUserDataTwo)) mustBe Right(())
       count mustBe 2
 
       private val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
       private val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
       private val updatedEmploymentUserDataOne = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
 
-      await(employmentRepo.createOrUpdate(updatedEmploymentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(updatedEmploymentUserDataOne)) mustBe Right(())
 
       count mustBe 2
       private val maybeData: Option[EncryptedEmploymentUserData] = await(find(employmentUserDataTwo)(authRequestTwo))
@@ -245,12 +245,12 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "create a new document when the same documents exists but the sessionId is different" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
 
       private val newUserData = employmentUserDataOne.copy(sessionId = UUID.randomUUID)
 
-      await(employmentRepo.createOrUpdate(newUserData)) mustBe Right()
+      await(employmentRepo.createOrUpdate(newUserData)) mustBe Right(())
       count mustBe 2
     }
   }
@@ -260,7 +260,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       private val now = DateTime.now(DateTimeZone.UTC)
       private val data = employmentUserDataOne.copy(lastUpdated = now)
 
-      await(employmentRepo.createOrUpdate(data)) mustBe Right()
+      await(employmentRepo.createOrUpdate(data)) mustBe Right(())
       count mustBe 1
 
       private val findResult = await(employmentRepo.find(data.taxYear, data.employmentId, authRequestOne.user))
@@ -270,7 +270,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     }
 
     "find a document in collection with all fields present" in new EmptyDatabase {
-      await(employmentRepo.createOrUpdate(employmentUserDataFull)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataFull)) mustBe Right(())
       count mustBe 1
 
       val findResult: Either[DatabaseError, Option[EmploymentUserData]] = {
@@ -289,7 +289,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
       implicit val textAndKey: TextAndKey = TextAndKey(employmentUserDataOne.mtdItId, appConfig.encryptionKey)
-      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
 
       private val encryptedEmploymentUserData: EncryptedEmploymentUserData = employmentUserDataOne.encrypted

@@ -27,9 +27,8 @@ import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, servicesBenefitsAmountRedirects}
 import services.benefits.UtilitiesService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.utilities.OtherServicesBenefitsAmountView
@@ -42,6 +41,7 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
                                                       pageView: OtherServicesBenefitsAmountView,
                                                       employmentSessionService: EmploymentSessionService,
                                                       utilitiesService: UtilitiesService,
+                                                      redirectService: RedirectService,
                                                       formsProvider: UtilitiesFormsProvider,
                                                       errorHandler: ErrorHandler)
                                                      (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -51,8 +51,8 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+          EmploymentBenefitsType)(redirectService.servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
           val form = fillForm(formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent), cyaAmount)
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
@@ -66,8 +66,8 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
-          EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
+          EmploymentBenefitsType)(redirectService.servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
@@ -85,7 +85,7 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }

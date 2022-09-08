@@ -27,9 +27,8 @@ import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
-import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, utilitiesBenefitsRedirects}
 import services.benefits.UtilitiesService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.utilities.UtilitiesOrGeneralServicesBenefitsView
@@ -42,6 +41,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
                                                              utilitiesOrGeneralServicesBenefitsView: UtilitiesOrGeneralServicesBenefitsView,
                                                              employmentSessionService: EmploymentSessionService,
                                                              utilitiesService: UtilitiesService,
+                                                             redirectService: RedirectService,
                                                              formsProvider: UtilitiesFormsProvider,
                                                              errorHandler: ErrorHandler)
                                                             (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
@@ -50,7 +50,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
               Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(formsProvider.utilitiesOrGeneralServicesBenefitsForm(
@@ -66,7 +66,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
           formsProvider.utilitiesOrGeneralServicesBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(utilitiesOrGeneralServicesBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
@@ -86,11 +86,11 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(authAction: Authori
         } else {
           MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)
         }
-        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+        redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    utilitiesBenefitsRedirects(cya, taxYear, employmentId)
+    redirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

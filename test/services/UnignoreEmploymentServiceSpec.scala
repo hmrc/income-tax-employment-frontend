@@ -33,7 +33,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
   with MockAuditService
   with MockNrsService {
 
-  private val service: UnignoreEmploymentService = new UnignoreEmploymentService(
+  private val underTest = new UnignoreEmploymentService(
     mockUnignoreEmploymentConnector,
     mockAuditService,
     mockNrsService,
@@ -42,21 +42,21 @@ class UnignoreEmploymentServiceSpec extends UnitTest
 
   ".unignoreEmployment" should {
     "return a successful result" in {
-      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", nino, mtditid, anEmploymentDetailsViewModel, Some(aBenefits), Some(aDeductions))
+      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, anEmploymentDetailsViewModel, Some(aBenefits), Some(aDeductions))
 
       mockAuditSendEvent(unignoreEmploymentAudit.toAuditModel)
-      mockUnignoreEmployment(nino, taxYear, anEmploymentSource.employmentId, Right(()))
+      mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Right(()))
       verifySubmitEvent(anUnignoreEmploymentNRSModel)
 
-      await(service.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Right()
+      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Right()
     }
 
     "return a error result" in {
       val error = APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)
 
-      mockUnignoreEmployment(nino, taxYear, anEmploymentSource.employmentId, Left(error))
+      mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Left(error))
 
-      await(service.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Left(error)
+      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Left(error)
     }
   }
 }

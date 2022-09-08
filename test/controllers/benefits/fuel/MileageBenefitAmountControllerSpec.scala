@@ -23,7 +23,8 @@ import play.api.data.Form
 import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{Result, Results}
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockFuelService}
+import services.DefaultRedirectService
+import support.mocks._
 import utils.{TestTaxYearHelper, UnitTest}
 import views.html.benefits.fuel.MileageBenefitAmountView
 
@@ -44,6 +45,7 @@ class MileageBenefitAmountControllerSpec extends UnitTest
     inYearAction,
     mockEmploymentSessionService,
     mockFuelService,
+    new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
   )(mockMessagesControllerComponents, mockAppConfig, ec)

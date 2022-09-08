@@ -21,7 +21,8 @@ import models.employment._
 import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
-import support.mocks.{MockAuditService, MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
+import support.builders.models.UserBuilder.aUser
+import support.mocks._
 import utils.UnitTest
 
 class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
@@ -31,7 +32,12 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockDeleteOrIgnoreExpensesService
   with MockAuditService {
 
-  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, mockAuditService, mockNrsService, mockExecutionContext)
+  private val underTest: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(
+    mockDeleteOrIgnoreExpensesConnector,
+    mockIncomeSourceConnector,
+    mockAuditService,
+    mockNrsService,
+    mockExecutionContext)
 
   private val hmrcExpensesWithoutDateIgnored =
     EmploymentExpenses(
@@ -44,7 +50,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   private val hmrcExpensesWithDateIgnored =
     EmploymentExpenses(
       None,
-      Some(s"${taxYearEOY-1}-04-04T01:01:01Z"),
+      Some(s"${taxYearEOY - 1}-04-04T01:01:01Z"),
       Some(8),
       Some(Expenses(Some(1), Some(1), Some(1), Some(1), Some(1), Some(1), Some(1), Some(1)))
     )
@@ -63,18 +69,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     employerRef = Some("223/AB12399"),
     payrollId = Some("123456789999"),
     startDate = Some("2019-04-21"),
-    cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+    cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
     dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
     hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
       employmentData = Some(EmploymentData(
-        submittedOn = s"${taxYearEOY-1}-02-12",
+        submittedOn = s"${taxYearEOY - 1}-02-12",
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),
-        directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+        directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
         Some(Deductions(
           studentLoans = Some(StudentLoans(
             uglDeductionAmount = Some(100.00),
@@ -105,7 +111,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     "return a successful result" when {
       "there is both hmrc expenses and customer expenses" which {
         "toRemove is equal to 'ALL'" in {
-          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
@@ -120,10 +126,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "ALL")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "ALL")
 
-          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
+          val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
 
           await(response) shouldBe Right()
         }
@@ -131,7 +137,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
         "toRemove is equal to 'CUSTOMER'" in {
-          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
@@ -146,10 +152,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
 
-          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)
+          val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)
 
           await(response) shouldBe Right()
         }
@@ -157,7 +163,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is hmrc data and no customer data" which {
         "toRemove is equal to 'HMRC-HELD'" in {
-          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, hmrcExpensesWithoutDateIgnored.expenses.getOrElse(Expenses()))
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, hmrcExpensesWithoutDateIgnored.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
@@ -172,10 +178,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "HMRC-HELD")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "HMRC-HELD")
 
-          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)
+          val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)
 
           await(response) shouldBe Right()
         }
@@ -183,7 +189,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is customer data and no hmrc data" which {
         "toRemove is equal to 'CUSTOMER'" in {
-          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+          val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
           verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
@@ -198,10 +204,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           ))
           ).toNrsPayloadModel))
 
-          mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-          mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
+          mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+          mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
 
-          val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
+          val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
 
           await(response) shouldBe Right()
         }
@@ -210,14 +216,14 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
     "returns an unsuccessful result" when {
       "there is no hmrc or customer data" in {
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, None), taxYear)
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, None), taxYear)
 
         await(response) shouldBe Right()
       }
 
       "the connector throws a Left" in {
-        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
         mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
 
@@ -233,16 +239,16 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         ))
         ).toNrsPayloadModel))
 
-        mockRefreshIncomeSourceResponseSuccess(taxYear, nino)
-        mockDeleteOrIgnoreExpensesError(nino, taxYear, "ALL")
+        mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+        mockDeleteOrIgnoreExpensesError(aUser.nino, taxYear, "ALL")
 
-        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
+        val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
 
         await(response) shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("CODE", "REASON")))
       }
 
       "incomeSourceConnector returns error" in {
-        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", nino, mtditid, customerExpenses.expenses.getOrElse(Expenses()))
+        val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
         mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
         verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
@@ -257,10 +263,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         ))
         ).toNrsPayloadModel))
 
-        mockRefreshIncomeSourceResponseError(taxYear, nino)
-        mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
+        mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
+        mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
 
-        val response = service.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
+        val response = underTest.deleteOrIgnoreExpenses(authorisationRequest.user, data(None, Some(customerExpenses)), taxYear)
 
         await(response) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
@@ -269,7 +275,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
   "calling performNrsSubmitPayload" should {
     "send the event from the model" in {
-
       verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
         businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
         jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
@@ -282,7 +287,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       ))
       ).toNrsPayloadModel))
 
-      await(service.performSubmitNrsPayload(authorisationRequest.user, priorData)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(authorisationRequest.user, priorData)) shouldBe Right()
     }
   }
 }

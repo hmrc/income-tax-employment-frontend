@@ -21,19 +21,19 @@ import models.redirects.ConditionalRedirect
 import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionFilter, Result}
-import utils.RedirectsMatcherUtils
+import utils.RedirectsMapper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class RedirectsFilterAction(redirectsMatcherUtils: RedirectsMatcherUtils,
-                                 controllerName: String,
+case class RedirectsFilterAction(redirectsMapper: RedirectsMapper,
+                                 clazz: Class[_],
                                  taxYear: Int,
                                  employmentId: String)
                                 (implicit ec: ExecutionContext) extends ActionFilter[UserSessionDataRequest] with Logging {
   override protected[actions] def executionContext: ExecutionContext = ec
 
   override protected[actions] def filter[A](input: UserSessionDataRequest[A]): Future[Option[Result]] = Future.successful {
-    val redirects = redirectsMatcherUtils.matchToRedirects(controllerName, taxYear, employmentId, input.employmentUserData.employment)
+    val redirects = redirectsMapper.mapToRedirects(clazz, taxYear, employmentId, input.employmentUserData.employment)
     val optionalRedirect = redirects.collectFirst {
       case ConditionalRedirect(condition, result, Some(hasPriorBenefits))
         if condition && hasPriorBenefits == input.employmentUserData.hasPriorBenefits => Redirect(result)

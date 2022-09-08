@@ -21,7 +21,6 @@ import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.AuthorisationRequest
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import play.api.libs.json.{JsString, Writes}
-import play.api.mvc.Request
 import play.api.test.FakeRequest
 import support.builders.models.UserBuilder.aUser
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,12 +31,13 @@ import scala.concurrent.Future
 
 class NrsServiceSpec extends UnitTest {
 
-  val connector: NrsConnector = mock[NrsConnector]
-  val service: NrsService = new NrsService(connector)
+  private val connector: NrsConnector = mock[NrsConnector]
 
-  implicit val writesObject: Writes[DecodedCreateNewEmploymentDetailsPayload] = (o: DecodedCreateNewEmploymentDetailsPayload) => JsString(o.toString)
+  private val underTest: NrsService = new NrsService(connector)
 
-  val payloadModel = DecodedCreateNewEmploymentDetailsPayload(
+  implicit private val writesObject: Writes[DecodedCreateNewEmploymentDetailsPayload] = (o: DecodedCreateNewEmploymentDetailsPayload) => JsString(o.toString)
+
+  private val payloadModel = DecodedCreateNewEmploymentDetailsPayload(
     employmentData = DecodedNewEmploymentData(
       employerName = Some("Name"),
       employerRef = Some("123/12345"),
@@ -57,43 +57,31 @@ class NrsServiceSpec extends UnitTest {
   )
 
   ".postNrsConnector" when {
-
     "there is user-agent, true client ip and port" should {
-
       "return the connector response" in {
-
         val expectedResult: NrsSubmissionResponse = Right()
-
         val headerCarrierWithTrueClientDetails = headerCarrierWithSession.copy(trueClientIp = Some("127.0.0.1"), trueClientPort = Some("80"))
 
         (connector.postNrsConnector(_: String, _: DecodedCreateNewEmploymentDetailsPayload)(_: HeaderCarrier, _: Writes[DecodedCreateNewEmploymentDetailsPayload]))
-          .expects(nino, payloadModel, headerCarrierWithTrueClientDetails.withExtraHeaders("mtditid" -> mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32", "clientIP" -> "127.0.0.1", "clientPort" -> "80"), writesObject)
+          .expects(aUser.nino, payloadModel, headerCarrierWithTrueClientDetails.withExtraHeaders("mtditid" -> aUser.mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32", "clientIP" -> "127.0.0.1", "clientPort" -> "80"), writesObject)
           .returning(Future.successful(expectedResult))
 
-        val request = AuthorisationRequest(aUser,FakeRequest().withHeaders("User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32"))
+        val request = AuthorisationRequest(aUser, FakeRequest().withHeaders("User-Agent" -> "Firefox v4.4543 / Android v3.42 / IOS v134.32"))
 
-        val result = await(service.submit(nino, payloadModel, mtditid, getTrueUserAgent(request))(headerCarrierWithTrueClientDetails, writesObject))
-
-        result shouldBe expectedResult
+        await(underTest.submit(aUser.nino, payloadModel, aUser.mtditid, getTrueUserAgent(request))(headerCarrierWithTrueClientDetails, writesObject)) shouldBe expectedResult
       }
     }
 
     "there isn't user-agent, true client ip and port" should {
-
       "return the connector response" in {
-
         val expectedResult: NrsSubmissionResponse = Right()
 
         (connector.postNrsConnector(_: String, _: DecodedCreateNewEmploymentDetailsPayload)(_: HeaderCarrier, _: Writes[DecodedCreateNewEmploymentDetailsPayload]))
-          .expects(nino, payloadModel, headerCarrierWithSession.withExtraHeaders("mtditid" -> mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "No user agent provided"), writesObject)
+          .expects(aUser.nino, payloadModel, headerCarrierWithSession.withExtraHeaders("mtditid" -> aUser.mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "No user agent provided"), writesObject)
           .returning(Future.successful(expectedResult))
 
-        val result = await(service.submit(nino, payloadModel, mtditid, getTrueUserAgent))
-
-        result shouldBe expectedResult
+        await(underTest.submit(aUser.nino, payloadModel, aUser.mtditid, getTrueUserAgent)) shouldBe expectedResult
       }
     }
-
   }
-
 }
