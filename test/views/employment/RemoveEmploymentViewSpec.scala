@@ -16,22 +16,23 @@
 
 package views.employment
 
-import models.{AuthorisationRequest, IncomeTaxUserData}
+import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import controllers.employment.routes._
-import utils.ViewUtils.dateFormatter
+import utils.ViewUtils.translatedDateFormatter
 import views.html.employment.RemoveEmploymentView
+import java.time.LocalDate
 
 class RemoveEmploymentViewSpec extends ViewUnitTest {
 
   private val employmentId: String = "employmentId"
   private val employerName: String = "maggie"
 
-  private val  appUrl = "/update-and-submit-income-tax-return/employment-income"
+  private val appUrl = "/update-and-submit-income-tax-return/employment-income"
   private val employmentSummaryUrl = s"$appUrl/$taxYearEOY/employment-summary"
 
 
@@ -194,9 +195,9 @@ class RemoveEmploymentViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val startDate = "2020-01-01"
-          val startDateFormatted = dateFormatter(startDate).get
+          val startDateFormatted = translatedDateFormatter(LocalDate.parse(startDate))
           val employerName = "apple"
-          val htmlFormat = underTest(taxYearEOY, employmentId, employerName , isHmrcEmployment = true, startDate )
+          val htmlFormat = underTest(taxYearEOY, employmentId, employerName, isHmrcEmployment = true, startDate)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
           welshToggleCheck(userScenario.isWelsh)
@@ -213,9 +214,9 @@ class RemoveEmploymentViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val startDate = "2020-01-01"
-          val startDateFormatted = dateFormatter(startDate).get
+          val startDateFormatted = translatedDateFormatter(LocalDate.parse(startDate))
           val employerName = "apple"
-          val htmlFormat = underTest(taxYearEOY, employmentId, employerName , isHmrcEmployment = true, startDate )
+          val htmlFormat = underTest(taxYearEOY, employmentId, employerName, isHmrcEmployment = true, startDate)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
           welshToggleCheck(userScenario.isWelsh)
