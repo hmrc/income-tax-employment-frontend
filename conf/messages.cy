@@ -232,7 +232,6 @@ employment.employerName.paragraph = Maeín rhaid i enwír cyflogwr fod yn 74 o g
 
 #################       Employment ref messages        ########################################
 
-payeRef.errors.empty = Nodwch gyfeirnod TWE
 payeRef.errors.wrongFormat = Nodwch gyfeirnod TWE yn y fformat cywir
 payeRef.heading = Beth yw cyfeirnod TWE {0}?
 payeRef.hint = Er enghraifft, 123/AB456
@@ -324,8 +323,6 @@ employment.didYouLeave.title.individual = A wnaethoch adael y cyflogwr hwn yn y 
 employment.payrollId.bullet3 = y cymeriadau arbennig: .,-()/=!"%&*;<>''+:\?
 employment.payrollId.error.incorrect.agent = Nodwch ID cyflogres eich cleient yn y fformat cywir
 employment.payrollId.error.incorrect.individual = Nodwch eich ID cyflogres yn y fformat cywir
-employment.payrollId.error.noEntry.agent = Nodwch ID cyflogres eich cleient
-employment.payrollId.error.noEntry.individual = Nodwch eich ID cyflogres
 employment.payrollId.error.tooMany.agent = Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai
 employment.payrollId.error.tooMany.individual = Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai
 employment.payrollId.forExample = Er enghraifft, 123456

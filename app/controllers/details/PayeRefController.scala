@@ -22,7 +22,6 @@ import controllers.details.routes._
 import controllers.employment.routes._
 import forms.details.PayeRefForm
 import models.AuthorisationRequest
-import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -83,19 +82,18 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payeRef: String)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateEmployerRef(request.user, taxYear, employmentId, employmentUserData, payeRef).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentDetails: EmploymentDetails,
+  private def getRedirectCall(employmentUserData: EmploymentUserData,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
+    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       DidYouLeaveEmployerController.show(taxYear, employmentId)

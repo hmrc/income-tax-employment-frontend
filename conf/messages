@@ -231,7 +231,6 @@ employment.employerName.paragraph = The employer name must be 74 characters or f
 
 #################       Employment ref messages        ########################################
 
-payeRef.errors.empty = Enter a PAYE reference
 payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 payeRef.heading = What’s the PAYE reference of {0}?
 payeRef.hint = For example, 123/AB456
@@ -323,8 +322,6 @@ employment.didYouLeave.title.individual = Did you leave this employer in the tax
 employment.payrollId.bullet3 = the special characters: .,-()/=!"%&*;<>''+:\?
 employment.payrollId.error.incorrect.agent = Enter your client’s payroll ID in the correct format
 employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
-employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
-employment.payrollId.error.noEntry.individual = Enter your payroll ID
 employment.payrollId.error.tooMany.agent = Your client’s payroll ID must be 38 characters or fewer
 employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
 employment.payrollId.forExample = For example, 123456

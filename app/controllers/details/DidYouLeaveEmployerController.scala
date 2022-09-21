@@ -22,7 +22,6 @@ import controllers.details.routes.{EmployerStartDateController, EmploymentDatesC
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
-import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -83,14 +82,16 @@ class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateDidYouLeaveQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentDetails: EmploymentDetails,
+  private def getRedirectCall(employmentUserData: EmploymentUserData,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
+    val employmentDetails = employmentUserData.employment.employmentDetails
+
+    if (employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else if (employmentDetails.didYouLeaveQuestion.contains(true)) {
       EmploymentDatesController.show(taxYear, employmentId)

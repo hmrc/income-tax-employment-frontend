@@ -42,106 +42,118 @@ class EmploymentDetailsSpec extends UnitTest
   private val encryptedTotalTaxToDate = EncryptedValue("encryptedTotalTaxToDate", "some-nonce")
   private val encryptedCurrentDataIsHmrcHeld = EncryptedValue("encryptedCurrentDataIsHmrcHeld", "some-nonce")
 
-  "EmploymentDetails.isSubmittable" should {
+  "EmploymentDetails.isSubmittable(...)" should {
     "return false" when {
-      "employerRef is not defined" in {
-        val underTest = anEmploymentDetails.copy(employerRef = None)
-
-        underTest.isSubmittable shouldBe false
-      }
-
-      "startDate is not defined" in {
+      "isPriorSubmission is true and startDate is not defined" in {
         val underTest = anEmploymentDetails.copy(startDate = None)
 
-        underTest.isSubmittable shouldBe false
+        underTest.isSubmittable(isPriorSubmission = true) shouldBe false
       }
 
-      "payrollId is not defined" in {
-        val underTest = anEmploymentDetails.copy(payrollId = None)
-
-        underTest.isSubmittable shouldBe false
-      }
-
-      "taxablePayToDate is not defined" in {
-        val underTest = anEmploymentDetails.copy(taxablePayToDate = None)
-
-        underTest.isSubmittable shouldBe false
-      }
-
-      "totalTaxToDate is not defined" in {
-        val underTest = anEmploymentDetails.copy(totalTaxToDate = None)
-
-        underTest.isSubmittable shouldBe false
-      }
-    }
-
-    "return true when employerRef, startDate, payrollId, taxablePayToDate and totalTaxToDate are defined" in {
-      val underTest = anEmploymentDetails.copy(
-        employerRef = Some("123/12345"),
-        startDate = Some("2020-11-11"),
-        payrollId = Some("12345678"),
-        taxablePayToDate = Some(55.99),
-        totalTaxToDate = Some(3453453.00)
-      )
-
-      underTest.isSubmittable shouldBe true
-    }
-  }
-
-  "EmploymentDetails.isFinished" should {
-    "return false" when {
-      "employerRef is None" in {
-        val underTest = anEmploymentDetails.copy(employerRef = None)
-
-        underTest.isFinished shouldBe false
-      }
-
-      "startDate is None" in {
+      "isPriorSubmission is false and startDate is not defined" in {
         val underTest = anEmploymentDetails.copy(startDate = None)
 
-        underTest.isFinished shouldBe false
+        underTest.isSubmittable(isPriorSubmission = false) shouldBe false
       }
 
-      "payrollId is None" in {
-        val underTest = anEmploymentDetails.copy(payrollId = None)
-
-        underTest.isFinished shouldBe false
-      }
-
-      "didYouLeaveQuestion is true and cessationDate is None" in {
-        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = None)
-
-        underTest.isFinished shouldBe false
-      }
-
-      "didYouLeaveQuestion is None" in {
-        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = None)
-
-        underTest.isFinished shouldBe false
-      }
-
-      "taxablePayToDate is None" in {
+      "isPriorSubmission is false and taxablePayToDate is not defined" in {
         val underTest = anEmploymentDetails.copy(taxablePayToDate = None)
 
-        underTest.isFinished shouldBe false
+        underTest.isSubmittable(isPriorSubmission = false) shouldBe false
       }
 
-      "totalTaxToDate is None" in {
+      "isPriorSubmission is false and totalTaxToDate is not defined" in {
         val underTest = anEmploymentDetails.copy(totalTaxToDate = None)
 
-        underTest.isFinished shouldBe false
+        underTest.isSubmittable(isPriorSubmission = false) shouldBe false
       }
     }
 
     "return true" when {
-      "all fields are populated and didYouLeaveQuestion is false" in {
-        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false), cessationDate = None)
+      "isPriorSubmission is true and startDate is defined" in {
+        val underTest = anEmploymentDetails.copy(
+          employerRef = None,
+          startDate = Some("2020-11-11"),
+          payrollId = None,
+          taxablePayToDate = None,
+          totalTaxToDate = None
+        )
 
-        underTest.isFinished shouldBe true
+        underTest.isSubmittable(isPriorSubmission = true) shouldBe true
       }
 
-      "all fields are populated" in {
-        anEmploymentDetails.isFinished shouldBe true
+      "isPriorSubmission is false and startDate is defined" in {
+        val underTest = anEmploymentDetails.copy(
+          employerRef = None,
+          startDate = Some("2020-11-11"),
+          payrollId = None
+        )
+
+        underTest.isSubmittable(isPriorSubmission = false) shouldBe true
+      }
+    }
+  }
+
+  "EmploymentDetails.isFinished(...)" should {
+    "return false" when {
+      "isPriorSubmission is true and startDate is None" in {
+        val underTest = anEmploymentDetails.copy(startDate = None)
+
+        underTest.isFinished(isPriorSubmission = true) shouldBe false
+      }
+
+      "isPriorSubmission is false and startDate is None" in {
+        val underTest = anEmploymentDetails.copy(startDate = None)
+
+        underTest.isFinished(isPriorSubmission = false) shouldBe false
+      }
+
+      "isPriorSubmission is true and didYouLeaveQuestion is true and cessationDate is None" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = None)
+
+        underTest.isFinished(isPriorSubmission = true) shouldBe false
+      }
+
+      "isPriorSubmission is false and isPriorSubmission is true and didYouLeaveQuestion is true and cessationDate is None" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(true), cessationDate = None)
+
+        underTest.isFinished(isPriorSubmission = false) shouldBe false
+      }
+
+      "isPriorSubmission is true and didYouLeaveQuestion is None" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = None)
+
+        underTest.isFinished(isPriorSubmission = true) shouldBe false
+      }
+
+      "isPriorSubmission is false and taxablePayToDate is None" in {
+        val underTest = anEmploymentDetails.copy(taxablePayToDate = None)
+
+        underTest.isFinished(isPriorSubmission = false) shouldBe false
+      }
+
+      "isPriorSubmission is false and totalTaxToDate is None" in {
+        val underTest = anEmploymentDetails.copy(totalTaxToDate = None)
+
+        underTest.isFinished(isPriorSubmission = false) shouldBe false
+      }
+    }
+
+    "return true" when {
+      "isPriorSubmission is true and startDate has value" in {
+        val underTest = anEmploymentDetails.copy(startDate = Some(s"2021-11-11"))
+
+        underTest.isFinished(isPriorSubmission = true) shouldBe true
+      }
+
+      "isPriorSubmission is false and all fields are populated and didYouLeaveQuestion is false" in {
+        val underTest = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false), cessationDate = None)
+
+        underTest.isFinished(isPriorSubmission = false) shouldBe true
+      }
+
+      "isPriorSubmission is false and all fields are populated" in {
+        anEmploymentDetails.isFinished(isPriorSubmission = false) shouldBe true
       }
     }
   }

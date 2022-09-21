@@ -37,23 +37,19 @@ case class EmploymentDetails(employerName: String,
                              totalTaxToDate: Option[BigDecimal] = None,
                              currentDataIsHmrcHeld: Boolean) {
 
-  lazy val isSubmittable: Boolean =
-    employerRef.isDefined &&
-      startDate.isDefined &&
-      payrollId.isDefined &&
+  def isSubmittable(isPriorSubmission: Boolean): Boolean =
+    if (isPriorSubmission) startDate.isDefined else startDate.isDefined &&
       taxablePayToDate.isDefined &&
       totalTaxToDate.isDefined
 
-  lazy val isFinished: Boolean = {
+  def isFinished(isPriorSubmission: Boolean): Boolean = {
     val cessationSectionFinished = didYouLeaveQuestion match {
       case Some(true) => cessationDate.isDefined
       case Some(false) => true
       case None => false
     }
 
-    employerRef.isDefined &&
-      startDate.isDefined &&
-      payrollId.isDefined &&
+    if (isPriorSubmission) startDate.isDefined && cessationSectionFinished else startDate.isDefined &&
       taxablePayToDate.isDefined &&
       totalTaxToDate.isDefined &&
       cessationSectionFinished

@@ -29,6 +29,7 @@ import utils.PageUrls.{checkYourDetailsUrl, fullUrl, overviewUrl, payrollIdUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   private val employmentId = "001"
@@ -104,13 +105,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" when {
-    "return a bad request an empty form is submitted" which {
+    "return a bad request when form validation fails" which {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(cya())
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), Map("payrollId" -> ""),
+        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), Map("payrollId" -> "a" * 39),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
