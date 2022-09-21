@@ -27,10 +27,10 @@ import java.util.Base64
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.{Cipher, IllegalBlockSizeException, KeyGenerator, NoSuchPaddingException}
 
-class SecureGCMCipherSpec extends UnitTest {
+class SecureGCMCipherSpec extends support.UnitTest {
   SharedMetricRegistries.clear()
 
-  private implicit lazy val appConfig: AppConfig = mockAppConfig
+  private implicit lazy val appConfig: AppConfig = new MockAppConfig().config()
 
   private val underTest = new SecureGCMCipher
 

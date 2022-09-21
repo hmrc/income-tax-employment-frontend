@@ -21,11 +21,11 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
 import play.api.test.Helpers._
 import play.api.{Configuration, Environment}
+import support.ControllerUnitTest
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.UnitTest
 
-class LanguageSwitchControllerSpec extends UnitTest with GuiceOneAppPerSuite {
+class LanguageSwitchControllerSpec extends ControllerUnitTest with GuiceOneAppPerSuite {
 
   private val env = Environment.simple()
   private val configuration = Configuration.load(env)

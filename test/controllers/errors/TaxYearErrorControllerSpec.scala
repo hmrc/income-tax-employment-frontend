@@ -19,15 +19,15 @@ package controllers.errors
 import common.SessionValues
 import play.api.http.Status.OK
 import play.api.test.Helpers.contentType
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTest
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, Helpers}
+import support.ServiceUnitTest
 import views.html.errors.TaxYearErrorTemplate
 
-class TaxYearErrorControllerSpec extends UnitTest with DefaultAwaitTimeout {
+class TaxYearErrorControllerSpec extends ServiceUnitTest with DefaultAwaitTimeout {
 
   private val pageView = app.injector.instanceOf[TaxYearErrorTemplate]
 
-  private val underTest = new TaxYearErrorController(pageView)(mockMessagesControllerComponents, mockAppConfig)
+  private val underTest = new TaxYearErrorController(pageView)(Helpers.stubMessagesControllerComponents(), appConfig)
 
   ".show()" should {
     "return an OK response .show() is called" in {

@@ -17,7 +17,7 @@
 package models.expenses
 
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class DecodedDeleteEmploymentExpensesSpec extends UnitTest {
 

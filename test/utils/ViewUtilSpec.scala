@@ -22,7 +22,7 @@ import utils.ViewUtils.ariaVisuallyHiddenText
 
 import java.time.LocalDate
 
-class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
+class ViewUtilSpec extends support.UnitTest with GuiceOneAppPerSuite with ViewTest {
 
   "calling method convertBoolToYesNo" should {
     "return yes when employment field is true" in {

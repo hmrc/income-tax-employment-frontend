@@ -30,6 +30,7 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import support.ServiceUnitTest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -38,12 +39,12 @@ import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserD
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import support.mocks._
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.{InYearUtil, UnitTest}
+import utils.{Clock, InYearUtil, UnitTestClock}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import scala.concurrent.Future
 
-class EmploymentSessionServiceSpec extends UnitTest
+class EmploymentSessionServiceSpec extends ServiceUnitTest
   with MockIncomeTaxUserDataConnector
   with MockEmploymentUserDataRepository
   with MockCreateUpdateEmploymentDataConnector
@@ -57,6 +58,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   private val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
   private val mockInYearUtil: InYearUtil = app.injector.instanceOf[InYearUtil]
+  private val testClock: Clock = UnitTestClock
 
   private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
@@ -72,7 +74,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     mockCreateUpdateEmploymentDataConnector,
     testClock,
     mockInYearUtil
-  )(mockAppConfig, mockExecutionContext)
+  )(appConfig, ec)
 
   private val underTestWithMimicking: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
@@ -84,7 +86,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     mockCreateUpdateEmploymentDataConnector,
     testClock,
     mockInYearUtil
-  )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), mockExecutionContext)
+  )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), ec)
 
   private val anyResult = Ok
 

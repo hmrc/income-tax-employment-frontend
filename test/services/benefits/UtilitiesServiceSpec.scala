@@ -18,18 +18,18 @@ package services.benefits
 
 import models.User
 import models.benefits.UtilitiesAndServicesModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
+class UtilitiesServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
   private val user: User = authorisationRequest.user
 
-  private val underTest = new UtilitiesService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new UtilitiesService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update utilities model and set section question to true when true value passed" in {

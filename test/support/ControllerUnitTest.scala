@@ -16,11 +16,12 @@
 
 package support
 
+import common.SessionValues
 import config.AppConfig
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.Helpers.stubMessagesControllerComponents
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, Injecting}
 import support.mocks.MockAppConfig
 
 import scala.concurrent.ExecutionContext
@@ -30,9 +31,15 @@ trait ControllerUnitTest extends UnitTest
   with GuiceOneAppPerSuite
   with Injecting
   with TaxYearHelper
-  with FakeRequestHelper {
+  with FakeRequestHelper
+  with MessageHelper {
 
   protected implicit val cc: MessagesControllerComponents = stubMessagesControllerComponents()
   protected implicit val appConfig: AppConfig = new MockAppConfig().config()
   protected implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
+
+  protected override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+
 }

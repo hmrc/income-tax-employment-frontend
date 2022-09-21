@@ -18,15 +18,15 @@ package audit
 
 import play.api.Configuration
 import play.api.libs.json.Json
+import support.ServiceUnitTest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import utils.UnitTest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuditServiceSpec extends UnitTest {
+class AuditServiceSpec extends ServiceUnitTest {
 
   private trait Test {
     val mockedAppName = "some-app-name"

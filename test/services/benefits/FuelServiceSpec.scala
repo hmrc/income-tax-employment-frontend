@@ -17,17 +17,17 @@
 package services.benefits
 
 import models.benefits.CarVanFuelModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class FuelServiceSpec extends UnitTest with MockEmploymentSessionService {
+class FuelServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new FuelService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new FuelService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update fuel model and set section question to true when true value passed" in {

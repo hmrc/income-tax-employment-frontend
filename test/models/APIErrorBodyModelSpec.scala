@@ -18,7 +18,7 @@ package models
 
 import play.api.http.Status.SERVICE_UNAVAILABLE
 import play.api.libs.json.{JsObject, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class APIErrorBodyModelSpec extends UnitTest {
   val model: APIErrorBodyModel = new APIErrorBodyModel(

@@ -17,9 +17,9 @@
 package audit
 
 import play.api.libs.json.Json
-import utils.UnitTest
+import support.{UnitTest, TaxYearHelper}
 
-class AmendEmploymentExpensesUpdateAuditSpec extends UnitTest {
+class AmendEmploymentExpensesUpdateAuditSpec extends UnitTest with TaxYearHelper {
 
   "writes" when {
     "passed a Amend an EmploymentExpenses model" should {

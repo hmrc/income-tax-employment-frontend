@@ -16,14 +16,8 @@
 
 package support
 
-trait TaxYearHelper {
+import support.mocks.MockAuthorisedAction
 
-  protected val taxYear: Int = TaxYearUtils.taxYear
-  protected val taxYearEOY: Int = TaxYearUtils.taxYearEOY
-
-  protected val taxYearEndOfYearMinusOne: Int = taxYearEOY - 1
-
-  protected val validTaxYearListSingle: Seq[Int] = Seq(taxYear)
-  protected val validTaxYearList: Seq[Int] = Seq(taxYearEndOfYearMinusOne, taxYearEOY, taxYear)
-  protected val invalidTaxYear: Int = taxYear + 999
+class TestWithAuth(isAgent: Boolean = false, nino: Option[String] = Some("AA123456A")) extends MockAuthorisedAction{
+  if (isAgent) mockAuthAsAgent() else mockAuth(nino)
 }

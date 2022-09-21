@@ -17,21 +17,22 @@
 package services.studentLoans
 
 import audit.{AmendStudentLoansDeductionsUpdateAudit, CreateNewStudentLoansDeductionsAudit, ViewStudentLoansDeductionsAudit}
+import config.AppConfig
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import services.EmploymentSessionService
+import support.ServiceUnitTest
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockNrsService}
+import support.mocks._
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.UnitTest
 
-class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService
+class StudentLoansCYAServiceSpec extends ServiceUnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService
   with MockErrorHandler {
 
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
-
-  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockNrsService, mockExecutionContext)
+  val mockAppConfig: AppConfig = new MockAppConfig().config()
+  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockNrsService, ec)
 
   lazy val employerId = "1234567890"
 

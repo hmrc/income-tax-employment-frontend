@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package utils
+package support
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.test.FakeRequest
 
-class DateTimeUtilSpec extends support.UnitTest with GuiceOneAppPerSuite with TaxYearHelper {
+trait MessageHelper extends UnitTest with GuiceOneAppPerSuite {
 
-  "calling the DateTimeUtil object" when {
-    "a valid timestamp" must {
-      "return a zoned date time" in {
-        val time = Some(s"${taxYearEOY-1}-01-04T05:01:01Z")
-        DateTimeUtil.getSubmittedOnDateTime(time).get.toString shouldBe s"${taxYearEOY-1}-01-04T05:01:01Z"
-      }
+  protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  protected implicit val defaultMessages: Messages = messagesApi.preferred(FakeRequest().withHeaders())
+  protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
-      "return an exception when its not a valid timestamp" in {
-        val time = Some("time")
-        DateTimeUtil.getSubmittedOnDateTime(time) shouldBe None
-      }
-    }
-  }
+  protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
+
 }

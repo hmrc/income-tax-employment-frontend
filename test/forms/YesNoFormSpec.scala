@@ -19,7 +19,7 @@ package forms
 import forms.YesNoForm.{no => nope, _}
 
 import play.api.data.{Form, FormError}
-import utils.UnitTest
+import support.UnitTest
 
 class YesNoFormSpec extends UnitTest {
 

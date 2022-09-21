@@ -16,7 +16,7 @@
 
 package filters
 
-import utils.UnitTest
+import support.UnitTest
 
 class InputFiltersSpec extends UnitTest with InputFilters {
 

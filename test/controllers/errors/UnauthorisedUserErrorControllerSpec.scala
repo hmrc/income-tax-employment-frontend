@@ -19,7 +19,8 @@ package controllers.errors
 import play.api.http.Status.UNAUTHORIZED
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.{UnitTest, ViewTest}
+import utils.ViewTest
+import support.UnitTest
 import views.html.errors.UnauthorisedUserErrorPageView
 
 class UnauthorisedUserErrorControllerSpec extends UnitTest with DefaultAwaitTimeout with ViewTest {

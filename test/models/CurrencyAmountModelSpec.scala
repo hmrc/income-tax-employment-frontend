@@ -17,7 +17,7 @@
 package models
 
 import play.api.libs.json.{JsObject, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class CurrencyAmountModelSpec extends UnitTest {
 

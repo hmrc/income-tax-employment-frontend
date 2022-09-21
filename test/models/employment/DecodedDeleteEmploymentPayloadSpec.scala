@@ -19,9 +19,9 @@ package models.employment
 import models.benefits.Benefits
 import models.expenses.Expenses
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.{TaxYearHelper, UnitTest}
 
-class DecodedDeleteEmploymentPayloadSpec extends UnitTest {
+class DecodedDeleteEmploymentPayloadSpec extends UnitTest with TaxYearHelper{
 
   "writes" when {
     "passed a valid DeleteEmploymentPayload" should {

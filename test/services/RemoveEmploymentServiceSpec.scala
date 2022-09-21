@@ -22,11 +22,11 @@ import models.expenses.Expenses
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import services.employment.RemoveEmploymentService
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.mocks._
-import utils.UnitTest
 
-class RemoveEmploymentServiceSpec extends UnitTest
+class RemoveEmploymentServiceSpec extends ServiceUnitTest
   with MockDeleteOrIgnoreEmploymentConnector
   with MockIncomeSourceConnector
   with MockAuditService
@@ -40,7 +40,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
     mockDeleteOrIgnoreExpensesService,
     mockAuditService,
     mockNrsService,
-    mockExecutionContext
+    ec
   )
 
   private val employmentId: String = "001"

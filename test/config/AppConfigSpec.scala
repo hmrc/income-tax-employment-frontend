@@ -16,15 +16,15 @@
 
 package config
 
+import support.ServiceUnitTest
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.UnitTest
 
-class AppConfigSpec extends UnitTest {
+class AppConfigSpec extends ServiceUnitTest {
 
   private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   private val appUrl = "http://localhost:9308"
-  private val appConfig = new AppConfig(mockServicesConfig)
+  override val appConfig = new AppConfig(mockServicesConfig)
 
   (mockServicesConfig.getString(_: String)).expects("microservice.services.bas-gateway-frontend.url").returns("http://bas-gateway-frontend:9553")
 

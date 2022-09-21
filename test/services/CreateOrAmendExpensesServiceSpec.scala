@@ -27,14 +27,14 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.mocks.MockCreateOrAmendExpensesConnector
-import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import scala.concurrent.Future
 
-class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendExpensesConnector {
+class CreateOrAmendExpensesServiceSpec extends ServiceUnitTest with MockCreateOrAmendExpensesConnector {
 
   private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -47,7 +47,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
   private val underTest: CreateOrAmendExpensesService = new CreateOrAmendExpensesService(
     mockCreateOrAmendExpensesConnector,
     errorHandler,
-    mockExecutionContext
+    ec
   )
 
   private val expensesViewModel: ExpensesViewModel = ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(100.11),

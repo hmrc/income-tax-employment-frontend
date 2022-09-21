@@ -17,17 +17,17 @@
 package services.benefits
 
 import models.benefits.AssetsModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
+class AssetsServiceSpec  extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new AssetsService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new AssetsService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update assets model and set section question to true when true value passed" in {

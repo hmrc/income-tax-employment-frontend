@@ -16,12 +16,20 @@
 
 package models.requests
 
+import models.AuthorisationRequest
 import models.employment.EmploymentExpenses
 import models.expenses.Expenses
 import play.api.libs.json.Json
-import utils.UnitTest
+import play.api.mvc.AnyContent
+import support.{FakeRequestHelper, TaxYearHelper, UnitTest}
+import support.builders.models.employment.EmploymentExpensesBuilder
+import uk.gov.hmrc.auth.core.AffinityGroup
 
-class CreateUpdateExpensesRequestSpec extends UnitTest {
+class CreateUpdateExpensesRequestSpec extends UnitTest with FakeRequestHelper with TaxYearHelper {
+
+  protected val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+  protected lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString), fakeRequest)
 
   val defaultExpenses: Expenses = Expenses(
     businessTravelCosts = Some(150),
@@ -37,7 +45,7 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
   val defaultModel: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
     defaultExpenses)
 
-  val defaultPriorCustomerEmploymentExpenses: EmploymentExpenses = employmentExpenses.copy(
+  val defaultPriorCustomerEmploymentExpenses: EmploymentExpenses = EmploymentExpensesBuilder.anEmploymentExpenses.copy(
     expenses = Some(defaultExpenses.copy(
       businessTravelCosts = Some(15),
       jobExpenses = Some(10),
@@ -142,7 +150,7 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
 
     "some prior expenses are provided " in {
 
-      val priorCustomerEmploymentExpenses = employmentExpenses.copy(
+      val priorCustomerEmploymentExpenses = defaultPriorCustomerEmploymentExpenses.copy(
         expenses = Some(defaultExpenses.copy(
           businessTravelCosts = Some(15),
           jobExpenses = Some(10),

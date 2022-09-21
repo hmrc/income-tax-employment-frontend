@@ -16,13 +16,13 @@
 
 package services.studentLoans
 
+import support.ServiceUnitTest
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService {
+class StudentLoansServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 

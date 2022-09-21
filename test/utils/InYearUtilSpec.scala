@@ -25,7 +25,7 @@ import support.mocks.MockAppConfig
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class InYearUtilSpec extends UnitTest with TestTaxYearHelper {
+class InYearUtilSpec extends support.ServiceUnitTest with support.TaxYearHelper {
 
   private val currentYear: Int = taxYear
   private val month4: Int = 4
@@ -72,14 +72,14 @@ class InYearUtilSpec extends UnitTest with TestTaxYearHelper {
         val result = inYearAction.notInYear(futureTaxYear, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(futureTaxYear))
+        header(HeaderNames.LOCATION, result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(futureTaxYear))
       }
 
       "return redirect to incomeTaxSubmissionOverview page when the requested tax year is in year (2021)" in {
         val result = inYearAction.notInYear(2021, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(currentYear))
+        header(HeaderNames.LOCATION, result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(currentYear))
       }
 
       Seq(2018, 2019, 2020).foreach { previousTaxYear =>
@@ -100,19 +100,19 @@ class InYearUtilSpec extends UnitTest with TestTaxYearHelper {
         val result = inYearAction.notInYear(futureTaxYear, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(futureTaxYear))
+        header(HeaderNames.LOCATION, result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(futureTaxYear))
       }
 
       "return redirect to incomeTaxSubmissionOverview page when the requested tax year is in year (2022)" in {
         val result = inYearAction.notInYear(currentYear, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER
-        header(HeaderNames.LOCATION, result) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(currentYear))
+        header(HeaderNames.LOCATION, result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(currentYear))
       }
 
       "return redirect to incomeTaxSubmissionOverview page when the requested tax year is not in year (2021) and employmentEOYEnabled is false" in {
-        implicit val mockAppConfig: AppConfig = new MockAppConfig().config(isEmploymentEOYEnabled = false)
-        val underTest = new InYearUtil
+        val mockAppConfig: AppConfig = new MockAppConfig().config(isEmploymentEOYEnabled = false)
+        val underTest = new InYearUtil()(mockAppConfig)
         val result = underTest.notInYear(currentYear, currentDate)(block)
 
         status(result) shouldBe SEE_OTHER

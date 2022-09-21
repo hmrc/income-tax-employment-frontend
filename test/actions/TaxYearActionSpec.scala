@@ -20,17 +20,13 @@ import common.SessionValues
 import config.AppConfig
 import models.{AuthorisationRequest, User}
 import play.api.http.Status.SEE_OTHER
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
+import support.ServiceUnitTest
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.{TestTaxYearHelper, UnitTest}
 
-class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
-
-  private val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+class TaxYearActionSpec extends ServiceUnitTest  {
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
-  implicit lazy val cc: MessagesApi = mockControllerComponents.messagesApi
 
   def taxYearAction(taxYear: Int, reset: Boolean = true): TaxYearAction = new TaxYearAction(taxYear, reset)
 

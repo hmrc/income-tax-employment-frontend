@@ -21,7 +21,7 @@ import models.{APIErrorBodyModel, APIErrorModel, APIErrorsBodyModel}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
-import utils.UnitTest
+import support.UnitTest
 
 class APIParserSpec extends UnitTest {
 

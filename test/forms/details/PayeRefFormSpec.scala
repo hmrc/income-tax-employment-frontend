@@ -17,7 +17,7 @@
 package forms.details
 
 import play.api.data.{Form, FormError}
-import utils.UnitTest
+import support.UnitTest
 
 class PayeRefFormSpec extends UnitTest {
 

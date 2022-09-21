@@ -22,14 +22,14 @@ import models.AuthorisationRequest
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import play.api.libs.json.{JsString, Writes}
 import play.api.test.FakeRequest
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.RequestUtils.getTrueUserAgent
-import utils.UnitTest
 
 import scala.concurrent.Future
 
-class NrsServiceSpec extends UnitTest {
+class NrsServiceSpec extends ServiceUnitTest {
 
   private val connector: NrsConnector = mock[NrsConnector]
 

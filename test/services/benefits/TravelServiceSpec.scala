@@ -17,17 +17,17 @@
 package services.benefits
 
 import models.benefits.TravelEntertainmentModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class TravelServiceSpec extends UnitTest with MockEmploymentSessionService {
+class TravelServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new TravelService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new TravelService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update travel model and set section question to true when true value passed" in {

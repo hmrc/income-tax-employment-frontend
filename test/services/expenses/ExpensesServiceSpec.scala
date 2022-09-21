@@ -17,15 +17,15 @@
 package services.expenses
 
 import models.expenses.ExpensesViewModel
+import support.ServiceUnitTest
 import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserDataWithBenefits
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
+class ExpensesServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
-  private val underTest = new ExpensesService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new ExpensesService(mockEmploymentSessionService, ec)
 
   "updateClaimingEmploymentExpenses" should {
     "update expenses model and set claimingEmploymentExpenses to true when true value passed" in {

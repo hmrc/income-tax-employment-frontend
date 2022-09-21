@@ -22,9 +22,9 @@ import support.builders.models.employment.EmploymentExpensesBuilder.anEmployment
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.expenses.ExpensesBuilder.anExpenses
-import utils.UnitTest
+import support.{TaxYearHelper, UnitTest}
 
-class AllEmploymentDataSpec extends UnitTest {
+class AllEmploymentDataSpec extends UnitTest with TaxYearHelper {
 
   private val employmentId = "some-employment-id"
 

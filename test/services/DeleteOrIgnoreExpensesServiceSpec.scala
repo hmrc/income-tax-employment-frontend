@@ -21,11 +21,11 @@ import models.employment._
 import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.mocks._
-import utils.UnitTest
 
-class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
+class DeleteOrIgnoreExpensesServiceSpec extends ServiceUnitTest
   with MockDeleteOrIgnoreExpensesConnector
   with MockIncomeSourceConnector
   with MockNrsService
@@ -37,7 +37,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     mockIncomeSourceConnector,
     mockAuditService,
     mockNrsService,
-    mockExecutionContext)
+    ec)
 
   private val hmrcExpensesWithoutDateIgnored =
     EmploymentExpenses(

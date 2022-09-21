@@ -17,17 +17,17 @@
 package services.benefits
 
 import models.benefits.IncomeTaxAndCostsModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
+class IncomeServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new IncomeService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new IncomeService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update income model and set section question to true when true value passed" in {

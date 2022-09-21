@@ -17,17 +17,17 @@
 package services.benefits
 
 import models.benefits.BenefitsViewModel
+import support.ServiceUnitTest
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
+class BenefitsServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new BenefitsService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new BenefitsService(mockEmploymentSessionService, ec)
 
   "updateIsBenefitsReceived" should {
     "update benefits model when questionValue is true" when {

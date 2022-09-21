@@ -23,12 +23,12 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import services.ExpensesRedirectService._
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
-import utils.UnitTest
 
 import scala.concurrent.Future
 
-class ExpensesRedirectServiceSpec extends UnitTest {
+class ExpensesRedirectServiceSpec extends ServiceUnitTest {
 
   private val result = Future.successful(Ok("OK"))
 

@@ -19,6 +19,7 @@ package services
 import audit.UnignoreEmploymentAudit
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
+import support.ServiceUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.employment.DeductionsBuilder.aDeductions
@@ -26,9 +27,8 @@ import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEm
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.UnignoreEmploymentNRSModelBuilder.anUnignoreEmploymentNRSModel
 import support.mocks._
-import utils.UnitTest
 
-class UnignoreEmploymentServiceSpec extends UnitTest
+class UnignoreEmploymentServiceSpec extends ServiceUnitTest
   with MockUnignoreEmploymentConnector
   with MockAuditService
   with MockNrsService {
@@ -37,7 +37,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
     mockUnignoreEmploymentConnector,
     mockAuditService,
     mockNrsService,
-    mockExecutionContext
+    ec
   )
 
   ".unignoreEmployment" should {

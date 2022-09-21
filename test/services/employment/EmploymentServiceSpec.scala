@@ -17,16 +17,16 @@
 package services.employment
 
 import models.employment.EmploymentDate
+import support.ServiceUnitTest
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
 
-class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
+class EmploymentServiceSpec extends ServiceUnitTest with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new EmploymentService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new EmploymentService(mockEmploymentSessionService, ec)
 
   "updateEmployerRef" should {
     "set employerRef" in {
