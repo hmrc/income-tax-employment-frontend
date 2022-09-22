@@ -21,7 +21,7 @@ import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
 import controllers.details.routes.EmployerNameController
 import controllers.employment.routes.SelectEmployerController
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -50,7 +50,7 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
     } else {
       val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
-      val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
+      val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq[EmploymentSource]()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq[EmploymentSource]())
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined
 

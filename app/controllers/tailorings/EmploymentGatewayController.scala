@@ -19,9 +19,12 @@ package controllers.tailorings
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
 import forms.{FormUtils, YesNoForm}
+import models.IncomeTaxUserData
+import models.employment.AllEmploymentData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.tailorings.EmploymentGatewayView
@@ -31,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentGatewayController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
+                                            employmentSessionService: EmploymentSessionService,
                                             view: EmploymentGatewayView,
                                             errorHandler: ErrorHandler)
                                            (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
@@ -52,18 +56,23 @@ class EmploymentGatewayController @Inject()(mcc: MessagesControllerComponents,
       form(request.user.isAgent).bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear))),
         yesNo => {
-          if(yesNo) {
-            Future(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
+          employmentSessionService.getPriorData(request.user, taxYear).map {
+            case Left(error) => None
+            case Right(allEmploymentData) => allEmploymentData.employment
+              if (allEmploymentData.employment.isDefined && !yesNo) {
+                deletetAndExcludeData()
+              }
           }
-          else {
-            Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          }
-        }
+          Future(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
+            }
       )
-    }
-    else {
+          } else {
       Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
+
   }
+
+  private def deletetAndExcludeData() = ???
+
 
 }
