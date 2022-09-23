@@ -41,7 +41,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
                                        inYearAction: InYearUtil,
                                        errorHandler: ErrorHandler,
                                        employmentSessionService: EmploymentSessionService)
-                                       (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                      (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
@@ -106,6 +106,6 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else PayeRefController.show(taxYear, employmentId)
+    if (employmentDetails.isFinished(false)) CheckEmploymentDetailsController.show(taxYear, employmentId) else PayeRefController.show(taxYear, employmentId)
   }
 }

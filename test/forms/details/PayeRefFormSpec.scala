@@ -17,74 +17,41 @@
 package forms.details
 
 import play.api.data.{Form, FormError}
-import utils.UnitTest
+import support.UnitTest
 
 class PayeRefFormSpec extends UnitTest {
 
-  private val payeRefForm: Form[String] = PayeRefForm.payeRefForm
-  private val payeRef = "payeRef"
+  private lazy val validPayeRef = List("123/AA12345", "123/AA1234", "123/AA123456", "123/AAAAAAAA", "123/A")
+  private lazy val invalidPayeRefs = List("123AA12345", "A11/AA123456", "123/AA1234567890", "123/", "12/AA12345")
 
-  private lazy val validPayeRef = List("123/AA12345", "123/AA1234", "123/AA123456","123/AAAAAAAA", "123/A")
-  private lazy val invalidPayeRefs = List("123AA12345",  "A11/AA123456", "123/AA1234567890", "123/", "12/AA12345")
-  private lazy val testEmpty = ""
+  private val underTest: Form[String] = PayeRefForm.payeRefForm
 
+  ".payeRefForm" should {
+    "allow empty form" in {
+      val emptyFormData = Map[String, String]().empty
 
-  "PayeRefFormSpec" should {
-    "as an individual" should {
-      "correctly validate a name" when {
-        "a valid name is entered" in {
-          validPayeRef.foreach { ref =>
-            val testInput = Map(payeRef -> ref)
-            val expected = ref
-            val actual = payeRefForm.bind(testInput).value
+      underTest.bind(emptyFormData).errors shouldBe Seq.empty
+    }
 
-            actual shouldBe Some(expected)
-          }
-        }
-      }
+    "allow empty field" in {
+      val emptyFieldFormData = Map(PayeRefForm.payeRef -> "")
 
-      "invalidate a name in the incorrect format" in {
-        invalidPayeRefs.foreach { ref =>
-          val testInput = Map(payeRef -> ref)
-          val invalidLengthTest = payeRefForm.bind(testInput)
+      underTest.bind(emptyFieldFormData).errors shouldBe Seq.empty
+    }
 
-          invalidLengthTest.errors should contain(FormError(payeRef, "payeRef.errors.wrongFormat"))
-        }
-      }
+    "allow valid PAYE reference" in {
+      validPayeRef.foreach { payeReference =>
+        val formData = Map(PayeRefForm.payeRef -> payeReference)
 
-      "invalidate an empty name" in {
-        val testInput = Map(payeRef -> testEmpty)
-        val emptyTest = payeRefForm.bind(testInput)
-
-        emptyTest.errors should contain(FormError(payeRef, "payeRef.errors.empty"))
+        underTest.bind(formData).errors shouldBe Seq.empty
       }
     }
 
-    "as an agent" should {
-      "correctly validate a name" when {
-        "a valid name is entered" in {
-          validPayeRef.foreach { ref =>
-            val testInput = Map(payeRef -> ref)
-            val expected = ref
-            val actual = payeRefForm.bind(testInput).value
+    "contain error when PAYE reference is invalid" in {
+      invalidPayeRefs.foreach { payeReference =>
+        val formData = Map(PayeRefForm.payeRef -> payeReference)
 
-            actual shouldBe Some(expected)
-          }
-        }
-      }
-
-      "invalidate a name in the incorrect format" in {
-        invalidPayeRefs.foreach { ref =>
-          val testInput = Map(payeRef -> ref)
-          val invalidLengthTest = payeRefForm.bind(testInput)
-          invalidLengthTest.errors should contain(FormError(payeRef, "payeRef.errors.wrongFormat"))
-        }
-      }
-
-      "invalidate an empty name" in {
-        val testInput = Map(payeRef -> testEmpty)
-        val emptyTest = payeRefForm.bind(testInput)
-        emptyTest.errors should contain(FormError(payeRef, "payeRef.errors.empty"))
+        underTest.bind(formData).errors should contain(FormError(PayeRefForm.payeRef, "payeRef.errors.wrongFormat"))
       }
     }
   }

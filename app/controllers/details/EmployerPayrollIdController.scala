@@ -22,7 +22,6 @@ import controllers.details.routes.EmployerPayAmountController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmployerPayrollIdForm
 import models.AuthorisationRequest
-import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -80,14 +79,14 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updatePayrollId(request.user, taxYear, employmentId, employmentUserData, payrollId).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentDetails: EmploymentDetails,
+  private def getRedirectCall(employmentUserData: EmploymentUserData,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
+    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       EmployerPayAmountController.show(taxYear, employmentId)

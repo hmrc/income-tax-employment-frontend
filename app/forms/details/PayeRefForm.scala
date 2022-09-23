@@ -19,23 +19,18 @@ package forms.details
 import filters.InputFilters
 import forms.validation.StringConstraints.validateChar
 import forms.validation.mappings.MappingUtil.trimmedText
-import forms.validation.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.validation.Constraint
-import play.api.data.validation.Constraints.nonEmpty
 
 object PayeRefForm extends InputFilters {
 
-  private val payeRef: String = "payeRef"
-  private val charRegex = "^\\d{3}\\/[A-Za-z0-9 ]{1,10}$"
+  val payeRef: String = "payeRef"
 
-  private val notEmpty: Constraint[String] = nonEmpty(errorMessage = "payeRef.errors.empty")
+  private val charRegex = "^$|^\\d{3}\\/[A-Za-z0-9 ]{1,10}$"
 
   private val validateFormat: Constraint[String] = validateChar(charRegex)("payeRef.errors.wrongFormat")
 
   def payeRefForm: Form[String] = Form(
-    payeRef -> trimmedText.transform[String](filter, identity).verifying(
-      notEmpty andThen validateFormat
-    )
+    payeRef -> trimmedText.transform[String](filter, identity).verifying(validateFormat)
   )
 }

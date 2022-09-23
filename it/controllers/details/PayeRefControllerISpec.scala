@@ -16,6 +16,7 @@
 
 package controllers.details
 
+import forms.details.PayeRefForm
 import models.details.EmploymentDetails
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
@@ -23,10 +24,10 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
-import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
@@ -124,26 +125,13 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   ".submit" when {
-    "return a bad request when a form is submitted with no input" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        insertCyaData(cya())
-        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map[String, String]())
-      }
-
-      "has an BAD_REQUEST status" in {
-        result.status shouldBe BAD_REQUEST
-      }
-    }
-
     "return a bad request when the input is in incorrect format" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(cya())
         urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)),
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> ("123/abc " + employmentId + "<Q>")))
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map(PayeRefForm.payeRef -> ("123/abc " + employmentId + "<Q>")))
       }
 
       "has an BAD_REQUEST status" in {
@@ -156,7 +144,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(cya())
-        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> payeRef))
+        val form = Map(PayeRefForm.payeRef -> payeRef)
+        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
       }
 
       "has an SEE_OTHER status" in {

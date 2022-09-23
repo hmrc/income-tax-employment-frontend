@@ -27,7 +27,7 @@ import support.ViewUnitTest
 import views.html.details.EmployerPayrollIdView
 
 class EmployerPayrollIdViewSpec extends ViewUnitTest {
-  private val inputName: String = "payrollId"
+
   private val employmentId = "001"
 
   object Selectors {
@@ -49,7 +49,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedTitle: String
     val expectedErrorTitle: String
     val expectedH1: String
-    val emptyErrorText: String
     val wrongFormatErrorText: String
     val tooLongErrorText: String
     val paragraph1: String
@@ -87,7 +86,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedTitle: String = "What’s your payroll ID for this employment?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedH1: String = "What’s your payroll ID for this employment?"
-    val emptyErrorText: String = "Enter your payroll ID"
     val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
     val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
     val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
@@ -98,7 +96,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedH1: String = "What’s your client’s payroll ID for this employment?"
-    val emptyErrorText: String = "Enter your client’s payroll ID"
     val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
     val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
     val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
@@ -109,7 +106,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedTitle: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedH1: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
-    val emptyErrorText: String = "Nodwch eich ID cyflogres"
     val wrongFormatErrorText: String = "Nodwch eich ID cyflogres yn y fformat cywir"
     val tooLongErrorText: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai"
     val paragraph1: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
@@ -120,7 +116,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedTitle: String = "Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedH1: String = "Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?"
-    val emptyErrorText: String = "Nodwch ID cyflogres eich cleient"
     val wrongFormatErrorText: String = "Nodwch ID cyflogres eich cleient yn y fformat cywir"
     val tooLongErrorText: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai"
     val paragraph1: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
@@ -160,7 +155,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         textOnPageCheck(bullet3, bulletSelector(3))
         textOnPageCheck(get.paragraph2, paragraph3Selector)
         textOnPageCheck(hintText, hintTextSelector)
-        inputFieldValueCheck(inputName, inputSelector, "")
+        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.show(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(user.isWelsh)
@@ -183,44 +178,18 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         textOnPageCheck(bullet3, bulletSelector(3))
         textOnPageCheck(get.paragraph2, paragraph3Selector)
         textOnPageCheck(hintText, hintTextSelector)
-        inputFieldValueCheck(inputName, inputSelector, "123456")
+        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "123456")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(user.isWelsh)
-      }
-
-      "render the page with a form error when an empty form is submitted" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
-        implicit val messages: Messages = getMessages(user.isWelsh)
-
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> "")), taxYear = taxYearEOY, employmentId)
-
-        implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        titleCheck(get.expectedErrorTitle, user.isWelsh)
-        h1Check(get.expectedH1)
-        captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph2Selector)
-        textOnPageCheck(bullet1, bulletSelector(1))
-        textOnPageCheck(bullet2, bulletSelector(2))
-        textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph4Selector)
-        textOnPageCheck(hintText, hintTextSelector)
-        inputFieldValueCheck(inputName, inputSelector, "")
-        buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(user.isWelsh)
-
-        errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
-        errorAboveElementCheck(get.emptyErrorText)
       }
 
       "render the page with a form error when the input is too long" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val payrollId = "123456789012345678901234567890123456789"
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId)
+        val tooLonPayrollId = "a" * 39
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(EmployerPayrollIdForm.payrollId -> tooLonPayrollId)), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -233,7 +202,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         textOnPageCheck(bullet3, bulletSelector(3))
         textOnPageCheck(get.paragraph2, paragraph4Selector)
         textOnPageCheck(hintText, hintTextSelector)
-        inputFieldValueCheck(inputName, inputSelector, payrollId)
+        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, tooLonPayrollId)
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(user.isWelsh)
@@ -247,7 +216,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val payrollId = "$11223"
-        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(inputName -> payrollId)), taxYear = taxYearEOY, employmentId)
+        val htmlFormat = underTest(form.employerPayrollIdForm(user.isAgent).bind(Map(EmployerPayrollIdForm.payrollId -> payrollId)), taxYear = taxYearEOY, employmentId)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -260,7 +229,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         textOnPageCheck(bullet3, bulletSelector(3))
         textOnPageCheck(get.paragraph2, paragraph4Selector)
         textOnPageCheck(hintText, hintTextSelector)
-        inputFieldValueCheck(inputName, inputSelector, payrollId)
+        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, payrollId)
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(user.isWelsh)

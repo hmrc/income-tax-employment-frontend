@@ -67,11 +67,11 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
+          case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished(cya.isPriorSubmission)) {
             Future.successful(redirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId))
           } else {
             prior match {
-              case Some(_) if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
+              case Some(_) if !cya.employment.employmentDetails.isSubmittable(cya.isPriorSubmission) => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
               case _ => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)

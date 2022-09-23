@@ -27,6 +27,7 @@ import support.ViewUnitTest
 import views.html.details.PayeRefView
 
 class PayeRefViewSpec extends ViewUnitTest {
+
   private val payeRef = "payeRef"
   private val payeRefValue: String = "123/AA12345"
   private val employmentId = "employmentId"
@@ -41,8 +42,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedErrorHref = "#payeRef"
   }
 
-  val InputFieldName = "payeRef"
-
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedErrorTitle: String
@@ -54,7 +53,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedH1: String
     val continueButtonText: String
     val hintText: String
-    val emptyErrorText: String
     val wrongFormatErrorText: String
   }
 
@@ -63,7 +61,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
-    val emptyErrorText: String = "Enter a PAYE reference"
     val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
   }
 
@@ -72,7 +69,6 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedH1: String = "Beth yw cyfeirnod TWE maggie?"
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, 123/AB456"
-    val emptyErrorText: String = "Nodwch gyfeirnod TWE"
     val wrongFormatErrorText: String = "Nodwch gyfeirnod TWE yn y fformat cywir"
   }
 
@@ -130,7 +126,7 @@ class PayeRefViewSpec extends ViewUnitTest {
         h1Check(expectedH1)
         captionCheck(expectedCaption)
         textOnPageCheck(hintText, hintTestSelector)
-        inputFieldValueCheck(InputFieldName, inputSelector, payeRefValue)
+        inputFieldValueCheck(PayeRefForm.payeRef, inputSelector, payeRefValue)
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(PayeRefController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(user.isWelsh)
@@ -149,25 +145,9 @@ class PayeRefViewSpec extends ViewUnitTest {
         captionCheck(expectedCaption)
         textOnPageCheck(hintText, hintTestSelector)
         textOnPageCheck(get.expectedContentNewAccount, contentSelector)
-        inputFieldValueCheck(InputFieldName, inputSelector, "")
+        inputFieldValueCheck(PayeRefForm.payeRef, inputSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(PayeRefController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(user.isWelsh)
-      }
-
-      "render the page with a form error when an empty form is submitted" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
-        implicit val messages: Messages = getMessages(user.isWelsh)
-
-        val htmlFormat = underTest(form.bind(Map(payeRef -> "")), taxYear = taxYearEOY, employerName, employmentId)
-
-        implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        titleCheck(get.expectedErrorTitle, user.isWelsh)
-        h1Check(expectedH1)
-        captionCheck(expectedCaption)
-        inputFieldValueCheck(InputFieldName, inputSelector, "")
-        errorSummaryCheck(emptyErrorText, expectedErrorHref)
         welshToggleCheck(user.isWelsh)
       }
 
@@ -183,7 +163,7 @@ class PayeRefViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, user.isWelsh)
         h1Check(expectedH1)
         captionCheck(expectedCaption)
-        inputFieldValueCheck(InputFieldName, inputSelector, invalidPaye)
+        inputFieldValueCheck(PayeRefForm.payeRef, inputSelector, invalidPaye)
         errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         welshToggleCheck(user.isWelsh)
       }

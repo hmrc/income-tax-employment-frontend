@@ -19,25 +19,25 @@ import sbt._
 
 object AppDependencies {
 
-  private val bootstrapFrontendPlay28Version = "7.0.0"
-  private val mongoPlayVersion = "0.71.0"
+  private val bootstrapFrontendPlay28Version = "7.3.0"
+  private val mongoPlayVersion = "0.73.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-28" % bootstrapFrontendPlay28Version,
     "uk.gov.hmrc"                   %% "play-frontend-hmrc"         % "3.8.0-play-28",
     "uk.gov.hmrc.mongo"             %% "hmrc-mongo-play-28"         % mongoPlayVersion,
-    "com.fasterxml.jackson.module"  %% "jackson-module-scala"       % "2.13.3"
+    "com.fasterxml.jackson.module"  %% "jackson-module-scala"       % "2.13.4"
   )
 
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapFrontendPlay28Version  % Test,
     "org.scalatest"           %% "scalatest"                % "3.2.12"                        % Test,
-    "org.jsoup"               %  "jsoup"                    % "1.15.2"                        % Test,
+    "org.jsoup"               %  "jsoup"                    % "1.15.3"                        % Test,
     "com.typesafe.play"       %% "play-test"                % current                         % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                         % "test, it",
-    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.33.2"                        % "test, it",
+    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.34.0"                        % "test, it",
     "org.scalamock"           %% "scalamock"                % "5.2.0"                         % Test,
-    "com.vladsch.flexmark"    %  "flexmark-all"               % "0.62.2"                      % "test, it",
+    "com.vladsch.flexmark"    %  "flexmark-all"             % "0.62.2"                        % "test, it",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion                % "test, it"
   )
 }

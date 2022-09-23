@@ -22,17 +22,13 @@ import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.validation.Constraint
-import play.api.data.validation.Constraints.nonEmpty
 
-//TODO - unit test the form validation and error message keys
 object EmployerPayrollIdForm extends InputFilters {
 
   val payrollId: String = "payrollId"
-  val charLimit: Int = 38
-  val regex: String = "^[A-Za-z0-9.,\\\\\\-()\\/=!\"%&*; <>'’+:\\?]{0,38}$"
 
-  def notEmpty(isAgent: Boolean): Constraint[String] =
-    nonEmpty(if (isAgent) "employment.payrollId.error.noEntry.agent" else "employment.payrollId.error.noEntry.individual")
+  private val charLimit: Int = 38
+  private val regex: String = "^[A-Za-z0-9.,\\\\\\-()\\/=!\"%&*; <>'’+:\\?]{0,38}$"
 
   def notCharLimit(isAgent: Boolean): Constraint[String] =
     validateSize(charLimit)(if (isAgent) "employment.payrollId.error.tooMany.agent" else "employment.payrollId.error.tooMany.individual")
@@ -42,8 +38,7 @@ object EmployerPayrollIdForm extends InputFilters {
 
   def employerPayrollIdForm(isAgent: Boolean): Form[String] = Form(
     payrollId -> trimmedText.transform[String](filter, identity).verifying(
-      notEmpty(isAgent) andThen notCharLimit(isAgent) andThen validateFormat(isAgent)
+      notCharLimit(isAgent) andThen validateFormat(isAgent)
     )
   )
-
 }

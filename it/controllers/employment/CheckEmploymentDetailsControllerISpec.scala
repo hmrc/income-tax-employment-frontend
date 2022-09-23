@@ -17,6 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
+import controllers.details.routes.EmployerStartDateController
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -31,6 +32,7 @@ import play.api.test.Helpers.route
 import play.api.{Environment, Mode}
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -38,7 +40,6 @@ import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmplo
 import support.builders.models.employment.PayBuilder.aPay
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
@@ -338,11 +339,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           taxYearEOY,
           employmentId,
           isPriorSubmission = false,
-          hasPriorBenefits = true, hasPriorStudentLoans = false,
-          EmploymentCYAModel(
-            anEmploymentSource.toEmploymentDetails(false).copy(employerRef = None),
-            None
-          )
+          hasPriorBenefits = true,
+          hasPriorStudentLoans = false,
+          EmploymentCYAModel(anEmploymentSource.toEmploymentDetails(false).copy(startDate = None), None)
         ))
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
@@ -351,10 +350,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-      }
-
-      "has a redirect url of employer reference page" in {
-        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
