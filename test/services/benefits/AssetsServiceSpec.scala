@@ -17,17 +17,24 @@
 package services.benefits
 
 import models.benefits.AssetsModel
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
+
+class AssetsServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new AssetsService(mockEmploymentSessionService, mockExecutionContext)
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+
+  private val underTest = new AssetsService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update assets model and set section question to true when true value passed" in {
@@ -37,7 +44,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, anEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -48,7 +55,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -59,7 +66,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserDataWithNoAssetsModel, questionValue = false)) shouldBe
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserDataWithNoAssetsModel, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -73,7 +80,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssetsQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateAssetsQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -83,7 +90,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssetsQuestion(authorisationRequest.user, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateAssetsQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -96,7 +103,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssets(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateAssets(aUser, taxYearEOY, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -109,7 +116,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssetTransferQuestion(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateAssetTransferQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -119,7 +126,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssetTransferQuestion(authorisationRequest.user, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateAssetTransferQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -132,7 +139,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAssetTransfer(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateAssetTransfer(aUser, taxYearEOY, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 }

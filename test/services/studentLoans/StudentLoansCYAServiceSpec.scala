@@ -21,56 +21,65 @@ import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import services.EmploymentSessionService
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockNrsService}
+import support.mocks._
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.UnitTest
 
-class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService
+import scala.concurrent.ExecutionContext
+
+class StudentLoansCYAServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockAuditService
+  with MockNrsService
+  with MockEmploymentSessionService
   with MockErrorHandler {
 
-  lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  lazy val service = new StudentLoansCYAService(session, mockAppConfig, mockErrorHandler, mockAuditService, mockNrsService, mockExecutionContext)
+  private lazy val employerId = "1234567890"
+  private lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
 
-  lazy val employerId = "1234567890"
 
-  lazy val hmrcSource: HmrcEmploymentSource = HmrcEmploymentSource(
+  private lazy val hmrcSource: HmrcEmploymentSource = HmrcEmploymentSource(
     employerId, "HMRC", None, None, None, None, None, None, None, None
   )
 
-  lazy val customerSource: EmploymentSource = EmploymentSource(
+  private lazy val customerSource: EmploymentSource = EmploymentSource(
     employerId, "Customer", None, None, None, None, None, None, None, None
   )
 
-  lazy val allEmploymentData: AllEmploymentData = AllEmploymentData(
+  private lazy val allEmploymentData: AllEmploymentData = AllEmploymentData(
     Seq(hmrcSource), None, Seq(customerSource), None
   )
 
-  lazy val studentLoans: StudentLoans = StudentLoans(
+  private lazy val studentLoans: StudentLoans = StudentLoans(
     uglDeductionAmount = Some(100),
     pglDeductionAmount = Some(100)
   )
 
-  val validModel: StudentLoansCYAModel = StudentLoansCYAModel(
+  private val validModel: StudentLoansCYAModel = StudentLoansCYAModel(
     uglDeduction = true,
     uglDeductionAmount = Some(500.00),
     pglDeduction = true,
     pglDeductionAmount = Some(500.00)
   )
 
+  private val underTest = new StudentLoansCYAService(session, new MockAppConfig().config(), mockErrorHandler, mockAuditService, mockNrsService, ec)
+
   ".extractEmploymentInformation" should {
-
     "return an employment source" when {
-
       "the data contains customer data and is flagged as customer held" in {
-        val result = service.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = true)
+        val result = underTest.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = true)
 
         result shouldBe Some(customerSource)
       }
 
       "the data contains hmrc data and is flagged as hmrc held" in {
-        val result = service.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = false)
+        val result = underTest.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = false)
 
         result shouldBe Some(hmrcSource.toEmploymentSource)
       }
@@ -78,26 +87,22 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
     }
 
     "return a none" when {
-
       "the data does not contain customer data and is flagged as customer held" in {
-        val result = service.extractEmploymentInformation(allEmploymentData.copy(customerEmploymentData = Seq()), employerId, isCustomerHeld = true)
+        val result = underTest.extractEmploymentInformation(allEmploymentData.copy(customerEmploymentData = Seq()), employerId, isCustomerHeld = true)
 
         result shouldBe None
       }
 
       "the data does not contain hmrc data and is flagged as hmrc held" in {
-        val result = service.extractEmploymentInformation(allEmploymentData.copy(hmrcEmploymentData = Seq()), employerId, isCustomerHeld = false)
+        val result = underTest.extractEmploymentInformation(allEmploymentData.copy(hmrcEmploymentData = Seq()), employerId, isCustomerHeld = false)
 
         result shouldBe None
       }
-
     }
-
   }
 
   ".performSubmitAudits" should {
     "send the event from the model when it's a create" in {
-
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         None,
         Some(
@@ -127,12 +132,11 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         Some("001")
       )
 
-
       val createNewStudentLoansDeductionsAudit = CreateNewStudentLoansDeductionsAudit(
         taxYear = taxYearEOY,
-        userType = authorisationRequest.user.affinityGroup.toLowerCase,
-        nino = authorisationRequest.user.nino,
-        mtditid = authorisationRequest.user.mtditid,
+        userType = aUser.affinityGroup.toLowerCase,
+        nino = aUser.nino,
+        mtditid = aUser.mtditid,
         deductions = Deductions(
           studentLoans = Some(studentLoans))
       )
@@ -141,15 +145,13 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
 
       val customerEmploymentData = anEmploymentSource.copy(employmentData = None)
       val employmentDataWithoutDeductions = allEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
-
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(employmentDataWithoutDeductions))
+      val result = underTest.performSubmitAudits(aUser, model, employmentId = "001", taxYear = taxYearEOY, Some(employmentDataWithoutDeductions))
 
       await(result) shouldBe AuditResult.Success
 
     }
 
     "send the audit events from the model when it's an amend" in {
-
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         None,
         Some(
@@ -185,19 +187,19 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(
           EmploymentFinancialData(
             employmentData = Some(EmploymentData(
-              submittedOn = s"${taxYearEOY-1}-02-12",
+              submittedOn = s"${taxYearEOY - 1}-02-12",
               employmentSequenceNumber = Some("123456789999"),
               companyDirector = Some(true),
               closeCompany = Some(false),
-              directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+              directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
               disguisedRemuneration = Some(false),
-              pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+              pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
               Some(Deductions(
                 studentLoans = Some(StudentLoans(
                   uglDeductionAmount = Some(100.00),
@@ -220,9 +222,9 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
 
       mockAuditSendEvent(AmendStudentLoansDeductionsUpdateAudit(
         taxYear = taxYearEOY,
-        userType = authorisationRequest.user.affinityGroup.toLowerCase,
-        nino = authorisationRequest.user.nino,
-        mtditid = authorisationRequest.user.mtditid,
+        userType = aUser.affinityGroup.toLowerCase,
+        nino = aUser.nino,
+        mtditid = aUser.mtditid,
         priorStudentLoanDeductionsData = employmentSource1.hmrcEmploymentFinancialData.get.employmentData.flatMap(_.deductions).get,
         studentLoanDeductionsData = Deductions(
           studentLoans = Some(StudentLoans(
@@ -233,7 +235,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
       ).toAuditModel
       )
 
-      val result = service.performSubmitAudits(authorisationRequest.user, model, employmentId = "001", taxYear = taxYearEOY, Some(prior))
+      val result = underTest.performSubmitAudits(aUser, model, employmentId = "001", taxYear = taxYearEOY, Some(prior))
 
       await(result) shouldBe AuditResult.Success
     }
@@ -242,10 +244,10 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
   ".sendViewStudentLoansDeductionsAudit" should {
     "send the audit event" in {
       mockAuditSendEvent(ViewStudentLoansDeductionsAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, validModel.asDeductions
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid, validModel.asDeductions
       ).toAuditModel)
 
-      await(service.sendViewStudentLoansDeductionsAudit(authorisationRequest.user, taxYearEOY, validModel.asDeductions)) shouldBe AuditResult.Success
+      await(underTest.sendViewStudentLoansDeductionsAudit(aUser, taxYearEOY, validModel.asDeductions)) shouldBe AuditResult.Success
     }
   }
 
@@ -285,12 +287,11 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
           Some(100)
         )))))
 
-      await(service.performSubmitNrsPayload(authorisationRequest.user, model, "001", prior = None)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)) shouldBe Right()
 
     }
 
     "send the event from the model when it's an amend" in {
-
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         Some("id"),
         Some(
@@ -325,18 +326,18 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = s"${taxYearEOY-1}-02-12",
+            submittedOn = s"${taxYearEOY - 1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -369,7 +370,7 @@ class StudentLoansCYAServiceSpec extends UnitTest with MockAuditService with Moc
         )
       ))
 
-      await(service.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(priorData))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))) shouldBe Right()
     }
   }
 }

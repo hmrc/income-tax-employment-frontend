@@ -46,8 +46,8 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
         Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, returnValueAgent)), "Activated")
       ))
 
-      authorisedAction.enrolmentGetIdentifierValue(EnrolmentKeys.Individual, EnrolmentIdentifiers.individualId, enrolments) shouldBe Some(returnValue)
-      authorisedAction.enrolmentGetIdentifierValue(EnrolmentKeys.Agent, EnrolmentIdentifiers.agentReference, enrolments) shouldBe Some(returnValueAgent)
+      mockAuthorisedAction.enrolmentGetIdentifierValue(EnrolmentKeys.Individual, EnrolmentIdentifiers.individualId, enrolments) shouldBe Some(returnValue)
+      mockAuthorisedAction.enrolmentGetIdentifierValue(EnrolmentKeys.Agent, EnrolmentIdentifiers.agentReference, enrolments) shouldBe Some(returnValueAgent)
     }
 
     "return a None" when {
@@ -59,11 +59,11 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
 
       "the given identifier cannot be found" in {
-        authorisedAction.enrolmentGetIdentifierValue(key, "someOtherIdentifier", enrolments) shouldBe None
+        mockAuthorisedAction.enrolmentGetIdentifierValue(key, "someOtherIdentifier", enrolments) shouldBe None
       }
 
       "the given key cannot be found" in {
-        authorisedAction.enrolmentGetIdentifierValue("someOtherKey", identifierKey, enrolments) shouldBe None
+        mockAuthorisedAction.enrolmentGetIdentifierValue("someOtherKey", identifierKey, enrolments) shouldBe None
       }
     }
   }
@@ -82,7 +82,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          authorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
+          mockAuthorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns an OK status" in {
@@ -108,7 +108,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          authorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, emptyHeaderCarrier)
+          mockAuthorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, emptyHeaderCarrier)
         }
 
         "returns an SEE_OTHER status" in {
@@ -124,7 +124,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          authorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
+          mockAuthorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns a forbidden" in {
@@ -141,7 +141,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          authorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
+          mockAuthorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns an Unauthorised" in {
@@ -168,7 +168,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L50))
-          authorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
+          mockAuthorisedAction.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "has a status of 303" in {
@@ -200,7 +200,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
             .expects(*, *, *, *)
             .returning(Future.successful(enrolments))
 
-          authorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
+          mockAuthorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
         }
 
         "has a status of OK" in {
@@ -227,7 +227,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
             .expects(*, *, *, *)
             .returning(Future.successful(enrolments))
 
-          authorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, emptyHeaderCarrier)
+          mockAuthorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, emptyHeaderCarrier)
         }
 
         "has a status of SEE_OTHER" in {
@@ -240,7 +240,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuthReturnException(AuthException)
-          authorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
+          mockAuthorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
         }
         status(result) shouldBe SEE_OTHER
       }
@@ -254,7 +254,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuthReturnException(NoActiveSession)
-          authorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
+          mockAuthorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
         }
 
         status(result) shouldBe SEE_OTHER
@@ -272,7 +272,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, *, *, *)
             .returning(Future.successful(enrolments))
-          authorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
+          mockAuthorisedAction.agentAuthentication(block)(fakeRequestWithMtditidAndNino, headerCarrierWithSession)
         }
         status(result) shouldBe SEE_OTHER
       }
@@ -291,7 +291,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuthAsAgent()
-          authorisedAction.invokeBlock(fakeRequestWithMtditidAndNino, block)
+          mockAuthorisedAction.invokeBlock(fakeRequestWithMtditidAndNino, block)
         }
 
         "should return an OK(200) status" in {
@@ -304,7 +304,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuth(Some("AA123456A"))
-          authorisedAction.invokeBlock(fakeRequest, block)
+          mockAuthorisedAction.invokeBlock(fakeRequest, block)
         }
 
         status(result) shouldBe OK
@@ -320,7 +320,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuthReturnException(AuthException)
-          authorisedAction.invokeBlock(fakeRequest, block)
+          mockAuthorisedAction.invokeBlock(fakeRequest, block)
         }
         status(result) shouldBe SEE_OTHER
       }
@@ -332,7 +332,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
             .expects(*, Retrievals.affinityGroup, *, *)
             .returning(Future.successful(Some(AffinityGroup.Agent)))
 
-          authorisedAction.invokeBlock(fakeRequestWithNino, block)
+          mockAuthorisedAction.invokeBlock(fakeRequestWithNino, block)
         }
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe "/report-quarterly/income-and-expenses/view/agents/client-utr"
@@ -346,7 +346,7 @@ class AuthorisedActionSpec extends UnitTest with MockAuthorisedAction {
 
         lazy val result = {
           mockAuthReturnException(NoActiveSession)
-          authorisedAction.invokeBlock(fakeRequest, block)
+          mockAuthorisedAction.invokeBlock(fakeRequest, block)
         }
 
         status(result) shouldBe SEE_OTHER

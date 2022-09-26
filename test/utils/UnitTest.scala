@@ -23,7 +23,6 @@ import config.AppConfig
 import models.AuthorisationRequest
 import models.benefits.Benefits
 import models.employment._
-import models.expenses.Expenses
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -32,6 +31,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
@@ -81,7 +81,8 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
-    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString), fakeRequest)
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
 
   protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
@@ -108,7 +109,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),
-    hmrcExpenses = Some(employmentExpenses),
+    hmrcExpenses = Some(anEmploymentExpenses),
     customerEmploymentData = Seq(EmploymentSource(
       employmentId = "001",
       employerName = "maggie",
@@ -141,16 +142,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     customerExpenses = None
   )
 
-  lazy val expenses: Expenses = Expenses(
-    Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
-  )
-  lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
-    dateIgnored = None,
-    totalExpenses = None,
-    expenses = Some(expenses)
-  )
-
   lazy val allBenefits: Benefits = Benefits(
     car = Some(1.23),
     carFuel = Some(2.00),
@@ -180,36 +171,5 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     otherItems = Some(26.00),
     assets = Some(27.00),
     assetTransfer = Some(280000.00)
-  )
-
-  val amendBenefits: Benefits = Benefits(
-    accommodation = Some(10),
-    assets = Some(10),
-    assetTransfer = Some(10),
-    beneficialLoan = Some(10),
-    car = Some(10),
-    carFuel = Some(10),
-    educationalServices = Some(10),
-    entertaining = Some(10),
-    expenses = Some(10),
-    medicalInsurance = Some(10),
-    telephone = Some(10),
-    service = Some(10),
-    taxableExpenses = Some(10),
-    van = Some(10),
-    vanFuel = Some(10),
-    mileage = Some(10),
-    nonQualifyingRelocationExpenses = Some(10),
-    nurseryPlaces = Some(10),
-    otherItems = Some(10),
-    paymentsOnEmployeesBehalf = Some(10),
-    personalIncidentalExpenses = Some(10),
-    qualifyingRelocationExpenses = Some(10),
-    employerProvidedProfessionalSubscriptions = Some(10),
-    employerProvidedServices = Some(10),
-    incomeTaxPaidByDirector = Some(10),
-    travelAndSubsistence = Some(10),
-    vouchersAndCreditCards = Some(10),
-    nonCash = Some(10)
   )
 }

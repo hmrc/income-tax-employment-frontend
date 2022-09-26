@@ -16,20 +16,25 @@
 
 package services.benefits
 
-import models.User
 import models.benefits.UtilitiesAndServicesModel
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
+
+class UtilitiesServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
-  private val user: User = authorisationRequest.user
 
-  private val underTest = new UtilitiesService(mockEmploymentSessionService, mockExecutionContext)
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+
+  private val underTest = new UtilitiesService(mockEmploymentSessionService, ec)
 
   "updateSectionQuestion" should {
     "update utilities model and set section question to true when true value passed" in {
@@ -40,7 +45,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -51,7 +56,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -62,7 +67,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateSectionQuestion(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -75,7 +80,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateTelephoneQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
+      await(underTest.updateTelephoneQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -87,7 +92,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateTelephoneQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateTelephoneQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -100,7 +105,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateTelephone(user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateTelephone(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -113,7 +118,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedServicesQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
+      await(underTest.updateEmployerProvidedServicesQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -125,7 +130,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedServicesQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateEmployerProvidedServicesQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -138,7 +143,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedServices(user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateEmployerProvidedServices(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -151,7 +156,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedProfessionalSubscriptionsQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
+      await(underTest.updateEmployerProvidedProfessionalSubscriptionsQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -163,7 +168,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedProfessionalSubscriptionsQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateEmployerProvidedProfessionalSubscriptionsQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -176,7 +181,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerProvidedProfessionalSubscriptions(user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe
+      await(underTest.updateEmployerProvidedProfessionalSubscriptions(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -190,7 +195,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateServiceQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
+      await(underTest.updateServiceQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -202,7 +207,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateServiceQuestion(user, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateServiceQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -215,7 +220,7 @@ class UtilitiesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateService(user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateService(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 }

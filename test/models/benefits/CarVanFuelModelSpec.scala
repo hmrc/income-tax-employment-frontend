@@ -21,12 +21,12 @@ import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Call
 import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import support.{TaxYearHelper, UnitTest}
+import support.{TaxYearProvider, UnitTest}
 import utils.TypeCaster.Converter
 import utils.{EncryptedValue, SecureGCMCipher}
 
 class CarVanFuelModelSpec extends UnitTest
-  with TaxYearHelper
+  with TaxYearProvider
   with MockFactory {
 
   private val employmentId = "employmentId"

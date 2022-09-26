@@ -35,7 +35,7 @@ class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSess
   implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController(
-    authorisedAction,
+    mockAuthorisedAction,
     view,
     inYearAction,
     mockEmploymentSessionService,

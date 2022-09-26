@@ -16,17 +16,22 @@
 
 package audit
 
+import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.libs.json.Json
+import support.UnitTest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import utils.UnitTest
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuditServiceSpec extends UnitTest {
+class AuditServiceSpec extends UnitTest
+  with MockFactory {
+
+  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
   private trait Test {
     val mockedAppName = "some-app-name"

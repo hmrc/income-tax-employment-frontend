@@ -26,13 +26,14 @@ import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import services.DefaultRedirectService
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockEmploymentSessionService, MockErrorHandler, MockFuelService}
+import support.mocks.{MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler, MockFuelService}
 import utils.UnitTest
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
 class CompanyCarBenefitsControllerSpec extends UnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockFuelService
   with MockErrorHandler {
@@ -63,7 +64,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
   )
 
   private lazy val controller = new CompanyCarBenefitsController(
-    authorisedAction,
+    mockAuthorisedAction,
     inYearAction,
     view,
     mockEmploymentSessionService,

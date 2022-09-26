@@ -21,6 +21,7 @@ import common.SessionValues
 import java.time.LocalDate
 import play.api.mvc.Request
 
+@deprecated("Use TextYearProvider instead")
 trait TaxYearHelper extends SessionHelper {
 
   private val dateNow: LocalDate = LocalDate.now()

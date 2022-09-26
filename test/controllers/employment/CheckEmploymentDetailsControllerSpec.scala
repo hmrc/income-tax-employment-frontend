@@ -50,7 +50,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTest
     mockCheckEmploymentDetailsService,
     new DefaultRedirectService(),
     mockErrorHandler
-  )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), authorisedAction)
+  )(mockMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), mockAuthorisedAction)
 
   private val employmentId = "223AB12399"
 

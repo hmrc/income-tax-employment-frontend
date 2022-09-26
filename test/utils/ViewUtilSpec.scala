@@ -17,12 +17,22 @@
 package utils
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import utils.ViewUtils.ariaVisuallyHiddenText
 
 import java.time.LocalDate
 
-class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
+class ViewUtilSpec extends support.UnitTest with GuiceOneAppPerSuite {
+
+  protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  private implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
+
+  protected lazy val defaultMessages: Messages = messagesApi.preferred(FakeRequest())
+  protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+
+  protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 
   "calling method convertBoolToYesNo" should {
     "return yes when employment field is true" in {

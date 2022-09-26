@@ -16,9 +16,7 @@
 
 package utils
 
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-
-class RedirectUtilsSpec extends UnitTest with GuiceOneAppPerSuite {
+class RedirectUtilsSpec extends support.UnitTest {
 
   "calling the RedirectUtils object" when {
     "asRelativeUrl" must {

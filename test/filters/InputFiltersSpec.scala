@@ -16,13 +16,13 @@
 
 package filters
 
-import utils.UnitTest
+import support.UnitTest
+
 
 class InputFiltersSpec extends UnitTest with InputFilters {
 
   "Input filter" must {
     "filter out those hackers" in {
-
       filter("<script>(.*?)</script>") shouldBe  ""
       filter("<script(.*?)>") shouldBe ""
       filter("</script>") shouldBe  ""
@@ -32,8 +32,6 @@ class InputFiltersSpec extends UnitTest with InputFilters {
       filter("eval((.*?)") shouldBe ""
       filter("expression((.*?)") shouldBe ""
       filter("abc|bcd") shouldBe "abcbcd"
-
     }
   }
-
 }

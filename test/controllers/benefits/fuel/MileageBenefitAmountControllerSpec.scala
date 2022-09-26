@@ -40,7 +40,7 @@ class MileageBenefitAmountControllerSpec extends UnitTest
   private implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   private lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
   private lazy val controller = new MileageBenefitAmountController(
-    authorisedAction,
+    mockAuthorisedAction,
     view,
     inYearAction,
     mockEmploymentSessionService,

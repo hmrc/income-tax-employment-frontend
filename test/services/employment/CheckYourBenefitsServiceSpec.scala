@@ -20,15 +20,55 @@ import audit.{AmendEmploymentBenefitsUpdateAudit, CreateNewEmploymentBenefitsAud
 import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import utils.UnitTest
 
-class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionService with MockNrsService with MockAuditService {
+import scala.concurrent.ExecutionContext
+
+class CheckYourBenefitsServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService
+  with MockNrsService
+  with MockAuditService {
+
+  private val amendBenefits: Benefits = Benefits(
+    accommodation = Some(10),
+    assets = Some(10),
+    assetTransfer = Some(10),
+    beneficialLoan = Some(10),
+    car = Some(10),
+    carFuel = Some(10),
+    educationalServices = Some(10),
+    entertaining = Some(10),
+    expenses = Some(10),
+    medicalInsurance = Some(10),
+    telephone = Some(10),
+    service = Some(10),
+    taxableExpenses = Some(10),
+    van = Some(10),
+    vanFuel = Some(10),
+    mileage = Some(10),
+    nonQualifyingRelocationExpenses = Some(10),
+    nurseryPlaces = Some(10),
+    otherItems = Some(10),
+    paymentsOnEmployeesBehalf = Some(10),
+    personalIncidentalExpenses = Some(10),
+    qualifyingRelocationExpenses = Some(10),
+    employerProvidedProfessionalSubscriptions = Some(10),
+    employerProvidedServices = Some(10),
+    incomeTaxPaidByDirector = Some(10),
+    travelAndSubsistence = Some(10),
+    vouchersAndCreditCards = Some(10),
+    nonCash = Some(10)
+  )
+
 
   private val underTest = new CheckYourBenefitsService(mockNrsService, mockAuditService)
 
@@ -57,49 +97,48 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
                 ))
               )
             ),
-            Some(allBenefits)
+            Some(aBenefits)
           )
         ),
         Some("001")
       )
 
       verifySubmitEvent(DecodedCreateNewBenefitsPayload(Some("name"), Some("employerRef"),
-        Benefits(accommodation = allBenefits.accommodation,
-          assets = allBenefits.assets,
-          assetTransfer = allBenefits.assetTransfer,
-          beneficialLoan = allBenefits.beneficialLoan,
-          car = allBenefits.car,
-          carFuel = allBenefits.carFuel,
-          educationalServices = allBenefits.educationalServices,
-          entertaining = allBenefits.entertaining,
-          expenses = allBenefits.expenses,
-          medicalInsurance = allBenefits.medicalInsurance,
-          telephone = allBenefits.telephone,
-          service = allBenefits.service,
-          taxableExpenses = allBenefits.taxableExpenses,
-          van = allBenefits.van,
-          vanFuel = allBenefits.vanFuel,
-          mileage = allBenefits.mileage,
-          nonQualifyingRelocationExpenses = allBenefits.nonQualifyingRelocationExpenses,
-          nurseryPlaces = allBenefits.nurseryPlaces,
-          otherItems = allBenefits.otherItems,
-          paymentsOnEmployeesBehalf = allBenefits.paymentsOnEmployeesBehalf,
-          personalIncidentalExpenses = allBenefits.personalIncidentalExpenses,
-          qualifyingRelocationExpenses = allBenefits.qualifyingRelocationExpenses,
-          employerProvidedProfessionalSubscriptions = allBenefits.employerProvidedProfessionalSubscriptions,
-          employerProvidedServices = allBenefits.employerProvidedServices,
-          incomeTaxPaidByDirector = allBenefits.incomeTaxPaidByDirector,
-          travelAndSubsistence = allBenefits.travelAndSubsistence,
-          vouchersAndCreditCards = allBenefits.vouchersAndCreditCards,
-          nonCash = allBenefits.nonCash
+        Benefits(accommodation = aBenefits.accommodation,
+          assets = aBenefits.assets,
+          assetTransfer = aBenefits.assetTransfer,
+          beneficialLoan = aBenefits.beneficialLoan,
+          car = aBenefits.car,
+          carFuel = aBenefits.carFuel,
+          educationalServices = aBenefits.educationalServices,
+          entertaining = aBenefits.entertaining,
+          expenses = aBenefits.expenses,
+          medicalInsurance = aBenefits.medicalInsurance,
+          telephone = aBenefits.telephone,
+          service = aBenefits.service,
+          taxableExpenses = aBenefits.taxableExpenses,
+          van = aBenefits.van,
+          vanFuel = aBenefits.vanFuel,
+          mileage = aBenefits.mileage,
+          nonQualifyingRelocationExpenses = aBenefits.nonQualifyingRelocationExpenses,
+          nurseryPlaces = aBenefits.nurseryPlaces,
+          otherItems = aBenefits.otherItems,
+          paymentsOnEmployeesBehalf = aBenefits.paymentsOnEmployeesBehalf,
+          personalIncidentalExpenses = aBenefits.personalIncidentalExpenses,
+          qualifyingRelocationExpenses = aBenefits.qualifyingRelocationExpenses,
+          employerProvidedProfessionalSubscriptions = aBenefits.employerProvidedProfessionalSubscriptions,
+          employerProvidedServices = aBenefits.employerProvidedServices,
+          incomeTaxPaidByDirector = aBenefits.incomeTaxPaidByDirector,
+          travelAndSubsistence = aBenefits.travelAndSubsistence,
+          vouchersAndCreditCards = aBenefits.vouchersAndCreditCards,
+          nonCash = aBenefits.nonCash
         )))
 
-      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", prior = None)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)(HeaderCarrier())) shouldBe Right()
 
     }
 
     "send the event from the model when it's an amend" in {
-
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         Some("id"),
         Some(
@@ -135,18 +174,18 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = s"${taxYearEOY-1}-02-12",
+            submittedOn = s"${taxYearEOY - 1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -154,7 +193,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
               ))
             ))
           )),
-          employmentBenefits = Some(EmploymentBenefits(s"${taxYearEOY-1}-02-15", Some(allBenefits)))
+          employmentBenefits = Some(EmploymentBenefits(s"${taxYearEOY - 1}-02-15", Some(aBenefits)))
         )),
         None
       )
@@ -168,34 +207,34 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
 
       verifySubmitEvent(DecodedAmendBenefitsPayload(
         Benefits(
-          accommodation = allBenefits.accommodation,
-          assets = allBenefits.assets,
-          assetTransfer = allBenefits.assetTransfer,
-          beneficialLoan = allBenefits.beneficialLoan,
-          car = allBenefits.car,
-          carFuel = allBenefits.carFuel,
-          educationalServices = allBenefits.educationalServices,
-          entertaining = allBenefits.entertaining,
-          expenses = allBenefits.expenses,
-          medicalInsurance = allBenefits.medicalInsurance,
-          telephone = allBenefits.telephone,
-          service = allBenefits.service,
-          taxableExpenses = allBenefits.taxableExpenses,
-          van = allBenefits.van,
-          vanFuel = allBenefits.vanFuel,
-          mileage = allBenefits.mileage,
-          nonQualifyingRelocationExpenses = allBenefits.nonQualifyingRelocationExpenses,
-          nurseryPlaces = allBenefits.nurseryPlaces,
-          otherItems = allBenefits.otherItems,
-          paymentsOnEmployeesBehalf = allBenefits.paymentsOnEmployeesBehalf,
-          personalIncidentalExpenses = allBenefits.personalIncidentalExpenses,
-          qualifyingRelocationExpenses = allBenefits.qualifyingRelocationExpenses,
-          employerProvidedProfessionalSubscriptions = allBenefits.employerProvidedProfessionalSubscriptions,
-          employerProvidedServices = allBenefits.employerProvidedServices,
-          incomeTaxPaidByDirector = allBenefits.incomeTaxPaidByDirector,
-          travelAndSubsistence = allBenefits.travelAndSubsistence,
-          vouchersAndCreditCards = allBenefits.vouchersAndCreditCards,
-          nonCash = allBenefits.nonCash
+          accommodation = aBenefits.accommodation,
+          assets = aBenefits.assets,
+          assetTransfer = aBenefits.assetTransfer,
+          beneficialLoan = aBenefits.beneficialLoan,
+          car = aBenefits.car,
+          carFuel = aBenefits.carFuel,
+          educationalServices = aBenefits.educationalServices,
+          entertaining = aBenefits.entertaining,
+          expenses = aBenefits.expenses,
+          medicalInsurance = aBenefits.medicalInsurance,
+          telephone = aBenefits.telephone,
+          service = aBenefits.service,
+          taxableExpenses = aBenefits.taxableExpenses,
+          van = aBenefits.van,
+          vanFuel = aBenefits.vanFuel,
+          mileage = aBenefits.mileage,
+          nonQualifyingRelocationExpenses = aBenefits.nonQualifyingRelocationExpenses,
+          nurseryPlaces = aBenefits.nurseryPlaces,
+          otherItems = aBenefits.otherItems,
+          paymentsOnEmployeesBehalf = aBenefits.paymentsOnEmployeesBehalf,
+          personalIncidentalExpenses = aBenefits.personalIncidentalExpenses,
+          qualifyingRelocationExpenses = aBenefits.qualifyingRelocationExpenses,
+          employerProvidedProfessionalSubscriptions = aBenefits.employerProvidedProfessionalSubscriptions,
+          employerProvidedServices = aBenefits.employerProvidedServices,
+          incomeTaxPaidByDirector = aBenefits.incomeTaxPaidByDirector,
+          travelAndSubsistence = aBenefits.travelAndSubsistence,
+          vouchersAndCreditCards = aBenefits.vouchersAndCreditCards,
+          nonCash = aBenefits.nonCash
         ),
         employmentBenefitsData = Benefits(
           accommodation = amendBenefits.accommodation,
@@ -229,7 +268,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         )
       ))
 
-      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(priorData))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))(HeaderCarrier())) shouldBe Right()
     }
   }
 
@@ -258,19 +297,19 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
                 ))
               )
             ),
-            Some(allBenefits)
+            Some(aBenefits)
           )
         ),
         Some("employmentId")
       )
 
       val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(taxYearEOY,
-        authorisationRequest.user.affinityGroup.toLowerCase,
-        authorisationRequest.user.nino,
-        authorisationRequest.user.mtditid,
+        aUser.affinityGroup.toLowerCase,
+        aUser.nino,
+        aUser.mtditid,
         anEmploymentSource.employerName,
         Some(anEmploymentSource.employerRef.get),
-        allBenefits)
+        aBenefits)
 
       mockAuditSendEvent(createNewEmploymentsAudit.toAuditModel)
 
@@ -278,7 +317,9 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       val employmentDataWithoutBenefits = anAllEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
       val expected: AuditResult = Success
 
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = taxYearEOY, Some(employmentDataWithoutBenefits)).get
+      val result = underTest.performSubmitAudits(aUser, model, employmentId = anEmploymentSource.employmentId,
+        taxYear = taxYearEOY, Some(employmentDataWithoutBenefits))(HeaderCarrier(), ExecutionContext.global).get
+
       await(result) shouldBe expected
     }
 
@@ -314,15 +355,17 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
 
       val amendAudit = AmendEmploymentBenefitsUpdateAudit(
         taxYearEOY,
-        authorisationRequest.user.affinityGroup.toLowerCase,
-        authorisationRequest.user.nino,
-        authorisationRequest.user.mtditid,
+        aUser.affinityGroup.toLowerCase,
+        aUser.nino,
+        aUser.mtditid,
         aBenefits,
         amendBenefits)
       mockAuditSendEvent(amendAudit.toAuditModel)
 
       val expected: AuditResult = Success
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = taxYearEOY, Some(anAllEmploymentData)).get
+      val result = underTest.performSubmitAudits(aUser, model, employmentId = anEmploymentSource.employmentId,
+        taxYear = taxYearEOY, Some(anAllEmploymentData))((HeaderCarrier()), ExecutionContext.global).get
+
       await(result) shouldBe expected
     }
 
@@ -350,12 +393,12 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
                 ))
               )
             ),
-            Some(allBenefits)
+            Some(aBenefits)
           )
         ),
         Some("001")
       )
-      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = "003", taxYear = taxYearEOY, Some(employmentsModel))
+      val result = underTest.performSubmitAudits(aUser, model, employmentId = "003", taxYear = taxYearEOY, Some(anAllEmploymentData))(HeaderCarrier(), ExecutionContext.global)
       result shouldBe None
     }
   }

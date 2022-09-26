@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config
+package support.mocks
 
 import models.mongo.EmploymentUserData
 import models.{AuthorisationRequest, User}
@@ -39,6 +39,3 @@ trait MockStudentLoansCYAService extends MockFactory {
       .once()
   }
 }
-
-
-

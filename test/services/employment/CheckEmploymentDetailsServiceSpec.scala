@@ -19,14 +19,22 @@ package services.employment
 import audit._
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.UnitTest
+
+import scala.concurrent.ExecutionContext
 
 class CheckEmploymentDetailsServiceSpec extends UnitTest
+  with TaxYearProvider
   with MockEmploymentSessionService
   with MockNrsService
   with MockAuditService {
+
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val underTest = new CheckEmploymentDetailsService(mockNrsService, mockAuditService)
 
@@ -63,12 +71,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       val prior = None
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq()
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, prior)) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(aUser, model, "001", taxYearEOY, prior)) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's a create and theres existing data" in {
 
@@ -136,12 +144,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentData(
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq(PriorEmploymentAuditInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(aUser, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
     "send the audit events from the model when it's an amend" in {
 
@@ -211,7 +219,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
 
       mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditEmploymentData(
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid, AuditEmploymentData(
           employerName = employmentSource1.employerName,
           employerRef = employmentSource1.employerRef,
           employmentId = employmentSource1.employmentId,
@@ -225,7 +233,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         )
       ).toAuditModel)
 
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(aUser, model, "001", taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
   }
 
@@ -266,7 +274,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq()
       ))
 
-      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", prior)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right()
     }
     "send the events from the model when it's a create and theres existing data" in {
 
@@ -339,7 +347,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq(DecodedPriorEmploymentInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ))
 
-      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
     }
     "send the events from the model when it's an amend" in {
 
@@ -422,7 +430,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
       ))
 
-      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
     }
   }
 }

@@ -18,7 +18,7 @@ package forms
 
 import forms.AmountForm.amountForm
 import play.api.data.Form
-import utils.UnitTest
+import support.UnitTest
 
 class FormUtilsSpec extends UnitTest {
 

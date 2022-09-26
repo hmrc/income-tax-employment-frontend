@@ -16,13 +16,20 @@
 
 package services.studentLoans
 
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
+
+class StudentLoansServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService {
+
+  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val employmentId = "some-employment-id"
 
@@ -38,9 +45,10 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateUglQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, ugl = false)) shouldBe Right(expectedEmploymentUserData)
+        await(underTest.updateUglQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, ugl = false)) shouldBe Right(expectedEmploymentUserData)
       }
     }
+
     "set uglDeductions to true and uglDeductionsAmount to None" when {
       "passed true" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
@@ -50,7 +58,7 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateUglQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, ugl = true)) shouldBe Right(expectedEmploymentUserData)
+        await(underTest.updateUglQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, ugl = true)) shouldBe Right(expectedEmploymentUserData)
       }
     }
   }
@@ -65,9 +73,10 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updatePglQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, pgl = false)) shouldBe Right(expectedEmploymentUserData)
+        await(underTest.updatePglQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, pgl = false)) shouldBe Right(expectedEmploymentUserData)
       }
     }
+
     "set pglDeductions to true and pglDeductionsAmount to None" when {
       "passed true" in {
         val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
@@ -77,7 +86,7 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updatePglQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, pgl = true)) shouldBe Right(expectedEmploymentUserData)
+        await(underTest.updatePglQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, pgl = true)) shouldBe Right(expectedEmploymentUserData)
       }
     }
   }
@@ -91,7 +100,7 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateUglDeductionAmount(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, uglAmount = 500.00)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateUglDeductionAmount(aUser, taxYearEOY, employmentId, givenEmploymentUserData, uglAmount = 500.00)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -104,7 +113,7 @@ class StudentLoansServiceSpec extends UnitTest with MockEmploymentSessionService
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updatePglDeductionAmount(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, pglAmount = 500.00)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updatePglDeductionAmount(aUser, taxYearEOY, employmentId, givenEmploymentUserData, pglAmount = 500.00)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 }

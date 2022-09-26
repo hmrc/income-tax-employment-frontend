@@ -22,37 +22,40 @@ import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPay
 import models.requests.CreateUpdateExpensesRequest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.UnitTest
 
-class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
 
+class CheckEmploymentExpensesServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockAuditService
+  with MockNrsService
+  with MockEmploymentSessionService {
+
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val underTest = new CheckEmploymentExpensesService(mockAuditService, mockNrsService)
 
   "calling performSubmitAudit" should {
     "send the audit events from the model when it's a create" in {
-      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
-        Some(true),
-        expenses)
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true), anExpenses)
       val prior = None
 
       mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentExpensesData(
-          expenses.jobExpenses,
-          expenses.flatRateJobExpenses,
-          expenses.professionalSubscriptions,
-          expenses.otherAndCapitalAllowances
-        )
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid,
+        AuditNewEmploymentExpensesData(anExpenses.jobExpenses, anExpenses.flatRateJobExpenses, anExpenses.professionalSubscriptions, anExpenses.otherAndCapitalAllowances)
       ).toAuditModel)
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYearEOY, prior)) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(aUser, model, taxYearEOY, prior)) shouldBe AuditResult.Success
     }
 
     "send the audit events from the model when it's a create and theres existing data" in {
-      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
-        Some(true),
-        expenses)
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true), anExpenses)
 
       val prior: AllEmploymentData = anAllEmploymentData.copy(
         hmrcExpenses = None,
@@ -60,22 +63,22 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
       )
 
       mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
-        taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentExpensesData(
-          expenses.jobExpenses,
-          expenses.flatRateJobExpenses,
-          expenses.professionalSubscriptions,
-          expenses.otherAndCapitalAllowances
+        taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid, AuditNewEmploymentExpensesData(
+          anExpenses.jobExpenses,
+          anExpenses.flatRateJobExpenses,
+          anExpenses.professionalSubscriptions,
+          anExpenses.otherAndCapitalAllowances
         )
       ).toAuditModel)
-      await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYearEOY, Some(prior))) shouldBe AuditResult.Success
+
+      await(underTest.performSubmitAudits(aUser, model, taxYearEOY, Some(prior))) shouldBe AuditResult.Success
     }
   }
 
   "send the audit events from the model when it's a amend and there is existing data" in {
-    val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
-      expenses)
-    val priorCustomerEmploymentExpenses = employmentExpenses.copy(
-      expenses = Some(this.expenses.copy(
+    val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true), anExpenses)
+    val priorCustomerEmploymentExpenses = anEmploymentExpenses.copy(
+      expenses = Some(anExpenses.copy(
         jobExpenses = Some(0.0),
         flatRateJobExpenses = Some(0.0),
         professionalSubscriptions = Some(0.0),
@@ -90,22 +93,21 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
     )
 
     mockAuditSendEvent(AmendEmploymentExpensesUpdateAudit(
-      taxYearEOY, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid,
+      taxYearEOY, aUser.affinityGroup.toLowerCase, aUser.nino, aUser.mtditid,
       priorEmploymentExpensesData = AuditEmploymentExpensesData(
         priorCustomerEmploymentExpenses.expenses.get.jobExpenses,
         priorCustomerEmploymentExpenses.expenses.get.flatRateJobExpenses,
         priorCustomerEmploymentExpenses.expenses.get.professionalSubscriptions,
         priorCustomerEmploymentExpenses.expenses.get.otherAndCapitalAllowances
       ),
-      employmentExpensesData = AuditEmploymentExpensesData
-      (
-        expenses.jobExpenses,
-        expenses.flatRateJobExpenses,
-        expenses.professionalSubscriptions,
-        expenses.otherAndCapitalAllowances
+      employmentExpensesData = AuditEmploymentExpensesData(
+        anExpenses.jobExpenses,
+        anExpenses.flatRateJobExpenses,
+        anExpenses.professionalSubscriptions,
+        anExpenses.otherAndCapitalAllowances
       )
     ).toAuditModel)
-    await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYearEOY, Some(prior))) shouldBe AuditResult.Success
+    await(underTest.performSubmitAudits(aUser, model, taxYearEOY, Some(prior))) shouldBe AuditResult.Success
   }
 
   ".performSubmitNrsPayload" should {
@@ -156,8 +158,8 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
           mileageAllowanceRelief = Some(80))
       )
 
-      val priorCustomerEmploymentExpenses = employmentExpenses.copy(
-        expenses = Some(expenses.copy(
+      val priorCustomerEmploymentExpenses = anEmploymentExpenses.copy(
+        expenses = Some(anExpenses.copy(
           businessTravelCosts = Some(123),
           jobExpenses = Some(123),
           flatRateJobExpenses = Some(123),
@@ -174,18 +176,18 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         employerRef = Some("223/AB12399"),
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
-        cessationDate = Some(s"${taxYearEOY-1}-03-11"),
+        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
         dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY-1}-01-04T05:01:01Z"),
+        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
         hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
           employmentData = Some(EmploymentData(
-            submittedOn = s"${taxYearEOY-1}-02-12",
+            submittedOn = s"${taxYearEOY - 1}-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
-            directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+            directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
             disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY-1}-04-23"), Some(32), Some(2))),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),

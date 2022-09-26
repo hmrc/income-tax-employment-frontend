@@ -20,8 +20,8 @@ import connectors.parsers.APIParser
 import models.{APIErrorBodyModel, APIErrorModel, APIErrorsBodyModel}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.libs.json.{JsValue, Json}
+import support.UnitTest
 import uk.gov.hmrc.http.HttpResponse
-import utils.UnitTest
 
 class APIParserSpec extends UnitTest {
 
@@ -43,7 +43,7 @@ class APIParserSpec extends UnitTest {
   "FakeParser" should {
     "log the correct message" in {
       val result = FakeParser.logMessage(httpResponse())
-      result shouldBe (
+      result shouldBe
         """[TestParser][read] Received 500 from service API. Body:{
           |  "failures" : [ {
           |    "code" : "SERVICE_UNAVAILABLE",
@@ -52,12 +52,14 @@ class APIParserSpec extends UnitTest {
           |    "code" : "INTERNAL_SERVER_ERROR",
           |    "reason" : "The service is currently facing issues."
           |  } ]
-          |}""".stripMargin)
+          |}""".stripMargin
     }
+
     "return the the correct error" in {
       val result = FakeParser.badSuccessJsonFromAPI
       result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("PARSING_ERROR", "Error parsing response from API")))
     }
+
     "handle multiple errors" in {
       val result = FakeParser.handleAPIError(httpResponse())
       result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorsBodyModel(Seq(
@@ -65,6 +67,7 @@ class APIParserSpec extends UnitTest {
         APIErrorBodyModel("INTERNAL_SERVER_ERROR", "The service is currently facing issues.")
       ))))
     }
+
     "handle single errors" in {
       val result = FakeParser.handleAPIError(httpResponse(Json.parse(
         """{"code":"INTERNAL_SERVER_ERROR","reason":"The service is currently facing issues."}""".stripMargin)))
@@ -81,5 +84,4 @@ class APIParserSpec extends UnitTest {
       result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("PARSING_ERROR", "Error parsing response from API")))
     }
   }
-
 }

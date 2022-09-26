@@ -18,14 +18,13 @@ package audit
 
 import models.employment.{Deductions, StudentLoans}
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest {
+class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest with TaxYearProvider {
 
   "writes" when {
     "passed a AmendStudentLoansDeductionsUpdate model" should {
       "produce valid json" in {
-
         val auditModel: AmendStudentLoansDeductionsUpdateAudit = AmendStudentLoansDeductionsUpdateAudit(
           taxYear = taxYearEOY,
           userType = "individual",
@@ -46,29 +45,27 @@ class AmendStudentLoansDeductionUpdateAuditSpec extends UnitTest {
 
         val validJson: JsValue = Json.parse(
           s"""{
-            |"taxYear": $taxYearEOY,
-            |"userType": "individual",
-            |"nino": "AA123456A",
-            |"mtditid": "1234567890",
-            |"priorStudentLoanDeductionsData": {
-            |   "studentLoans": {
-            |       "undergraduateLoanDeductionAmount": 12345.67,
-            |       "postgraduateLoanDeductionAmount": 12345.67
-            |       }
-            |   },
-            |"studentLoanDeductionsData": {
-            |   "studentLoans": {
-            |      "undergraduateLoanDeductionAmount": 2233.44,
-            |      "postgraduateLoanDeductionAmount": 2233.44
-            |      }
-            |  }
-            |}""".stripMargin
-
+             |"taxYear": $taxYearEOY,
+             |"userType": "individual",
+             |"nino": "AA123456A",
+             |"mtditid": "1234567890",
+             |"priorStudentLoanDeductionsData": {
+             |   "studentLoans": {
+             |       "undergraduateLoanDeductionAmount": 12345.67,
+             |       "postgraduateLoanDeductionAmount": 12345.67
+             |       }
+             |   },
+             |"studentLoanDeductionsData": {
+             |   "studentLoans": {
+             |      "undergraduateLoanDeductionAmount": 2233.44,
+             |      "postgraduateLoanDeductionAmount": 2233.44
+             |      }
+             |  }
+             |}""".stripMargin
         )
 
         Json.toJson(auditModel) shouldBe validJson
       }
     }
   }
-
 }

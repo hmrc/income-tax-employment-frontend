@@ -20,17 +20,22 @@ import connectors.NrsConnector
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.AuthorisationRequest
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
+import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.{JsString, Writes}
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
+import support.UnitTest
 import support.builders.models.UserBuilder.aUser
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.RequestUtils.getTrueUserAgent
-import utils.UnitTest
 
 import scala.concurrent.Future
 
-class NrsServiceSpec extends UnitTest {
+class NrsServiceSpec extends UnitTest
+  with MockFactory {
 
+  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")))
   private val connector: NrsConnector = mock[NrsConnector]
 
   private val underTest: NrsService = new NrsService(connector)
@@ -74,6 +79,8 @@ class NrsServiceSpec extends UnitTest {
 
     "there isn't user-agent, true client ip and port" should {
       "return the connector response" in {
+        implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+          new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString), FakeRequest())
         val expectedResult: NrsSubmissionResponse = Right()
 
         (connector.postNrsConnector(_: String, _: DecodedCreateNewEmploymentDetailsPayload)(_: HeaderCarrier, _: Writes[DecodedCreateNewEmploymentDetailsPayload]))
