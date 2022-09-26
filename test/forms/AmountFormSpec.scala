@@ -18,7 +18,7 @@ package forms
 
 import forms.AmountForm._
 import play.api.data.{Form, FormError}
-import utils.UnitTest
+import support.UnitTest
 
 class AmountFormSpec extends UnitTest {
 
@@ -34,9 +34,7 @@ class AmountFormSpec extends UnitTest {
   val testCurrencyTooBig = "100000000000.00"
 
   "The AmountForm" should {
-
     "correctly validate a currency" when {
-
       "a valid currency is entered" in {
         val testInput = Map(amount -> testCurrencyValid.toString)
         val expected = testCurrencyValid
@@ -46,9 +44,8 @@ class AmountFormSpec extends UnitTest {
     }
 
     "correctly validate a currency with spaces" when {
-
       "a valid currency is entered" in {
-        val testInput = Map(amount -> testCurrencyWithSpaces.toString)
+        val testInput = Map(amount -> testCurrencyWithSpaces)
         val expected = testCurrencyValid
         val actual = theForm().bind(testInput).value
         actual shouldBe Some(expected)

@@ -28,13 +28,14 @@ import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import support.builders.models.UserBuilder.aUser
-import support.mocks.{MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
+import support.mocks.{MockAuthorisedAction, MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
 import utils.UnitTest
 import views.html.details.EmploymentTaxView
 
 import scala.concurrent.Future
 
 class EmploymentTaxControllerSpec extends UnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockEmploymentService
   with MockErrorHandler {
@@ -59,7 +60,7 @@ class EmploymentTaxControllerSpec extends UnitTest
 
   private lazy val underTest = new EmploymentTaxController(
     mockMessagesControllerComponents,
-    authorisedAction,
+    mockAuthorisedAction,
     view,
     mockEmploymentSessionService,
     mockEmploymentService,

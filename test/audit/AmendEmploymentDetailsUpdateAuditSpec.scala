@@ -19,9 +19,10 @@ package audit
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import play.api.libs.json.Json
-import utils.UnitTest
+import support.builders.models.UserBuilder.aUser
+import support.{TaxYearProvider, UnitTest}
 
-class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest {
+class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvider {
 
   "toAmendAuditModel" should {
     "create the audit model when only updating employment data" in {
@@ -74,7 +75,7 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest {
         None
       )
 
-      model.toAmendAuditModel(authorisationRequest.user, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
+      model.toAmendAuditModel(aUser, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
         taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some(s"${taxYearEOY - 1}-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
         AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999")))
     }

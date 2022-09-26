@@ -38,12 +38,12 @@ import play.api.test.Helpers.status
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import support.{TaxYearHelper, UnitTest}
+import support.{TaxYearProvider, UnitTest}
 
 import scala.concurrent.Future
 
 class DefaultRedirectServiceSpec extends UnitTest
-  with TaxYearHelper {
+  with TaxYearProvider {
 
   private val cyaModel: EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
 

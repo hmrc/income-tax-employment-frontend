@@ -17,16 +17,13 @@
 package models.expenses
 
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class DecodedDeleteEmploymentExpensesSpec extends UnitTest {
 
   "writes" when {
-
     "passed a valid DeleteEmploymentExpenses model" should {
-
       "produce valid json" in {
-
         val validJson: JsValue = Json.parse(
           """{
             |    "expenses": {
@@ -55,5 +52,4 @@ class DecodedDeleteEmploymentExpensesSpec extends UnitTest {
       }
     }
   }
-
 }

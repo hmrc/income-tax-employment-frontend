@@ -17,16 +17,23 @@
 package services.employment
 
 import models.employment.EmploymentDate
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
+
+class EmploymentServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService {
+
+  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new EmploymentService(mockEmploymentSessionService, mockExecutionContext)
+  private val underTest = new EmploymentService(mockEmploymentSessionService, ec)
 
   "updateEmployerRef" should {
     "set employerRef" in {
@@ -36,7 +43,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerRef(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payeRef = Some("employerRef"))) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateEmployerRef(aUser, taxYearEOY, employmentId, givenEmploymentUserData, payeRef = Some("employerRef"))) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -50,7 +57,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -64,7 +71,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -78,7 +85,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updatePayrollId(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payrollId = Some("payrollId"))) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updatePayrollId(aUser, taxYearEOY, employmentId, givenEmploymentUserData, payrollId = Some("payrollId"))) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -91,7 +98,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateDidYouLeaveQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = false)) shouldBe
+      await(underTest.updateDidYouLeaveQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -103,7 +110,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateDidYouLeaveQuestion(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = true)) shouldBe
+      await(underTest.updateDidYouLeaveQuestion(aUser, taxYearEOY, employmentId, givenEmploymentUserData, leftEmployer = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -116,7 +123,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateCessationDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, cessationDate = "some-date")) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateCessationDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, cessationDate = "some-date")) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -128,7 +135,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateTaxablePayToDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateTaxablePayToDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -140,7 +147,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateTotalTaxToDate(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateTotalTaxToDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
   }
 }

@@ -18,9 +18,9 @@ package audit
 
 import models.expenses.Expenses
 import play.api.libs.json.{JsValue, Json}
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class DeleteEmploymentExpensesAuditSpec extends UnitTest {
+class DeleteEmploymentExpensesAuditSpec extends UnitTest with TaxYearProvider {
 
   val fullJson: JsValue = Json.parse(
     s"""{

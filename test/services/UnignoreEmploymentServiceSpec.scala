@@ -26,9 +26,13 @@ import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEm
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.builders.models.employment.UnignoreEmploymentNRSModelBuilder.anUnignoreEmploymentNRSModel
 import support.mocks._
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext
 
 class UnignoreEmploymentServiceSpec extends UnitTest
+  with TaxYearProvider
   with MockUnignoreEmploymentConnector
   with MockAuditService
   with MockNrsService {
@@ -37,7 +41,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
     mockUnignoreEmploymentConnector,
     mockAuditService,
     mockNrsService,
-    mockExecutionContext
+    ExecutionContext.global
   )
 
   ".unignoreEmployment" should {
@@ -48,7 +52,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
       mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Right(()))
       verifySubmitEvent(anUnignoreEmploymentNRSModel)
 
-      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Right()
+      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Right()
     }
 
     "return a error result" in {
@@ -56,7 +60,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
 
       mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Left(error))
 
-      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)) shouldBe Left(error)
+      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Left(error)
     }
   }
 }

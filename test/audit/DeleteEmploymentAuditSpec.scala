@@ -19,9 +19,9 @@ package audit
 import models.benefits.Benefits
 import models.employment.{Deductions, EmploymentDetailsViewModel, StudentLoans}
 import play.api.libs.json.Json
-import utils.{TestTaxYearHelper, UnitTest}
+import support.{TaxYearProvider, UnitTest}
 
-class DeleteEmploymentAuditSpec extends UnitTest with TestTaxYearHelper {
+class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
 
   "writes" when {
     "passed a DeleteEmploymentAudit model" should {

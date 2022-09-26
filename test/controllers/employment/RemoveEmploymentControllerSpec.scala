@@ -42,7 +42,7 @@ class RemoveEmploymentControllerSpec extends UnitTest
 
   private lazy val controller = new RemoveEmploymentController(
     mockMessagesControllerComponents,
-    authorisedAction,
+    mockAuthorisedAction,
     inYearAction,
     view,
     mockEmploymentSessionService,

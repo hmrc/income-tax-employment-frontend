@@ -17,17 +17,24 @@
 package services.benefits
 
 import models.benefits.BenefitsViewModel
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import support.mocks.MockEmploymentSessionService
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
+import scala.concurrent.ExecutionContext
+
+class BenefitsServiceSpec extends UnitTest
+  with TaxYearProvider
+  with MockEmploymentSessionService {
 
   private val employmentId = "some-employment-id"
 
-  private val underTest = new BenefitsService(mockEmploymentSessionService, mockExecutionContext)
+  private implicit val ec: ExecutionContext = ExecutionContext.global
+
+  private val underTest = new BenefitsService(mockEmploymentSessionService, ec)
 
   "updateIsBenefitsReceived" should {
     "update benefits model when questionValue is true" when {
@@ -38,7 +45,7 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
+        await(underTest.updateIsBenefitsReceived(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
           Right(expectedEmploymentUserData)
       }
 
@@ -49,7 +56,7 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
+        await(underTest.updateIsBenefitsReceived(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = true)) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -63,7 +70,7 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
+        await(underTest.updateIsBenefitsReceived(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
           Right(expectedEmploymentUserData)
       }
 
@@ -74,7 +81,7 @@ class BenefitsServiceSpec extends UnitTest with MockEmploymentSessionService {
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateIsBenefitsReceived(authorisationRequest.user, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
+        await(underTest.updateIsBenefitsReceived(aUser, taxYearEOY, employmentId, employmentUserData, questionValue = false)) shouldBe
           Right(expectedEmploymentUserData)
       }
     }

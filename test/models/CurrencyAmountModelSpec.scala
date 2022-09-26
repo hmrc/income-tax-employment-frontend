@@ -17,17 +17,14 @@
 package models
 
 import play.api.libs.json.{JsObject, Json}
-import utils.UnitTest
+import support.UnitTest
 
 class CurrencyAmountModelSpec extends UnitTest {
 
-  val model: CurrencyAmountModel = CurrencyAmountModel(45.00)
-  val jsonModel: JsObject = Json.obj(
-    "amount" -> 45.00
-  )
+  private val model: CurrencyAmountModel = CurrencyAmountModel(45.00)
+  private val jsonModel: JsObject = Json.obj("amount" -> 45.00)
 
   "CurrencyAmountModel" should {
-
     "parse to Json" in {
       Json.toJson(model) shouldBe jsonModel
     }
@@ -36,6 +33,4 @@ class CurrencyAmountModelSpec extends UnitTest {
       jsonModel.as[CurrencyAmountModel] shouldBe model
     }
   }
-
 }
-

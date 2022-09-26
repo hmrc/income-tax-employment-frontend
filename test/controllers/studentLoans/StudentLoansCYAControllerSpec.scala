@@ -17,7 +17,6 @@
 package controllers.studentLoans
 
 import common.{EmploymentSection, SessionValues}
-import config.MockStudentLoansCYAService
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -29,7 +28,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockErrorHandler}
+import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockStudentLoansCYAService}
 import utils.UnitTest
 import views.html.studentLoans.StudentLoansCYAView
 
@@ -49,7 +48,7 @@ class StudentLoansCYAControllerSpec extends UnitTest
     view,
     mockStudentLoansCYAService,
     mockEmploymentSessionService,
-    authorisedAction,
+    mockAuthorisedAction,
     inYearAction,
     mockErrorHandler)(appConfig = new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled,
     isEmploymentEOYEnabled = isEmploymentEOYEnabled, taxYearErrorEnabled = taxYearErrorFeature), ec)

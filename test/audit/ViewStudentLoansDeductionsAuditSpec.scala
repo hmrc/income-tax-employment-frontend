@@ -18,9 +18,9 @@ package audit
 
 import models.employment.{Deductions, StudentLoans}
 import play.api.libs.json.Json
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-class ViewStudentLoansDeductionsAuditSpec extends UnitTest {
+class ViewStudentLoansDeductionsAuditSpec extends UnitTest with TaxYearProvider {
 
   "writes" when {
     "passed a ViewStudentLoansDeductionsAudit model" should {

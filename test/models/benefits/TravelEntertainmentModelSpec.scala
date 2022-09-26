@@ -21,12 +21,12 @@ import controllers.employment.routes.CheckYourBenefitsController
 import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
-import support.{TaxYearHelper, UnitTest}
+import support.{TaxYearProvider, UnitTest}
 import utils.TypeCaster.Converter
 import utils.{EncryptedValue, SecureGCMCipher}
 
 class TravelEntertainmentModelSpec extends UnitTest
-  with TaxYearHelper
+  with TaxYearProvider
   with MockFactory {
 
   private val employmentId = "some-employment-id"

@@ -37,7 +37,7 @@ class StudentLoansQuestionControllerSpec extends UnitTest
     mockMessagesControllerComponents,
     view,
     mockEmploymentSessionService,
-    authorisedAction,
+    mockAuthorisedAction,
     inYearAction,
     mockErrorHandler)(appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
     taxYearErrorEnabled = taxYearErrorFeature))

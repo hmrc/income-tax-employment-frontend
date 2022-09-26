@@ -19,9 +19,11 @@ package models.requests
 import models.employment.EmploymentExpenses
 import models.expenses.Expenses
 import play.api.libs.json.Json
-import utils.UnitTest
+import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import support.{TaxYearProvider, UnitTest}
 
-class CreateUpdateExpensesRequestSpec extends UnitTest {
+class CreateUpdateExpensesRequestSpec extends UnitTest with TaxYearProvider {
 
   val defaultExpenses: Expenses = Expenses(
     businessTravelCosts = Some(150),
@@ -37,7 +39,7 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
   val defaultModel: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
     defaultExpenses)
 
-  val defaultPriorCustomerEmploymentExpenses: EmploymentExpenses = employmentExpenses.copy(
+  val defaultPriorCustomerEmploymentExpenses: EmploymentExpenses = anEmploymentExpenses.copy(
     expenses = Some(defaultExpenses.copy(
       businessTravelCosts = Some(15),
       jobExpenses = Some(10),
@@ -52,13 +54,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
   "creates a create audit event" when {
 
     "all expenses are provided" in {
-      val actualResult = defaultModel.toCreateAuditModel(authorisationRequest.user, taxYear)
+      val actualResult = defaultModel.toCreateAuditModel(anAuthorisationRequest.user, taxYear)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            | "employmentExpensesData": {
            |  "jobExpenses": 100,
            |  "flatRateJobExpenses": 50,
@@ -77,13 +79,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
         )
       )
 
-      val actualResult = model.toCreateAuditModel(authorisationRequest.user, taxYear)
+      val actualResult = model.toCreateAuditModel(anAuthorisationRequest.user, taxYear)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            | "employmentExpensesData": {
            |  "jobExpenses": 100,
            |  "flatRateJobExpenses": 50
@@ -102,13 +104,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
         )
       )
 
-      val actualResult = model.toCreateAuditModel(authorisationRequest.user, taxYear)
+      val actualResult = model.toCreateAuditModel(anAuthorisationRequest.user, taxYear)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            | "employmentExpensesData": {}
            |}""".stripMargin)
       Json.toJson(actualResult) shouldBe expectedJson
@@ -117,13 +119,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
 
   "creates an amend audit event" when {
     "all prior and current expenses are provided" in {
-      val actualResult = defaultModel.toAmendAuditModel(authorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
+      val actualResult = defaultModel.toAmendAuditModel(anAuthorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            |  "priorEmploymentExpensesData": {
            |  "jobExpenses": 10,
            |  "flatRateJobExpenses": 5,
@@ -142,7 +144,7 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
 
     "some prior expenses are provided " in {
 
-      val priorCustomerEmploymentExpenses = employmentExpenses.copy(
+      val priorCustomerEmploymentExpenses = anEmploymentExpenses.copy(
         expenses = Some(defaultExpenses.copy(
           businessTravelCosts = Some(15),
           jobExpenses = Some(10),
@@ -154,14 +156,14 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
           mileageAllowanceRelief = Some(30)
         )))
 
-      val actualResult = defaultModel.toAmendAuditModel(authorisationRequest.user, taxYear, priorCustomerEmploymentExpenses)
+      val actualResult = defaultModel.toAmendAuditModel(anAuthorisationRequest.user, taxYear, priorCustomerEmploymentExpenses)
 
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            |  "priorEmploymentExpensesData": {
            |  "jobExpenses": 10,
            |  "flatRateJobExpenses": 5
@@ -189,13 +191,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
         expenses = None
       )
 
-      val actualResult = model.toAmendAuditModel(authorisationRequest.user, taxYear, priorExpenses)
+      val actualResult = model.toAmendAuditModel(anAuthorisationRequest.user, taxYear, priorExpenses)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            |   "priorEmploymentExpensesData": {},
            | "employmentExpensesData": {
            |  "jobExpenses": 100,
@@ -213,13 +215,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
         )
       )
 
-      val actualResult = model.toAmendAuditModel(authorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
+      val actualResult = model.toAmendAuditModel(anAuthorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            |   "priorEmploymentExpensesData": {
            |  "jobExpenses": 10,
            |  "flatRateJobExpenses": 5,
@@ -244,13 +246,13 @@ class CreateUpdateExpensesRequestSpec extends UnitTest {
         )
       )
 
-      val actualResult = model.toAmendAuditModel(authorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
+      val actualResult = model.toAmendAuditModel(anAuthorisationRequest.user, taxYear, defaultPriorCustomerEmploymentExpenses)
       val expectedJson = Json.parse(
         s"""{
            | "taxYear": $taxYear,
-           | "userType": "${authorisationRequest.user.affinityGroup.toLowerCase}",
-           | "nino": "${authorisationRequest.user.nino}",
-           | "mtditid": "${authorisationRequest.user.mtditid}",
+           | "userType": "${anAuthorisationRequest.user.affinityGroup.toLowerCase}",
+           | "nino": "${anAuthorisationRequest.user.nino}",
+           | "mtditid": "${anAuthorisationRequest.user.mtditid}",
            |   "priorEmploymentExpensesData": {
            |  "jobExpenses": 10,
            |  "flatRateJobExpenses": 5,

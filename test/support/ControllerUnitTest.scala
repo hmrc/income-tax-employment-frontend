@@ -29,8 +29,8 @@ trait ControllerUnitTest extends UnitTest
   with FutureAwaits with DefaultAwaitTimeout
   with GuiceOneAppPerSuite
   with Injecting
-  with TaxYearHelper
-  with FakeRequestHelper {
+  with TaxYearProvider
+  with FakeRequestProvider {
 
   protected implicit val cc: MessagesControllerComponents = stubMessagesControllerComponents()
   protected implicit val appConfig: AppConfig = new MockAppConfig().config()

@@ -18,7 +18,7 @@ package forms.details
 
 import forms.details.EmployerNameForm.employerName
 import play.api.data.{Form, FormError}
-import utils.UnitTest
+import support.UnitTest
 
 class EmployerNameFormSpec extends UnitTest {
 

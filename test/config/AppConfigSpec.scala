@@ -16,11 +16,12 @@
 
 package config
 
+import org.scalamock.scalatest.MockFactory
+import support.{FakeRequestProvider, UnitTest}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.UnitTest
 
-class AppConfigSpec extends UnitTest {
+class AppConfigSpec extends UnitTest with MockFactory with FakeRequestProvider {
 
   private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   private val appUrl = "http://localhost:9308"
@@ -43,7 +44,6 @@ class AppConfigSpec extends UnitTest {
   (mockServicesConfig.getString _).expects("appName").returns("income-tax-employment-frontend")
 
   "AppConfig" should {
-
     "return correct feedbackUrl when the user is an individual" in {
       val expectedBackUrl = SafeRedirectUrl(appUrl + fakeRequest.uri).encodedUrl
       val expectedServiceIdentifier = "update-and-submit-income-tax-return"

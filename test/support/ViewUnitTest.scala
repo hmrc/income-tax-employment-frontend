@@ -34,7 +34,7 @@ trait ViewUnitTest extends UnitTest
   with GuiceOneAppPerSuite
   with Injecting
   with TestTaxYearHelper
-  with FakeRequestHelper {
+  with FakeRequestProvider {
 
   private lazy val individualUserRequest: AuthorisationRequest[AnyContent] = anAuthorisationRequest.copy[AnyContent](request = fakeIndividualRequest)
   private lazy val agentUserRequest: AuthorisationRequest[AnyContent] = anAuthorisationRequest.copy[AnyContent](aUser.copy(arn = Some("arn"), affinityGroup = AffinityGroup.Agent.toString))

@@ -16,15 +16,16 @@
 
 package utils
 
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import support.TaxYearProvider
 
-class DateTimeUtilSpec extends UnitTest with GuiceOneAppPerSuite {
+class DateTimeUtilSpec extends support.UnitTest
+  with TaxYearProvider {
 
   "calling the DateTimeUtil object" when {
     "a valid timestamp" must {
       "return a zoned date time" in {
-        val time = Some(s"${taxYearEOY-1}-01-04T05:01:01Z")
-        DateTimeUtil.getSubmittedOnDateTime(time).get.toString shouldBe s"${taxYearEOY-1}-01-04T05:01:01Z"
+        val time = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z")
+        DateTimeUtil.getSubmittedOnDateTime(time).get.toString shouldBe s"${taxYearEOY - 1}-01-04T05:01:01Z"
       }
 
       "return an exception when its not a valid timestamp" in {

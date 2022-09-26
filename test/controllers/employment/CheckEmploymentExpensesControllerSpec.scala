@@ -52,7 +52,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTest
     mockErrorHandler
   )(
     mockAppConfig,
-    authorisedAction,
+    mockAuthorisedAction,
     mockMessagesControllerComponents,
     ec
   )
