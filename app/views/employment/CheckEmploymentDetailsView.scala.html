@@ -86,7 +86,7 @@
 
         val payeRef = EmploymentDataForView(
             messages(msgKeyGeneric + ".payeRef"),
-            employmentDetails.employerRef,
+            Some(employmentDetails.employerRef.getOrElse(messages("common.notProvided"))),
             PayeRefController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.payeRef")
         )
@@ -123,7 +123,7 @@
 
         val payrollId = EmploymentDataForView(
             messages(msgKeyGeneric + ".payrollId"),
-            employmentDetails.payrollId,
+            Some(employmentDetails.payrollId.getOrElse(messages("common.notProvided"))),
             EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.payrollId")
         )
