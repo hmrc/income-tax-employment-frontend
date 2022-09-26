@@ -36,7 +36,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEmployerRef(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payeRef = "employerRef")) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateEmployerRef(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payeRef = Some("employerRef"))) shouldBe Right(expectedEmploymentUserData)
     }
   }
 
@@ -78,7 +78,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updatePayrollId(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payrollId = "payrollId")) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updatePayrollId(authorisationRequest.user, taxYearEOY, employmentId, givenEmploymentUserData, payrollId = Some("payrollId"))) shouldBe Right(expectedEmploymentUserData)
     }
   }
 

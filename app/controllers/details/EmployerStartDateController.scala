@@ -23,6 +23,7 @@ import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDateForm
 import forms.details.EmploymentDateForm.employmentStartDateForm
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.employment.EmploymentDate
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -82,14 +83,14 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateStartDate(request.user, taxYear, employmentId, employmentUserData, startedDate).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentUserData: EmploymentUserData,
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
+    if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       EmployerPayrollIdController.show(taxYear, employmentId)

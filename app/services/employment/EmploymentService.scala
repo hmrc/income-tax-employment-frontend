@@ -16,14 +16,13 @@
 
 package services.employment
 
-import java.time.LocalDate
-
-import javax.inject.Inject
 import models.User
 import models.employment.EmploymentDate
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject()(employmentSessionService: EmploymentSessionService,
@@ -33,9 +32,9 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
                         taxYear: Int,
                         employmentId: String,
                         originalEmploymentUserData: EmploymentUserData,
-                        payeRef: String): Future[Either[Unit, EmploymentUserData]] = {
+                        payeRef: Option[String]): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val updatedEmployment: EmploymentCYAModel = cya.copy(cya.employmentDetails.copy(employerRef = Some(payeRef)))
+    val updatedEmployment: EmploymentCYAModel = cya.copy(cya.employmentDetails.copy(employerRef = payeRef))
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
@@ -68,9 +67,9 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
                       taxYear: Int,
                       employmentId: String,
                       originalEmploymentUserData: EmploymentUserData,
-                      payrollId: String): Future[Either[Unit, EmploymentUserData]] = {
+                      payrollId: Option[String]): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val updatedEmployment = cya.copy(cya.employmentDetails.copy(payrollId = Some(payrollId)))
+    val updatedEmployment = cya.copy(cya.employmentDetails.copy(payrollId = payrollId))
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }

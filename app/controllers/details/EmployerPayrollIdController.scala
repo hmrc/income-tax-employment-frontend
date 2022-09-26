@@ -22,6 +22,7 @@ import controllers.details.routes.EmployerPayAmountController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmployerPayrollIdForm
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -69,24 +70,24 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
           formWithErrors => {
             Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId)))
           },
-          submittedPayrollId => handleSuccessForm(taxYear, employmentId, data, submittedPayrollId)
+          payrollId => handleSuccessForm(taxYear, employmentId, data, if (payrollId.trim.isEmpty) None else Some(payrollId))
         )
       }
     }
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payrollId: String)
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payrollId: Option[String])
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updatePayrollId(request.user, taxYear, employmentId, employmentUserData, payrollId).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentUserData: EmploymentUserData,
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
+    if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       EmployerPayAmountController.show(taxYear, employmentId)

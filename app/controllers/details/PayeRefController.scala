@@ -22,6 +22,7 @@ import controllers.details.routes._
 import controllers.employment.routes._
 import forms.details.PayeRefForm
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -66,7 +67,6 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
@@ -76,24 +76,24 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
             val employerName = data.employment.employmentDetails.employerName
             Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, employmentId)))
           },
-          payeRef => handleSuccessForm(taxYear, employmentId, data, payeRef)
+          payeRef => handleSuccessForm(taxYear, employmentId, data, if (payeRef.trim.isEmpty) None else Some(payeRef))
         )
       }
     }
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payeRef: String)
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payeRef: Option[String])
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateEmployerRef(request.user, taxYear, employmentId, employmentUserData, payeRef).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentUserData: EmploymentUserData,
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
+    if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       DidYouLeaveEmployerController.show(taxYear, employmentId)

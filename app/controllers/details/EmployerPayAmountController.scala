@@ -22,6 +22,7 @@ import controllers.details.routes.EmploymentTaxController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
+import models.details.EmploymentDetails
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -84,14 +85,14 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData, taxYear, employmentId))
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentUserData: EmploymentUserData,
+  private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentUserData.employment.employmentDetails.isFinished(employmentUserData.isPriorSubmission)) {
+    if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       EmploymentTaxController.show(taxYear, employmentId)
