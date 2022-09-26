@@ -90,7 +90,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
               data.isPriorSubmission,
               data.hasPriorBenefits,
               data.hasPriorStudentLoans
-            )(errorHandler.internalServerError())(Redirect(getRedirectCall(updatedCya.employmentDetails, data.isPriorSubmission, taxYear, employmentId)))
+            )(errorHandler.internalServerError())(Redirect(getRedirectCall(updatedCya.employmentDetails, taxYear, employmentId)))
           }
         )
       }
@@ -98,10 +98,9 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   private def getRedirectCall(employmentDetails: EmploymentDetails,
-                              isPriorSubmission: Boolean,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished(isPriorSubmission)) {
+    if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
       EmployerPayrollIdController.show(taxYear, employmentId)
