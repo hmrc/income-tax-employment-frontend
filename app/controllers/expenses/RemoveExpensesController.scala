@@ -60,7 +60,7 @@ class RemoveExpensesController @Inject()(authAction: AuthorisedAction,
             case (None, None) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
             case _ => deleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(request.user, allEmploymentData, taxYear).map {
               case Left(error) => errorHandler.handleError(error.status)
-              case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
+              case Right(_) => Redirect(EmploymentSummaryController.show(taxYear, "true"))
             }
           }
       }

@@ -41,7 +41,7 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
                                   (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, Result]] = {
     createOrUpdateExpenses(request.user, taxYear, expensesRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
-      case Right(_) => Right(Redirect(EmploymentSummaryController.show(taxYear)))
+      case Right(_) => Right(Redirect(EmploymentSummaryController.show(taxYear, "true")))
     }
   }
 
@@ -55,7 +55,7 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
                                         (result: CreateUpdateExpensesRequest => Future[Result]): Future[Result] = {
     cyaAndPriorToCreateUpdateExpensesRequest(user, cya, prior) match {
       //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
-      case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
+      case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentSummaryController.show(taxYear, "true")))
       case Right(model) => result(model)
     }
   }

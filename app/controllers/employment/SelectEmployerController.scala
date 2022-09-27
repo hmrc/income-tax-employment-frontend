@@ -90,7 +90,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
         unignoreEmploymentService.unignoreEmployment(request.user, taxYear, employmentSource).flatMap {
           case Left(error) => Future.successful(errorHandler.handleError(error.status))
           case Right(_) =>
-            val redirect = Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
+            val redirect = Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear, "true"))
 
             idInSession.fold {
               employmentSessionService.clear(request.user, taxYear, employer, clearCYA = false).map {

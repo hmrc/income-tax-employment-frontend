@@ -73,7 +73,7 @@
                 content = Text(messages("employment.removeEmployment.button")),
                 classes = "govuk-button--warning"
             ))
-            @link(EmploymentSummaryController.show(taxYear).url, messages("common.cancel"), id = Some("cancel-link-id"))
+            @link(EmploymentSummaryController.show(taxYear, "true").url, messages("common.cancel"), id = Some("cancel-link-id"))
         </div>
     }
 }

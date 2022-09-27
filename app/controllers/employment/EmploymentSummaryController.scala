@@ -42,9 +42,8 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
+  def show(taxYear: Int, gateway: String): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
     val isInYear: Boolean = inYearAction.inYear(taxYear)
-
     if (!isInYear && !appConfig.employmentEOYEnabled) {
       Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     } else {
@@ -54,7 +53,7 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined
 
-      Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent))
+     Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent, gateway == "true"))
     }
   }
 

@@ -14,7 +14,9 @@ GET         /timeout                                                            
 
 #################       Summary pages      #########################################
 
-GET         /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+GET         /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int, gateway = "false")
+GET         /:taxYear/employment-summary/gateway:gateway                             controllers.employment.EmploymentSummaryController.show(taxYear: Int, gateway: String)
+
 GET         /:taxYear/employment-summary/add-employment                              controllers.employment.EmploymentSummaryController.addNewEmployment(taxYear: Int)
 
 GET         /:taxYear/employer-information                                           controllers.employment.EmployerInformationController.show(taxYear: Int, employmentId: String)
@@ -345,5 +347,4 @@ GET         /error/you-need-client-authorisation                                
 GET         /error/not-authorised-to-use-service                                     controllers.errors.UnauthorisedUserErrorController.show
 
 GET         /error/you-need-agent-services-account                                   controllers.errors.YouNeedAgentServicesController.show
-
 

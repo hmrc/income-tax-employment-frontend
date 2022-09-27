@@ -24,6 +24,7 @@
 @import controllers.employment.routes.EmployerInformationController
 @import controllers.employment.routes.EmploymentSummaryController
 @import controllers.employment.routes.RemoveEmploymentController
+@import controllers.tailorings.routes.EmploymentGatewayController
 @import controllers.expenses.routes.EmploymentExpensesController
 @import controllers.expenses.routes.ExpensesInterruptPageController
 @import controllers.expenses.routes.RemoveExpensesController
@@ -58,12 +59,12 @@
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(employments.nonEmpty || !gateway) {
-        govukSummaryList(SummaryList(summaryListRow(
+    @if(employments.nonEmpty || gateway) {
+        @govukSummaryList(SummaryList(Seq(summaryListRow(
             HtmlContent(messages("PAYE employment")),
-            HtmlContent( if(gateway) messages("common.yes") else messages("common.no")),
-            actions = Seq((controllers.tailorings.EmploymentGatewayController.show(taxYear: Int), messages("common.change"), Some(messages(common.change))))
-    )
+            HtmlContent( if(!employments.isEmpty) messages("common.yes") else messages("common.no")),
+            actions = Seq((EmploymentGatewayController.show(taxYear: Int), messages("common.change"), Some(messages("common.change")))
+        )))))
     }
 
     @if(isInYear) {

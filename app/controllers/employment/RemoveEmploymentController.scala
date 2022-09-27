@@ -67,7 +67,7 @@ class RemoveEmploymentController @Inject()(cc: MessagesControllerComponents,
             case Some(EmploymentSourceOrigin(_, _)) =>
               removeEmploymentService.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, request.user).map {
                 case Left(error) => errorHandler.handleError(error.status)
-                case Right(_) => Redirect(EmploymentSummaryController.show(taxYear))
+                case Right(_) => Redirect(EmploymentSummaryController.show(taxYear, "true"))
               }
             case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }

@@ -107,7 +107,7 @@
         govukSummaryList(SummaryList(rows))
     }
 
-    @formWithCSRF(action = EmploymentSummaryController.show(taxYear)) {
+    @formWithCSRF(action = EmploymentSummaryController.show(taxYear, "true")) {
         @govUkButton(Button(
             attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
             preventDoubleClick = true,
