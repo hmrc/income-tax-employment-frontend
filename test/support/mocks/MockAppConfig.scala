@@ -19,10 +19,10 @@ package support.mocks
 import config.AppConfig
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.RequestHeader
+import support.TaxYearProvider
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.TestTaxYearHelper
 
-class MockAppConfig extends MockFactory with TestTaxYearHelper {
+class MockAppConfig extends MockFactory with TaxYearProvider {
 
   def config(encrypt: Boolean = true,
              _mimicEmploymentAPICalls: Boolean = false,

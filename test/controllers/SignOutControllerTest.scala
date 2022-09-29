@@ -18,13 +18,13 @@ package controllers
 
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.SEE_OTHER
-import play.api.test.Helpers.header
+import play.api.test.Helpers.{header, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTest
+import support.ControllerUnitTest
 
-class SignOutControllerTest extends UnitTest with DefaultAwaitTimeout {
+class SignOutControllerTest extends ControllerUnitTest with DefaultAwaitTimeout {
 
-  val controller = new SignOutController(mockMessagesControllerComponents, mockAppConfig)
+  val controller = new SignOutController(stubMessagesControllerComponents(), appConfig)
 
   "SigOutController" should {
 

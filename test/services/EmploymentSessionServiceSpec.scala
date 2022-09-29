@@ -16,7 +16,7 @@
 
 package services
 
-import common.EmploymentSection
+import common.{EmploymentSection, SessionValues}
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.details.EmploymentDetails
@@ -25,11 +25,14 @@ import models.employment.createUpdate._
 import models.expenses.Expenses
 import models.mongo._
 import models.{APIErrorBodyModel, APIErrorModel, AuthorisationRequest, User}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Logging
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
-import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status}
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -37,13 +40,16 @@ import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAMo
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import support.mocks._
+import support.{TaxYearProvider, UnitTest}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.{InYearUtil, UnitTest}
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+import utils.{Clock, InYearUtil, UnitTestClock}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentSessionServiceSpec extends UnitTest
+class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
+  with TaxYearProvider
   with MockIncomeTaxUserDataConnector
   with MockEmploymentUserDataRepository
   with MockCreateUpdateEmploymentDataConnector
@@ -51,6 +57,8 @@ class EmploymentSessionServiceSpec extends UnitTest
   with MockExpensesUserDataRepository
   with Logging {
 
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+  implicit val testClock: Clock = UnitTestClock
   private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
   private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
@@ -72,7 +80,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     mockCreateUpdateEmploymentDataConnector,
     testClock,
     mockInYearUtil
-  )(mockAppConfig, mockExecutionContext)
+  )(new MockAppConfig().config(), ec)
 
   private val underTestWithMimicking: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
@@ -84,7 +92,15 @@ class EmploymentSessionServiceSpec extends UnitTest
     mockCreateUpdateEmploymentDataConnector,
     testClock,
     mockInYearUtil
-  )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), mockExecutionContext)
+  )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), ec)
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
+  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")))
 
   private val anyResult = Ok
 
@@ -1257,7 +1273,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      redirectLocation(response) shouldBe Some("303")
     }
 
     "return BAD_REQUEST(400) status when createOrUpdate fails" in {
@@ -1271,7 +1287,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val response = underTest.createOrUpdateSessionData(user = authorisationRequest.user, taxYear = taxYear, employmentId = "employmentId", cyaModel = cya, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true)(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "400"
+      redirectLocation(response) shouldBe Some("400")
     }
   }
 
@@ -1343,7 +1359,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         isPriorSubmission, hasPriorExpenses, authorisationRequest.user)(Redirect("400"))(onSuccessBlock)
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      redirectLocation(response) shouldBe Some("303")
     }
 
     "return onFail block when createOrUpdate fails" in {
@@ -1357,7 +1373,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         isPriorSubmission = true, hasPriorExpenses = true, authorisationRequest.user)(onFailBlock)(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "400"
+      redirectLocation(response) shouldBe Some("400")
     }
   }
 
@@ -1417,7 +1433,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      redirectLocation(response) shouldBe Some("303")
     }
 
     "redirect to overview when no data is retrieved" in {
@@ -1428,7 +1444,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "/overview"
+      redirectLocation(response) shouldBe Some("/overview")
     }
 
     "return internal server error when DatabaseError" in {
@@ -1529,7 +1545,7 @@ class EmploymentSessionServiceSpec extends UnitTest
         val response = underTest.clearExpenses(taxYear)(Redirect("303"))
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "303"
+        redirectLocation(response) shouldBe Some("303")
       }
 
       "redirect to error when the record in the database has not been removed" in {

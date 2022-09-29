@@ -16,20 +16,20 @@
 
 package support.builders.models.employment
 
-import DeductionsBuilder.aDeductions
-import PayBuilder.aPay
 import models.employment.{Deductions, EmploymentData, StudentLoans}
+import support.TaxYearUtils.taxYearEOY
+import support.builders.models.employment.DeductionsBuilder.aDeductions
+import support.builders.models.employment.PayBuilder.aPay
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
-import utils.TestTaxYearHelper
 
-object EmploymentDataBuilder extends TestTaxYearHelper {
+object EmploymentDataBuilder {
 
   val anEmploymentData: EmploymentData = EmploymentData(
-    submittedOn = s"${taxYearEOY-1}-02-12",
+    submittedOn = s"${taxYearEOY - 1}-02-12",
     employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
     closeCompany = Some(false),
-    directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+    directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
     disguisedRemuneration = Some(false),
     pay = Some(aPay),
     deductions = Some(aDeductions)
@@ -40,7 +40,7 @@ object EmploymentDataBuilder extends TestTaxYearHelper {
     employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
     closeCompany = Some(false),
-    directorshipCeasedDate = Some(s"${taxYearEOY-1}-02-12"),
+    directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
     disguisedRemuneration = Some(false),
     pay = Some(aPay.copy(
       taxablePayToDate = aPay.taxablePayToDate.map(_ + 1000),

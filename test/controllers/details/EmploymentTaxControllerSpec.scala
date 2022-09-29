@@ -24,17 +24,21 @@ import models.AuthorisationRequest
 import models.details.EmploymentDetails
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
-import play.api.mvc.Result
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{Ok, Redirect}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockAuthorisedAction, MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTest
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.{InYearUtil, UnitTest}
 import views.html.details.EmploymentTaxView
 
 import scala.concurrent.Future
 
-class EmploymentTaxControllerSpec extends UnitTest
+class EmploymentTaxControllerSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockEmploymentService
@@ -53,25 +57,33 @@ class EmploymentTaxControllerSpec extends UnitTest
       hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
   }
 
+  private val nino = "AA123456A"
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
   private val employmentId = "223/AB12399"
 
   private lazy val view = app.injector.instanceOf[EmploymentTaxView]
-  implicit private val messages: Messages = getMessages(isWelsh = false)
+  implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 
   private lazy val underTest = new EmploymentTaxController(
-    mockMessagesControllerComponents,
+    stubMessagesControllerComponents,
     mockAuthorisedAction,
     view,
     mockEmploymentSessionService,
     mockEmploymentService,
-    inYearAction,
+    new InYearUtil,
     new EmploymentDetailsFormsProvider(),
     mockErrorHandler,
-  )(mockAppConfig)
+  )(appConfig)
 
   ".show" should {
     "return a result when " which {
-      s"has an OK($OK) status" in new TestWithAuth {
+      s"has an OK($OK) status" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetAndHandle(taxYearEOY, Ok(view(
             taxYearEOY, "001", "Dave", AmountForm.amountForm(""))
@@ -89,7 +101,8 @@ class EmploymentTaxControllerSpec extends UnitTest
 
   ".submit" should {
     "return a result when " which {
-      s"Has a $SEE_OTHER status when cya in session" in new TestWithAuth {
+      s"Has a $SEE_OTHER status when cya in session" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           val redirect = CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url
@@ -103,7 +116,7 @@ class EmploymentTaxControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe controllers.employment.routes.CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url
+        redirectLocation(result) shouldBe Some(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
       }
     }
   }

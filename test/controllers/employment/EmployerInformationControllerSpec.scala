@@ -17,35 +17,50 @@
 package controllers.employment
 
 import common.SessionValues
+import models.AuthorisationRequest
 import play.api.http.Status._
-import play.api.i18n.Messages
-import play.api.mvc.Result
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import support.ControllerUnitTest
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAppConfig, MockEmploymentSessionService}
-import utils.UnitTest
+import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService}
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.InYearUtil
 import views.html.employment.EmployerInformationView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSessionService {
+class EmployerInformationControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
+  with MockEmploymentSessionService {
 
   private lazy val view = app.injector.instanceOf[EmployerInformationView]
-  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
-  implicit private val messages: Messages = getMessages(isWelsh = false)
 
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmployerInformationController(
     mockAuthorisedAction,
     view,
-    inYearAction,
+    new InYearUtil(),
     mockEmploymentSessionService,
-  )(mockMessagesControllerComponents, appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents, appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
+  private val nino = "AA123456A"
   private val employmentId: String = "223/AB12399"
+
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
+  implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 
   ".show" should {
     "render Employment And Benefits page when GetEmploymentDataModel is in mongo" which {
-      s"has an OK($OK) status" in new TestWithAuth {
+      s"has an OK($OK) status" in {
+        mockAuth(Some(nino))
         val name: String = anEmploymentSource.employerName
         val employmentId: String = anEmploymentSource.employmentId
         val benefitsIsDefined: Boolean = anEmploymentSource.employmentBenefits.isDefined
@@ -63,23 +78,26 @@ class EmployerInformationControllerSpec extends UnitTest with MockEmploymentSess
     }
 
     "redirect the User to the Overview page when GetEmploymentDataModel is in mongo but " which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-        val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY, anEmploymentSource.employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
+        val result: Future[Result] = controller(isEmploymentEOYEnabled = false)
+          .show(taxYearEOY, anEmploymentSource.employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
     "redirect the User to the Overview page no data in mongo" which {
-      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+      s"has the SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
-          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
   }

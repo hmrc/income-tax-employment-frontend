@@ -20,7 +20,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.Assertion
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc.Call
 
 trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
@@ -69,7 +69,7 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
 
   def titleCheck(title: String, isWelsh: Boolean)(implicit document: Document): Unit = {
     s"has a title of $title" in {
-      document.title() shouldBe s"$title - ${if(isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
+      document.title() shouldBe s"$title - ${if (isWelsh) serviceNameWelsh else serviceName} - $govUkExtension"
     }
   }
 
@@ -114,7 +114,7 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
         document.select(selector).attr("class") should include("govuk-button")
       }
 
-      if(href.isDefined) {
+      if (href.isDefined) {
         s"has a href to '${href.get}'" in {
           document.select(selector).attr("href") shouldBe href.get
         }
@@ -178,16 +178,16 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
   }
 
   def checkMessagesAreUnique(initial: List[(String, String)], keysToExplore: List[(String, String)], result: Set[String]): Set[String] = {
-      keysToExplore match {
-        case Nil => result
-        case head :: tail =>
-          val (currentMessageKey, currentMessage) = (head._1, head._2)
-          val duplicate = initial.collect {
-            case (messageKey, message) if currentMessageKey != messageKey && currentMessage == message => currentMessageKey
-          }.toSet
+    keysToExplore match {
+      case Nil => result
+      case head :: tail =>
+        val (currentMessageKey, currentMessage) = (head._1, head._2)
+        val duplicate = initial.collect {
+          case (messageKey, message) if currentMessageKey != messageKey && currentMessage == message => currentMessageKey
+        }.toSet
 
-          checkMessagesAreUnique(initial, tail, duplicate ++ result)
-      }
+        checkMessagesAreUnique(initial, tail, duplicate ++ result)
+    }
   }
 
   def welshToggleCheck(activeLanguage: String)(implicit document: Document): Unit = {

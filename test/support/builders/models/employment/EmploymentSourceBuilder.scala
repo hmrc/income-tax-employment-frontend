@@ -17,11 +17,11 @@
 package support.builders.models.employment
 
 import models.employment.EmploymentSource
+import support.TaxYearUtils.taxYearEOY
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import support.builders.models.employment.EmploymentDataBuilder.anEmploymentData
-import utils.TestTaxYearHelper
 
-object EmploymentSourceBuilder extends TestTaxYearHelper {
+object EmploymentSourceBuilder {
 
   val anEmploymentSource: EmploymentSource = EmploymentSource(
     employmentId = "employmentId",
