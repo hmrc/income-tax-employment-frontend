@@ -34,10 +34,9 @@ import utils.RequestUtils.getTrueUserAgent
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedAction @Inject()(appConfig: AppConfig)
-                                (implicit val authService: AuthService,
-                                 val mcc: MessagesControllerComponents
-                                ) extends ActionBuilder[AuthorisationRequest, AnyContent] with I18nSupport {
+class AuthorisedAction @Inject()(appConfig: AppConfig, authService: AuthService)
+                                (implicit mcc: MessagesControllerComponents)
+  extends ActionBuilder[AuthorisationRequest, AnyContent] with I18nSupport {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
   lazy val logger: Logger = Logger.apply(this.getClass)
