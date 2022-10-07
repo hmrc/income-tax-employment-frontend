@@ -17,15 +17,16 @@
 package controllers.errors
 
 import play.api.http.Status.UNAUTHORIZED
-import play.api.test.Helpers.contentType
+import play.api.test.Helpers.{contentType, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import support.ControllerUnitTest
 import utils.UnitTest
 import views.html.errors.YouNeedAgentServicesView
 
-class YouNeedAgentServicesControllerSpec extends UnitTest with DefaultAwaitTimeout {
+class YouNeedAgentServicesControllerSpec extends ControllerUnitTest with DefaultAwaitTimeout {
 
   private val pageView = app.injector.instanceOf[YouNeedAgentServicesView]
-  private val controller = new YouNeedAgentServicesController(pageView)(mockMessagesControllerComponents, mockAppConfig)
+  private val controller = new YouNeedAgentServicesController(pageView)(stubMessagesControllerComponents, appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

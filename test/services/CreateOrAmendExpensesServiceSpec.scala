@@ -16,26 +16,36 @@
 
 package services
 
+import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import models.requests
 import models.requests.{CreateUpdateExpensesRequest, NothingToUpdate}
+import models.{AuthorisationRequest, requests}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
-import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status}
 import support.builders.models.UserBuilder.aUser
-import support.mocks.MockCreateOrAmendExpensesConnector
-import utils.UnitTest
+import support.mocks.{MockAuthorisedAction, MockCreateOrAmendExpensesConnector}
+import support.{TaxYearProvider, UnitTest}
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendExpensesConnector {
+class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
+  with TaxYearProvider
+  with MockAuthorisedAction
+  with MockCreateOrAmendExpensesConnector {
 
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
   private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
@@ -46,9 +56,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
   private val underTest: CreateOrAmendExpensesService = new CreateOrAmendExpensesService(
     mockCreateOrAmendExpensesConnector,
-    errorHandler,
-    mockExecutionContext
-  )
+    errorHandler, ec)
 
   private val expensesViewModel: ExpensesViewModel = ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(100.11),
     flatRateJobExpensesQuestion = Some(true), flatRateJobExpenses = Some(200.22), professionalSubscriptionsQuestion = Some(true),
@@ -116,6 +124,14 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
   val expensesModel: Expenses = expensesCyaData.expenses.toExpenses
   val updatedExpensesModel: Expenses = expensesCyaData.expenses.copy(flatRateJobExpenses = Some(BigDecimal("1000.01"))).toExpenses
 
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
+  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")))
+
   "createModelAndReturnResult" should {
     "return to employment summary when there is nothing changed in relation to the hmrc expenses and customer expenses" in {
       lazy val response = underTest.createExpensesModelAndReturnResult(
@@ -125,7 +141,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
+      redirectLocation(response) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
     }
 
     "return to employment summary when there is nothing changed in relation to the customer expenses when no hmrc expenses" in {
@@ -136,7 +152,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
+      redirectLocation(response) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
     }
 
     "return to employment summary when there is nothing changed in relation to the hmrc expenses when no customer expenses" in {
@@ -147,7 +163,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
+      redirectLocation(response) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
     }
 
     "redirect after successfully posting changed expensesUserData when there are no prior customer expenses or hmrc expenses" in {
@@ -158,7 +174,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      redirectLocation(response) shouldBe Some("303")
     }
 
     "redirect after successfully posting expensesUserData with no expenses when there are no prior customer expenses or hmrc expenses" in {
@@ -169,7 +185,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      redirectLocation(response) shouldBe Some("303")
     }
 
     "redirect after successfully posting a minimal change to the expensesUserData data" when {
@@ -181,7 +197,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "303"
+        redirectLocation(response) shouldBe Some("303")
       }
     }
 
@@ -194,7 +210,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "303"
+        redirectLocation(response) shouldBe Some("303")
       }
     }
 
@@ -208,7 +224,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "303"
+        redirectLocation(response) shouldBe Some("303")
       }
     }
   }
@@ -221,7 +237,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(ignoreExpenses = Some(true)))
         status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 
@@ -232,7 +248,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
         status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 
@@ -243,7 +259,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(expenses = Expenses()))
         status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 

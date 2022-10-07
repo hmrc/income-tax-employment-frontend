@@ -24,37 +24,45 @@ import models.benefits.Benefits
 import models.employment.createUpdate._
 import models.employment.{Deductions, OptionalCyaAndPrior, StudentLoans}
 import play.api.http.Status._
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import support.ControllerUnitTest
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import support.mocks.{MockAppConfig, MockAuditService, MockEmploymentSessionService, MockErrorHandler, MockStudentLoansCYAService}
-import utils.UnitTest
+import support.mocks._
+import utils.InYearUtil
 import views.html.studentLoans.StudentLoansCYAView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class StudentLoansCYAControllerSpec extends UnitTest
+class StudentLoansCYAControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockStudentLoansCYAService
   with MockAuditService
   with MockErrorHandler {
 
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
-  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansCYAController(
-    mockMessagesControllerComponents,
+    stubMessagesControllerComponents,
     view,
     mockStudentLoansCYAService,
     mockEmploymentSessionService,
     mockAuthorisedAction,
-    inYearAction,
+    new InYearUtil,
     mockErrorHandler)(appConfig = new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled,
     isEmploymentEOYEnabled = isEmploymentEOYEnabled, taxYearErrorEnabled = taxYearErrorFeature), ec)
 
+  private val nino = "AA123456A"
   private val employmentId = "223AB12399"
   val employerName: String = "Mishima Zaibatsu"
+
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
   private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
@@ -99,28 +107,30 @@ class StudentLoansCYAControllerSpec extends UnitTest
 
   ".show" should {
     "redirect to the overview page" when {
-      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+      "employmentEOYEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
 
-      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+      "studentLoansEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
   }
 
   ".submit" should {
     "return to employment information" when {
-      "nothing to update" in new TestWithAuth {
-
+      "nothing to update" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
@@ -130,12 +140,12 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmployerInformationController.show(taxYear, employmentId).url
+        redirectLocation(result) shouldBe Some(EmployerInformationController.show(taxYear, employmentId).url)
       }
     }
     "continue to expenses" when {
-      "nothing to update" in new TestWithAuth {
-
+      "nothing to update" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
@@ -145,10 +155,10 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CheckEmploymentExpensesController.show(taxYear).url
+        redirectLocation(result) shouldBe Some(CheckEmploymentExpensesController.show(taxYear).url)
       }
-      "student loans are added" in new TestWithAuth {
-
+      "student loans are added" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -160,10 +170,10 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe ExpensesInterruptPageController.show(taxYear).url
+        redirectLocation(result) shouldBe Some(ExpensesInterruptPageController.show(taxYear).url)
       }
-      "student loans are added and when mimicking the apis" in new TestWithAuth {
-
+      "student loans are added and when mimicking the apis" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -176,13 +186,13 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe StudentLoansCYAController.show(taxYear, employmentId).url
+        redirectLocation(result) shouldBe Some(StudentLoansCYAController.show(taxYear, employmentId).url)
       }
     }
 
     "return to employer information" when {
-      "student loans are added to existing hmrc employment" in new TestWithAuth {
-
+      "student loans are added to existing hmrc employment" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -193,10 +203,10 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmployerInformationController.show(taxYear, "id").url
+        redirectLocation(result) shouldBe Some(EmployerInformationController.show(taxYear, "id").url)
       }
-      "student loans are added to existing customer employment" in new TestWithAuth {
-
+      "student loans are added to existing customer employment" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -207,13 +217,13 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmployerInformationController.show(taxYear, employmentId).url
+        redirectLocation(result) shouldBe Some(EmployerInformationController.show(taxYear, employmentId).url)
       }
     }
 
     "return to CYA show method" when {
-      "the journey is not finished" in new TestWithAuth {
-
+      "the journey is not finished" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -223,10 +233,10 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe StudentLoansCYAController.show(taxYear, employmentId).url
+        redirectLocation(result) shouldBe Some(StudentLoansCYAController.show(taxYear, employmentId).url)
       }
-      "there is no cya data" in new TestWithAuth {
-
+      "there is no cya data" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(None, Some(anAllEmploymentData))))
@@ -235,12 +245,12 @@ class StudentLoansCYAControllerSpec extends UnitTest
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe StudentLoansCYAController.show(taxYear, employmentId).url
+        redirectLocation(result) shouldBe Some(StudentLoansCYAController.show(taxYear, employmentId).url)
       }
     }
     "return an error" when {
-      "data can't be retrieved" in new TestWithAuth {
-
+      "data can't be retrieved" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Left(InternalServerError))
@@ -251,8 +261,8 @@ class StudentLoansCYAControllerSpec extends UnitTest
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      "prior data can't be retrieved" in new TestWithAuth {
-
+      "prior data can't be retrieved" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
@@ -269,20 +279,22 @@ class StudentLoansCYAControllerSpec extends UnitTest
     }
 
     "redirect to the overview page" when {
-      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+      "employmentEOYEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
 
-      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+      "studentLoansEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
   }

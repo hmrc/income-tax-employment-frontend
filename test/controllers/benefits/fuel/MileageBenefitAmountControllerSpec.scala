@@ -22,41 +22,49 @@ import forms.benefits.fuel.FuelFormsProvider
 import play.api.data.Form
 import play.api.http.Status._
 import play.api.mvc.Results.{Ok, Redirect}
-import play.api.mvc.{Result, Results}
+import play.api.mvc.{AnyContentAsEmpty, Result, Results}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{status, stubMessagesControllerComponents}
 import services.DefaultRedirectService
 import support.mocks._
-import utils.{TestTaxYearHelper, UnitTest}
+import support.{ControllerUnitTest, TaxYearProvider}
+import utils.InYearUtil
 import views.html.benefits.fuel.MileageBenefitAmountView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class MileageBenefitAmountControllerSpec extends UnitTest
+class MileageBenefitAmountControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockFuelService
   with MockAuditService
-  with TestTaxYearHelper
+  with TaxYearProvider
   with MockErrorHandler {
 
-  private implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   private lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
   private lazy val controller = new MileageBenefitAmountController(
     mockAuthorisedAction,
     view,
-    inYearAction,
+    new InYearUtil,
     mockEmploymentSessionService,
     mockFuelService,
     new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
-  )(mockMessagesControllerComponents, mockAppConfig, ec)
+  )(stubMessagesControllerComponents, appConfig, ec)
+  private val nino = "AA123456A"
   val employmentId = "12345"
   val form: Form[BigDecimal] = AmountForm.amountForm("benefits.mileageBenefitAmount.error.empty.individual")
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
   ".show" should {
 
     "return a result" which {
 
-      s"has an OK($OK) status" in new TestWithAuth {
+      s"has an OK($OK) status" in {
+        mockAuth(Some(nino))
         val anyResult: Results.Status = Ok
         val result: Future[Result] = {
           mockGetAndHandle(taxYearEOY, anyResult)
@@ -75,7 +83,8 @@ class MileageBenefitAmountControllerSpec extends UnitTest
 
     "return a result" which {
 
-      s"has an SEE_OTHER($SEE_OTHER) status when there is no employment" in new TestWithAuth {
+      s"has an SEE_OTHER($SEE_OTHER) status when there is no employment" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
 
           val anyResult = Redirect("redirect")

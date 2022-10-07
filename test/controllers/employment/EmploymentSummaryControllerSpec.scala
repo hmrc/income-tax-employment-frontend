@@ -17,19 +17,24 @@
 package controllers.employment
 
 import actions.ActionsProvider
+import akka.actor.ActorSystem
 import common.SessionValues
 import config.AppConfig
 import models.employment._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.mvc.Result
 import play.api.mvc.Results.InternalServerError
-import support.mocks.{MockActionsProvider, MockAppConfig, MockEmploymentSessionService, MockRedirectsMapper}
-import utils.{InYearUtil, UnitTest}
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import support.ControllerUnitTest
+import support.mocks._
+import utils.InYearUtil
 import views.html.employment.EmploymentSummaryView
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTest
+class EmploymentSummaryControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockActionsProvider
   with MockRedirectsMapper {
@@ -113,8 +118,15 @@ class EmploymentSummaryControllerSpec extends UnitTest
     )
   }
 
+  private val nino = "AA123456A"
+
   private val employmentSummaryView = app.injector.instanceOf[EmploymentSummaryView]
 
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+
+  implicit val actorSystem: ActorSystem = ActorSystem()
   private val actionsProvider = {
     val mockAppConfig: AppConfig = new MockAppConfig().config()
     new ActionsProvider(
@@ -130,35 +142,35 @@ class EmploymentSummaryControllerSpec extends UnitTest
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController(
     employmentSummaryView,
     mockEmploymentSessionService,
-    inYearAction,
+    new InYearUtil(),
     mockErrorHandler,
     actionsProvider
-  )(mockMessagesControllerComponents, new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents, new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   ".addNewEmployment" should {
     "redirect to add employment page when there is no session data and no prior employments" which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, None)
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
+        redirectLocation(result).get should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is no session data and some prior employment" which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
+        redirectLocation(result).get should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to employer name page when there is session data and some prior employment" which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData.copy(hmrcEmploymentData = Seq(FullModel.oneEmploymentSourceData.hmrcEmploymentData.head.copy(dateIgnored = None)))))
         mockClear()
 
@@ -166,22 +178,22 @@ class EmploymentSummaryControllerSpec extends UnitTest
           SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
           SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
+        redirectLocation(result).get should include(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/details/employer-name?employmentId=")
       }
     }
     "redirect to select employer page when there is no session data and an ignored hmrc employment" which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
-
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
+        redirectLocation(result) shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer")
       }
     }
     "redirect to select employer page when there is session data and an ignored hmrc employment" which {
-      s"has an SEE_OTHER($SEE_OTHER) status when session data is cleared successfully" in new TestWithAuth {
-
+      s"has an SEE_OTHER($SEE_OTHER) status when session data is cleared successfully" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
         mockClear()
 
@@ -189,10 +201,11 @@ class EmploymentSummaryControllerSpec extends UnitTest
           SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "12345678901234567890",
           SessionValues.TAX_YEAR -> taxYearEOY.toString))
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer"
+        redirectLocation(result) shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/select-employer")
       }
 
-      s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in new TestWithAuth {
+      s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
         mockClear(Left())
         mockInternalServerError(InternalServerError)
@@ -207,38 +220,42 @@ class EmploymentSummaryControllerSpec extends UnitTest
 
   ".show" should {
     "render single employment summary view when there is only one employment" which {
-      s"has an OK($OK) status" in new TestWithAuth {
+      s"has an OK($OK) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))
 
-        val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
-        status(result) shouldBe OK
-        bodyOf(result).contains("Mishima Zaibatsu") shouldBe true
+        val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
+        result.header.status shouldBe OK
+        await(result.body.consumeData.map(_.utf8String)).contains("Mishima Zaibatsu")  shouldBe true
       }
     }
 
     "render multiple employment summary view when there are two employments" which {
-      s"has an OK($OK) status" in new TestWithAuth {
+      s"has an OK($OK) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYear, Some(FullModel.multipleEmploymentSourcesData))
 
-        val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
-        status(result) shouldBe OK
-        bodyOf(result).contains("Violet Systems") shouldBe true
+        val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
+        result.header.status shouldBe OK
+        await(result.body.consumeData.map(_.utf8String)).contains("Violet Systems")  shouldBe true
       }
     }
 
     "redirect the User to the Overview page when EOY and employmentEOYEnabled is false" which {
-      s"has an SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+      s"has an SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.multipleEmploymentSourcesData))
 
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
 
     "render summary view when no data in session" which {
-      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
+      s"has the SEE_OTHER($SEE_OTHER) status" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYear, None)
 
         val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))

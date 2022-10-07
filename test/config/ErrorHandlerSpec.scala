@@ -22,7 +22,8 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status._
 import play.api.i18n._
 import play.api.mvc.Result
-import utils.{UnitTest, ViewTest}
+import support.UnitTest
+import utils.ViewTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import scala.concurrent.Future

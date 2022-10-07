@@ -179,7 +179,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     await(awaited.body.consumeData.map(_.utf8String))
   }
 
-  lazy val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  lazy implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   private val fakeRequest = FakeRequest().withHeaders("X-Session-ID" -> aUser.sessionId)
   protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -200,14 +200,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   def authAction(stubbedRetrieval: Future[_],
                  acceptedConfidenceLevel: Seq[ConfidenceLevel] = Seq.empty[ConfidenceLevel]
                 ): AuthorisedAction = new AuthorisedAction(
-    appConfig
-  )(
+    appConfig,
     authService(stubbedRetrieval, if (acceptedConfidenceLevel.nonEmpty) {
       acceptedConfidenceLevel
     } else {
       defaultAcceptedConfidenceLevels
-    }),
-    mcc
+    })
   )
 
   def successfulRetrieval: Future[Enrolments ~ Some[AffinityGroup] ~ ConfidenceLevel] = Future.successful(

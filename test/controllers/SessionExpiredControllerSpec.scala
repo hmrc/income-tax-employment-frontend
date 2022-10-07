@@ -17,14 +17,14 @@
 package controllers
 
 import play.api.http.Status.{NO_CONTENT, OK}
-import play.api.test.Helpers.{charset, contentType}
+import play.api.test.Helpers.{charset, contentType, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.UnitTest
+import support.ControllerUnitTest
 import views.html.templates.TimeoutPage
 
-class SessionExpiredControllerSpec extends UnitTest with DefaultAwaitTimeout {
+class SessionExpiredControllerSpec extends ControllerUnitTest with DefaultAwaitTimeout {
 
-  lazy val controller = new SessionExpiredController(mockMessagesControllerComponents, mockAppConfig, app.injector.instanceOf[TimeoutPage])
+  lazy val controller = new SessionExpiredController(stubMessagesControllerComponents(), appConfig, app.injector.instanceOf[TimeoutPage])
 
   ".KeepAlive" should {
     "return no Content" in {

@@ -16,20 +16,25 @@
 
 package services
 
+import akka.actor.ActorSystem
 import controllers.expenses.routes._
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
+import play.api.test.Helpers.{redirectLocation, status}
 import services.ExpensesRedirectService._
 import support.builders.models.UserBuilder.aUser
-import utils.UnitTest
+import support.{TaxYearProvider, UnitTest}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class ExpensesRedirectServiceSpec extends UnitTest {
+class ExpensesRedirectServiceSpec extends UnitTest with GuiceOneAppPerSuite with TaxYearProvider{
 
+  implicit val actorSystem: ActorSystem = ActorSystem()
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   private val result = Future.successful(Ok("OK"))
 
   private val emptyExpensesViewModel = ExpensesViewModel(isUsingCustomerData = false)
@@ -68,7 +73,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
     "redirect to the CYA page if the journey is finished" in {
       val result = Future.successful(ExpensesRedirectService.expensesSubmitRedirect(expensesCYAModel(fullExpensesViewModel), Call("GET", "/next"))(taxYearEOY))
       status(result) shouldBe SEE_OTHER
-      redirectUrl(result) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+      redirectLocation(result) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
     }
 
     "redirect to next page if the journey is not finished" in {
@@ -76,7 +81,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
         claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false), flatRateJobExpensesQuestion = Some(false))),
         Call("GET", "/next"))(taxYearEOY))
       status(result) shouldBe SEE_OTHER
-      redirectUrl(result) shouldBe "/next"
+      redirectLocation(result) shouldBe Some("/next")
     }
   }
 
@@ -88,7 +93,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.jobExpensesAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe BusinessTravelOvernightExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
       }
       "it's a new submission and user attempts to view Uniforms Or Tools Question page but jobExpensesQuestion is None" in {
         val response = redirectBasedOnCurrentAnswers(taxYearEOY, data = Some(expensesUserData.copy(expensesCya = expensesCYAModel(
@@ -96,7 +101,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.flatRateRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe BusinessTravelOvernightExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
       }
     }
 
@@ -107,7 +112,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.flatRateRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe TravelAndOvernightAmountController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(TravelAndOvernightAmountController.show(taxYearEOY).url)
       }
     }
 
@@ -118,7 +123,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.flatRateAmountRedirect(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe UniformsOrToolsExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(UniformsOrToolsExpensesController.show(taxYearEOY).url)
       }
       "it's a new submission and user attempts to view jobExpenses amount page but jobExpensesQuestion is false" in {
         val response = redirectBasedOnCurrentAnswers(taxYearEOY, data = Some(expensesUserData.copy(isPriorSubmission = false, hasPriorExpenses = false, expensesCya = expensesCYAModel(
@@ -126,7 +131,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.jobExpensesAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe UniformsOrToolsExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(UniformsOrToolsExpensesController.show(taxYearEOY).url)
       }
     }
 
@@ -137,7 +142,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.professionalSubscriptionsRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe UniformsOrToolsExpensesAmountController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(UniformsOrToolsExpensesAmountController.show(taxYearEOY).url)
       }
     }
 
@@ -148,7 +153,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.professionalSubscriptionsAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
       }
       "it's a new submission and user attempts to view Uniforms or Tools (flatRate) amount page but flatRateJobExpenses is false" in {
         val response = redirectBasedOnCurrentAnswers(taxYearEOY, data = Some(expensesUserData.copy(expensesCya = ExpensesCYAModel(
@@ -156,7 +161,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.flatRateAmountRedirect(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
       }
 
     }
@@ -169,7 +174,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.otherAllowancesRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe ProfFeesAndSubscriptionsExpensesAmountController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYearEOY).url)
       }
     }
 
@@ -181,7 +186,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe OtherEquipmentController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(OtherEquipmentController.show(taxYearEOY).url)
       }
       "it's a new submission and user attempts to view Professional Subscriptions amount page but professionalSubscriptionsQuestion is false" in {
         val response = redirectBasedOnCurrentAnswers(taxYearEOY, data = Some(expensesUserData.copy(expensesCya = ExpensesCYAModel(
@@ -190,7 +195,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.professionalSubscriptionsAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe OtherEquipmentController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(OtherEquipmentController.show(taxYearEOY).url)
       }
     }
 
@@ -201,7 +206,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.commonExpensesRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a new submission and user attempts to view Other Equipment amount page but otherAndCapitalAllowancesQuestion is false" in {
@@ -212,7 +217,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
 
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view jobExpensesQuestion page but claimingEmploymentExpenses is false" in {
@@ -221,7 +226,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.commonExpensesRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view jobExpenses amount page but jobExpensesQuestion is false" in {
@@ -230,7 +235,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.jobExpensesAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view flatRate amount page but flatRateJobExpensesQuestion is false" in {
@@ -239,7 +244,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.flatRateAmountRedirect(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view Professional Subscriptions amount page but professionalSubscriptionsQuestion is false" in {
@@ -248,7 +253,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.professionalSubscriptionsAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view Other Equipment amount page but otherAndCapitalAllowancesQuestion is false" in {
@@ -257,7 +262,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "it's a prior submission and user attempts to view Other Equipment page but claimingEmploymentExpenses is false" in {
@@ -266,7 +271,7 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.otherAllowancesRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "there is no expenses user data" in {
@@ -274,23 +279,23 @@ class ExpensesRedirectServiceSpec extends UnitTest {
           cya => ExpensesRedirectService.otherAllowancesRedirects(cya, taxYearEOY)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckEmploymentExpensesController.show(taxYearEOY).url
+        redirectLocation(response) shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "continue with request if all previous required fields are filled" when {
         "it's a new submission" in {
-          val response = redirectBasedOnCurrentAnswers(taxYearEOY, Some(expensesUserData))(cya =>
-            ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result }
+          val response = await(redirectBasedOnCurrentAnswers(taxYearEOY, Some(expensesUserData))(cya =>
+            ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result })
 
-          status(response) shouldBe OK
-          bodyOf(response) shouldBe "OK"
+          response.header.status shouldBe OK
+          await(response.body.consumeData.map(_.utf8String)) shouldBe "OK"
         }
         "it's a prior submission" in {
-          val response = redirectBasedOnCurrentAnswers(taxYearEOY, Some(expensesUserData.copy(hasPriorExpenses = true, isPriorSubmission = true)))(cya =>
-            ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result }
+          val response = await(redirectBasedOnCurrentAnswers(taxYearEOY, Some(expensesUserData.copy(hasPriorExpenses = true, isPriorSubmission = true)))(cya =>
+            ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYearEOY)) { _ => result })
 
-          status(response) shouldBe OK
-          bodyOf(response) shouldBe "OK"
+          response.header.status shouldBe OK
+          await(response.body.consumeData.map(_.utf8String)) shouldBe "OK"
         }
       }
     }

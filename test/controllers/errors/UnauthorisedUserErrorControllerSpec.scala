@@ -17,16 +17,16 @@
 package controllers.errors
 
 import play.api.http.Status.UNAUTHORIZED
-import play.api.test.Helpers.contentType
+import play.api.test.Helpers.{contentType, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import utils.{UnitTest, ViewTest}
+import support.ControllerUnitTest
 import views.html.errors.UnauthorisedUserErrorPageView
 
-class UnauthorisedUserErrorControllerSpec extends UnitTest with DefaultAwaitTimeout with ViewTest {
+class UnauthorisedUserErrorControllerSpec extends ControllerUnitTest with DefaultAwaitTimeout {
 
   private val pageView: UnauthorisedUserErrorPageView = app.injector.instanceOf[UnauthorisedUserErrorPageView]
 
-  lazy val underTest = new UnauthorisedUserErrorController(pageView)(mockMessagesControllerComponents, mockAppConfig)
+  lazy val underTest = new UnauthorisedUserErrorController(pageView)(stubMessagesControllerComponents, appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

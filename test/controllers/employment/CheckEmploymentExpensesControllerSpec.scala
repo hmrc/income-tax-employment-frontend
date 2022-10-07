@@ -18,70 +18,79 @@ package controllers.employment
 
 import common.SessionValues
 import controllers.expenses.CheckEmploymentExpensesController
+import models.AuthorisationRequest
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.{Ok, Redirect}
-import play.api.mvc.{AnyContentAsEmpty, Result}
-import play.api.test.Helpers.header
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
+import play.api.test.Helpers.{header, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import support.ControllerUnitTest
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import support.mocks.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTest
+import support.mocks._
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.InYearUtil
 import views.html.expenses.CheckEmploymentExpensesView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class CheckEmploymentExpensesControllerSpec extends UnitTest
+class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
   with DefaultAwaitTimeout
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockCheckEmploymentExpensesService
   with MockAuditService
   with MockErrorHandler {
 
   private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
-  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
-  implicit private val messages: Messages = getMessages(isWelsh = false)
-
   private lazy val controller = new CheckEmploymentExpensesController(
     view,
     createOrAmendExpensesService,
     mockEmploymentSessionService,
     mockCheckEmploymentExpensesService,
-    inYearAction,
+    new InYearUtil,
     mockErrorHandler
   )(
-    mockAppConfig,
+    appConfig,
     mockAuthorisedAction,
-    mockMessagesControllerComponents,
+    stubMessagesControllerComponents,
     ec
   )
 
+  private val nino = "AA123456A"
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
+    SessionValues.CLIENT_MTDITID -> "1234567890",
+    SessionValues.CLIENT_NINO -> nino,
+    SessionValues.TAX_YEAR -> taxYear.toString,
+    SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
+  ).withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
+  implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
+
   "calling show() as an individual" should {
     "return status code 303 with correct Location header" when {
-      "there is no expenses data in the database" in new TestWithAuth {
+      "there is no expenses data in the database" in {
+        mockAuth(Some(nino))
         val responseF: Future[Result] = {
-          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear)(fakeRequest)
         }
 
         status(responseF) shouldBe SEE_OTHER
-        header(LOCATION, responseF) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        header(LOCATION, responseF) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
     "return status code 200 with correct content" when {
-      "there is expenses data in the database" in new TestWithAuth {
-        val request: FakeRequest[AnyContentAsEmpty.type] =
-          fakeRequest.withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString,
-            SessionValues.CLIENT_MTDITID -> "1234567890",
-            SessionValues.CLIENT_NINO -> "AA123456A"
-          )
+      "there is expenses data in the database" in {
+        mockAuth(Some(nino))
 
         val responseF: Future[Result] = {
           mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true)))
-          controller.show(taxYear)(request)
+          controller.show(taxYear)(fakeRequest)
         }
 
         status(responseF) shouldBe OK
@@ -91,20 +100,22 @@ class CheckEmploymentExpensesControllerSpec extends UnitTest
 
   "calling show() as an agent" should {
     "return status code 303 with correct Location header" when {
-      "there is no expenses data in the database" in new TestWithAuth(isAgent = true) {
+      "there is no expenses data in the database" in {
+        mockAuthAsAgent()
         val responseF: Future[Result] = {
-          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          controller.show(taxYear)(fakeRequestWithMtditidAndNino)
+          mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          controller.show(taxYear)(fakeRequest)
         }
 
         status(responseF) shouldBe SEE_OTHER
-        header(LOCATION, responseF) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        header(LOCATION, responseF) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
     "return status code 200 with correct content" when {
-      "there is expenses data in the database" in new TestWithAuth(isAgent = true) {
-        val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
+      "there is expenses data in the database" in {
+        mockAuthAsAgent()
+        val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest
         val responseF: Future[Result] = {
           mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true)))
           controller.show(taxYear)(request)

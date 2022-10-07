@@ -19,18 +19,22 @@ package actions
 import common.SessionValues
 import config.AppConfig
 import models.{AuthorisationRequest, User}
+import org.scalamock.scalatest.MockFactory
 import play.api.http.Status.SEE_OTHER
 import play.api.i18n.MessagesApi
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
+import support.{ControllerUnitTest, TaxYearProvider}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.{TestTaxYearHelper, UnitTest}
 
-class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
+class TaxYearActionSpec extends ControllerUnitTest with TaxYearProvider with MockFactory {
 
   private val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
-  implicit lazy val cc: MessagesApi = mockControllerComponents.messagesApi
+  implicit lazy val messagesApi: MessagesApi = cc.messagesApi
+
+  val invalidTaxYear: Int = taxYear + 999
 
   def taxYearAction(taxYear: Int, reset: Boolean = true): TaxYearAction = new TaxYearAction(taxYear, reset)
 
@@ -43,7 +47,7 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
             SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.taxYearErrorFeature _ expects() returning true
 
           await(taxYearAction(taxYear).refine(userRequest))
@@ -59,7 +63,7 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
             SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.taxYearErrorFeature _ expects() returning false
 
           await(taxYearAction(taxYearEOY).refine(userRequest))
@@ -75,7 +79,7 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
             SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.taxYearErrorFeature _ expects() returning false
 
           await(taxYearAction(taxYearEOY, reset = false).refine(userRequest))
@@ -94,19 +98,20 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
           FakeRequest().withHeaders("X-Session-ID" -> sessionId)
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.incomeTaxSubmissionStartUrl _ expects (taxYear) returning
             "controllers.routes.StartPageController.show(taxYear).url"
 
-          taxYearAction(taxYear).refine(userRequest)
+          val request = taxYearAction(taxYear).refine(userRequest)
+          await(request.map(_.left.get))
         }
 
         "has a status of SEE_OTHER (303)" in {
-          status(result.map(_.left.get)) shouldBe SEE_OTHER
+          result.header.status shouldBe SEE_OTHER
         }
 
         "has the start page redirect url" in {
-          redirectUrl(result.map(_.left.get)) shouldBe "controllers.routes.StartPageController.show(taxYear).url"
+          result.header.headers("Location") shouldBe "controllers.routes.StartPageController.show(taxYear).url"
         }
 
       }
@@ -118,18 +123,19 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
             SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.taxYearErrorFeature _ expects() returning true
 
-          taxYearAction(invalidTaxYear).refine(userRequest)
+          val request = taxYearAction(invalidTaxYear).refine(userRequest)
+          await(request.map(_.left.get))
         }
 
         "has a status of SEE_OTHER (303)" in {
-          status(result.map(_.left.get)) shouldBe SEE_OTHER
+          result.header.status shouldBe SEE_OTHER
         }
 
         "has the TaxYearError redirect url" in {
-          redirectUrl(result.map(_.left.get)) shouldBe controllers.errors.routes.TaxYearErrorController.show.url
+          result.header.headers("Location") shouldBe controllers.errors.routes.TaxYearErrorController.show.url
         }
       }
 
@@ -140,24 +146,28 @@ class TaxYearActionSpec extends UnitTest with TestTaxYearHelper {
             SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
         )
 
-        lazy val result = {
+        val result = {
           mockedConfig.taxYearErrorFeature _ expects() returning true
           mockedConfig.incomeTaxSubmissionOverviewUrl _ expects (taxYearEOY) returning
             "controllers.routes.OverviewPageController.show(taxYearEOY).url"
 
-          taxYearAction(taxYearEOY).refine(userRequest)
+          val request = taxYearAction(taxYearEOY).refine(userRequest)
+          await(request.map(_.left.get))
         }
 
         "has a status of SEE_OTHER (303)" in {
-          status(result.map(_.left.get)) shouldBe SEE_OTHER
+          result.header.status shouldBe SEE_OTHER
         }
 
         "has the Overview page redirect url" in {
-          redirectUrl(result.map(_.left.get)) shouldBe "controllers.routes.OverviewPageController.show(taxYearEOY).url"
+          result.header.headers("Location") shouldBe "controllers.routes.OverviewPageController.show(taxYearEOY).url"
         }
 
         "has the updated TAX_YEAR session value" in {
-          await(result.map(_.left.get)).session.get(SessionValues.TAX_YEAR).get shouldBe (taxYearEOY).toString
+          implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+            new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+              fakeRequest)
+          result.session.get(SessionValues.TAX_YEAR).get shouldBe (taxYearEOY).toString
         }
       }
     }
