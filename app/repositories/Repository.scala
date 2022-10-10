@@ -33,6 +33,12 @@ trait Repository {
     equal("employmentId", toBson(employmentId))
   )
 
+  def filterGateway(sessionId: String, mtdItId: String, nino: String): Bson = and(
+    equal("sessionId", toBson(sessionId)),
+    equal("mtdItId", toBson(mtdItId)),
+    equal("nino", toBson(nino)),
+  )
+
   def filterExpenses(sessionId: String, mtdItId: String, nino: String, taxYear: Int): Bson = and(
     equal("sessionId", toBson(sessionId)),
     equal("mtdItId", toBson(mtdItId)),

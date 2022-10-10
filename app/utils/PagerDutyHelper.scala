@@ -33,6 +33,9 @@ object PagerDutyHelper extends Logging {
     val FAILED_TO_FIND_EXPENSES_DATA: PagerDutyKeys.Value = Value
     val FAILED_TO_ClEAR_EXPENSES_DATA: PagerDutyKeys.Value = Value
     val ENCRYPTION_DECRYPTION_ERROR: PagerDutyKeys.Value = Value
+    val FAILED_TO_CREATE_UPDATE_GATEWAY_DATA: PagerDutyKeys.Value = Value
+    val FAILED_TO_FIND_GATEWAY_DATA: PagerDutyKeys.Value = Value
+    val FAILED_TO_ClEAR_GATEWAY_DATA: PagerDutyKeys.Value = Value
   }
 
   def pagerDutyLog(pagerDutyKey: PagerDutyKeys.Value, otherDetail: String): Unit = {

@@ -107,7 +107,7 @@
 
     @if(isInYear) {
         @button("common.returnToPayeEmployment", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear, "true").url))
+            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
     } else {
         @formWithCSRF(action = controllers.expenses.routes.CheckEmploymentExpensesController.submit(taxYear)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))

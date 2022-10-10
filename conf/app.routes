@@ -14,8 +14,7 @@ GET         /timeout                                                            
 
 #################       Summary pages      #########################################
 
-GET         /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int, gateway = "false")
-GET         /:taxYear/employment-summary/gateway:gateway                             controllers.employment.EmploymentSummaryController.show(taxYear: Int, gateway: String)
+GET         /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int)
 
 GET         /:taxYear/employment-summary/add-employment                              controllers.employment.EmploymentSummaryController.addNewEmployment(taxYear: Int)
 

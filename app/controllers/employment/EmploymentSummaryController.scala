@@ -23,7 +23,7 @@ import controllers.details.routes.EmployerNameController
 import controllers.employment.routes.SelectEmployerController
 import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
@@ -31,6 +31,7 @@ import views.html.employment.EmploymentSummaryView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
                                             employmentSessionService: EmploymentSessionService,
@@ -42,20 +43,26 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int, gateway: String): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
+  def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear).async { implicit request =>
     val isInYear: Boolean = inYearAction.inYear(taxYear)
     if (!isInYear && !appConfig.employmentEOYEnabled) {
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
       val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq[EmploymentSource]()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq[EmploymentSource]())
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined
+      val gateway: Future[Option[Boolean]] = if (priorData.isDefined) {
+        employmentSessionService.createOrAmendGateway(request.user,Some(true))(onFail = Some(true))(onSuccess = Some(true))
+      } else {
+        employmentSessionService.getGatewayValue(request.user)
+      }
 
-     Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent, gateway == "true"))
+      gateway.flatMap(gatewayValue =>
+          Future(Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent, gatewayValue))))
+      }
     }
-  }
 
   def addNewEmployment(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear).async { implicit request =>
     lazy val hasIgnoredEmployments = request.employmentPriorData.map(_.ignoredEmployments).getOrElse(Seq()).nonEmpty

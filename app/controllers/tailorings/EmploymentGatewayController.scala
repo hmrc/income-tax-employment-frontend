@@ -17,14 +17,14 @@
 package controllers.tailorings
 
   import actions.{AuthorisedAction, TaxYearAction}
-  import akka.actor.Status.Success
   import config.{AppConfig, ErrorHandler}
   import forms.{FormUtils, YesNoForm}
-  import models.{AuthorisationRequest, IncomeTaxUserData, User}
   import models.employment.AllEmploymentData
+  import models.{AuthorisationRequest, IncomeTaxUserData, User}
   import play.api.data.Form
   import play.api.i18n.I18nSupport
   import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+  import services.employment.RemoveEmploymentService
   import services.{EmploymentSessionService, ExcludeJourneyService}
   import uk.gov.hmrc.http.HeaderCarrier
   import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,7 +39,8 @@ package controllers.tailorings
                                               employmentSessionService: EmploymentSessionService,
                                               view: EmploymentGatewayView,
                                               errorHandler: ErrorHandler,
-                                              excludeJourneyService: ExcludeJourneyService
+                                              excludeJourneyService: ExcludeJourneyService,
+                                              removeEmploymentService: RemoveEmploymentService
                                              )
                                              (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
     with I18nSupport with SessionHelper with FormUtils {
@@ -61,16 +62,16 @@ package controllers.tailorings
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear))),
           yesNo => {
             employmentSessionService.getPriorData(request.user, taxYear).map {
-              case Left(error) => Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear, "true")))
+              case Left(error) => Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
 
               case Right(allEmploymentData) =>
                 if (allEmploymentData.employment.isDefined && !yesNo) {
                   deleteAndExcludeData(taxYear, request.user, allEmploymentData)
-                  Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear, "true")))
-                } else if (allEmploymentData.employment.isEmpty && !yesNo) {
-                  Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear, "true")))
+                  employmentSessionService.createOrAmendGateway(request.user, Some(yesNo))()()
+                  Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
                 } else {
-                  Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear, gateway = "false")))
+                  employmentSessionService.createOrAmendGateway(request.user, Some(yesNo))()()
+                  Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
                 }
             }.flatMap(f => f)
           }
@@ -81,7 +82,8 @@ package controllers.tailorings
 
     }
 
-    private def deleteAndExcludeData(taxYear: Int, user: User, incomeTaxUserData: IncomeTaxUserData)(implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Unit = {
+    private def deleteAndExcludeData(taxYear: Int, user: User, incomeTaxUserData: IncomeTaxUserData)
+                                    (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Unit = {
       excludeJourneyService.excludeJourney("employments", taxYear, user.nino)(user, hc)
       incomeTaxUserData.employment.fold()(employments => employments.customerEmploymentData.map(employment =>
         employmentSessionService.clear(user, taxYear, employment.employmentId)

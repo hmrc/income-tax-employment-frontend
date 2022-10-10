@@ -18,7 +18,7 @@ package config
 
 import com.google.inject.AbstractModule
 import common.UUID
-import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, ExpensesUserDataRepository, ExpensesUserDataRepositoryImpl}
+import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, ExpensesUserDataRepository, ExpensesUserDataRepositoryImpl, GatewayUserDataRepository, GatewayUserDataRepositoryImpl}
 import services.{DefaultRedirectService, RedirectService}
 import utils.Clock
 
@@ -29,6 +29,7 @@ class Modules extends AbstractModule {
     bind(classOf[UUID]).toInstance(UUID)
     bind(classOf[Clock]).toInstance(Clock)
     bind(classOf[RedirectService]).to(classOf[DefaultRedirectService]).asEagerSingleton()
+    bind(classOf[GatewayUserDataRepository]).to(classOf[GatewayUserDataRepositoryImpl]).asEagerSingleton()
     bind(classOf[EmploymentUserDataRepository]).to(classOf[EmploymentUserDataRepositoryImpl]).asEagerSingleton()
     bind(classOf[ExpensesUserDataRepository]).to(classOf[ExpensesUserDataRepositoryImpl]).asEagerSingleton()
   }

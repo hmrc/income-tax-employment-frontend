@@ -40,7 +40,7 @@
     govukInsetText: GovukInsetText,
     govUkButton: GovukButton
 )
-@(taxYear: Int, employments: Seq[EmploymentSource], expensesExist: Boolean, isInYear: Boolean, isAgent: Boolean, gateway: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employments: Seq[EmploymentSource], expensesExist: Boolean, isInYear: Boolean, isAgent: Boolean, gateway: Option[Boolean])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages("employment.employmentSummary.heading")
@@ -59,10 +59,10 @@
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(employments.nonEmpty || gateway) {
+    @if(!(employments.nonEmpty && gateway.contains(true))) {
         @govukSummaryList(SummaryList(Seq(summaryListRow(
             HtmlContent(messages("PAYE employment")),
-            HtmlContent( if(!employments.isEmpty) messages("common.yes") else messages("common.no")),
+            HtmlContent( if(gateway.contains(true)) messages("common.yes") else messages("common.no")),
             actions = Seq((EmploymentGatewayController.show(taxYear: Int), messages("common.change"), Some(messages("common.change")))
         )))))
     }
@@ -113,7 +113,7 @@
         if(employments.nonEmpty) govukSummaryList(SummaryList(employments.map(employmentSource => mapToSummaryListRow(employmentSource, isInYear))))
     }
 
-    @if(!isInYear && !gateway) {
+    @if(!isInYear && gateway.isEmpty) {
         <p class="govuk-body"><a class="govuk-link" href="@EmploymentSummaryController.addNewEmployment(taxYear)">@messages(s"employment.employmentSummary.${if(employments.nonEmpty) "addAnotherEmployer" else "addAnEmployer"}")</a></p>
     }
 

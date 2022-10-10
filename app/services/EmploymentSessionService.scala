@@ -16,6 +16,7 @@
 
 package services
 
+import akka.dispatch.OnSuccess
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
@@ -31,7 +32,7 @@ import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
-import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
+import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository, GatewayUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{Clock, InYearUtil}
 
@@ -42,6 +43,7 @@ import scala.util.Try
 @Singleton
 class EmploymentSessionService @Inject()(employmentUserDataRepository: EmploymentUserDataRepository,
                                          expensesUserDataRepository: ExpensesUserDataRepository,
+                                         gatewayUserDataRepository: GatewayUserDataRepository,
                                          incomeTaxUserDataConnector: IncomeTaxUserDataConnector,
                                          incomeSourceConnector: IncomeSourceConnector,
                                          messagesApi: MessagesApi,
@@ -566,6 +568,27 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         case true => onSuccess
         case false => errorHandler.internalServerError()
       }
+    }
+  }
+
+  def clearGatewayData()(onSuccess: Result)(implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+    gatewayUserDataRepository.clear(request.user).map {
+        case true => onSuccess
+        case false => errorHandler.internalServerError()
+      }
+  }
+
+  def getGatewayValue(user: User): Future[Option[Boolean]] = {
+    gatewayUserDataRepository.find(user).map {
+      case Right(userDataGateway) => userDataGateway.flatMap(gatewayData => gatewayData.gateway)
+      case Left(error) => None
+    }
+  }
+
+  def createOrAmendGateway[A](user: User, gateway: Option[Boolean])(onFail: A)(onSuccess: A): Future[A] = {
+    gatewayUserDataRepository.createOrUpdate(UserDataGateway(user.sessionId, user.mtditid, user.nino, gateway)).map {
+      case Right(_) => onSuccess
+      case Left(_) =>  onFail
     }
   }
 }
