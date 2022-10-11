@@ -32,11 +32,13 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_GATEWAY_DATA, FAILED_TO_ClEAR_GATEWAY_DATA, FAILED_TO_FIND_GATEWAY_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 import utils.SecureGCMCipher
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
+
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GatewayUserDataRepositoryImpl()(mongo: MongoComponent, appConfig: AppConfig)
+class GatewayUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)
                                                (implicit ec: ExecutionContext, secureGCMCipher: SecureGCMCipher)
   extends PlayMongoRepository[UserDataGateway](
     mongoComponent = mongo,

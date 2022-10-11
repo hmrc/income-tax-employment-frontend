@@ -59,7 +59,7 @@
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @if(!(employments.nonEmpty && gateway.contains(true))) {
+    @if(!(employments.isEmpty && gateway.contains(true))) {
         @govukSummaryList(SummaryList(Seq(summaryListRow(
             HtmlContent(messages("PAYE employment")),
             HtmlContent( if(gateway.contains(true)) messages("common.yes") else messages("common.no")),
@@ -113,7 +113,7 @@
         if(employments.nonEmpty) govukSummaryList(SummaryList(employments.map(employmentSource => mapToSummaryListRow(employmentSource, isInYear))))
     }
 
-    @if(!isInYear && gateway.isEmpty) {
+    @if(employments.isEmpty && gateway.contains(true)) {
         <p class="govuk-body"><a class="govuk-link" href="@EmploymentSummaryController.addNewEmployment(taxYear)">@messages(s"employment.employmentSummary.${if(employments.nonEmpty) "addAnotherEmployer" else "addAnEmployer"}")</a></p>
     }
 
