@@ -16,14 +16,23 @@
 
 package views.templates
 
+import common.SessionValues
 import config.AppConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import utils.ViewTest
+import support.mocks.MockAppConfig
+import support.{TaxYearProvider, UnitTest, ViewHelper}
 import views.html.templates.ServiceUnavailableTemplate
 
-class ServiceUnavailableTemplateSpec extends ViewTest {
+class ServiceUnavailableTemplateSpec extends UnitTest
+  with ViewHelper
+  with GuiceOneAppPerSuite
+  with TaxYearProvider {
 
   object Selectors {
     val h1Selector = "#main-content > div > div > header > h1"
@@ -60,7 +69,14 @@ class ServiceUnavailableTemplateSpec extends ViewTest {
   }
 
   lazy val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
-  lazy val appConfig: AppConfig = mockAppConfig
+  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val messages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+  lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+  val appConfig: AppConfig = new MockAppConfig().config()
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
   "ServiceUnavailableTemplate in English" should {
     import expectedResultsEN._

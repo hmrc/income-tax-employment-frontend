@@ -25,15 +25,15 @@ import models.details.EmploymentDetails
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
 import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.mocks.{MockAuthorisedAction, MockEmploymentService, MockEmploymentSessionService, MockErrorHandler}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.{InYearUtil, UnitTest}
+import utils.InYearUtil
 import views.html.details.EmploymentTaxView
 
 import scala.concurrent.Future

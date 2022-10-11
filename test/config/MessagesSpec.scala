@@ -18,9 +18,9 @@ package config
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.MessagesApi
-import utils.ViewTest
+import support.{UnitTest, ViewHelper}
 
-class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
+class MessagesSpec extends UnitTest with ViewHelper with GuiceOneAppPerSuite {
 
   val exclusionKeys: Set[String] = Set(
     "global.error.badRequest400.title",
@@ -95,6 +95,19 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
       val result = checkMessagesAreUnique(messages, messages, Set())
 
       result shouldBe Set()
+    }
+  }
+
+  def checkMessagesAreUnique(initial: List[(String, String)], keysToExplore: List[(String, String)], result: Set[String]): Set[String] = {
+    keysToExplore match {
+      case Nil => result
+      case head :: tail =>
+        val (currentMessageKey, currentMessage) = (head._1, head._2)
+        val duplicate = initial.collect {
+          case (messageKey, message) if currentMessageKey != messageKey && currentMessage == message => currentMessageKey
+        }.toSet
+
+        checkMessagesAreUnique(initial, tail, duplicate ++ result)
     }
   }
 }

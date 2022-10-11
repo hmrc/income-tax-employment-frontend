@@ -16,18 +16,39 @@
 
 package views.templates.helpers
 
+import common.SessionValues
 import config.AppConfig
+import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty}
+import play.api.test.FakeRequest
 import support.mocks.MockAppConfig
-import utils.ViewTest
+import support.{TaxYearProvider, UnitTest, ViewHelper}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.templates.helpers.BetaBar
 
-class BetaBarViewSpec extends ViewTest {
+class BetaBarViewSpec extends UnitTest
+  with ViewHelper
+  with GuiceOneAppPerSuite
+  with TaxYearProvider {
 
   lazy val betaBar: BetaBar = app.injector.instanceOf[BetaBar]
 
   private val aTagSelector = "a"
+
+  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val messages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+  val mockAppConfig: AppConfig = new MockAppConfig().config()
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
 
   "BetaBarView" when {
 
