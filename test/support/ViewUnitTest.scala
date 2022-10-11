@@ -26,14 +26,13 @@ import support.builders.models.AuthorisationRequestBuilder.anAuthorisationReques
 import support.builders.models.UserBuilder.aUser
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.TestTaxYearHelper
 
 trait ViewUnitTest extends UnitTest
   with UserScenarios
   with ViewHelper
   with GuiceOneAppPerSuite
   with Injecting
-  with TestTaxYearHelper
+  with TaxYearProvider
   with FakeRequestProvider {
 
   private lazy val individualUserRequest: AuthorisationRequest[AnyContent] = anAuthorisationRequest.copy[AnyContent](request = fakeIndividualRequest)

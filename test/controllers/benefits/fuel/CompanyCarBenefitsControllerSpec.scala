@@ -16,29 +16,42 @@
 
 package controllers.benefits.fuel
 
+import common.SessionValues
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.benefits.fuel.FuelFormsProvider
+import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
-import play.api.mvc.{Result, Results}
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result, Results}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{contentAsString, redirectLocation, status, stubMessagesControllerComponents}
 import services.DefaultRedirectService
+import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import support.mocks.{MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler, MockFuelService}
-import utils.UnitTest
+import support.mocks._
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.InYearUtil
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
-class CompanyCarBenefitsControllerSpec extends UnitTest
+class CompanyCarBenefitsControllerSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockFuelService
   with MockErrorHandler {
 
+  private val nino = "AA123456A"
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+      fakeRequest)
   private val employmentId = "223/AB12399"
+
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
   private lazy val employmentUserData = new EmploymentUserData(
     aUser.sessionId,
@@ -65,17 +78,18 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
 
   private lazy val controller = new CompanyCarBenefitsController(
     mockAuthorisedAction,
-    inYearAction,
+    new InYearUtil,
     view,
     mockEmploymentSessionService,
     mockFuelService,
     new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
-  )(mockMessagesControllerComponents, mockAppConfig)
+  )(stubMessagesControllerComponents, new MockAppConfig().config())
 
   ".show" should {
-    "get user session data and return the result from the given execution block" in new TestWithAuth {
+    "get user session data and return the result from the given execution block" in {
+      mockAuth(Some(nino))
       val anyResult: Results.Status = Ok
       val result: Future[Result] = {
         mockGetSessionDataResult(taxYearEOY, employmentId, anyResult)
@@ -89,6 +103,9 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
   ".handleShow" should {
     "return Redirect result income tax submission overview" when {
       "when employment user data not present" in {
+        implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+          new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+            fakeRequest)
         await(controller.handleShow(taxYearEOY, employmentId, None)) shouldBe Redirect(CheckYourBenefitsController.show(taxYearEOY, employmentId))
       }
     }
@@ -98,7 +115,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
         val result = controller.handleShow(taxYearEOY, employmentId, Some(employmentUserDataWithoutBenefits))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=223%2FAB12399"
+        redirectLocation(result) shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=223%2FAB12399")
       }
     }
 
@@ -114,7 +131,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
 
   ".submit" should {
     "return a result" which {
-      "has a SEE_OTHER status with valid form body true" in new TestWithAuth {
+      "has a SEE_OTHER status with valid form body true" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetSessionDataResult(taxYearEOY, employmentId, InternalServerError("500"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
@@ -122,7 +140,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      "has a SEE_OTHER status with valid form body false" in new TestWithAuth {
+      "has a SEE_OTHER status with valid form body false" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetSessionDataResult(taxYearEOY, employmentId, InternalServerError("500"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
@@ -130,7 +149,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in new TestWithAuth {
+      "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetSessionDataResult(taxYearEOY, employmentId, Redirect("/any-url"))
           controller.submit(taxYearEOY, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
@@ -138,7 +158,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
         status(result) shouldBe SEE_OTHER
       }
 
-      "has a SEE_OTHER status with valid form body but no session" in new TestWithAuth {
+      "has a SEE_OTHER status with valid form body but no session" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetSessionDataResult(taxYearEOY, employmentId, Redirect("/any-url"))
 
@@ -147,7 +168,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTest
         status(result) shouldBe SEE_OTHER
       }
 
-      "has a BAD_REQUEST status with invalid form body" in new TestWithAuth {
+      "has a BAD_REQUEST status with invalid form body" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = {
           mockGetSessionDataResult(taxYearEOY, employmentId, BadRequest)
           controller.submit(taxYearEOY, employmentId)(fakeRequest)

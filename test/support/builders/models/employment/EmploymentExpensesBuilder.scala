@@ -16,14 +16,14 @@
 
 package support.builders.models.employment
 
-import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import models.employment.EmploymentExpenses
-import utils.TestTaxYearHelper
+import support.TaxYearUtils.taxYearEOY
+import support.builders.models.expenses.ExpensesBuilder.anExpenses
 
-object EmploymentExpensesBuilder extends TestTaxYearHelper {
+object EmploymentExpensesBuilder {
 
   val anEmploymentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = Some(s"${taxYearEOY-1}-02-12"),
+    submittedOn = Some(s"${taxYearEOY - 1}-02-12"),
     dateIgnored = None,
     totalExpenses = None,
     expenses = Some(anExpenses)

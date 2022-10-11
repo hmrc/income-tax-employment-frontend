@@ -31,6 +31,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
+import support.TaxYearProvider
 import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.mocks.{MockAppConfig, MockAuthorisedAction}
 import uk.gov.hmrc.auth.core._
@@ -41,7 +42,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
 @deprecated("Use UnitTest in support package for unit tests")
-trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TestTaxYearHelper
+trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAndAfterEach with GuiceOneAppPerSuite with TaxYearProvider
   with MockAuthorisedAction {
 
   class TestWithAuth(isAgent: Boolean = false, nino: Option[String] = Some("AA123456A")) {

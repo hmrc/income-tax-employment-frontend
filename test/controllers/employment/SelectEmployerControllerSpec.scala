@@ -17,44 +17,47 @@
 package controllers.employment
 
 import actions.ActionsProvider
+import akka.actor.ActorSystem
 import common.SessionValues
-import config.AppConfig
 import controllers.details.routes.EmployerNameController
 import controllers.employment.routes.EmploymentSummaryController
 import forms.details.EmployerNameForm.employerName
 import forms.employment.SelectEmployerForm
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
 import sttp.model.Method.POST
+import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks._
-import utils.{InYearUtil, UnitTest}
+import utils.InYearUtil
 import views.html.employment.SelectEmployerView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class SelectEmployerControllerSpec extends UnitTest
+class SelectEmployerControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockUnignoreEmploymentService
   with MockErrorHandler
   with MockActionsProvider
   with MockRedirectsMapper {
 
+  implicit val actorSystem: ActorSystem = ActorSystem()
   private lazy val view: SelectEmployerView = app.injector.instanceOf[SelectEmployerView]
-  implicit private lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
   private val actionsProvider = {
-    val mockAppConfig: AppConfig = new MockAppConfig().config()
     new ActionsProvider(
       mockAuthorisedAction,
       mockEmploymentSessionService,
       mockErrorHandler,
-      new InYearUtil()(mockAppConfig),
+      new InYearUtil()(appConfig),
       mockRedirectsMapper,
-      mockAppConfig
+      appConfig
     )
   }
 
@@ -64,33 +67,41 @@ class SelectEmployerControllerSpec extends UnitTest
     mockUnignoreEmploymentService,
     mockEmploymentSessionService,
     mockErrorHandler,
-    new SelectEmployerForm)(mockMessagesControllerComponents, mockAppConfig, ec)
+    new SelectEmployerForm)(stubMessagesControllerComponents, appConfig, ec)
+
+  private val nino = "AA123456A"
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
   ".show" should {
     "return a result" which {
-      s"has an OK($OK) status when there is employment data" in new TestWithAuth {
+      s"has an OK($OK) status when there is employment data" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
 
-        val result: Future[Result] = controller.show(taxYearEOY)(fakeRequest.withSession(
+        val result = await(controller.show(taxYearEOY)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> taxYearEOY.toString
-        ))
+        )))
 
-        status(result) shouldBe OK
-        bodyOf(result).contains(employerName) shouldBe true
+        result.header.status shouldBe OK
+        await(result.body.consumeData.map(_.utf8String)).contains(employerName) shouldBe true
       }
 
-      s"has a SEE_OTHER($SEE_OTHER) status when it's not end of year" in new TestWithAuth {
-        mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      s"has a SEE_OTHER($SEE_OTHER) status when it's not end of year" in {
+        mockAuth(Some(nino))
+        mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString
         ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
 
-      s"has a SEE_OTHER($SEE_OTHER) status when there is no ignored employments" in new TestWithAuth {
+      s"has a SEE_OTHER($SEE_OTHER) status when there is no ignored employments" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData))
 
         val result: Future[Result] = controller.show(taxYearEOY)(fakeRequest.withSession(
@@ -98,10 +109,11 @@ class SelectEmployerControllerSpec extends UnitTest
         ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
+        redirectLocation(result).get should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
       }
 
-      s"has a SEE_OTHER($SEE_OTHER) status when there is no ignored employments and an id in session" in new TestWithAuth {
+      s"has a SEE_OTHER($SEE_OTHER) status when there is no ignored employments and an id in session" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData))
 
         val result: Future[Result] = controller.show(taxYearEOY)(fakeRequest.withSession(
@@ -110,15 +122,16 @@ class SelectEmployerControllerSpec extends UnitTest
         ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url)
+        redirectLocation(result).get should include(EmployerNameController.show(taxYearEOY, "id").url)
       }
     }
   }
 
   ".submit" should {
     s"return a SEE_OTHER($SEE_OTHER) status" when {
-      s"form is submitted" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"form is submitted" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(clearCya = false)
@@ -129,11 +142,12 @@ class SelectEmployerControllerSpec extends UnitTest
           .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
+        redirectLocation(result) shouldBe Some(EmploymentSummaryController.show(taxYearEOY).url)
       }
 
-      s"form is submitted with an id in session" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"form is submitted with an id in session" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear()
@@ -147,13 +161,14 @@ class SelectEmployerControllerSpec extends UnitTest
           ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
+        redirectLocation(result) shouldBe Some(EmploymentSummaryController.show(taxYearEOY).url)
       }
     }
 
     s"return a INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status" when {
-      s"unignore fails" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"unignore fails" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored),
           Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
@@ -171,8 +186,9 @@ class SelectEmployerControllerSpec extends UnitTest
     }
 
     s"return a INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status" when {
-      s"clear fails" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"clear fails" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(Left(()))
@@ -189,8 +205,9 @@ class SelectEmployerControllerSpec extends UnitTest
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
-      s"clear fails with no id in session" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"clear fails with no id in session" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(Left(()), clearCya = false)
@@ -206,8 +223,9 @@ class SelectEmployerControllerSpec extends UnitTest
     }
 
     s"return a SEE OTHER($SEE_OTHER) status" when {
-      s"clear removes the prior cya data" in new TestWithAuth {
-        private val dateIgnored: Some[String] = Some("2019-04-21")
+      s"clear removes the prior cya data" in {
+        mockAuth(Some(nino))
+        val dateIgnored: Some[String] = Some("2019-04-21")
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = dateIgnored)))))
         mockUnignore(aUser.copy(sessionId = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"), taxYearEOY, anEmploymentSource.copy(dateIgnored = dateIgnored), Right(()))
         mockClear(Right(()))
@@ -221,12 +239,13 @@ class SelectEmployerControllerSpec extends UnitTest
           ))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmploymentSummaryController.show(taxYearEOY).url
+        redirectLocation(result) shouldBe Some(EmploymentSummaryController.show(taxYearEOY).url)
       }
     }
 
     s"return a SEE_OTHER($SEE_OTHER) status" when {
-      s"there are no ignored employments" in new TestWithAuth {
+      s"there are no ignored employments" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
@@ -235,12 +254,13 @@ class SelectEmployerControllerSpec extends UnitTest
           .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
+        redirectLocation(result).get should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
       }
     }
 
     s"return a SEE_OTHER($SEE_OTHER) status" when {
-      s"adding a new employment" in new TestWithAuth {
+      s"adding a new employment" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest
@@ -249,12 +269,13 @@ class SelectEmployerControllerSpec extends UnitTest
           .withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
+        redirectLocation(result).get should include(EmployerNameController.show(taxYearEOY, "id").url.dropRight(2))
       }
     }
 
     s"return a BAD REQUEST($BAD_REQUEST) status" when {
-      s"invalid form" in new TestWithAuth {
+      s"invalid form" in {
+        mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anAllEmploymentData.hmrcEmploymentData.head.copy(dateIgnored = Some("2019-04-21"))))))
 
         val result: Future[Result] = controller.submit(taxYearEOY)(fakeRequest

@@ -34,10 +34,10 @@ import scala.concurrent.{ExecutionContext, Future}
 trait MockAuthorisedAction extends MockFactory {
 
   private val mockAppConfig = new MockAppConfig().config()
-  val mockAuthConnector = mock[AuthConnector]
+  private val mockAuthConnector = mock[AuthConnector]
   private val mockAuthService = new AuthService(mockAuthConnector)
 
-  protected val mockAuthorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
+  protected val mockAuthorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig, mockAuthService)(stubMessagesControllerComponents())
 
   protected def mockAuthAsAgent(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
     val enrolments: Enrolments = Enrolments(Set(

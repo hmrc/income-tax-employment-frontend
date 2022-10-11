@@ -18,66 +18,79 @@ package controllers.studentLoans
 
 import common.SessionValues
 import play.api.http.Status.SEE_OTHER
-import play.api.mvc.Result
-import support.mocks.{MockAppConfig, MockEmploymentSessionService, MockErrorHandler}
-import utils.UnitTest
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import support.ControllerUnitTest
+import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService, MockErrorHandler}
+import utils.InYearUtil
 import views.html.studentLoans.StudentLoansQuestionView
 
 import scala.concurrent.Future
 
-class StudentLoansQuestionControllerSpec extends UnitTest
+class StudentLoansQuestionControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockEmploymentSessionService
   with MockErrorHandler {
 
   private lazy val view: StudentLoansQuestionView = app.injector.instanceOf[StudentLoansQuestionView]
 
+  private val nino = "AA123456A"
   private val employmentId = "1234567890"
 
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+
   private def controller(slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansQuestionController(
-    mockMessagesControllerComponents,
+    stubMessagesControllerComponents,
     view,
     mockEmploymentSessionService,
     mockAuthorisedAction,
-    inYearAction,
+    new InYearUtil(),
     mockErrorHandler)(appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
     taxYearErrorEnabled = taxYearErrorFeature))
 
   ".show" should {
     "redirect to the overview page" when {
-      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+      "employmentEOYEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
 
-      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+      "studentLoansEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).show(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
   }
 
   ".submit" should {
     "redirect to the overview page" when {
-      "employmentEOYEnabled feature switch is off" in new TestWithAuth {
+      "employmentEOYEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
 
-      "studentLoansEnabled feature switch is off" in new TestWithAuth {
+      "studentLoansEnabled feature switch is off" in {
+        mockAuth(Some(nino))
         val result: Future[Result] = controller(slEnabled = false, taxYearErrorFeature = false).submit(taxYearEOY,
           employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
+        redirectLocation(result) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
       }
     }
   }

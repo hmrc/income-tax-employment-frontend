@@ -106,6 +106,7 @@ class TaxYearErrorTemplateSpec extends ViewUnitTest {
       }
 
       "render the error page with the right content for a single TaxYear" which {
+        val invalidTaxYear: Int = taxYear + 999
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/error/wrong-tax-year").withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
           SessionValues.VALID_TAX_YEARS -> invalidTaxYear.toString
