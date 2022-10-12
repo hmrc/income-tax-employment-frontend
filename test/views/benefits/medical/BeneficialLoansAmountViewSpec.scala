@@ -91,10 +91,10 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Faint oedd eich benthyciadau buddiannol i gyd?"
     val expectedHeading = "Faint oedd eich benthyciadau buddiannol i gyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val youCanFindText = "Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar eich ffurflen P11D."
+    val youCanFindText = "Mae’r wybodaeth hon ar gael yn adran H, blwch 15 ar eich ffurflen P11D."
     val expectedNoEntryErrorMessage = "Nodwch swm eich benthyciadau buddiannol"
     val expectedIncorrectFormatErrorMessage = "Nodwch swm eich benthyciadau buddiannol yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iích benthyciadau buddiannol fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’ch benthyciadau buddiannol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -111,10 +111,10 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Faint oedd benthyciadau buddiannol eich cleient i gyd?"
     val expectedHeading = "Faint oedd benthyciadau buddiannol eich cleient i gyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val youCanFindText = "Maeír wybodaeth hon ar gael yn adran H, blwch 15 ar ffurflen P11D eich cleient."
+    val youCanFindText = "Mae’r wybodaeth hon ar gael yn adran H, blwch 15 ar ffurflen P11D eich cleient."
     val expectedNoEntryErrorMessage = "Nodwch swm benthyciadau buddiannol eich cleient"
     val expectedIncorrectFormatErrorMessage = "Nodwch swm benthyciadau buddiannol eich cleient yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid i fenthyciadau buddiannol eich cleient fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i fenthyciadau buddiannol eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

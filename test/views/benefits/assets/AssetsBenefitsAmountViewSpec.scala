@@ -98,10 +98,10 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Beth oedd gwerth yr asedion a oedd ar gael i chi eu defnyddio?"
     val expectedHeading = "Beth oedd gwerth yr asedion a oedd ar gael i chi eu defnyddio?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar eich ffurflen P11D."
+    val expectedYouCanText: String = "Mae’r wybodaeth hon ar gael yn adran L, blwch 13 ar eich ffurflen P11D."
     val expectedErrorNoEntry = "Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio"
     val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a oedd ar gael i chi eu defnyddio yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i swm yr asedion a oedd ar gael i chi eu defnyddio fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i swm yr asedion a oedd ar gael i chi eu defnyddio fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -115,13 +115,13 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Beth oedd gwerth yr asedion a oedd ar gael iích cleient eu defnyddio?"
-    val expectedHeading = "Beth oedd gwerth yr asedion a oedd ar gael iích cleient eu defnyddio?"
+    val expectedTitle = "Beth oedd gwerth yr asedion a oedd ar gael i’ch cleient eu defnyddio?"
+    val expectedHeading = "Beth oedd gwerth yr asedion a oedd ar gael i’ch cleient eu defnyddio?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran L, blwch 13 ar ffurflen P11D eich cleient."
-    val expectedErrorNoEntry = "Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio"
-    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a oedd ar gael iích cleient eu defnyddio yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i swm yr asedion a oedd ar gael iích cleient eu defnyddio fod yn llai na £100,000,000,000"
+    val expectedYouCanText: String = "Mae’r wybodaeth hon ar gael yn adran L, blwch 13 ar ffurflen P11D eich cleient."
+    val expectedErrorNoEntry = "Nodwch swm yr asedion a oedd ar gael i’ch cleient eu defnyddio"
+    val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a oedd ar gael i’ch cleient eu defnyddio yn y fformat cywir"
+    val expectedErrorOverMaximum = "Mae’n rhaid i swm yr asedion a oedd ar gael i’ch cleient eu defnyddio fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

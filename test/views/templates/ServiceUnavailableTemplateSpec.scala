@@ -58,12 +58,12 @@ class ServiceUnavailableTemplateSpec extends UnitTest
 
   object expectedResultsCY {
     val h1Expected = "Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael"
-    val p1Expected = "Byddwch yn gallu defnyddio’r gwasanaeth hwn nes ymlaen."
+    val p1Expected = "Byddwch yn gallu defnyddio’r gwasanaeth hwn yn nes ymlaen."
     val p2Expected = "Gallwch hefyd wneud y canlynol:"
-    val bulletPoint1Expected = "mynd iír hafan Treth Incwm (yn agor tab newydd) am ragor o wybodaeth"
+    val bulletPoint1Expected = "mynd i’r hafan Treth Incwm (yn agor tab newydd) am ragor o wybodaeth"
     val bulletPoint1Link = "https://www.gov.uk/income-tax"
     val bulletPoint1LinkText = "hafan Treth Incwm (yn agor tab newydd)"
-    val bulletPoint2Expected = "defnyddio Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm"
+    val bulletPoint2Expected = "defnyddio Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd) i siarad â rhywun am eich treth incwm"
     val bulletPoint2Link = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
     val bulletPoint2LinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }

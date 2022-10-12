@@ -62,10 +62,10 @@ class TaxableCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?"
-    val expectedHeading = "A gafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedTitle = "A gafodd unrhyw rai o’ch costau trethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai o’ch costau trethadwy eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd unrhyw rai oích costau trethadwy eu had-dalu gan eich cyflogwr"
+    val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd unrhyw rai o’ch costau trethadwy eu had-dalu gan eich cyflogwr"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -95,7 +95,7 @@ class TaxableCostsBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val theseAreText = "Maeír rhain yn unrhyw gostau sydd ddim yn cael eu trethu wrth y ffynhonnell, er enghraifft, cymudo at ddiben nad ywín ymwneud ‚ busnes."
+    val theseAreText = "Mae’r rhain yn unrhyw gostau sydd ddim yn cael eu trethu wrth y ffynhonnell, er enghraifft, cymudo at ddiben nad yw’n ymwneud â busnes."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

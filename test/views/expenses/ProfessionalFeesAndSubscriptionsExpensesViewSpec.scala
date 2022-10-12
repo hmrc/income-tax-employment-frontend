@@ -92,8 +92,8 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
     val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol"
-    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i chi daluír ffioedd i wneud eich gwaith"
-    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i’ch swydd"
+    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i chi dalu’r ffioedd i wneud eich gwaith"
+    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig sy’n berthnasol i’ch swydd"
     val checkIfYouCanClaim = "Gwiriwch os gallwch hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
   }
 
@@ -112,8 +112,8 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
     val expectedHeading = "A ydych am hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol ar gyfer eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol eich cleient"
-    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid iích cleient daluír ffioedd i wneud ei waith"
-    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig syín berthnasol i swydd eich cleient"
+    val expectedExample1 = "ffioedd aelodaeth broffesiynol, os oes rhaid i’ch cleient dalu’r ffioedd i wneud ei waith"
+    val expectedExample2 = "tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy neu gymdeithasau dysgedig sy’n berthnasol i swydd eich cleient"
     val checkIfYouCanClaim = "Gwiriwch a all eich cleient hawlio ar gyfer ffioedd a thanysgrifiadau proffesiynol (yn agor tab newydd)."
   }
 

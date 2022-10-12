@@ -45,7 +45,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Er eich diogelwch, gwnaethom eich allgofnodi"
-    val p1Expected = "Ni wnaethom gadwích atebion."
+    val p1Expected = "Ni wnaethom gadw’ch atebion."
     val buttonExpectedText = "Mewngofnodi"
   }
 

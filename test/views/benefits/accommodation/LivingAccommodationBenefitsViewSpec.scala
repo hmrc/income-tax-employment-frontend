@@ -78,14 +78,14 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedParagraphText: String = "Diffinnir llety fel llety y gallwch fyw ynddo, píun a ydych yn byw ynddo drwyír amser neu dim ond rhan oír amser. " +
-      "Maeín cynnwys tai, fflatiau, cychod preswyl a lletyau gwyliau."
+    val expectedParagraphText: String = "Diffinnir llety fel llety y gallwch fyw ynddo, p’un a ydych yn byw ynddo drwy’r amser neu dim ond rhan o’r amser. " +
+      "Mae’n cynnwys tai, fflatiau, cychod preswyl a lletyau gwyliau."
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
     val expectedDetailsTitle = "Rhagor o wybodaeth am lety byw"
-    val expectedDetailsText1: String = "Nid yw llety yn cynnwys ystafelloedd mewn gwesty neu ëboard and lodgingsí, pan eich bod yn dibynnu ar rywun arall am goginio, glanhau neu olchi dillad."
-    val expectedDetailsText3: String = "Os ydych yn credu y dylaiír swm cyfan, neu ran ohono, fod wedi ei eithrio rhag treth, cyfeiriwch at HS202 Living accommodation a dilynwch y daflen waith."
+    val expectedDetailsText1: String = "Nid yw llety yn cynnwys ystafelloedd mewn gwesty neu ‘board and lodgings’, pan eich bod yn dibynnu ar rywun arall am goginio, glanhau neu olchi dillad."
+    val expectedDetailsText3: String = "Os ydych yn credu y dylai’r swm cyfan, neu ran ohono, fod wedi ei eithrio rhag treth, cyfeiriwch at HS202 Living accommodation a dilynwch y daflen waith."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -102,7 +102,7 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gawsoch unrhyw fuddiannau llety byw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau llety byw"
-    val expectedDetailsText2: String = "Dylaiích incwm o gyflogaeth gynnwys gwerth unrhyw lety byw rydych chi neu eich perthnasau yn ei gael oherwydd eich cyflogaeth."
+    val expectedDetailsText2: String = "Dylai’ch incwm o gyflogaeth gynnwys gwerth unrhyw lety byw rydych chi neu eich perthnasau yn ei gael oherwydd eich cyflogaeth."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {

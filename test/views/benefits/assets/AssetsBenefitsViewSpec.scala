@@ -82,7 +82,7 @@ class AssetsBenefitsViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
     val expectedHeading = "A oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio?"
-    val youCanUseText = "Gallwch ddefnyddioír asedion hyn ond nid ydych yn berchen arnynt."
+    val youCanUseText = "Gallwch ddefnyddio’r asedion hyn ond nid ydych yn berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os oedd eich cyflogwr wedi gwneud asedion ar gael i chi eu defnyddio"
   }
@@ -98,7 +98,7 @@ class AssetsBenefitsViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
     val expectedHeading = "A oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio?"
-    val youCanUseText = "Gall ddefnyddioír asedion hyn ond nid ywín berchen arnynt."
+    val youCanUseText = "Gall ddefnyddio’r asedion hyn ond nid yw’n berchen arnynt."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os oedd cyflogwr eich cleient wedi gwneud asedion ar gael iddo eu defnyddio"
   }

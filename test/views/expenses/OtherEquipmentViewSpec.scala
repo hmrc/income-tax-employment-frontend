@@ -69,7 +69,7 @@ class OtherEquipmentViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedParagraphText = "Mae hyn yn cynnwys pethau fel:"
-    val expectedExample1 = "cost prynu m‚n eitemau - fel driliau trydanol a dillad amddiffynnol"
+    val expectedExample1 = "cost prynu mân eitemau - fel driliau trydanol a dillad amddiffynnol"
     val expectedExample2 = "lwfansau cyfalaf ar gyfer eitemau mwy - fel peiriannau a chyfrifiaduron"
     val yesText = "Iawn"
     val noText = "Na"

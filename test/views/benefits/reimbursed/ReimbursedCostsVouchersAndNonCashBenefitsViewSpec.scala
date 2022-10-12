@@ -60,8 +60,8 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
-    val expectedH1 = "A gawsoch unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
+    val expectedTitle = "A gawsoch unrhyw gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
+    val expectedH1 = "A gawsoch unrhyw gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan eich cyflogwr"
   }
@@ -74,8 +74,8 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
-    val expectedH1 = "A gafodd eich cleient unrhyw gostau wediíu had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
+    val expectedTitle = "A gafodd eich cleient unrhyw gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
+    val expectedH1 = "A gafodd eich cleient unrhyw gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient gostau wedi’u had-dalu, talebau neu fuddiannau sydd ddim yn arian parod gan ei gyflogwr"
   }

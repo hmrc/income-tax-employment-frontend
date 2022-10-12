@@ -85,11 +85,11 @@ class EntertainmentBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "Faint y cawsoch i gyd ar gyfer gwesteia?"
     val expectedHeading: String = "Faint y cawsoch i gyd ar gyfer gwesteia?"
-    val expectedContent: String = "Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N oích ffurflen P11D."
+    val expectedContent: String = "Mae’r ffigur hwn ar gael ym mlwch 16 ‘gwesteia’ yn adran N o’ch ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwesteia"
     val invalidFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwesteia yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iích buddiant gwesteia fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’ch buddiant gwesteia fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -105,11 +105,11 @@ class EntertainmentBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "Faint y cafodd eich cleient i gyd ar gyfer gwesteia?"
     val expectedHeading: String = "Faint y cafodd eich cleient i gyd ar gyfer gwesteia?"
-    val expectedContent: String = "Maeír ffigur hwn ar gael ym mlwch 16 ëgwesteiaí yn adran N o ffurflen P11D eich cleient."
+    val expectedContent: String = "Mae’r ffigur hwn ar gael ym mlwch 16 ‘gwesteia’ yn adran N o ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwesteia"
     val invalidFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwesteia yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant gwesteia eich cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i fuddiant gwesteia eich cleient fod yn llai na £100,000,000,000"
   }
 
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))

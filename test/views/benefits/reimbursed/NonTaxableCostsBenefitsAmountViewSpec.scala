@@ -91,12 +91,12 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint oích costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
-    val expectedHeading = "Faint oích costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedTitle = "Faint o’ch costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "Faint o’ch costau anhrethadwy a gafodd eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr"
     val expectedIncorrectFormatErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r costau anhrethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -114,7 +114,7 @@ class NonTaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient"
     val expectedIncorrectFormatErrorMessage = "Nodwch swm y costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r costau anhrethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

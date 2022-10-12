@@ -74,7 +74,7 @@ class UniformsOrToolsExpensesViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
     val expectedHeading = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer?"
-    val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen arnoch i wneud eich gwaith"
+    val expectedCanClaimExample1 = "atgyweirio neu ddisodli mân offer sydd eu hangen arnoch i wneud eich gwaith"
     val expectedUniformsAndToolsLink = "Gwiriwch i weld a allwch hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
@@ -92,7 +92,7 @@ class UniformsOrToolsExpensesViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
     val expectedHeading = "A ydych am hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer ar gyfer eich cleient?"
-    val expectedCanClaimExample1 = "atgyweirio neu ddisodli m‚n offer sydd eu hangen ar eich cleient i wneud ei waith"
+    val expectedCanClaimExample1 = "atgyweirio neu ddisodli mân offer sydd eu hangen ar eich cleient i wneud ei waith"
     val expectedUniformsAndToolsLink = "Gwiriwch i weld a all eich cleient hawlio treuliau cyfradd unffurf ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer (yn agor tab newydd)."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ i hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
@@ -110,9 +110,9 @@ class UniformsOrToolsExpensesViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
-    val expectedCanClaim = "Maeín bosibl y gallwch hawlio ar gyfer costau:"
+    val expectedCanClaim = "Mae’n bosibl y gallwch hawlio ar gyfer costau:"
     val expectedCanClaimExample2 = "glanhau, atgyweirio neu ddisodli gwisgoedd unffurf neu ddillad gwaith arbenigol"
-    val flatRateExpense = "Maeír treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (ëtraul cyfradd unffurfí neu ëdidyniad sefydlogí)."
+    val flatRateExpense = "Mae’r treuliau hyn yn cael eu talu ar gyfradd y cytunir arni (‘traul cyfradd unffurf’ neu ‘didyniad sefydlog’)."
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"

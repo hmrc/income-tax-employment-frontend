@@ -170,7 +170,7 @@ class StudentLoansCYAViewSpec extends ViewUnitTest {
     override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
     override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
 
-    override val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+    override val answerStudentLoan = "Israddedig a Ôl-raddedig"
 
     override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
     override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
@@ -194,14 +194,14 @@ class StudentLoansCYAViewSpec extends ViewUnitTest {
     override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
     override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
 
-    override lazy val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+    override lazy val answerStudentLoan = "Israddedig a Ôl-raddedig"
 
     override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
     override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
     override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
 
     override lazy val insetText: String = s"Ni allwch ddiweddaru’ch manylion benthyciad myfyriwr tan 6 Ebrill $taxYear."
-    override lazy val buttonText: String = "Dychwelyd i‘r cyflogwr"
+    override lazy val buttonText: String = "Dychwelyd at y cyflogwr"
   }
 
   object ExpectedResultsWelshEOYAgent extends CommonExpectedResults {
@@ -217,7 +217,7 @@ class StudentLoansCYAViewSpec extends ViewUnitTest {
     override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
     override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
 
-    override val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+    override val answerStudentLoan = "Israddedig a Ôl-raddedig"
 
     override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
     override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
@@ -241,14 +241,14 @@ class StudentLoansCYAViewSpec extends ViewUnitTest {
     override val questionUndergraduateAmount = "Swm ad-daliadau israddedig"
     override val questionPostGraduateAmount = "Swm ad-daliadau ôl-raddedig"
 
-    override lazy val answerStudentLoan = "Israddedig ac Ôl-raddedig"
+    override lazy val answerStudentLoan = "Israddedig a Ôl-raddedig"
 
     override val hiddenTextStudentLoan: String = "Newid Newid Ad-daliadau Benthyciad Myfyriwr"
     override val hiddenTextUndergraduate: String = "Newid Newid Swm ad-daliadau israddedig"
     override val hiddenTextPostgraduate: String = "Newid Newid Swm ad-daliadau ôl-raddedig"
 
     override lazy val insetText: String = s"Ni allwch ddiweddaru manylion benthyciad myfyriwr eich cleient tan 6 Ebrill $taxYear."
-    override lazy val buttonText: String = "Dychwelyd i‘r cyflogwr"
+    override lazy val buttonText: String = "Dychwelyd at y cyflogwr"
   }
 
   object Selectors {

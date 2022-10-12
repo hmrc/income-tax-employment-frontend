@@ -133,12 +133,12 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val changeLinkExpected = "Newid"
     val continueButtonText = "Cadw ac yn eich blaen"
     val employerNameField1 = "Cyflogwr"
-    val employmentStartDateField1 = "Dyddiad dechrauír gyflogaeth"
+    val employmentStartDateField1 = "Dyddiad dechrau’r gyflogaeth"
     val didYouLeaveEmployerField = "Wedi gadael y cyflogwr"
     val employmentDatesField = "Dyddiadau cyflogaeth"
     val payeReferenceField2 = "Cyfeirnod TWE"
     val payReceivedField3 = "Tal a gafwyd"
-    val taxField4 = "Treth y DU a dynnwyd oír cyflog"
+    val taxField4 = "Treth y DU a dynnwyd o’r cyflog"
     val payrollIdField: String = "ID y gyflogres"
 
     val employerHiddenText: String = "Newid enw’r cyflogwr hwn"
@@ -148,7 +148,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
     val totalTaxToDateHiddenText: String = "Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog"
 
-    val returnToEmployerText: String = "Dychwelyd i‘r cyflogwr"
+    val returnToEmployerText: String = "Dychwelyd at y cyflogwr"
     val employmentStartDate = "21 Ebrill 2019"
     val employmentEndDate = s"11 Mawrth ${taxYearEOY - 1}"
     val employmentDates = s"$employmentStartDate i $employmentEndDate"
@@ -188,10 +188,10 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1 = "Gwiriwch eich manylion cyflogaeth"
     val expectedTitle = "Gwiriwch eich manylion cyflogaeth"
-    val expectedContent = "Maeích manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
-    val expectedInsetText = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
+    val expectedContent = "Mae’ch manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
+    val expectedInsetText = s"Ni allwch ddiweddaru’ch manylion cyflogaeth tan 6 Ebrill $taxYear."
     val changeEmploymentStartDateHiddenText: String => String = (employerName: String) => s"Newidiwch eich dyddiad dechrau ar gyfer $employerName"
-    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadauích cyflogaeth chi"
+    val changeEmploymentDatesHiddenText = "Newidiwch ddyddiadau’ch cyflogaeth chi"
     val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
     val employmentStartDateAddHiddenText = "Ychwanegu dyddiad dechrau’r gyflogaeth"
 

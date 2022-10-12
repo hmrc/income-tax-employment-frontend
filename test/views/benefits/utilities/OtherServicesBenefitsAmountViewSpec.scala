@@ -86,7 +86,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill"
     val invalidFormatErrorText: String = "Nodwch y swm a gawsoch ar gyfer gwasanaethau eraill yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gawsoch ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a gawsoch ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -104,7 +104,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill"
     val invalidFormatErrorText: String = "Nodwch y swm a gafodd eich cleient ar gyfer gwasanaethau eraill yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gafodd eich cleient ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a gafodd eich cleient ar gyfer gwasanaethau eraill fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

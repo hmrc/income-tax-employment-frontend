@@ -60,8 +60,8 @@ class IncomeTaxOrIncurredCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?"
-    val expectedH1 = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm neu gostau a ysgwyddwyd?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’ch Treth Incwm neu gostau a ysgwyddwyd?"
+    val expectedH1 = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’ch Treth Incwm neu gostau a ysgwyddwyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’ch Treth Incwm neu gostau a ysgwyddwyd"
   }
@@ -74,8 +74,8 @@ class IncomeTaxOrIncurredCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?"
-    val expectedH1 = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm neu gostau a ysgwyddwyd?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’i Dreth Incwm neu gostau a ysgwyddwyd?"
+    val expectedH1 = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’i Dreth Incwm neu gostau a ysgwyddwyd?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’i Dreth Incwm neu gostau a ysgwyddwyd"
   }

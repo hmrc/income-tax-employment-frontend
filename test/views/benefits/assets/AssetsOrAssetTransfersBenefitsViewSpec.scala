@@ -72,7 +72,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch unrhyw asedion gan y cwmni hwn?"
     val expectedHeading = "A gawsoch unrhyw asedion gan y cwmni hwn?"
     val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth eich cyflogwr eu rhoi dros dro i chi:"
-    val expectedBullet2 = "iíw cadw eich hun"
+    val expectedBullet2 = "i’w cadw eich hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch asedion"
   }
@@ -90,7 +90,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient unrhyw asedion gan y cwmni hwn?"
     val expectedHeading = "A gafodd eich cleient unrhyw asedion gan y cwmni hwn?"
     val expectedIncludesParagraph = "Dylech gynnwys asedion y gwnaeth ei gyflogwr eu rhoi dros dro iddo:"
-    val expectedBullet2 = "iíw cadw iíw hun"
+    val expectedBullet2 = "i’w cadw i’w hun"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient asedion"
   }

@@ -55,7 +55,7 @@ class AgentAuthErrorPageViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Mae problem wedi codi"
-    val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae’n rhaid i’ch cleient"
+    val youCannotViewText: String = "Ni allwch fwrw golwg dros wybodaeth y cleient hwn. Mae angen i’ch cleient"
     val authoriseYouAsText = "eich awdurdodi fel ei asiant (yn agor tab newydd)"
     val beforeYouCanTryText = "cyn y gallwch fewngofnodi i’r gwasanaeth hwn."
     val tryAnotherClientText = "Rhowch gynnig ar fanylion cleient arall"

@@ -77,12 +77,12 @@ class VouchersBenefitsAmountViewSpec extends ViewUnitTest {
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continue: String = "Yn eich blaen"
-    val expectedTitle: String = "Beth yw gwerth llawn y talebau aír taliadau cerdyn credyd?"
-    val expectedHeading: String = "Beth yw gwerth llawn y talebau aír taliadau cerdyn credyd?"
+    val expectedTitle: String = "Beth yw gwerth llawn y talebau a’r taliadau cerdyn credyd?"
+    val expectedHeading: String = "Beth yw gwerth llawn y talebau a’r taliadau cerdyn credyd?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch y swm ar gyfer talebau neu gardiau credyd"
     val invalidFormatErrorText: String = "Nodwch y swm ar gyfer talebau neu gardiau credyd yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm ar gyfer talebau neu gardiau credyd fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm ar gyfer talebau neu gardiau credyd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -90,7 +90,7 @@ class VouchersBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val youCanText: String = "Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar eich ffurflen P11D."
+    val youCanText: String = "Mae’r wybodaeth hon ar gael yn adran C, blwch 12 ar eich ffurflen P11D."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -98,7 +98,7 @@ class VouchersBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val youCanText: String = "Maeír wybodaeth hon ar gael yn adran C, blwch 12 ar ffurflen P11D eich cleient."
+    val youCanText: String = "Mae’r wybodaeth hon ar gael yn adran C, blwch 12 ar ffurflen P11D eich cleient."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

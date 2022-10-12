@@ -85,7 +85,7 @@ class EmployerProvidedServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr yn y fformat cywir"
     val emptyErrorText: String = "Nodwch y swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a gawsoch am wasanaethau a ddarperir gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -103,7 +103,7 @@ class EmployerProvidedServicesBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr yn y fformat cywir"
     val emptyErrorText: String = "Nodwch y swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a gafodd eich cleient am wasanaethau a ddarperir gan ei gyflogwr fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -88,11 +88,11 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Faint oedd cyfanswm eich buddiant car cwmni?"
     val expectedHeading = "Faint oedd cyfanswm eich buddiant car cwmni?"
-    val expectedParagraphText = "Maeír wybodaeth hon ar gael yn adran F, blwch 9 ar eich ffurflen P11D."
+    val expectedParagraphText = "Mae’r wybodaeth hon ar gael yn adran F, blwch 9 ar eich ffurflen P11D."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm eich buddiant car cwmni"
     val expectedInvalidFormatErrorMessage = "Nodwch swm eich buddiant car cwmni yn y fformat cywir"
-    val expectedMaxLengthErrorMessage = "Maeín rhaid i’ch buddiant car cwmni fod yn llai na £100,000,000,000"
+    val expectedMaxLengthErrorMessage = "Mae’n rhaid i’ch buddiant car cwmni fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,11 +108,11 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Faint oedd cyfanswm buddiant car cwmni eich cleient?"
     val expectedHeading = "Faint oedd cyfanswm buddiant car cwmni eich cleient?"
-    val expectedParagraphText = "Maeír wybodaeth hon ar gael yn adran F, blwch 9 ar ffurflen P11D eich cleient."
+    val expectedParagraphText = "Mae’r wybodaeth hon ar gael yn adran F, blwch 9 ar ffurflen P11D eich cleient."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm buddiant car cwmni eich cleient"
-    val expectedInvalidFormatErrorMessage = "Nodwch swm buddiant car cwmniích cleient yn y fformat cywir"
-    val expectedMaxLengthErrorMessage = "Maeín rhaid i fuddiant car cwmni eich cleient fod yn llai na £100,000,000,000"
+    val expectedInvalidFormatErrorMessage = "Nodwch swm buddiant car cwmni’ch cleient yn y fformat cywir"
+    val expectedMaxLengthErrorMessage = "Mae’n rhaid i fuddiant car cwmni eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

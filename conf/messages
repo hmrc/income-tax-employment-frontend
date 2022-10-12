@@ -124,7 +124,7 @@ timeout.p1 = We did not save your answers.
 
 #################       Employment summary messages        ########################################
 
-employment.employment.details.label = Employment Details
+#employment.employment.details.label = Employment Details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.you.must = You must

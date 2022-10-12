@@ -62,8 +62,8 @@ class IncurredCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?"
-    val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran oír costau yr ysgwyddwyd arnoch?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’r costau yr ysgwyddwyd arnoch?"
+    val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’r costau yr ysgwyddwyd arnoch?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’r costau yr ysgwyddwyd arnoch"
   }
@@ -76,8 +76,8 @@ class IncurredCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?"
-    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oír costau yr ysgwyddwyd arno?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’r costau yr ysgwyddwyd arno?"
+    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’r costau yr ysgwyddwyd arno?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’r costau yr ysgwyddwyd arno"
   }

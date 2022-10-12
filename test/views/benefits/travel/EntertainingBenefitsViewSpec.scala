@@ -80,7 +80,7 @@ class EntertainingBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gawsoch unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia"
-    val expectedContent = "Costau gwesteia ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
+    val expectedContent = "Costau gwesteia yw’r rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -96,7 +96,7 @@ class EntertainingBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau gwesteia?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau gwesteia"
-    val expectedContent = "Costau gwesteia ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
+    val expectedContent = "Costau gwesteia yw’r rhain y mae ei gyflogwr wedi talu amdanynt, neu wedi’u had-dalu amdanynt. Er enghraifft, bwyta, yfed a mathau eraill o letygarwch."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

@@ -67,7 +67,7 @@ class NonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gawsoch unrhyw fuddiant sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau sydd ddim yn arian parod"
-    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
+    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio na’i gyfnewid fel arian parod."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,7 +83,7 @@ class NonCashBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau sydd ddim yn arian parod?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau sydd ddim yn arian parod"
-    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio naíi gyfnewid fel arian parod."
+    val paragraph = "Dyma werth unrhyw beth nad oes modd ei ddefnyddio na’i gyfnewid fel arian parod."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

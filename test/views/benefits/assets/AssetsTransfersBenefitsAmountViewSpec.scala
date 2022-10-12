@@ -97,10 +97,10 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Beth oedd gwerth yr asedion a roddodd eich cyflogwr i chi eu cadw?"
     val expectedHeading = "Beth oedd gwerth yr asedion a roddodd eich cyflogwr i chi eu cadw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar eich ffurflen P11D."
+    val expectedYouCanText: String = "Mae’r wybodaeth hon ar gael yn adran A, blwch 13 ar eich ffurflen P11D."
     val expectedErrorNoEntry = "Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw"
     val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a roddodd eich cyflogwr i chi eu cadw yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr i chi eu cadw fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i gyfanswm yr asedion a roddodd eich cyflogwr i chi eu cadw fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -117,10 +117,10 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Beth oedd gwerth yr asedion a roddodd cyflogwr eich cleient iddo eu cadw?"
     val expectedHeading = "Beth oedd gwerth yr asedion a roddodd cyflogwr eich cleient iddo eu cadw?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedYouCanText: String = "Maeír wybodaeth hon ar gael yn adran A, blwch 13 ar ffurflen P11D eich cleient."
+    val expectedYouCanText: String = "Mae’r wybodaeth hon ar gael yn adran A, blwch 13 ar ffurflen P11D eich cleient."
     val expectedErrorNoEntry = "Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw"
     val expectedErrorIncorrectFormat = "Nodwch swm yr asedion a roddodd cyflogwr eich cleient iddo eu cadw yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i gyfanswm yr asedion a roddodd eich cyflogwr iddo eu cadw fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i gyfanswm yr asedion a roddodd eich cyflogwr iddo eu cadw fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

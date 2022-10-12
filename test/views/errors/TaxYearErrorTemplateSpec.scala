@@ -58,11 +58,11 @@ class TaxYearErrorTemplateSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "Heb ddod o hyd i’r dudalen"
-    val p1Expected = s"Dim ond gwybodaeth ar gyfer y blynyddoedd treth ${validTaxYearList.min} i ${validTaxYearList.max} y gallwch ei nodi."
-    val p1ExpectedSingle = "Dim ond gwybodaeth ar gyfer blwyddyn dreth ddilys y gallwch ei nodi."
+    val p1Expected = s"Gallwch nodi gwybodaeth ar gyfer blynyddoedd treth ${validTaxYearList.min} to ${validTaxYearList.max} yn unig."
+    val p1ExpectedSingle = "Gallwch nodi gwybodaeth ar gyfer blwyddyn dreth ddilys yn unig."
     val p2Expected = "Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir."
-    val p3Expected: String = "Os ywír cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
-      "ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm."
+    val p3Expected: String = "Os yw’r cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
+      "ymholiadau cyffredinol (yn agor tab newydd) i siarad â rhywun am eich treth incwm."
     val p3ExpectedLinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }
 

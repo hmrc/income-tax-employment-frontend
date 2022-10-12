@@ -86,10 +86,10 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi."
+    val expectedDoNotClaim = "Peidiwch â hawlio unrhyw swm y mae eich cyflogwr wedi’i dalu i chi."
     val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos"
     val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos yn y fformat cywir"
-    val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000"
+    val expectedOverMaxError = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,10 +108,10 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val expectedHeading = "Faint rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
-    val expectedDoNotClaim = "Peidiwch ‚ hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo."
+    val expectedDoNotClaim = "Peidiwch â hawlio unrhyw swm y mae cyflogwr eich cleient wedi’i dalu iddo."
     val expectedNoEntryError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient"
     val expectedFormatError = "Nodwch y swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos ar gyfer eich cleient yn y fformat cywir"
-    val expectedOverMaxError = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000"
+    val expectedOverMaxError = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer costau teithio busnes ac aros dros nos eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

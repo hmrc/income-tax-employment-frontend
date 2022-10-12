@@ -92,11 +92,11 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Faint oedd cyfanswm eich buddiant meddygol neu ddeintyddol?"
     val expectedHeading = "Faint oedd cyfanswm eich buddiant meddygol neu ddeintyddol?"
     val expectedParagraph = "Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd eich cyflogwr amdano."
-    val expectedParagraphForForm = "Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar eich ffurflen P11D."
+    val expectedParagraphForForm = "Mae’r wybodaeth hon ar gael yn adran I, blwch 11 ar eich ffurflen P11D."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch"
     val expectedWrongFormatErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gawsoch yn y fformat cywir"
-    val expectedMaxErrorMessage = "Maeín rhaid iích buddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
+    val expectedMaxErrorMessage = "Mae’n rhaid i’ch buddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -114,11 +114,11 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedTitle = "Faint oedd cyfanswm buddiant meddygol neu ddeintyddol eich cleient?"
     val expectedHeading = "Faint oedd cyfanswm buddiant meddygol neu ddeintyddol eich cleient?"
     val expectedParagraph = "Dyma gyfanswm yr yswiriant meddygol neu ddeintyddol y talodd cyflogwr eich cleient amdano."
-    val expectedParagraphForForm = "Maeír wybodaeth hon ar gael yn adran I, blwch 11 ar ffurflen P11D eich cleient."
+    val expectedParagraphForForm = "Mae’r wybodaeth hon ar gael yn adran I, blwch 11 ar ffurflen P11D eich cleient."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient"
     val expectedWrongFormatErrorMessage = "Nodwch swm y buddiant meddygol neu ddeintyddol a gafodd eich cleient yn y fformat cywir"
-    val expectedMaxErrorMessage = "Maeín rhaid i fuddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
+    val expectedMaxErrorMessage = "Mae’n rhaid i fuddiant meddygol neu ddeintyddol fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

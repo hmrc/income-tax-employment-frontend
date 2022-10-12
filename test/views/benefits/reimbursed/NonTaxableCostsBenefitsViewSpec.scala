@@ -63,8 +63,8 @@ class NonTaxableCostsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
-    val expectedHeading = "A gafodd unrhyw rai oích costau anhrethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedTitle = "A gafodd unrhyw rai o’ch costau anhrethadwy eu had-dalu gan eich cyflogwr?"
+    val expectedHeading = "A gafodd unrhyw rai o’ch costau anhrethadwy eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd unrhyw rai o’ch costau anhrethadwy eu had-dalu gan eich cyflogwr"
     val paragraph = "Mae hyn yn cynnwys costau offer neu gyflenwadau sydd eu hangen i wneud eich swydd."

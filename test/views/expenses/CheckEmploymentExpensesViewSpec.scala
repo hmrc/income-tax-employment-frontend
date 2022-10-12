@@ -189,7 +189,7 @@ class CheckEmploymentExpensesViewSpec extends ViewUnitTest {
     val otherEquipmentHiddenText = "Newidiwch y swm rydych am ei hawlio ar gyfer offer eraill"
     val otherEquipmentAmountHiddenText = "Newidiwch y swm rydych am ei hawlio am offer eraill"
 
-    def expectedInsetText(taxYear: Int = taxYear): String = s"Does dim modd i chi ddiweddaruích treuliau cyflogaeth tan 6 Ebrill $taxYear."
+    def expectedInsetText(taxYear: Int = taxYear): String = s"Does dim modd i chi ddiweddaru’ch treuliau cyflogaeth tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {

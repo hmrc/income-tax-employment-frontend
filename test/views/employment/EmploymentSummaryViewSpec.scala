@@ -167,7 +167,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val addExpenses: String = "Ychwanegu treuliau"
     val employer: String = "Cyflogwr"
     val employers: String = "Cyflogwyr"
-    val returnToOverview: String = "Yn Ùl iír trosolwg"
+    val returnToOverview: String = "Yn ôl i’r trosolwg"
     val employmentDetails: String = "Manylion Cyflogaeth"
     val benefits: String = "Buddiannau"
     val view: String = "Bwrw golwg"
@@ -190,16 +190,16 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val yourEmpInfo: String =
-      "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
-    val yourEmpInfoStudentLoansUnreleased: String = "Maeích gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth a buddiannau."
-    val cannotUpdateInfo: String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
+      "Mae’ch gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
+    val yourEmpInfoStudentLoansUnreleased: String = "Mae’ch gwybodaeth cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch. Mae’n cynnwys manylion cyflogaeth a buddiannau."
+    val cannotUpdateInfo: String = s"Ni allwch ddiweddaru’ch manylion cyflogaeth tan 6 Ebrill $taxYear."
     val cannotAdd: String = s"Ni allwch ychwanegu treuliau tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val yourEmpInfo: String =
-      "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
-    val yourEmpInfoStudentLoansUnreleased: String = "Mae manylion cyflogaeth eich cleient yn seiliedig ar y wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth a buddiannau."
+      "Mae gwybodaeth cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth, buddiannau a chyfraniadau benthyciadau myfyrwyr."
+    val yourEmpInfoStudentLoansUnreleased: String = "Mae gwybodaeth cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano. Mae’n cynnwys manylion cyflogaeth a buddiannau."
     val cannotUpdateInfo: String = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
     val cannotAdd: String = s"Ni allwch ychwanegu treuliau eich cleient tan 6 Ebrill $taxYear."
   }

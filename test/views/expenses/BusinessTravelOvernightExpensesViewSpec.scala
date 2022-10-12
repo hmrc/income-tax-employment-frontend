@@ -109,7 +109,7 @@ class BusinessTravelOvernightExpensesViewSpec extends ViewUnitTest {
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Treuliau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedParagraphText = "Maeír treuliau hyn yn bethau fel:"
+    val expectedParagraphText = "Mae’r treuliau hyn yn bethau fel:"
     val yesText = "Iawn"
     val noText = "Na"
     val buttonText = "Yn eich blaen"
@@ -118,9 +118,9 @@ class BusinessTravelOvernightExpensesViewSpec extends ViewUnitTest {
     val expectedExample3 = "llety mewn gwesty os oes rhaid i chi aros dros nos"
     val expectedExample4 = "bwyd a diod"
     val expectedExample5 = "taliadau atal tagfeydd, tollau a ffioedd parcio"
-    val expectedExample6 = "galwadau ffÙn a chostau argraffuír busnes"
-    val expectedDetailsTitle = "Os ydych yn defnyddioích cerbyd eich hun ar gyfer teithiau busnes"
-    val expectedDetails2 = "lluoswch y milltiroedd ‚ír lwfans milltiroedd cymeradwy"
+    val expectedExample6 = "galwadau Ffôn a chostau argraffu’r busnes"
+    val expectedDetailsTitle = "Os ydych yn defnyddio’ch cerbyd eich hun ar gyfer teithiau busnes"
+    val expectedDetails2 = "lluoswch y milltiroedd â’r lwfans milltiroedd cymeradwy"
     val expectedApprovedMileageHeading = "Lwfans milltiroedd cymeradwy"
     val expectedCarVanHeading = "Ceir a faniau"
     val expectedCarVanText1 = "45c am y 10,000 milltir gyntaf"
@@ -147,7 +147,7 @@ class BusinessTravelOvernightExpensesViewSpec extends ViewUnitTest {
     val expectedHeading = "A ydych am hawlio unrhyw dreuliau teithio busness ac aros dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos"
-    val expectedDoNotInclude = "Peidiwch ‚ chynnwys eich costau teithio iír gwaith arferol."
+    val expectedDoNotInclude = "Peidiwch â chynnwys eich costau teithio i’r gwaith arferol."
     val expectedDetailsInfo = "Er mwyn cyfrifo faint y gallwch ei hawlio ar gyfer y flwyddyn dreth, bydd angen i chi wneud y canlynol:"
     val expectedDetails1 = "adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd rydych wedi ei ddefnyddio ar gyfer gwaith"
     val expectedDetails3 = "tynnwch unrhyw swm a dalodd eich cyflogwr tuag at eich costau"
@@ -169,9 +169,9 @@ class BusinessTravelOvernightExpensesViewSpec extends ViewUnitTest {
     val expectedHeading = "A ydych am hawlio ar gyfer treuliau teithio busnes ac aros dros nos eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ i hawlio ar gyfer costau teithio ac aros dros nos eich cleient"
-    val expectedDoNotInclude = "Peidiwch ‚ chynnwys costau teithio iír gwaith arferol eich cleient."
+    val expectedDoNotInclude = "Peidiwch â chynnwys costau teithio i’r gwaith arferol eich cleient."
     val expectedDetailsInfo = "Er mwyn cyfrifo faint y gall eich cleient ei hawlio ar gyfer pob blwyddyn dreth, bydd angen i chi wneud y canlynol:"
-    val expectedDetails1 = "adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd y maeích cleient yn ei ddefnyddio ar gyfer gwaith"
+    val expectedDetails1 = "adiwch y milltiroedd at ei gilydd ar gyfer pob math o gerbyd y mae’ch cleient yn ei ddefnyddio ar gyfer gwaith"
     val expectedDetails3 = "tynnwch unrhyw swm a dalodd cyflogwr eich cleient tuag at ei gostau"
   }
 
