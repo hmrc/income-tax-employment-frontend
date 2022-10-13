@@ -17,15 +17,16 @@
 package utils
 
 import models.AuthorisationRequest
-import models.mongo.{EmploymentUserData, ExpensesUserData}
+import models.mongo.{EmploymentUserData, ExpensesUserData, UserDataGateway}
 import org.mongodb.scala.bson.collection.immutable.Document
-import repositories.{EmploymentUserDataRepositoryImpl, ExpensesUserDataRepositoryImpl}
+import repositories.{EmploymentUserDataRepositoryImpl, ExpensesUserDataRepositoryImpl, GatewayUserDataRepository, GatewayUserDataRepositoryImpl}
 
 trait EmploymentDatabaseHelper {
   self: IntegrationTest =>
 
   lazy val employmentDatabase: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
   lazy val expensesDatabase: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  lazy val gatewayDatabase: GatewayUserDataRepositoryImpl = app.injector.instanceOf[GatewayUserDataRepositoryImpl]
 
   def dropEmploymentDB(): Unit = {
     await(employmentDatabase.collection.deleteMany(filter = Document()).toFuture())
@@ -35,6 +36,22 @@ trait EmploymentDatabaseHelper {
   def dropExpensesDB(): Unit = {
     await(expensesDatabase.collection.deleteMany(filter = Document()).toFuture())
     await(expensesDatabase.ensureIndexes)
+  }
+
+  def dropGatewayDB(): Unit = {
+    await(gatewayDatabase.collection.deleteMany(filter = Document()).toFuture())
+    await(gatewayDatabase.ensureIndexes)
+  }
+
+  def insertGatewayData(gatewayUserData: UserDataGateway): Unit = {
+    await(gatewayDatabase.createOrUpdate(gatewayUserData))
+  }
+
+  def findGatewayData(taxYear: Int, employmentId: String, authorisationRequest: AuthorisationRequest[_]): Option[UserDataGateway] = {
+    await(gatewayDatabase.find(authorisationRequest.user).map {
+      case Left(_) => None
+      case Right(value) => value
+    })
   }
 
   def insertCyaData(cya: EmploymentUserData): Unit = {

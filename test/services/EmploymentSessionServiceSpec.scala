@@ -30,6 +30,7 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
+import repositories.GatewayUserDataRepository
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -57,6 +58,8 @@ class EmploymentSessionServiceSpec extends UnitTest
   private val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
   private val mockInYearUtil: InYearUtil = app.injector.instanceOf[InYearUtil]
+  private val mockGatewayRepository: GatewayUserDataRepository = app.injector.instanceOf[GatewayUserDataRepository]
+
 
   private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
@@ -65,6 +68,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   private val underTest: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
     mockExpensesUserDataRepository,
+    mockGatewayRepository,
     mockUserDataConnector,
     mockIncomeSourceConnector,
     messages,
@@ -77,6 +81,7 @@ class EmploymentSessionServiceSpec extends UnitTest
   private val underTestWithMimicking: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
     mockExpensesUserDataRepository,
+    mockGatewayRepository,
     mockUserDataConnector,
     mockIncomeSourceConnector,
     messages,
