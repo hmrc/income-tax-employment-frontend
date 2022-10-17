@@ -16,7 +16,7 @@
 
 package support
 
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -39,6 +39,16 @@ trait ViewHelper {
 
   def elementExist(selector: String)(implicit document: Document): Boolean = {
     !document.select(selector).isEmpty
+  }
+
+  def element(selector: String)(implicit document: Document): Element = {
+    val elements = document.select(selector)
+
+    if (elements.size() == 0) {
+      fail(s"No elements exist with the selector '$selector'")
+    }
+
+    elements.first()
   }
 
   def titleCheck(title: String, isWelsh: Boolean)(implicit document: Document): Unit = {

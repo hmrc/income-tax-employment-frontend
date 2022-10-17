@@ -16,16 +16,31 @@
 
 package views.templates.helpers
 
+import common.SessionValues
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import utils.ViewTest
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
+import support.{TaxYearProvider, UnitTest, ViewHelper}
 import views.html.templates.helpers.Link
 
-class LinkViewSpec extends ViewTest {
+class LinkViewSpec extends UnitTest
+  with ViewHelper
+  with GuiceOneAppPerSuite
+  with TaxYearProvider {
 
   lazy val linkView: Link = app.injector.instanceOf[Link]
 
   private val aTagSelector = "a"
+
+  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val messages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
+    .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
   "LinkView" when {
     val link = "/contact/some-system"
