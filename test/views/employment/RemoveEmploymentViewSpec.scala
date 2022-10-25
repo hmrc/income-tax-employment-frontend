@@ -91,7 +91,7 @@ class RemoveEmploymentViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedTitle = "A ydych yn si?r eich bod am dynnuír gyflogaeth hon?"
+    val expectedTitle = "A ydych yn siŵr eich bod am dynnu’r gyflogaeth hon?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val employerName = "apple"
 
@@ -99,7 +99,7 @@ class RemoveEmploymentViewSpec extends ViewUnitTest {
 
     def employerInfo(employerName: String, startDate: String): String = {
       if(startDate.isEmpty) { s"$employerName Dyddiad dechrau ar goll" }
-      else { s"$employerName Dechreuwyd $startDate"}
+      else { s"$employerName Wedi dechrau ar $startDate"}
     }
 
     val expectedCaption = s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"

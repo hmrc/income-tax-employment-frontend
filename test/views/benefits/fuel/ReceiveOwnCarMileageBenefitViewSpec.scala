@@ -92,9 +92,9 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "A gawsoch fuddiant milltiroedd am ddefnyddio eich car eich hun ar gyfer gwaith?"
     val expectedH1 = "A gawsoch fuddiant milltiroedd am ddefnyddio eich car eich hun ar gyfer gwaith?"
-    val expectedP1: String = "Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gennych daliadau " +
-      "syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oích ffurflen P11D."
-    val expectedP2 = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
+    val expectedP1: String = "Dim ond taliadau sy’n uwch na’n ‘swm cymeradwy’ y mae angen i ni wybod amdanynt. Os oes gennych daliadau " +
+      "sy’n uwch na’r ‘swm cymeradwy’, dylid eu cofnodi yn adran E o’ch ffurflen P11D."
+    val expectedP2 = "Gwiriwch â’ch cyflogwr os nad ydych yn siŵr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiant milltiroedd am ddefnyddio’ch car eich hun ar gyfer gwaith"
   }
@@ -102,9 +102,9 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A gafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith?"
     val expectedH1 = "A gafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith?"
-    val expectedP1: String = "Dim ond taliadau syín uwch naín ëswm cymeradwyí y mae angen i ni wybod amdanynt. Os oes gan eich " +
-      "cleient daliadau syín uwch naír ëswm cymeradwyí, dylid eu cofnodi yn adran E oíi ffurflen P11D."
-    val expectedP2 = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
+    val expectedP1: String = "Dim ond taliadau sy’n uwch na’n ‘swm cymeradwy’ y mae angen i ni wybod amdanynt. Os oes gan eich " +
+      "cleient daliadau sy’n uwch na’r ‘swm cymeradwy’, dylid eu cofnodi yn adran E o’i ffurflen P11D."
+    val expectedP2 = "Gwiriwch â chyflogwr eich cleient os nad ydych yn siŵr."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant milltiroedd am ddefnyddio ei gar ei hun ar gyfer gwaith"
   }

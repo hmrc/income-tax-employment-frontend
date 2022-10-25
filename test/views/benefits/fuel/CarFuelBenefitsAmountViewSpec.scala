@@ -100,20 +100,20 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "Faint oedd cyfanswm eich buddiant tanwydd ar gyfer car cwmni?"
     val expectedTitle: String = "Faint oedd cyfanswm eich buddiant tanwydd ar gyfer car cwmni?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran F, blwch 10 ar eich ffurflen P11D."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran F, blwch 10 ar eich ffurflen P11D."
     val emptyErrorText: String = "Nodwch swm eich buddiant tanwydd ar gyfer car cwmni"
     val wrongFormatErrorText: String = "Nodwch swm eich buddiant tanwydd ar gyfer car cwmni yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant tanwydd ar gyfer eich car cwmni fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i fuddiant tanwydd ar gyfer eich car cwmni fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "Faint oedd cyfanswm y buddiant tanwydd ar gyfer car cwmni eich cleient?"
     val expectedTitle: String = "Faint oedd cyfanswm y buddiant tanwydd ar gyfer car cwmni eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran F, blwch 10 ar ffurflen P11D eich cleient."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran F, blwch 10 ar ffurflen P11D eich cleient."
     val emptyErrorText: String = "Nodwch swm buddiant tanwydd ar gyfer car cwmni eich cleient"
     val wrongFormatErrorText: String = "Nodwch swm buddiant tanwydd ar gyfer car cwmni eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant tanwydd ar gyfer car cwmni eich cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i fuddiant tanwydd ar gyfer car cwmni eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

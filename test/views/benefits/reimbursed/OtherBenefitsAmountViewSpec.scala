@@ -70,7 +70,7 @@ class OtherBenefitsAmountViewSpec extends ViewUnitTest {
     override val amountHint: String = "Er enghraifft, £193.52"
     val expectedCaption: String = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val continue: String = "Yn eich blaen"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a nodwyd ar gyfer buddiannau eraill fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a nodwyd ar gyfer buddiannau eraill fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

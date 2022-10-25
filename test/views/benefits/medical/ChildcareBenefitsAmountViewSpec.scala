@@ -92,7 +92,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch swm eich buddiant gofal plant"
     val expectedErrorIncorrectFormat = "Nodwch swm eich buddiant gofal plant yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iích buddiant gofal plant fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i’ch buddiant gofal plant fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -110,7 +110,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch swm buddiant gofal plant eich cleient"
     val expectedErrorIncorrectFormat = "Nodwch fuddiant gofal plant eich cleient yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i fuddiant gofal plant eich cleient fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i fuddiant gofal plant eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

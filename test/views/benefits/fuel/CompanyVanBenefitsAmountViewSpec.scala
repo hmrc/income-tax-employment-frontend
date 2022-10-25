@@ -85,11 +85,11 @@ class CompanyVanBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "Faint oedd cyfanswm eich buddiant fan cwmni?"
     val expectedHeading: String = "Faint oedd cyfanswm eich buddiant fan cwmni?"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 9 ar eich ffurflen P11D."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran G, blwch 9 ar eich ffurflen P11D."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Nodwch swm eich buddiant fan cwmni yn y fformat cywir"
     val emptyErrorText: String = "Nodwch swm eich buddiant fan cwmni"
-    val maxAmountErrorText: String = "Maeín rhaid iích buddiant fan cwmniích cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’ch buddiant fan cwmni’ch cleient fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -105,11 +105,11 @@ class CompanyVanBenefitsAmountViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "Faint oedd cyfanswm buddiant fan cwmni eich cleient?"
     val expectedHeading: String = "Faint oedd cyfanswm buddiant fan cwmni eich cleient?"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran G, blwch 9 ar ffurflen P11D eich cleient."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran G, blwch 9 ar ffurflen P11D eich cleient."
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val wrongFormatErrorText: String = "Nodwch swm buddiant fan cwmniích cleient yn y fformat cywir"
+    val wrongFormatErrorText: String = "Nodwch swm buddiant fan cwmni’ch cleient yn y fformat cywir"
     val emptyErrorText: String = "Nodwch swm buddiant fan cwmni eich cleient"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant fan cwmniích cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i fuddiant fan cwmni’ch cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

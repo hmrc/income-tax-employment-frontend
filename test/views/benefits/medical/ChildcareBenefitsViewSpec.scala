@@ -28,7 +28,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import views.html.benefits.medical.ChildcareBenefitsView
 
-class ChildcareBenefitsViewSpec extends ViewUnitTest {
+class ChildcareBenefitdsViewSpec extends ViewUnitTest {
 
   private val employmentId: String = "employmentId"
   private val exemptLink: String = "https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
@@ -74,8 +74,8 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gawsoch fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiant gofal plant"
-    val expectedTheseAre = "Costau gofal plant y talodd eich cyflogwr amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
-    val expectedCheckWith = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
+    val expectedTheseAre = "Costau gofal plant y talodd eich cyflogwr amdanynt yw’r rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
+    val expectedCheckWith = "Gwiriwch â’ch cyflogwr os nad ydych yn siŵr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -92,8 +92,8 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gafodd eich cleient fuddiant gofal plant?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant gofal plant"
-    val expectedTheseAre = "Costau gofal plant y talodd cyflogwr eich cleient amdanynt ywír rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
-    val expectedCheckWith = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
+    val expectedTheseAre = "Costau gofal plant y talodd cyflogwr eich cleient amdanynt yw’r rhain. Gall gynnwys talebau neu gostau gofal plant masnachol."
+    val expectedCheckWith = "Gwiriwch â chyflogwr eich cleient os nad ydych yn siŵr."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -110,7 +110,7 @@ class ChildcareBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val expectedWeOnly = "Dim ond costau gofal plant syín uwch na throthwyír eithriad y mae angen i ni wybod amdanynt (yn agor tab newydd)."
+    val expectedWeOnly = "Dim ond costau gofal plant sy’n uwch na throthwy’r eithriad y mae angen i ni wybod amdanynt (yn agor tab newydd)."
     val expectedWeOnlyLink = "y mae angen i ni wybod amdanynt (yn agor tab newydd)."
   }
 

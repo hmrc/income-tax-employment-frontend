@@ -85,12 +85,12 @@ class TaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Faint oích costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
-    val expectedHeading: String = "Faint oích costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedTitle: String = "Faint o’ch costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
+    val expectedHeading: String = "Faint o’ch costau trethadwy a gafodd eu had-dalu gan eich cyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr"
     val invalidFormatErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan eich cyflogwr yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír costau trethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r costau trethadwy a ad-dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -108,7 +108,7 @@ class TaxableCostsBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient"
     val invalidFormatErrorText: String = "Nodwch swm y costau trethadwy a ad-dalwyd gan gyflogwr eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír costau trethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r costau trethadwy a ad-dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

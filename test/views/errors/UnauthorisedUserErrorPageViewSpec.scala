@@ -60,14 +60,14 @@ class UnauthorisedUserErrorPageViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val h1Expected = "Nid ydych wediích awdurdodi i ddefnyddioír gwasanaeth hwn"
+    val h1Expected = "Nid ydych wedi’ch awdurdodi i ddefnyddio’r gwasanaeth hwn"
     val youCanText = "Gallwch wneud y canlynol:"
-    val goToTheText = "mynd iír"
+    val goToTheText = "mynd i’r"
     val incomeTaxHomePageText = "hafan Treth Incwm (yn agor tab newydd)"
     val forMoreInformationText = "am ragor o wybodaeth"
     val useText = "defnyddio"
     val selfAssessmentText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
-    val toSpeakText = "i siarad ‚ rhywun am eich treth incwm"
+    val toSpeakText = "i siarad â rhywun am eich treth incwm"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(

@@ -74,7 +74,7 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val continueButtonText = "Yn eich blaen"
     val hintText = "Er enghraifft, £193.52"
     val wrongFormatErrorText: String = "Nodwch y swm a dalwyd yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalwyd fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a dalwyd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -97,16 +97,16 @@ class qEmployerPayAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "Faint y gwnaeth maggie ei dalu i chi?"
     val expectedTitle: String = "Faint y gwnaeth eich cyflogwr ei dalu i chi?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContentNewAccount: String = "Nodwch y swm gros. Mae hwn iíw weld fel arfer ar eich P60."
+    val expectedContentNewAccount: String = "Nodwch y swm gros. Mae hwn i’w weld fel arfer ar eich P60."
     val emptyErrorText: String = "Nodwch swm a dalwyd i chi"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "Faint y gwnaeth maggie ei dalu iích cleient?"
+    val expectedH1: String = "Faint y gwnaeth maggie ei dalu i’ch cleient?"
     val expectedTitle: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu iddo?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient."
-    val emptyErrorText: String = "Nodwch y swm a dalwyd iích cleient"
+    val emptyErrorText: String = "Nodwch y swm a dalwyd i’ch cleient"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

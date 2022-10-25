@@ -86,7 +86,7 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys"
     val invalidFormatErrorText: String = "Nodwch swm eich buddiant adleoli anghymwys yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid iích buddiant adleoli anghymwys fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’ch buddiant adleoli anghymwys fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -104,7 +104,7 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val emptyErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient"
     val invalidFormatErrorText: String = "Nodwch swm buddiant adleoli anghymwys eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i fuddiant adleoli anghymwys eich cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i fuddiant adleoli anghymwys eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

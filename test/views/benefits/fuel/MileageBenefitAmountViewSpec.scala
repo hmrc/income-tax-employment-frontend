@@ -91,10 +91,10 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedHeading = "Faint o fuddiant milltiroedd a gawsoch i gyd am ddefnyddio eich car eich hun?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gawsoch am ddefnyddio eich car eich hun"
-    val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
-    val expectedParagraphWithPrefill: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
+    val expectedParagraph: String = "Mae’r wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
+    val expectedParagraphWithPrefill: String = "Mae’r wybodaeth hon ar gael yn adran E, blwch 12 ar eich ffurflen P11D."
     val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gawsoch chi yn y fformat cywir"
-    val expectedMaxErrorMessage: String = "Maeín rhaid iích buddiant milltiroedd fod yn llai na £100,000,000,000"
+    val expectedMaxErrorMessage: String = "Mae’n rhaid i’ch buddiant milltiroedd fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -113,10 +113,10 @@ class MileageBenefitAmountViewSpec extends ViewUnitTest {
     val expectedHeading = "Faint o fuddiant milltiroedd a gafodd eich cleient i gyd am ddefnyddio ei gar ei hun?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient am ddefnyddio ei gar ei hun"
-    val expectedParagraph: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
-    val expectedParagraphWithPrefill: String = "Maeír wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
+    val expectedParagraph: String = "Mae’r wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
+    val expectedParagraphWithPrefill: String = "Mae’r wybodaeth hon ar gael yn adran E, blwch 12 ar ffurflen P11D eich cleient."
     val expectedWrongFormatErrorMessage: String = "Nodwch swm y buddiant milltiroedd a gafodd eich cleient yn y fformat cywir"
-    val expectedMaxErrorMessage: String = "Maeín rhaid i fuddiant milltiroedd eich cleient fod yn llai na £100,000,000,000"
+    val expectedMaxErrorMessage: String = "Mae’n rhaid i fuddiant milltiroedd eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

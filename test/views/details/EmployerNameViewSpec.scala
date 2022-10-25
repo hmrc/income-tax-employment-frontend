@@ -70,11 +70,11 @@ class EmployerNameViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Beth oedd enwích cyflogwr?"
-    val expectedH1 = "Beth oedd enwích cyflogwr?"
+    val expectedTitle = "Beth oedd enw’ch cyflogwr?"
+    val expectedH1 = "Beth oedd enw’ch cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch enwích cyflogwr"
-    val expectedErrorWrongFormat = "Nodwch enwích cyflogwr yn y fformat cywir"
+    val expectedErrorNoEntry = "Nodwch enw’ch cyflogwr"
+    val expectedErrorWrongFormat = "Nodwch enw’ch cyflogwr yn y fformat cywir"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -106,8 +106,8 @@ class EmployerNameViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val expectedErrorCharLimit = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai"
-    val paragraphText = "Maeín rhaid i enwír cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val expectedErrorCharLimit = "Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai"
+    val paragraphText = "Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:"
     val formatList1 = "llythrennau mawr a bach (a i z)"
     val formatList2 = "rhifau"
     val formatList3 = "y cymeriadau arbennig: & : ’ \\ , . ( ) -"

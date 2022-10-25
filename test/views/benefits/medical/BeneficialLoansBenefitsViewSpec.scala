@@ -67,7 +67,7 @@ class BeneficialLoansBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gawsoch unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fenthyciadau buddiannol"
-    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain gan eich cyflogwr."
+    val theseAreText = "Benthyciadau di-log neu log isel yw’r rhain gan eich cyflogwr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -83,7 +83,7 @@ class BeneficialLoansBenefitsViewSpec extends ViewUnitTest {
     val expectedHeading = "A gafodd eich cleient unrhyw fenthyciadau buddiannol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fenthyciadau buddiannol"
-    val theseAreText = "Benthyciadau di-log neu log isel ywír rhain y mae ei gyflogwr wediíu rhoi iddo."
+    val theseAreText = "Benthyciadau di-log neu log isel yw’r rhain y mae ei gyflogwr wedi’u rhoi iddo."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

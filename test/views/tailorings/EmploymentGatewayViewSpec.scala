@@ -74,7 +74,7 @@ class EmploymentGatewayViewSpec extends ViewUnitTest {
     val expectedTitle = "A gawsoch incwm o gyflogaeth TWE?"
     val expectedH1 = "A gawsoch incwm o gyflogaeth TWE?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os cawsoch incwm o gyflogaeth TWE"
+    val expectedError = "Dewiswch ‘Iawn’ os cawsoch ddifidendau o gyfranddaliadau"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -88,7 +88,7 @@ class EmploymentGatewayViewSpec extends ViewUnitTest {
     val expectedTitle = "A gafodd eich cleient incwm o gyflogaeth TWE?"
     val expectedH1 = "A gafodd eich cleient incwm o gyflogaeth TWE?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os cafodd incwm o gyflogaeth TWE"
+    val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient log gan y DU"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

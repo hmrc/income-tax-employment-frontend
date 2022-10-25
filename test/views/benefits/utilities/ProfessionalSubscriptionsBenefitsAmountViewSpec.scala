@@ -85,7 +85,7 @@ class ProfessionalSubscriptionsBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir"
     val emptyErrorText: String = "Nodwch y swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a dalwyd gan eich cyflogwr ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -103,7 +103,7 @@ class ProfessionalSubscriptionsBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val wrongFormatErrorText: String = "Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol yn y fformat cywir"
     val emptyErrorText: String = "Nodwch y swm a dalwyd gan gyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol"
-    val maxAmountErrorText: String = "Maeín rhaid iír swm a dalodd cyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i’r swm a dalodd cyflogwr eich cleient ar gyfer ffioedd neu danysgrifiadau proffesiynol fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

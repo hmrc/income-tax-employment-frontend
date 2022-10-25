@@ -80,7 +80,7 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer"
     val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer yn y format cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -100,7 +100,7 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient"
     val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith neu offer eich cleient yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer eich cleient fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer gwisgoedd unffurf, dillad gwaith, neu offer eich cleient fod yn llai na £100,000,000,000"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -116,7 +116,7 @@ class UniformsOrToolsExpensesAmountViewSpec extends ViewUnitTest {
     val continueButtonText = "Yn eich blaen"
     val totalAmountText = "Cyfanswm ar gyfer pob cyflogwr"
     val hintText = "Er enghraifft, £193.52"
-    val expectedCannotClaim = "Ni allwch hawlio ar gyfer y gost gychwynnol o brynu m‚n offer neu ddillad ar gyfer gwaith."
+    val expectedCannotClaim = "Ni allwch hawlio ar gyfer y gost gychwynnol o brynu mân offer neu ddillad ar gyfer gwaith."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

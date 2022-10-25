@@ -83,9 +83,9 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
     val expectedTitle = "A wnaeth eich cyflogwr dalu costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
     val expectedHeading = "A wnaeth eich cyflogwr dalu costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedParagraphText: String = "Maeín bosibl bod eich cyflogwr wedi taluír ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd. " +
-      "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iích gwaith."
-    val checkWithEmployerText = "Gwiriwch ‚ích cyflogwr os nad ydych yn si?r."
+    val expectedParagraphText: String = "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy sy’n berthnasol i’w waith. " +
+      "Mae’n bosibl bod eich cyflogwr wedi talu’r ffioedd y mae’n rhaid i chi eu talu er mwyn gallu gwneud eich swydd."
+    val checkWithEmployerText = "Gwiriwch â’ch cyflogwr os nad ydych yn siŵr."
     val expectedErrorMessage = "Dewiswch ‘Iawn’ os talodd eich cyflogwr y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 
@@ -100,12 +100,11 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
-    val expectedHeading = "A wnaeth cyflogwr eich cleient daluír costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu’r costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
+    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu’r costau am unrhyw ffioedd neu danysgrifiadau proffesiynol?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedParagraphText: String = "Maeín bosibl bod cyflogwr eich cleient wedi talu ffioedd y maeín rhaid iddo eu talu er mwyn gallu gwneud ei waith. " +
-      "Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy syín berthnasol iíw waith."
-    val checkWithEmployerText = "Gwiriwch ‚ chyflogwr eich cleient os nad ydych yn si?r."
+    val expectedParagraphText: String = "Mae’n bosibl bod cyflogwr eich cleient wedi talu ffioedd y mae’n rhaid iddo eu talu er mwyn gallu gwneud ei waith. Mae hyn yn cynnwys tanysgrifiadau blynyddol i gyrff proffesiynol cymeradwy sy’n berthnasol i’w waith."
+    val checkWithEmployerText = "Gwiriwch â chyflogwr eich cleient os nad ydych yn siŵr."
     val expectedErrorMessage = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient y costau am unrhyw ffioedd neu danysgrifiadau proffesiynol"
   }
 

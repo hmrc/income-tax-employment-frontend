@@ -88,14 +88,14 @@ class PayeRefViewSpec extends ViewUnitTest {
     val expectedTitle: String = "Beth yw cyfeirnod TWE eich cyflogwr?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. " +
-      "Maeín bosibl y cyfeirir ato fel ëCyfeirnod TWE y Cyflogwrí neu fel ëCyfeirnod TWEí."
+      "Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "Beth yw cyfeirnod TWE cyflogwr eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. " +
-      "Maeín bosibl y cyfeirir ato fel ëCyfeirnod TWE y Cyflogwrí neu fel ëCyfeirnod TWEí."
+      "Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’."
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

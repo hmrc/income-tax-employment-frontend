@@ -95,7 +95,7 @@ class TravelOrEntertainmentBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel treuliau teithio, m‚n dreuliau dros nos a gwesteia."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel treuliau teithio, mân dreuliau dros nos a gwesteia."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

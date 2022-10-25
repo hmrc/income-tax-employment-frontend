@@ -76,7 +76,7 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill"
     val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer prynu offer eraill yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer prynu offer eraill fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer prynu offer eraill fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -101,7 +101,7 @@ class OtherEquipmentAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedNoEntryErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient"
     val expectedInvalidFormatErrorMessage = "Nodwch y swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r swm rydych am ei hawlio ar gyfer offer eraill a brynwyd gan eich cleient fod yn llai na £100,000,000,000"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

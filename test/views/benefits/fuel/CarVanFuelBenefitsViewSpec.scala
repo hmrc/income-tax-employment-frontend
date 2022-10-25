@@ -95,7 +95,7 @@ class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel ceir neu faniau cwmni, tanwydd ar gyfer car neu fan cwmni, a lwfansau milltiroedd ar gyfer cerbydau syín eiddo preifat."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel ceir neu faniau cwmni, tanwydd ar gyfer car neu fan cwmni, a lwfansau milltiroedd ar gyfer cerbydau sy’n eiddo preifat."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

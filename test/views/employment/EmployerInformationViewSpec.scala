@@ -97,7 +97,7 @@ class EmployerInformationViewSpec extends ViewUnitTest {
 
     val bannerParagraph: String = "Mae’n rhaid ychwanegu manylion cyflogaeth sydd ar goll."
     val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
-    val fieldNames = Seq("Manylion cyflogaeth", "Buddiannau cyflogaeth", "Benthyciadau Myfyrwyr")
+    val fieldNames = Seq("Manylion cyflogaeth", "Buddiannau cyflogaeth", "Benthyciadau myfyrwyr")
     val buttonText = "Yn ôl i ‘Cyflogaeth TWE’"
     val updated = "Wedi diweddaru"
     val toDo: String = "I’w gwneud"
@@ -123,7 +123,7 @@ class EmployerInformationViewSpec extends ViewUnitTest {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Gwybodaeth y cyflogwr"
 
-    def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaruích manylion cyflogaeth tan 6 Ebrill $taxYear."
+    def expectedContent(taxYear: Int): String = s"Ni allwch ddiweddaru’ch manylion cyflogaeth tan 6 Ebrill $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {

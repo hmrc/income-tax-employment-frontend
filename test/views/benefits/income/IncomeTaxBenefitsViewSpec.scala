@@ -63,11 +63,11 @@ class IncomeTaxBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm?"
-    val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran oích Treth Incwm?"
+    val expectedTitle = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’ch Treth Incwm?"
+    val expectedHeading = "A wnaeth eich cyflogwr dalu unrhyw gyfran o’ch Treth Incwm?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os talodd eich cyflogwr unrhyw gyfran o’ch Treth Incwm"
-    val ifYouText = "Os nad ydych wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan eich cyflogwr."
+    val ifYouText = "Os nad ydych wedi talu treth drwy’r cynllun TWE, gallwn adennill hon gan eich cyflogwr."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -79,11 +79,11 @@ class IncomeTaxBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?"
-    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran oíi Dreth Incwm?"
+    val expectedTitle = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’i Dreth Incwm?"
+    val expectedHeading = "A wnaeth cyflogwr eich cleient dalu unrhyw gyfran o’i Dreth Incwm?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os talodd cyflogwr eich cleient unrhyw gyfran o’i Dreth Incwm"
-    val ifYouText = "Os nad yw eich cleient wedi talu treth drwyír cynllun TWE, gallwn adennill hon gan ei gyflogwr."
+    val ifYouText = "Os nad yw eich cleient wedi talu treth drwy’r cynllun TWE, gallwn adennill hon gan ei gyflogwr."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

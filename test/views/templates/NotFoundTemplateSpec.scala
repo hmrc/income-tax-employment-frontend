@@ -55,9 +55,9 @@ class NotFoundTemplateSpec extends UnitTest
   object expectedResultsCY {
     val h1Expected = "Heb ddod o hyd i’r dudalen"
     val p1Expected = "Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir."
-    val p2Expected = "Os gwnaethoch ddefnyddio ‘copïo a gludo’ i nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn."
-    val p3Expected: String = "Os ywír cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
-      "ymholiadau cyffredinol (yn agor tab newydd) i siarad ‚ rhywun am eich treth incwm."
+    val p2Expected = "Os gwnaethoch ddefnyddio ‘copïo a gludo’ er mwyn nodi’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad llawn."
+    val p3Expected: String = "Os yw’r cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio Hunanasesiad: " +
+      "ymholiadau cyffredinol (yn agor tab newydd) i siarad â rhywun am eich treth incwm."
     val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
     val p3ExpectedLinkText = "Hunanasesiad: ymholiadau cyffredinol (yn agor tab newydd)"
   }

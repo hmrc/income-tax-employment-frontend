@@ -78,7 +78,7 @@ class UglAmountViewSpec extends ViewUnitTest {
     override val expectedCaption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val expectedButtonText: String = "Yn eich blaen"
     override val hintText: String = "Er enghraifft, £193.52"
-    override val title: String = "Faint o fenthyciad israddedig a wnaethoch ei ad-dalu?"
+    override val title: String = "Faint o’r benthyciad y gwnaethoch ei ad-dalu?"
     override val expectedH1: String = "Faint o fenthyciad israddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan Falador Knights?"
     override val expectedParagraphCheckText: String = "Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60."
     override val inputFieldName: String = "amount"

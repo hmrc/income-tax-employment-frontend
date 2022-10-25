@@ -66,7 +66,7 @@ class OtherServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau eraill"
-    val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill rydych wediíu defnyddio syín ofynnol ar gyfer eich swydd. Eich cyflogwr syín talu amdanynt."
+    val expectedContent = "Mae’r rhain yn unrhyw wasanaethau eraill rydych wedi’u defnyddio sy’n ofynnol ar gyfer eich swydd. Eich cyflogwr sy’n talu amdanynt."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -82,7 +82,7 @@ class OtherServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau eraill?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau eraill"
-    val expectedContent = "Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt."
+    val expectedContent = "Mae’r rhain yn unrhyw wasanaethau eraill y mae wedi’u defnyddio sy’n ofynnol ar gyfer ei swydd. Ei gyflogwr sy’n talu amdanynt."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -98,7 +98,7 @@ class OtherServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val theseAre = "Maeír rhain yn unrhyw wasanaethau eraill y mae wediíu defnyddio syín ofynnol ar gyfer ei swydd. Ei gyflogwr syín talu amdanynt."
+    val theseAre = "Mae’r rhain yn unrhyw wasanaethau eraill y mae wedi’u defnyddio sy’n ofynnol ar gyfer ei swydd. Ei gyflogwr sy’n talu amdanynt."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

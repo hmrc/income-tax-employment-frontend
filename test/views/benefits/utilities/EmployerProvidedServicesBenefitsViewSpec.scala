@@ -81,7 +81,7 @@ class EmployerProvidedServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ os cawsoch fuddiant am wasanaethau a ddarperir gan eich cyflogwr"
     val expectedParagraphText =
-      "Maeír rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig ‚ích swydd. Eich cyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
+      "Mae’r rhain yn wasanaethau roeddech yn eu defnyddio ond sydd ddim yn gysylltiedig â’ch swydd. Eich cyflogwr sy’n talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -98,7 +98,7 @@ class EmployerProvidedServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorMessage = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant am wasanaethau a ddarperir gan ei gyflogwr"
     val expectedParagraphText =
-      "Maeír rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig ‚íi swydd. Ei gyflogwr syín talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
+      "Mae’r rhain yn wasanaethau roedd yn eu defnyddio ond sydd ddim yn gysylltiedig â’i swydd. Ei gyflogwr sy’n talu amdanynt. Er enghraifft, tanysgrifiadau neu wasanaethau golchi dillad."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

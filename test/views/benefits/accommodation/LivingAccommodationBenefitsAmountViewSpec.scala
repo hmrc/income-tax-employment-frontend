@@ -98,20 +98,20 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedH1: String = "Faint oedd cyfanswm eich buddiant llety byw?"
     val expectedTitle: String = "Faint oedd cyfanswm eich buddiant llety byw?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar eich ffurflen P11D."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran D, blwch 14 ar eich ffurflen P11D."
     val emptyErrorText: String = "Nodwch swm eich buddiant llety byw"
     val wrongFormatErrorText: String = "Nodwch swm eich buddiant llety byw yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i swm eich buddiant llety byw fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i swm eich buddiant llety byw fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
     val expectedTitle: String = "Faint oedd cyfanswm buddiant llety byw eich cleient?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedContent: String = "Maeír wybodaeth hon ar gael yn adran D, blwch 14 ar ffurflen P11D eich cleient."
+    val expectedContent: String = "Mae’r wybodaeth hon ar gael yn adran D, blwch 14 ar ffurflen P11D eich cleient."
     val emptyErrorText: String = "Nodwch swm buddiant llety byw eich cleient"
     val wrongFormatErrorText: String = "Nodwch swm buddiant llety byw eich cleient yn y fformat cywir"
-    val maxAmountErrorText: String = "Maeín rhaid i swm buddiant llety byw eich cleient fod yn llai na £100,000,000,000"
+    val maxAmountErrorText: String = "Mae’n rhaid i swm buddiant llety byw eich cleient fod yn llai na £100,000,000,000"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

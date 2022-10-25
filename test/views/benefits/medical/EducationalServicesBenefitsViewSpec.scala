@@ -65,7 +65,7 @@ class EducationalServicesBenefitsViewSpec extends ViewUnitTest {
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
     val expectedHeading = "A gawsoch unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
-    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt ywír rhain."
+    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae eich cyflogwr yn talu amdanynt yw’r rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiannau ar gyfer gwasanaethau addysg"
   }
@@ -81,7 +81,7 @@ class EducationalServicesBenefitsViewSpec extends ViewUnitTest {
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
     val expectedHeading = "A gafodd eich cleient unrhyw fuddiannau ar gyfer gwasanaethau addysg?"
-    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt ywír rhain."
+    val expectedParagraph = "Ysgoloriaethau neu ffioedd ysgol y mae ei gyflogwr yn talu amdanynt yw’r rhain."
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau ar gyfer gwasanaethau addysg"
   }

@@ -103,13 +103,13 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
+    val expectedTitle: String = "Beth yw’ch ID cyflogres am y gyflogaeth hon?"
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val expectedH1: String = "Beth ywích ID cyflogres am y gyflogaeth hon?"
+    val expectedH1: String = "Beth yw’ch ID cyflogres am y gyflogaeth hon?"
     val wrongFormatErrorText: String = "Nodwch eich ID cyflogres yn y fformat cywir"
-    val tooLongErrorText: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai"
-    val paragraph1: String = "Maeín rhaid iích ID cyflogres fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
-    val paragraph2: String = "Mae hwn iíw weld ar eich slip cyflog neuích P60. Mae hefyd yn cael ei alwín ërhif cyflogresí."
+    val tooLongErrorText: String = "Mae’n rhaid i’ch ID cyflogres fod yn 38 o gymeriadau neu lai"
+    val paragraph1: String = "Mae’n rhaid i’ch ID cyflogres fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val paragraph2: String = "Mae hwn i’w weld ar eich slip cyflog neu’ch P60. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -117,9 +117,9 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedH1: String = "Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?"
     val wrongFormatErrorText: String = "Nodwch ID cyflogres eich cleient yn y fformat cywir"
-    val tooLongErrorText: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai"
-    val paragraph1: String = "Maeín rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
-    val paragraph2: String = "Mae hwn iíw weld ar slip cyflog eich cleient neu ar ei P60. Mae hefyd yn cael ei alwín ërhif cyflogresí."
+    val tooLongErrorText: String = "Mae’n rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai."
+    val paragraph1: String = "Mae’n rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:"
+    val paragraph2: String = "Mae hwn i’w weld ar slip cyflog eich cleient neu ar ei P60. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’."
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

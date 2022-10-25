@@ -38,12 +38,12 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedErrorTitle: String
     val expectedError: String
     val expectedContent: String
-    val expectedExample1: String
   }
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
     val expectedButtonText: String
+    val expectedExample1: String
     val yesText: String
     val noText: String
   }
@@ -58,6 +58,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
+    val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
     val yesText = "Yes"
     val noText = "No"
   }
@@ -65,6 +66,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
+    val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddio’r GIG ar ôl dod i’r DU."
     val yesText = "Iawn"
     val noText = "Na"
   }
@@ -75,7 +77,6 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if you got qualifying relocation benefits"
     val expectedContent = "These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees."
-    val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -84,7 +85,6 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got qualifying relocation benefits"
     val expectedContent = "These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees."
-    val expectedExample1 = "This does not include the cost of using the NHS after coming into the UK."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -92,8 +92,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gawsoch unrhyw fuddiant adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch unrhyw fuddiannau adleoli cymwys"
-    val expectedContent = "Maeír rhain yn gostau y mae eich cyflogwr wedi’u talu iích helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
-    val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
+    val expectedContent = "Mae’r rhain yn gostau y mae eich cyflogwr wedi’u talu i’ch helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -101,8 +100,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli cymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli cymwys"
-    val expectedContent = "Maeír rhain yn gostau y mae ei gyflogwr wediíu talu iíw helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
-    val expectedExample1 = "Nid yw hyn yn cynnwys cost defnyddioír GIG ar Ùl dod iír DU."
+    val expectedContent = "Mae’r rhain yn gostau y mae ei gyflogwr wedi’u talu i’w helpu i adleoli, gan gynnwys benthyciadau pontio a ffioedd cyfreithiol."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -135,7 +133,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
         formPostLinkCheck(QualifyingRelocationBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
 
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.specificExpectedResults.get.expectedExample1, contentSelector)
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.commonExpectedResults.expectedExample1, contentSelector)
 
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -156,7 +154,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
         formPostLinkCheck(QualifyingRelocationBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
 
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.specificExpectedResults.get.expectedExample1, contentSelector)
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.commonExpectedResults.expectedExample1, contentSelector)
 
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -177,7 +175,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))
         formPostLinkCheck(QualifyingRelocationBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
 
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.specificExpectedResults.get.expectedExample1, contentSelector)
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.commonExpectedResults.expectedExample1, contentSelector)
       }
     }
   }

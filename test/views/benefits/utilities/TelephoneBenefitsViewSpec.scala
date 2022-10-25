@@ -63,11 +63,11 @@ class TelephoneBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
-    val expectedHeading = "A gawsoch fuddiant ar gyfer ddefnyddio ffÙn?"
+    val expectedTitle = "A gawsoch fuddiant ar gyfer ddefnyddio Ffôn?"
+    val expectedHeading = "A gawsoch fuddiant ar gyfer ddefnyddio Ffôn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cawsoch fuddiant ar gyfer defnyddio ffôn"
-    val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan eich cyflogwr ac sydd ddim wediíu heithrio rhag treth."
+    val expectedParagraphText: String = "Costau Ffôn yw’r rhain sy’n cael eu talu gan eich cyflogwr ac sydd ddim wedi’u heithrio rhag treth."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -79,11 +79,11 @@ class TelephoneBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
-    val expectedHeading = "A gafodd eich cleient fuddiant ar gyfer defnyddio ffÙn?"
+    val expectedTitle = "A gafodd eich cleient fuddiant ar gyfer defnyddio Ffôn?"
+    val expectedHeading = "A gafodd eich cleient fuddiant ar gyfer defnyddio Ffôn?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorText = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiant ar gyfer defnyddio ffôn"
-    val expectedParagraphText: String = "Costau ffÙn ywír rhain syín cael eu talu gan ei gyflogwr ac sydd ddim wediíu heithrio rhag treth."
+    val expectedParagraphText: String = "Costau Ffôn yw’r rhain sy’n cael eu talu gan ei gyflogwr ac sydd ddim wedi’u heithrio rhag treth."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {

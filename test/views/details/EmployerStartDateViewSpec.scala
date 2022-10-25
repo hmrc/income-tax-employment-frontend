@@ -96,20 +96,20 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Pryd y gwnaethoch ddechrau gweithio iích cyflogwr?"
+    val expectedTitle = "Pryd y gwnaethoch ddechrau gweithio i’ch cyflogwr?"
     val expectedH1 = s"Pryd y gwnaethoch ddechrau gweithio yn $employerName?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val emptyDayError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod"
-    val emptyMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis"
-    val emptyYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn"
-    val emptyDayYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn"
-    val emptyMonthYearError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn"
-    val emptyDayMonthError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis"
+    val emptyDayError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod"
+    val emptyMonthError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis"
+    val emptyYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn"
+    val emptyDayYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn"
+    val emptyMonthYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn"
+    val emptyDayMonthError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis"
     val emptyAllError = "Nodwch y dyddiad y dechreuodd eich cyflogaeth"
-    val invalidDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn"
-    val tooLongAgoDateError = "Maeín rhaid i ddyddiad y gwnaethoch ddechrauích cyflogaeth fod ar Ùl 1 Ionawr 1900"
-    val tooRecentDateError = s"Maeín rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
-    val futureDateError = "Maeín rhaid iír dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol"
+    val invalidDateError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn"
+    val tooLongAgoDateError = "Mae’n rhaid i ddyddiad y gwnaethoch ddechrau’ch cyflogaeth fod ar ôl 1 Ionawr 1900"
+    val tooRecentDateError = s"Mae’n rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
+    val futureDateError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {

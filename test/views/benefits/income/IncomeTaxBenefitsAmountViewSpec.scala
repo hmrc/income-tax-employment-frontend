@@ -93,12 +93,12 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
-    val expectedHeading = "Faint oích Treth Incwm a dalodd eich cyflogwr?"
+    val expectedTitle = "Faint o’ch Treth Incwm a dalodd eich cyflogwr?"
+    val expectedHeading = "Faint o’ch Treth Incwm a dalodd eich cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr"
     val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan eich cyflogwr yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i’r Dreth Incwm a dalwyd gan eich cyflogwr fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -116,7 +116,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient"
     val expectedErrorIncorrectFormat = "Nodwch swm y Dreth Incwm a dalwyd gan gyflogwr eich cleient yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iír Dreth Incwm a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
+    val expectedErrorOverMaximum = "Mae’n rhaid i’r Dreth Incwm a dalwyd gan gyflogwr eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

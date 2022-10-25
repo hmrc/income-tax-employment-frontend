@@ -104,12 +104,12 @@ class VouchersBenefitsViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Buddiannau cyflogaeth ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     val expectedBullet1 = "nwyddau a gwasanaethau"
-    val expectedBullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
+    val expectedBullet2 = "swm o arian sy’n sylweddol is na’r gost i’w darparu"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
     val bullet1 = "nwyddau a gwasanaethau"
-    val bullet2 = "swm o arian syín sylweddol is naír gost iíw darparu"
+    val bullet2 = "swm o arian sy’n sylweddol is na’r gost i’w darparu"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

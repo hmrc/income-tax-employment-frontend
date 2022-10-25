@@ -65,11 +65,11 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A gawsoch unrhyw m‚n gostau dros nos?"
-    val expectedH1 = "A gawsoch unrhyw m‚n gostau dros nos?"
+    val expectedTitle = "A gawsoch unrhyw mân gostau dros nos?"
+    val expectedH1 = "A gawsoch unrhyw mân gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch chi mân gostau dros nos"
-    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes."
+    val costInformation = "Mae’r rhain yn gostau personol yr ysgwyddwyd arnoch wrth deithio dros nos ar fusnes."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -81,11 +81,11 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
-    val expectedH1 = "A gafodd eich cleient unrhyw m‚n gostau dros nos?"
+    val expectedTitle = "A gafodd eich cleient unrhyw mân gostau dros nos?"
+    val expectedH1 = "A gafodd eich cleient unrhyw mân gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient mân gostau dros nos"
-    val costInformation = "Maeír rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes."
+    val costInformation = "Mae’r rhain yn gostau personol yr ysgwyddwyd arno wrth iddo deithio dros nos ar fusnes."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -101,7 +101,7 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val allowanceInformation: String = "Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan iír DU. Dim ond costau syín uwch naír lwfans y mae angen i ni wybod amdanynt."
+    val allowanceInformation: String = "Y lwfans ar gyfer teithio yn y DU yw £5 y noson a £10 y noson y tu allan i’r DU. Dim ond costau sy’n uwch na’r lwfans y mae angen i ni wybod amdanynt."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

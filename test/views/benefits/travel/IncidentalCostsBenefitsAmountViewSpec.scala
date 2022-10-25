@@ -85,12 +85,12 @@ class IncidentalCostsBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedHeading = "Faint y cawsoch i gyd ar gyfer m‚n gostau dros nos?"
+    val expectedTitle = "Faint y cawsoch i gyd ar gyfer mân gostau dros nos?"
+    val expectedHeading = "Faint y cawsoch i gyd ar gyfer mân gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch y swm a gawsoch ar gyfer m‚n gostau dros nos"
-    val expectedErrorIncorrectFormat = "Nodwch y swm a gawsoch chi ar gyfer m‚n gostau dros nos yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid iích m‚n gostau dros nos fod yn llai na £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm a gawsoch ar gyfer mân gostau dros nos"
+    val expectedErrorIncorrectFormat = "Nodwch y swm a gawsoch chi ar gyfer mân gostau dros nos yn y fformat cywir"
+    val expectedErrorOverMaximum = "Mae’n rhaid i’ch mân gostau dros nos fod yn llai na £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -103,12 +103,12 @@ class IncidentalCostsBenefitsAmountViewSpec extends ViewUnitTest {
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
-    val expectedHeading = "Faint y cafodd eich cleient i gyd ar gyfer m‚n gostau dros nos?"
+    val expectedTitle = "Faint y cafodd eich cleient i gyd ar gyfer mân gostau dros nos?"
+    val expectedHeading = "Faint y cafodd eich cleient i gyd ar gyfer mân gostau dros nos?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos"
-    val expectedErrorIncorrectFormat = "Nodwch y swm a gafodd eich cleient ar gyfer m‚n gostau dros nos yn y fformat cywir"
-    val expectedErrorOverMaximum = "Maeín rhaid i f‚n gostau dros nos eich cleient fod yn llai na £100,000,000,000"
+    val expectedErrorNoEntry = "Nodwch y swm a gafodd eich cleient ar gyfer mân gostau dros nos"
+    val expectedErrorIncorrectFormat = "Nodwch y swm a gafodd eich cleient ar gyfer mân gostau dros nos yn y fformat cywir"
+    val expectedErrorOverMaximum = "Mae’n rhaid i fân gostau dros nos eich cleient fod yn llai na £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

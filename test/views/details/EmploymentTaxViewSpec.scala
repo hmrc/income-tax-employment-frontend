@@ -67,7 +67,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
     val hint: String = "Er enghraifft, £193.52"
     val continue: String = "Yn eich blaen"
     val expectedErrorInvalidFormat = "Nodwch y swm o dreth y DU yn y fformat cywir"
-    val expectedErrorMaxLimit = "Maeín rhaid iír swm o dreth y DU fod yn llai na £100,000,000,000"
+    val expectedErrorMaxLimit = "Mae’n rhaid i’r swm o dreth y DU fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -87,11 +87,11 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu oích enillion maggie?"
-    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu oích enillion?"
+    val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu o’ch enillion maggie?"
+    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu o’ch enillion?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd oích enillion"
-    val expectedPTextNoData: String = "Fel arfer, maeír swm hwn iíw weld yn adran ëManylion Cyflog a Threth Incwmí eich P60."
+    val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd o’ch enillion"
+    val expectedPTextNoData: String = "Fel arfer, mae’r swm hwn i’w weld yn adran ‘Manylion Cyflog a Threth Incwm’ eich P60."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -99,7 +99,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
     val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu o enillion eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd o enillion eich cleient"
-    val expectedPTextNoData: String = "Fel arfer, maeír swm hwn iíw weld yn yr adran ëManylion Cyflog a Threth Incwmí ar P60 eich cleient."
+    val expectedPTextNoData: String = "Fel arfer, mae’r swm hwn i’w weld yn yr adran ‘Manylion Cyflog a Threth Incwm’ ar P60 eich cleient."
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

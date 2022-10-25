@@ -87,8 +87,8 @@ class NonQualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gawsoch unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cawsoch fuddiannau adleoli anghymwys"
-    val expectedContent = "Costau adleoli ywír rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Mae enghreifftiauín cynnwys:"
-    val expectedExample1 = "taliadau morgais neu dai os ydych chiín symud i ardal ddrutach"
+    val expectedContent = "Costau adleoli yw’r rhain y mae eich cyflogwr wedi talu amdanynt, neu wedi eich ad-dalu amdanynt. Mae enghreifftiau’n cynnwys:"
+    val expectedExample1 = "taliadau morgais neu dai os ydych chi’n symud i ardal ddrutach"
     val expectedExample2 = "iawndal os byddwch yn colli arian wrth werthu eich cartref"
   }
 
@@ -107,9 +107,9 @@ class NonQualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     val expectedH1 = "A gafodd eich cleient unrhyw fuddiannau adleoli anghymwys?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedError = "Dewiswch ‘Iawn’ os cafodd eich cleient fuddiannau adleoli anghymwys"
-    val expectedContent = "Costau adleoli ywír rhain y mae ei gyflogwr wedi talu amdanynt, neu wediíu had-dalu amdanynt. Mae enghreifftiauín cynnwys:"
-    val expectedExample1 = "taliadau morgais neu dai os ywín symud i ardal ddrutach"
-    val expectedExample2 = "iawndal os ywín colli arian wrth werthu ei gartref"
+    val expectedContent = "Costau adleoli yw’r rhain y mae ei gyflogwr wedi talu amdanynt, neu wedi’u had-dalu amdanynt. Mae enghreifftiau’n cynnwys:"
+    val expectedExample1 = "taliadau morgais neu dai os yw’n symud i ardal ddrutach"
+    val expectedExample2 = "iawndal os yw’n colli arian wrth werthu ei gartref"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

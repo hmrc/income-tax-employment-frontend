@@ -78,7 +78,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
     val currencyPrefix = "£"
     val continueButtonText = "Yn eich blaen"
     val expectedIncorrectFormatErrorMessage = "Nodwch y swm ar gyfer buddiannau nad ydynt yn arian parod yn y fformat cywir"
-    val expectedOverMaximumErrorMessage = "Maeín rhaid iír swm a nodwyd ar gyfer buddiannau sydd ddim yn arian parod fod yn llai na £100,000,000,000"
+    val expectedOverMaximumErrorMessage = "Mae’n rhaid i’r swm a nodwyd ar gyfer buddiannau sydd ddim yn arian parod fod yn llai na £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

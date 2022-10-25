@@ -94,7 +94,7 @@ class UtilitiesOrGeneralServicesBenefitsViewSpec extends ViewUnitTest {
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
-    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel costau ffÙn, gwasanaethau a ddarperir gan y cyflogwr a ffioedd neu danysgrifiadau proffesiynol."
+    val thisIncludes = "Mae hyn yn cynnwys buddiannau fel costau Ffôn, gwasanaethau a ddarperir gan y cyflogwr a ffioedd neu danysgrifiadau proffesiynol."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
