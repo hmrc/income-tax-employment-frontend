@@ -71,9 +71,6 @@
                 CheckboxItem(
                     content = Text(messages("studentLoansQuestion.checkbox.2")),
                     value = "pgl",
-                    hint = Some(Hint(
-                        content = Text(messages("studentLoansQuestion.checkbox.2.hint"))
-                    )),
                     checked = cyaData.fold(false)(data => data.pglDeduction)
                 ),
                 CheckboxItem(

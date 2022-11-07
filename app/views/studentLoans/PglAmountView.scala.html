@@ -34,6 +34,9 @@
 
 @contentHtml = {
     <p class="govuk-body govuk-!-margin-bottom-4">@messages(s"studentLoans.common.checkWith.${if (request.user.isAgent) "agent" else "individual"}")</p>
+<label class="govuk-label govuk-label--m">
+    @{messages("studentLoans.postgraduateLoanAmount.H2")}
+</label>
 }
 
 @layout(pageTitle = messages(s"studentLoans.postgraduateLoanAmount.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {

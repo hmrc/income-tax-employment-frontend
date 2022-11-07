@@ -44,7 +44,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
     val checkboxUgl: String
     val checkboxUglHint: String
     val checkboxPgl: String
-    val checkboxPglHint: String
     val checkboxNo: String
     val buttonText: String
     val errorEmpty: String
@@ -53,16 +52,15 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
   }
 
   object ExpectedResultsEnglish extends CommonExpectedResults {
-    override val title: String = "Did you repay any student loan?"
-    override val heading: String = "Did you repay any student loan while employed by Whiterun Guards?"
+    override val title: String = "Did you repay any student loans?"
+    override val heading: String = "Did you repay any student loans while employed by Whiterun Guards?"
     override val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary."
-    override val paragraphText_2: String = "The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions."
+    override val paragraphText_2: String = "The Student Loans Company will have told you your loan or plan type. You can also check your payslips or P60 for repayments made."
     override val checkboxHint: String = "Select all that apply."
-    override val checkboxUgl: String = "Yes, undergraduate repayments"
-    override val checkboxUglHint: String = "This covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
-    override val checkboxPgl: String = "Yes, postgraduate repayments"
-    override val checkboxPglHint: String = "This covers courses like master’s or doctorates."
+    override val checkboxUgl: String = "Yes, student loan repayments"
+    override val checkboxUglHint: String = "This includes Plan 1, Plan 2 and Plan 4 repayments."
+    override val checkboxPgl: String = "Yes, postgraduate loan repayments"
     override val checkboxNo: String = "No"
     override val buttonText: String = "Save and continue"
     override val errorEmpty: String = "Select the types of student loan you repaid, or select \"No\""
@@ -71,16 +69,15 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
   }
 
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
-    override val title: String = "Did your client repay any student loan?"
-    override val heading: String = "Did your client repay any student loan while employed by Whiterun Guards?"
+    override val title: String = "Did your client repay any student loans?"
+    override val heading: String = "Did your client repay any student loans while employed by Whiterun Guards?"
     override val caption: String = s"Student loans for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary."
-    override val paragraphText_2: String = "The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions."
+    override val paragraphText_2: String = "The Student Loans Company will have told your client their loan or plan type. They can also check their payslips or P60 for repayments made."
     override val checkboxHint: String = "Select all that apply."
-    override val checkboxUgl: String = "Yes, undergraduate repayments"
-    override val checkboxUglHint: String = "This covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE)."
-    override val checkboxPgl: String = "Yes, postgraduate repayments"
-    override val checkboxPglHint: String = "This covers courses like master’s or doctorates."
+    override val checkboxUgl: String = "Yes, student loan repayments"
+    override val checkboxUglHint: String = "This includes Plan 1, Plan 2 and Plan 4 repayments."
+    override val checkboxPgl: String = "Yes, postgraduate loan repayments"
     override val checkboxNo: String = "No"
     override val buttonText: String = "Save and continue"
     override val errorEmpty: String = "Select the types of student loan your client repaid, or select \"No\""
@@ -90,15 +87,14 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
 
   object ExpectedResultsWelsh extends CommonExpectedResults {
     override val title: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?"
-    override val heading: String = "A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr tra’ch bod wedi’ch cyflogi gan Whiterun Guards?"
+    override val heading: String = "A wnaethoch ad-dalu unrhyw fenthyciadau myfyriwr tra oeddech wedi’ch cyflogi gan Whiterun Guards?"
     override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog."
-    override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi am hyn. Gwiriwch eich slipiau cyflog neu P60 am ddidyniadau benthyciad myfyrwyr."
+    override val paragraphText_2: String = "Bydd y Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi beth yw’ch cynllun neu’ch math o fenthyciad a’r ad-daliadau a wnaed. Gallwch hefyd wirio’ch slip cyflog neu’ch P60 ar gyfer ad-daliadau a wnaed."
     override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
-    override val checkboxUgl: String = "Iawn, ad-daliadau israddedig"
-    override val checkboxUglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE)."
-    override val checkboxPgl: String = "Iawn, ad-daliadau ôl-raddedig"
-    override val checkboxPglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth."
+    override val checkboxUgl: String = "Iawn, ad-daliadau benthyciad myfyriwr"
+    override val checkboxUglHint: String = "Mae hyn yn cynnwys ad-daliadau Cynllun 1, Cynllun 2 a Chynllun 4."
+    override val checkboxPgl: String = "Iawn, ad-daliadau benthyciad ôl-raddedig"
     override val checkboxNo: String = "Na"
     override val buttonText: String = "Cadw ac yn eich blaen"
     override val errorEmpty: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch \"Na\""
@@ -108,16 +104,14 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
 
   object ExpectedResultsWelshAgent extends CommonExpectedResults {
     override val title: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?"
-    override val heading: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr tra ei fod wedi’i gyflogi gan Whiterun Guards?"
+    override val heading: String = "A wnaeth eich cleient ad-dalu unrhyw fenthyciadau myfyriwr tra oedd wedi’i gyflogi gan Whiterun Guards?"
     override val caption: String = s"Benthyciadau Myfyrwyr ar gyfer 6 Ebrill ${taxYearEOY - 1} i 5 Ebrill $taxYearEOY"
     override val paragraphText_1: String = "Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog."
-    override val paragraphText_2: String = "Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient am hyn. Gwiriwch slipiau cyflog " +
-      "neu P60 eich cleient am ddidyniadau benthyciadau myfyrwyr."
+    override val paragraphText_2: String = "Bydd y Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient beth yw ei gynllun neu’i fath o fenthyciad a’r ad-daliadau a wnaed. Gall eich cleient hefyd wirio’i slip cyflog neu’i P60 ar gyfer ad-daliadau a wnaed."
     override val checkboxHint: String = "Dewiswch bob un sy’n berthnasol."
-    override val checkboxUgl: String = "Iawn, ad-daliadau israddedig"
-    override val checkboxUglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE)."
-    override val checkboxPgl: String = "Iawn, ad-daliadau ôl-raddedig"
-    override val checkboxPglHint: String = "Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth."
+    override val checkboxUgl: String = "Iawn, ad-daliadau benthyciad myfyriwr"
+    override val checkboxUglHint: String = "Mae hyn yn cynnwys ad-daliadau Cynllun 1, Cynllun 2 a Chynllun 4."
+    override val checkboxPgl: String = "Iawn, ad-daliadau benthyciad ôl-raddedig"
     override val checkboxNo: String = "Na"
     override val buttonText: String = "Cadw ac yn eich blaen"
     override val errorEmpty: String = "Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch \"Na\""
@@ -138,7 +132,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
 
     val checkboxPgl = "#studentLoans-2"
     val checkboxPglText = "#main-content > div > div > form > div > div.govuk-checkboxes > div:nth-child(2) > label"
-    val checkboxPglHint = "#studentLoans-2-item-hint"
 
     val checkboxN0 = "#studentLoans-4"
     val checkboxN0Text = "#main-content > div > div > form > div > div.govuk-checkboxes > div:nth-child(4) > label"
@@ -181,7 +174,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         hintTextCheck(checkboxUglHint, Selectors.checkboxUglHint)
         textOnPageCheck(checkboxPgl, Selectors.checkboxPglText)
         inputFieldValueCheck("studentLoans[]", Selectors.checkboxPgl, "pgl")
-        hintTextCheck(checkboxPglHint, Selectors.checkboxPglHint)
         textOnPageCheck(checkboxNo, Selectors.checkboxN0Text)
         inputFieldValueCheck("studentLoans[]", Selectors.checkboxN0, "none")
         buttonCheck(buttonText)
@@ -206,7 +198,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         checkBoxCheck("studentLoans[]", Selectors.checkboxUgl, value = "ugl", checked = true)
         textOnPageCheck(checkboxPgl, Selectors.checkboxPglText)
         checkBoxCheck("studentLoans[]", Selectors.checkboxPgl, value = "pgl", checked = true)
-        hintTextCheck(checkboxPglHint, Selectors.checkboxPglHint)
         textOnPageCheck(checkboxNo, Selectors.checkboxN0Text)
         checkBoxCheck("studentLoans[]", Selectors.checkboxN0, value = "none", checked = false)
         buttonCheck(buttonText)
@@ -231,7 +222,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         checkBoxCheck("studentLoans[]", Selectors.checkboxUgl, value = "ugl", checked = false)
         textOnPageCheck(checkboxPgl, Selectors.checkboxPglText)
         checkBoxCheck("studentLoans[]", Selectors.checkboxPgl, value = "pgl", checked = false)
-        hintTextCheck(checkboxPglHint, Selectors.checkboxPglHint)
         textOnPageCheck(checkboxNo, Selectors.checkboxN0Text)
         checkBoxCheck("studentLoans[]", Selectors.checkboxN0, value = "none", checked = true)
         buttonCheck(buttonText)
@@ -256,7 +246,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         checkBoxCheck("studentLoans[]", Selectors.checkboxUgl, value = "ugl", checked = false)
         textOnPageCheck(checkboxPgl, Selectors.checkboxPglText)
         checkBoxCheck("studentLoans[]", Selectors.checkboxPgl, value = "pgl", checked = false)
-        hintTextCheck(checkboxPglHint, Selectors.checkboxPglHint)
         textOnPageCheck(checkboxNo, Selectors.checkboxN0Text)
         checkBoxCheck("studentLoans[]", Selectors.checkboxN0, value = "none", checked = false)
         buttonCheck(buttonText)
@@ -283,7 +272,6 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         checkBoxCheck("studentLoans[]", Selectors.checkboxUgl, value = "ugl", checked = false)
         textOnPageCheck(checkboxPgl, Selectors.checkboxPglText)
         checkBoxCheck("studentLoans[]", Selectors.checkboxPgl, value = "pgl", checked = false)
-        hintTextCheck(checkboxPglHint, Selectors.checkboxPglHint)
         textOnPageCheck(checkboxNo, Selectors.checkboxN0Text)
         checkBoxCheck("studentLoans[]", Selectors.checkboxN0, value = "none", checked = false)
         buttonCheck(buttonText)

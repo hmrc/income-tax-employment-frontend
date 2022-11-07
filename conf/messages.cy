@@ -1339,37 +1339,38 @@ expenses.removeExpenses.button = Dileu treuliau
 
 studentLoansQuestion.title.individual = A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?
 studentLoansQuestion.title.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?
-studentLoansQuestion.heading.individual = A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr tra’ch bod wedi’ch cyflogi gan {0}?
-studentLoansQuestion.heading.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr tra ei fod wedi’i gyflogi gan {0}?
+studentLoansQuestion.heading.individual = A wnaethoch ad-dalu unrhyw fenthyciadau myfyriwr tra oeddech wedi’ch cyflogi gan {0}?
+studentLoansQuestion.heading.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciadau myfyriwr tra oedd wedi’i gyflogi gan {0}?
 studentLoansQuestion.inset.individual = Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog.
 studentLoansQuestion.inset.agent = Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog.
-studentLoansQuestion.inset.2.individual = Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi am hyn. Gwiriwch eich slipiau cyflog neu P60 am ddidyniadau benthyciad myfyrwyr.
-studentLoansQuestion.inset.2.agent = Byddai’r Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient am hyn. Gwiriwch slipiau cyflog neu P60 eich cleient am ddidyniadau benthyciadau myfyrwyr.
+studentLoansQuestion.inset.2.individual = Bydd y Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi beth yw’ch cynllun neu’ch math o fenthyciad a’r ad-daliadau a wnaed. Gallwch hefyd wirio’ch slip cyflog neu’ch P60 ar gyfer ad-daliadau a wnaed.
+studentLoansQuestion.inset.2.agent = Bydd y Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i’ch cleient beth yw ei gynllun neu’i fath o fenthyciad a’r ad-daliadau a wnaed. Gall eich cleient hefyd wirio’i slip cyflog neu’i P60 ar gyfer ad-daliadau a wnaed.
 studentLoansQuestion.checkbox.hint = Dewiswch bob un sy’n berthnasol.
-studentLoansQuestion.checkbox.1 = Iawn, ad-daliadau israddedig
-studentLoansQuestion.checkbox.1.hint = Mae hyn yn cynnwys cyrsiau fel graddau israddedig (BA, BSc), graddau sylfaen neu Dystysgrifau Addysg Uwch (CertHE).
-studentLoansQuestion.checkbox.2 = Iawn, ad-daliadau ôl-raddedig
-studentLoansQuestion.checkbox.2.hint = Mae hyn yn cynnwys cyrsiau fel graddau meistr neu ddoethuriaeth.
+studentLoansQuestion.checkbox.1 = Iawn, ad-daliadau benthyciad myfyriwr
+studentLoansQuestion.checkbox.1.hint = Mae hyn yn cynnwys ad-daliadau Cynllun 1, Cynllun 2 a Chynllun 4.
+studentLoansQuestion.checkbox.2 = Iawn, ad-daliadau benthyciad ôl-raddedig
 studentLoansQuestion.checkbox.error.individual = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch "Na"
 studentLoansQuestion.checkbox.error.agent = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch "Na"
 
-#####################    Undergraduate Amount Student Loans messages    #####################
+#####################    Student Loan Amount Student Loans messages    #####################
 
 studentLoans.undergraduateLoanAmount.title.individual = Faint o’r benthyciad y gwnaethoch ei ad-dalu?
 studentLoans.undergraduateLoanAmount.title.agent = Faint o fenthyciad israddedig a wnaeth eich cleient ei ad-dalu?
-studentLoans.undergraduateLoanAmount.heading.individual = Faint o fenthyciad israddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan {0}?
-studentLoans.undergraduateLoanAmount.heading.agent = Faint o fenthyciad israddedig a wnaeth eich cleient ei ad-dalu tra ei fod wedi’i gyflogi gan {0}?
+studentLoans.undergraduateLoanAmount.heading.individual = Faint o fenthyciad myfyriwr a wnaethoch ei ad-dalu tra oeddech wedi’ch cyflogi gan {0}?
+studentLoans.undergraduateLoanAmount.heading.agent = Faint o fenthyciad myfyriwr a wnaeth eich cleient ei ad-dalu tra oedd wedi’i gyflogi gan {0}?
+studentLoans.undergraduateLoanAmount.H2 = Swm y benthyciad myfyriwr
 studentLoans.undergraduateLoanAmount.label = Faint o fenthyciad israddedig y gwnaethoch ei ad-dalu gyda’r cyflogwr hwn
-studentLoans.undergraduateLoanAmount.error.noEntry.individual = Nodwch swm y benthyciad israddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan {0}
-studentLoans.undergraduateLoanAmount.error.noEntry.agent = Nodwch swm y benthyciad israddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan {0}
-studentLoans.undergraduateLoanAmount.error.invalidFormat = Nodwch swm y benthyciad israddedig yn y fformat cywir
+studentLoans.undergraduateLoanAmount.error.noEntry.individual = Nodwch swm y benthyciad myfyriwr a ad-dalwyd gennych tra oeddech wedi’ch cyflogi gan {0}
+studentLoans.undergraduateLoanAmount.error.noEntry.agent = Nodwch swm y benthyciad myfyriwr a ad-dalwyd gan eich cleient tra oedd wedi’i gyflogi gan {0}
+studentLoans.undergraduateLoanAmount.error.invalidFormat = Nodwch swm y benthyciad myfyriwr yn y fformat cywir
 
-#####################    Postgraduate Amount Student Loans messages    #####################
+#####################    Postgraduate Loan Amount Student Loans messages    #####################
 
 studentLoans.postgraduateLoanAmount.title.individual = Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu?
 studentLoans.postgraduateLoanAmount.title.agent = Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu?
 studentLoans.postgraduateLoanAmount.heading.individual = Faint o fenthyciad ôl-raddedig a wnaethoch ei ad-dalu tra’ch bod wedi’ch cyflogi gan {0}?
 studentLoans.postgraduateLoanAmount.heading.agent = Faint o fenthyciad ôl-raddedig a wnaeth eich cleient ei ad-dalu tra ei fod wedi’i gyflogi gan {0}?
+studentLoans.postgraduateLoanAmount.H2 = Swm y benthyciad ôl-raddedig
 studentLoans.postgraduateLoanAmount.label = Faint o fenthyciad ôl-raddedig y gwnaethoch ei ad-dalu gyda’r cyflogwr hwn
 studentLoans.postgraduateLoanAmount.error.noEntry.individual = Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gennych tra’ch bod wedi’ch cyflogi gan {0}
 studentLoans.postgraduateLoanAmount.error.noEntry.agent = Nodwch swm y benthyciad ôl-raddedig a ad-dalwyd gan eich cleient tra ei fod wedi’i gyflogi gan {0}
@@ -1380,18 +1381,17 @@ studentLoans.postgraduateLoanAmount.error.invalidFormat = Nodwch swm y benthycia
 studentLoans.bannerText = Ni allwch ddiweddaru benthyciadau myfyrwyr hyd nes eich bod yn
 studentLoans.title.individual = Gwiriwch fanylion ad-dalu’ch benthyciad myfyriwr
 studentLoans.title.agent = Gwiriwch fanylion ad-dalu benthyciad myfyriwr eich cleient
-studentLoans.slr = Ad-daliadau Benthyciad Myfyriwr
-studentLoans.ura = Swm ad-daliadau israddedig
-studentLoans.pra = Swm ad-daliadau ôl-raddedig
-studentLoans.undergraduate = Israddedig
-studentLoans.postgraduate = Ôl-raddedig
+studentLoans.rm = Ad-daliadau a wnaed
+studentLoans.pl = Benthyciad ôl-raddedig
+studentLoans.undergraduate = Benthyciad myfyriwr
+studentLoans.postgraduate = Benthyciadau ôl-raddedig
 studentLoans.p.individual = Mae’ch manylion ad-dalu benthyciad myfyriwr yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
 studentLoans.p.agent = Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano.
 studentLoans.inset.individual = Ni allwch ddiweddaru’ch manylion benthyciad myfyriwr tan 6 Ebrill {0}.
 studentLoans.inset.agent = Ni allwch ddiweddaru manylion benthyciad myfyriwr eich cleient tan 6 Ebrill {0}.
 
-studentLoans.common.checkWith.individual = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, eich slipiau cyflog neu P60.
-studentLoans.common.checkWith.agent = Gwiriwch gyda’r Cwmni Benthyciadau Myfyrwyr, slipiau cyflog neu P60 eich cleient.
+studentLoans.common.checkWith.individual = Gwiriwch eich slipiau cyflog neu’ch P60.
+studentLoans.common.checkWith.agent = Gwiriwch slipiau cyflog neu P60 eich cleient.
 
 #####################    Tailoring messages    #####################
 tailoring.title.individual = A gawsoch incwm o gyflogaeth TWE?

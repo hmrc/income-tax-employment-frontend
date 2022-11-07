@@ -192,8 +192,8 @@ object PageUrls extends IntegrationTest {
 //  *****************       Student loans pages      *********************
 
   def studentLoansCyaPage(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/check-student-loans-repayments?employmentId=$employmentId"
-  def pglAmountUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/postgraduate-repayment-amount?employmentId=$employmentId"
-  def studentLoansUglAmountUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/undergraduate-repayment-amount?employmentId=$employmentId"
+  def pglAmountUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/postgraduate-loan-repayment-amount?employmentId=$employmentId"
+  def studentLoansUglAmountUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/student-loan-repayment-amount?employmentId=$employmentId"
   def studentLoansQuestionPage(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/repayments?employmentId=$employmentId"
 
 //  *****************       Expenses management pages      ***************************
