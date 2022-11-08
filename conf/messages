@@ -1337,32 +1337,32 @@ expenses.removeExpenses.button = Remove expenses
 
 #####################    Student Loans Question messages    #####################
 
-studentLoansQuestion.title.individual = Did you repay any student loan?
-studentLoansQuestion.title.agent = Did your client repay any student loan?
-studentLoansQuestion.heading.individual = Did you repay any student loan while employed by {0}?
-studentLoansQuestion.heading.agent = Did your client repay any student loan while employed by {0}?
+studentLoansQuestion.title.individual = Did you repay any student loans?
+studentLoansQuestion.title.agent = Did your client repay any student loans?
+studentLoansQuestion.heading.individual = Did you repay any student loans while employed by {0}?
+studentLoansQuestion.heading.agent = Did your client repay any student loans while employed by {0}?
 studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
 studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
-studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.
-studentLoansQuestion.inset.2.agent = The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions.
+studentLoansQuestion.inset.2.individual = The Student Loans Company will have told you your loan or plan type. You can also check your payslips or P60 for repayments made.
+studentLoansQuestion.inset.2.agent = The Student Loans Company will have told your client their loan or plan type. They can also check their payslips or P60 for repayments made.
 studentLoansQuestion.checkbox.hint = Select all that apply.
-studentLoansQuestion.checkbox.1 = Yes, undergraduate repayments
-studentLoansQuestion.checkbox.1.hint = This covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
-studentLoansQuestion.checkbox.2 = Yes, postgraduate repayments
-studentLoansQuestion.checkbox.2.hint = This covers courses like master’s or doctorates.
+studentLoansQuestion.checkbox.1 = Yes, student loan repayments
+studentLoansQuestion.checkbox.1.hint = This includes Plan 1, Plan 2 and Plan 4 repayments.
+studentLoansQuestion.checkbox.2 = Yes, postgraduate loan repayments
 studentLoansQuestion.checkbox.error.individual = Select the types of student loan you repaid, or select "No"
 studentLoansQuestion.checkbox.error.agent = Select the types of student loan your client repaid, or select "No"
 
-#####################    Undergraduate Amount Student Loans messages    #####################
+#####################    Student loan Amount Student Loans messages    #####################
 
-studentLoans.undergraduateLoanAmount.title.individual = How much undergraduate loan did you repay?
-studentLoans.undergraduateLoanAmount.title.agent = How much undergraduate loan did your client repay?
-studentLoans.undergraduateLoanAmount.heading.individual = How much undergraduate loan did you repay while employed by {0}?
-studentLoans.undergraduateLoanAmount.heading.agent = How much undergraduate loan did your client repay while employed by {0}?
-studentLoans.undergraduateLoanAmount.label = How much undergraduate loan did you repay with this employer
-studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
-studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
-studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format
+studentLoans.undergraduateLoanAmount.title.individual = How much student loan did you repay?
+studentLoans.undergraduateLoanAmount.title.agent = How much student loan did your client repay?
+studentLoans.undergraduateLoanAmount.heading.individual = How much student loan did you repay while employed by {0}?
+studentLoans.undergraduateLoanAmount.heading.agent = How much student loan did your client repay while employed by {0}?
+studentLoans.undergraduateLoanAmount.H2 = Amount of student loan
+studentLoans.undergraduateLoanAmount.label = How much student loan did you repay with this employer
+studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of student loan you repaid while employed by {0}
+studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of student loan your client repaid while employed by {0}
+studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of student loan in the correct format
 
 #####################    Postgraduate Amount Student Loans messages    #####################
 
@@ -1370,6 +1370,7 @@ studentLoans.postgraduateLoanAmount.title.individual = How much postgraduate loa
 studentLoans.postgraduateLoanAmount.title.agent = How much postgraduate loan did your client repay?
 studentLoans.postgraduateLoanAmount.heading.individual = How much postgraduate loan did you repay while employed by {0}?
 studentLoans.postgraduateLoanAmount.heading.agent = How much postgraduate loan did your client repay while employed by {0}?
+studentLoans.postgraduateLoanAmount.H2 = Amount of postgraduate loan
 studentLoans.postgraduateLoanAmount.label = How much postgraduate loan did you repay with this employer
 studentLoans.postgraduateLoanAmount.error.noEntry.individual = Enter the amount of postgraduate loan you repaid while employed by {0}
 studentLoans.postgraduateLoanAmount.error.noEntry.agent = Enter the amount of postgraduate loan your client repaid while employed by {0}
@@ -1380,18 +1381,17 @@ studentLoans.postgraduateLoanAmount.error.invalidFormat = Enter the amount of po
 studentLoans.bannerText = You cannot update student loans until you
 studentLoans.title.individual = Check your student loan repayment details
 studentLoans.title.agent = Check your client’s student loan repayment details
-studentLoans.slr = Student loan repayments
-studentLoans.ura = Undergraduate repayments amount
-studentLoans.pra = Postgraduate repayments amount
-studentLoans.undergraduate = Undergraduate
-studentLoans.postgraduate = Postgraduate
+studentLoans.rm = Repayments made
+studentLoans.pl = Postgraduate loans
+studentLoans.undergraduate = Student loan
+studentLoans.postgraduate = postgraduate loan
 studentLoans.p.individual = Your student loan repayment details are based on the information we already hold about you.
 studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about them.
 studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
 studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.
 
-studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
-studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
+studentLoans.common.checkWith.individual = Check your payslips or P60.
+studentLoans.common.checkWith.agent = Check your client’s payslips or P60.
 
 #####################    Tailoring messages    #####################
 tailoring.title.individual = Did you get income from PAYE employment?

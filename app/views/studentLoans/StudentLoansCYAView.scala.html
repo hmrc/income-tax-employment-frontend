@@ -91,9 +91,9 @@
 
     @govukSummaryList(SummaryList(
         rows = Seq(
-            Some(summaryRow("studentLoans.slr", studentLoanRepaymentText, Some(StudentLoansQuestionController.show(taxYear, employmentId).url))),
-            if(model.uglDeduction) Some(summaryRow("studentLoans.ura", model.uglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId).url))) else None,
-            if(model.pglDeduction) Some(summaryRow("studentLoans.pra", model.pglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId).url))) else None
+            Some(summaryRow("studentLoans.rm", studentLoanRepaymentText, Some(StudentLoansQuestionController.show(taxYear, employmentId).url))),
+            if(model.uglDeduction) Some(summaryRow("common.studentLoans", model.uglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId).url))) else None,
+            if(model.pglDeduction) Some(summaryRow("studentLoans.pl", model.pglDeductionAmount.map(_.toString), Some(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId).url))) else None
         ).flatten
     ))
 
