@@ -210,25 +210,25 @@ trait WireMockHelper {
   }
 
   def authoriseIndividual(withNino: Boolean = true): StubMapping = {
-    stubPost(authoriseUri, OK, Json.prettyPrint(successfulAuthResponse(Some(AffinityGroup.Individual), ConfidenceLevel.L200,
+    stubPost(authoriseUri, OK, Json.prettyPrint(successfulAuthResponse(Some(AffinityGroup.Individual), ConfidenceLevel.L250,
       enrolments = Seq(mtditEnrolment) ++ (if (withNino) Seq(ninoEnrolment) else Seq.empty[JsObject]): _*)))
   }
 
   def authoriseIndividualUnauthorized(): StubMapping = {
     stubPost(authoriseUri, UNAUTHORIZED, Json.prettyPrint(
-      successfulAuthResponse(Some(AffinityGroup.Individual), ConfidenceLevel.L200, Seq(mtditEnrolment, ninoEnrolment): _*)
+      successfulAuthResponse(Some(AffinityGroup.Individual), ConfidenceLevel.L250, Seq(mtditEnrolment, ninoEnrolment): _*)
     ))
   }
 
   def authoriseAgent(): StubMapping = {
     stubPost(authoriseUri, OK, Json.prettyPrint(
-      successfulAuthResponse(Some(AffinityGroup.Agent), ConfidenceLevel.L200, Seq(asAgentEnrolment, mtditEnrolment): _*)
+      successfulAuthResponse(Some(AffinityGroup.Agent), ConfidenceLevel.L250, Seq(asAgentEnrolment, mtditEnrolment): _*)
     ))
   }
 
   def authoriseAgentUnauthorized(): StubMapping = {
     stubPost(authoriseUri, UNAUTHORIZED, Json.prettyPrint(
-      successfulAuthResponse(Some(AffinityGroup.Agent), ConfidenceLevel.L200, Seq(asAgentEnrolment, mtditEnrolment): _*)
+      successfulAuthResponse(Some(AffinityGroup.Agent), ConfidenceLevel.L250, Seq(asAgentEnrolment, mtditEnrolment): _*)
     ))
   }
 
