@@ -189,7 +189,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 
   val defaultAcceptedConfidenceLevels: Seq[ConfidenceLevel] = Seq(
-    ConfidenceLevel.L200,
+    ConfidenceLevel.L250,
     ConfidenceLevel.L500
   )
 
@@ -212,7 +212,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     Enrolments(Set(
       Enrolment("HMRC-MTD-IT", Seq(EnrolmentIdentifier("MTDITID", "1234567890")), "Activated", None),
       Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", "AA123456A")), "Activated", None)
-    )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
+    )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L250
   )
 
   def insufficientConfidenceRetrieval: Future[Enrolments ~ Some[AffinityGroup] ~ ConfidenceLevel] = Future.successful(
@@ -226,7 +226,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     Enrolments(Set(
       Enrolment("HMRC-MTD-IT", Seq(EnrolmentIdentifier("UTR", "1234567890")), "Activated", None),
       Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", "AA123456A")), "Activated", None)
-    )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
+    )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L250
   )
 
   def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty, validTaxYears: Seq[Int] = validTaxYearList): String = PlaySessionCookieBaker.bakeSessionCookie(Map(

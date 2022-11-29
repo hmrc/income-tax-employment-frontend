@@ -89,7 +89,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
 
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
-      .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+      .returning(Future.successful(enrolments and ConfidenceLevel.L250))
   }
 
   ".enrolmentGetIdentifierValue" should {
@@ -133,7 +133,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
         lazy val result: Future[Result] = {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
-            .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+            .returning(Future.successful(enrolments and ConfidenceLevel.L250))
           underTest.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeIndividualRequest, headerCarrierWithSession)
         }
 
@@ -159,7 +159,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
         lazy val result: Future[Result] = {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
-            .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+            .returning(Future.successful(enrolments and ConfidenceLevel.L250))
           underTest.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeIndividualRequest.withHeaders(), emptyHeaderCarrier)
         }
 
@@ -174,7 +174,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
         lazy val result: Future[Result] = {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
-            .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+            .returning(Future.successful(enrolments and ConfidenceLevel.L250))
           underTest.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeIndividualRequest, headerCarrierWithSession)
         }
 
@@ -190,7 +190,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
         lazy val result: Future[Result] = {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
-            .returning(Future.successful(enrolments and ConfidenceLevel.L200))
+            .returning(Future.successful(enrolments and ConfidenceLevel.L250))
           underTest.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeIndividualRequest, headerCarrierWithSession)
         }
 
