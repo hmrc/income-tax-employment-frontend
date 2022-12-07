@@ -31,7 +31,8 @@
         button: Button,
         govukInsetText: GovukInsetText,
         govukCheckboxes : GovukCheckboxes,
-        formWithCsrf : FormWithCSRF
+        formWithCsrf : FormWithCSRF,
+        govukFieldset : GovukFieldset
 )
 @(taxYear: Int, employmentId: String, employmentName: String, form: Form[StudentLoansQuestionModel], cyaData: Option[StudentLoansCYAModel] = None)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -43,7 +44,7 @@
 
     @errorSummary(form.errors, Some("studentLoans"))
 
-    @heading(messages("studentLoansQuestion.heading." + agentOrIndividual, employmentName), Some(messages("studentLoans.subheading", Seq((taxYear - 1).toString, taxYear.toString): _*)))
+    @heading(messages("studentLoansQuestion.heading"), Some(messages("studentLoans.subheading", Seq((taxYear - 1).toString, taxYear.toString): _*)))
 
     <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoansQuestion.inset." + agentOrIndividual, taxYear.toString)</p>
 
@@ -55,6 +56,13 @@
         @govukCheckboxes(Checkboxes(
             hint = Some(Hint(
                 content = Text(messages("studentLoansQuestion.checkbox.hint"))
+            )),
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages(s"studentLoansQuestion.legend." + agentOrIndividual, employmentName)),
+            classes = "govuk-fieldset__legend govuk-fieldset__legend--m",
+            isPageHeading = false
+            ))
             )),
             errorMessage = form.errors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
             idPrefix = Some("studentLoans"),
@@ -77,7 +85,7 @@
                     divider = Some(messages("common.or"))
                 ),
                 CheckboxItem(
-                    content = Text(messages("common.no")),
+                    content = Text(messages("studentLoansQuestion.checkbox.no")),
                     value = "none",
                     behaviour = Some(ExclusiveCheckbox),
                     checked = cyaData.fold(false)(data => !data.pglDeduction && !data.uglDeduction)

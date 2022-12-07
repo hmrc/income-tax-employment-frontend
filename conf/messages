@@ -1339,8 +1339,9 @@ expenses.removeExpenses.button = Remove expenses
 
 studentLoansQuestion.title.individual = Did you repay any student loans?
 studentLoansQuestion.title.agent = Did your client repay any student loans?
-studentLoansQuestion.heading.individual = Did you repay any student loans while employed by {0}?
-studentLoansQuestion.heading.agent = Did your client repay any student loans while employed by {0}?
+studentLoansQuestion.heading = Student loan repayments
+studentLoansQuestion.legend.individual = Did you repay any student loans while employed by {0}?
+studentLoansQuestion.legend.agent = Did your client repay any student loans while employed by {0}?
 studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
 studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
 studentLoansQuestion.inset.2.individual = The Student Loans Company will have told you your loan or plan type.
@@ -1349,6 +1350,7 @@ studentLoansQuestion.checkbox.hint = Select all that apply.
 studentLoansQuestion.checkbox.1 = Yes, student loan repayments
 studentLoansQuestion.checkbox.1.hint = This includes Plan 1, Plan 2 and Plan 4 repayments.
 studentLoansQuestion.checkbox.2 = Yes, postgraduate loan repayments
+studentLoansQuestion.checkbox.no = No. I did not repay any student loan
 studentLoansQuestion.checkbox.error.individual = Select the types of student loan you repaid, or select "No"
 studentLoansQuestion.checkbox.error.agent = Select the types of student loan your client repaid, or select "No"
 
