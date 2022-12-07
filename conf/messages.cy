@@ -1339,8 +1339,9 @@ expenses.removeExpenses.button = Dileu treuliau
 
 studentLoansQuestion.title.individual = A wnaethoch ad-dalu unrhyw fenthyciad myfyriwr?
 studentLoansQuestion.title.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciad myfyriwr?
-studentLoansQuestion.heading.individual = A wnaethoch ad-dalu unrhyw fenthyciadau myfyriwr tra oeddech wedi’ch cyflogi gan {0}?
-studentLoansQuestion.heading.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciadau myfyriwr tra oedd wedi’i gyflogi gan {0}?
+studentLoansQuestion.heading = Ad-daliadau benthyciad myfyriwr
+studentLoansQuestion.legend.individual = A wnaethoch ad-dalu unrhyw fenthyciadau myfyriwr tra oeddech wedi’ch cyflogi gan {0}?
+studentLoansQuestion.legend.agent = A wnaeth eich cleient ad-dalu unrhyw fenthyciadau myfyriwr tra oedd wedi’i gyflogi gan {0}?
 studentLoansQuestion.inset.individual = Rydym ond angen gwybod am daliadau y gwnaeth eich cyflogwr eu didynnu o’ch cyflog.
 studentLoansQuestion.inset.agent = Rydym ond angen gwybod am daliadau y gwnaeth ei gyflogwr eu didynnu o’i gyflog.
 studentLoansQuestion.inset.2.individual = Bydd y Cwmni Benthyciadau Myfyrwyr wedi rhoi gwybod i chi beth yw’ch cynllun neu’ch math o fenthyciad a’r ad-daliadau a wnaed.
@@ -1349,6 +1350,7 @@ studentLoansQuestion.checkbox.hint = Dewiswch bob un sy’n berthnasol.
 studentLoansQuestion.checkbox.1 = Iawn, ad-daliadau benthyciad myfyriwr
 studentLoansQuestion.checkbox.1.hint = Mae hyn yn cynnwys ad-daliadau Cynllun 1, Cynllun 2 a Chynllun 4.
 studentLoansQuestion.checkbox.2 = Iawn, ad-daliadau benthyciad ôl-raddedig
+studentLoansQuestion.checkbox.no = Na. ni wnes i ad-dalu unrhyw fenthyciad myfyriwr
 studentLoansQuestion.checkbox.error.individual = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gennych, neu dewiswch "Na"
 studentLoansQuestion.checkbox.error.agent = Dewiswch y mathau o fenthyciad myfyriwr a ad-dalwyd gan eich cleient, neu dewiswch "Na"
 
