@@ -134,7 +134,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest
           nonCash = aBenefits.nonCash
         )))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)(HeaderCarrier())) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)(HeaderCarrier())) shouldBe Right(())
 
     }
 
@@ -268,7 +268,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest
         )
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))(HeaderCarrier())) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))(HeaderCarrier())) shouldBe Right(())
     }
   }
 

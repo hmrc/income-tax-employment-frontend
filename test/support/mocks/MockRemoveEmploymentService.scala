@@ -33,7 +33,7 @@ trait MockRemoveEmploymentService extends MockFactory {
   CallHandler5[AllEmploymentData, Int, String, User, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
       (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String, _: User)(_: HeaderCarrier))
         .expects(employmentData, taxYear, employmentId, *, *)
-        .returns(Future.successful(Right()))
+        .returns(Future.successful(Right(())))
         .anyNumberOfTimes()
   }
 }

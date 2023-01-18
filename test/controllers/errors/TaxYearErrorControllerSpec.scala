@@ -27,7 +27,7 @@ class TaxYearErrorControllerSpec extends ControllerUnitTest with DefaultAwaitTim
 
   private val pageView = app.injector.instanceOf[TaxYearErrorTemplate]
 
-  private val underTest = new TaxYearErrorController(pageView)(stubMessagesControllerComponents, appConfig)
+  private val underTest = new TaxYearErrorController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   ".show()" should {
     "return an OK response .show() is called" in {

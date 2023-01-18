@@ -33,16 +33,14 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 employmentSessionService: EmploymentSessionService,
                                 errorHandler: ErrorHandler,
                                 inYearUtil: InYearUtil,
-                                redirectsMapper: RedirectsMapper,
-                                appConfig: AppConfig
-                               )(implicit ec: ExecutionContext) {
+                                redirectsMapper: RedirectsMapper)(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
   def endOfYearWithSessionData(taxYear: Int,
                                employmentId: String,
                                employmentType: EmploymentType,
                                clazz: Class[_]): ActionBuilder[UserSessionDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
       .andThen(UserSessionDataRequestRefinerAction(taxYear, employmentId, employmentType, employmentSessionService, errorHandler, appConfig))
       .andThen(RedirectsFilterAction(redirectsMapper, clazz, taxYear, employmentId))
@@ -50,14 +48,14 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
   // TODO: Refactor
   def notInYearWithPriorData(taxYear: Int, overrideRedirect: Option[Result] = None): ActionBuilder[UserPriorDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
       .andThen(employmentPriorDataAction(taxYear, overrideRedirect))
 
   // TODO: Refactor
   def authenticatedPriorDataAction(taxYear: Int): ActionBuilder[OptionalUserPriorDataRequest, AnyContent] =
     authAction
-      .andThen(TaxYearAction.taxYearAction(taxYear)(appConfig))
+      .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(optionalEmploymentPriorDataAction(taxYear))
 
   // TODO: Refactor

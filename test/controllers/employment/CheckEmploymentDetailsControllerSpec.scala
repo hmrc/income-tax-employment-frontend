@@ -55,7 +55,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
     mockCheckEmploymentDetailsService,
     new DefaultRedirectService(),
     mockErrorHandler
-  )(stubMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), mockAuthorisedAction)
+  )(stubMessagesControllerComponents(), ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), mockAuthorisedAction)
 
   private val nino = "AA123456A"
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

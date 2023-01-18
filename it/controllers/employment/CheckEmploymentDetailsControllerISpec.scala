@@ -17,7 +17,6 @@
 package controllers.employment
 
 import common.SessionValues
-import controllers.details.routes.EmployerStartDateController
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}

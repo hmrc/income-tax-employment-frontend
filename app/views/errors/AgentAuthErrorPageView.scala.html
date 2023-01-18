@@ -33,11 +33,11 @@
     @messages("error.agent.paragraph1") @link("https://www.gov.uk/guidance/client-authorisation-an-overview","error.agent.paragraph2",Some("client_auth_link"),true) @messages("error.agent.paragraph3")
 </p>
 @govUkButton(Button(
- attributes = Map(),
- preventDoubleClick = true,
- content = Text(messages("error.agent.paragraph4")),
- classes = "govuk-button",
- href = Some(appConfig.viewAndChangeEnterUtrUrl)
+    attributes = Map(),
+    preventDoubleClick = Some(true),
+    content = Text(messages("error.agent.paragraph4")),
+    classes = "govuk-button",
+    href = Some(appConfig.viewAndChangeEnterUtrUrl)
 ))
 
 }

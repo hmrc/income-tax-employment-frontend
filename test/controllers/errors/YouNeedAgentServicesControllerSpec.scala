@@ -25,7 +25,7 @@ import views.html.errors.YouNeedAgentServicesView
 class YouNeedAgentServicesControllerSpec extends ControllerUnitTest with DefaultAwaitTimeout {
 
   private val pageView = app.injector.instanceOf[YouNeedAgentServicesView]
-  private val controller = new YouNeedAgentServicesController(pageView)(stubMessagesControllerComponents, appConfig)
+  private val controller = new YouNeedAgentServicesController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

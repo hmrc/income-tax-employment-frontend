@@ -109,7 +109,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, employmentId, "HMRC-HELD")
           mockDeleteOrIgnoreExpenses(anAuthorisationRequest, allEmploymentData, taxYear)
 
-          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, aUser.copy(sessionId = aUser.sessionId))) shouldBe Right()
+          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId, aUser.copy(sessionId = aUser.sessionId))) shouldBe Right(())
         }
       }
 
@@ -131,7 +131,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
           mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, "002", "CUSTOMER")
           mockDeleteOrIgnoreExpenses(anAuthorisationRequest, allEmploymentData, taxYear)
 
-          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser.copy(sessionId = aUser.sessionId))) shouldBe Right()
+          await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser.copy(sessionId = aUser.sessionId))) shouldBe Right(())
         }
       }
     }
@@ -143,13 +143,13 @@ class RemoveEmploymentServiceSpec extends UnitTest
         mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
         mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, employmentId = "002", toRemove = "CUSTOMER")
 
-        await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser)) shouldBe Right()
+        await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId = "002", aUser)) shouldBe Right(())
       }
 
       "there is no employment data for that employment id" in {
         mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
 
-        await(underTest.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId, aUser)) shouldBe Right()
+        await(underTest.deleteOrIgnoreEmployment(data, taxYear, differentEmploymentId, aUser)) shouldBe Right(())
       }
 
       "the connector throws a Left" in {
@@ -207,7 +207,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
       ).toNrsPayloadModel
       )
 
-      await(underTest.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right(())
     }
   }
 }

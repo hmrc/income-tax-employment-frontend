@@ -42,7 +42,7 @@
         <div class="govuk-button-group">
             @govUkButton(Button(
                 attributes = Map("data-module" -> "govuk-button", "id" -> "remove-expenses-button-id"),
-                preventDoubleClick = true,
+                preventDoubleClick = Some(true),
                 content = Text(messages("expenses.removeExpenses.button")),
                 classes = "govuk-button--warning"
             ))

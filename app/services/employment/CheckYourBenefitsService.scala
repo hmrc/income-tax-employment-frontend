@@ -18,15 +18,15 @@ package services.employment
 
 import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import javax.inject.Inject
+import models.User
 import models.benefits.{DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment.AllEmploymentData
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.{AuthorisationRequest, User}
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsService @Inject()(nrsService: NrsService,

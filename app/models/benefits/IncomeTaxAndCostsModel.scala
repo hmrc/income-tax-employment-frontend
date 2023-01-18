@@ -60,7 +60,7 @@ case class IncomeTaxAndCostsModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedIncomeTaxAndCostsModel = EncryptedIncomeTaxAndCostsModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedIncomeTaxAndCostsModel = EncryptedIncomeTaxAndCostsModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     incomeTaxPaidByDirectorQuestion = incomeTaxPaidByDirectorQuestion.map(_.encrypted),
     incomeTaxPaidByDirector = incomeTaxPaidByDirector.map(_.encrypted),
@@ -81,7 +81,7 @@ case class EncryptedIncomeTaxAndCostsModel(sectionQuestion: Option[EncryptedValu
                                            paymentsOnEmployeesBehalfQuestion: Option[EncryptedValue] = None,
                                            paymentsOnEmployeesBehalf: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     incomeTaxPaidByDirectorQuestion = incomeTaxPaidByDirectorQuestion.map(_.decrypted[Boolean]),
     incomeTaxPaidByDirector = incomeTaxPaidByDirector.map(_.decrypted[BigDecimal]),

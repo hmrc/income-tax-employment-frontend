@@ -22,7 +22,7 @@
 
 @govukButton(Button(
     attributes = attributes,
-    preventDoubleClick = true,
+    preventDoubleClick = Some(true),
     content = Text(messages(alternativeText)),
     classes = classes.getOrElse(""),
     href = href

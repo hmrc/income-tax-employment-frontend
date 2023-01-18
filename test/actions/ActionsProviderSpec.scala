@@ -55,9 +55,7 @@ class ActionsProviderSpec extends ControllerUnitTest
     mockEmploymentSessionService,
     mockErrorHandler,
     new InYearUtil,
-    mockRedirectsMapper,
-    appConfig
-  )
+    mockRedirectsMapper)
 
   ".endOfYearWithSessionData" should {
     "redirect to UnauthorisedUserErrorController when authentication fails" in {

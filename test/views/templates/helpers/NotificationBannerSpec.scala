@@ -16,11 +16,9 @@
 
 package views.templates.helpers
 
-import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import views.html.templates.helpers.NotificationBanner
@@ -62,7 +60,6 @@ class NotificationBannerSpec extends ViewUnitTest {
     val common = userScenario.commonExpectedResults
     s"language is ${welshTest(userScenario.isWelsh)}" should {
       "show correctly translated title" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(HtmlContent("<p id='my-paragraph'>some-content</p>").asHtml)

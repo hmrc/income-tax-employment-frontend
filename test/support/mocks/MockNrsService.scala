@@ -32,6 +32,6 @@ trait MockNrsService extends MockFactory {
   def verifySubmitEvent[T](event: T): CallHandler[Future[NrsSubmissionResponse]] = {
     (mockNrsService.submit(_: String, _: T, _: String, _: Option[String])(_: HeaderCarrier, _: Writes[T]))
       .expects(*, event, *, *, *, *)
-      .returning(Future.successful(Right()))
+      .returning(Future.successful(Right(())))
   }
 }

@@ -97,7 +97,7 @@ case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
     reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards), reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)
   )
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedBenefitsViewModel = EncryptedBenefitsViewModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedBenefitsViewModel = EncryptedBenefitsViewModel(
     carVanFuelModel = carVanFuelModel.map(_.encrypted),
     accommodationRelocationModel = accommodationRelocationModel.map(_.encrypted),
     travelEntertainmentModel = travelEntertainmentModel.map(_.encrypted),
@@ -133,7 +133,7 @@ case class EncryptedBenefitsViewModel(carVanFuelModel: Option[EncryptedCarVanFue
                                       isUsingCustomerData: EncryptedValue,
                                       isBenefitsReceived: EncryptedValue) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): BenefitsViewModel = BenefitsViewModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): BenefitsViewModel = BenefitsViewModel(
     carVanFuelModel = carVanFuelModel.map(_.decrypted),
     accommodationRelocationModel = accommodationRelocationModel.map(_.decrypted),
     travelEntertainmentModel = travelEntertainmentModel.map(_.decrypted),

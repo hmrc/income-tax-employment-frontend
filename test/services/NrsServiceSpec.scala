@@ -64,7 +64,7 @@ class NrsServiceSpec extends UnitTest
   ".postNrsConnector" when {
     "there is user-agent, true client ip and port" should {
       "return the connector response" in {
-        val expectedResult: NrsSubmissionResponse = Right()
+        val expectedResult: NrsSubmissionResponse = Right(())
         val headerCarrierWithTrueClientDetails = headerCarrierWithSession.copy(trueClientIp = Some("127.0.0.1"), trueClientPort = Some("80"))
 
         (connector.postNrsConnector(_: String, _: DecodedCreateNewEmploymentDetailsPayload)(_: HeaderCarrier, _: Writes[DecodedCreateNewEmploymentDetailsPayload]))
@@ -81,7 +81,7 @@ class NrsServiceSpec extends UnitTest
       "return the connector response" in {
         implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
           new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString), FakeRequest())
-        val expectedResult: NrsSubmissionResponse = Right()
+        val expectedResult: NrsSubmissionResponse = Right(())
 
         (connector.postNrsConnector(_: String, _: DecodedCreateNewEmploymentDetailsPayload)(_: HeaderCarrier, _: Writes[DecodedCreateNewEmploymentDetailsPayload]))
           .expects(aUser.nino, payloadModel, headerCarrierWithSession.withExtraHeaders("mtditid" -> aUser.mtditid, "User-Agent" -> "income-tax-employment-frontend", "True-User-Agent" -> "No user agent provided"), writesObject)

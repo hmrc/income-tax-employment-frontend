@@ -110,7 +110,7 @@
     @formWithCSRF(action = EmploymentSummaryController.show(taxYear)) {
         @govUkButton(Button(
             attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-            preventDoubleClick = true,
+            preventDoubleClick = Some(true),
             content = Text(messages("common.returnToPayeEmployment")),
             classes = "govuk-button  govuk-!-margin-top-5"
         ))

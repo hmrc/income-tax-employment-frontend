@@ -23,13 +23,9 @@ import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserD
 import support.mocks.MockEmploymentSessionService
 import support.{TaxYearProvider, UnitTest}
 
-import scala.concurrent.ExecutionContext
-
 class StudentLoansServiceSpec extends UnitTest
   with TaxYearProvider
   with MockEmploymentSessionService {
-
-  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val employmentId = "some-employment-id"
 

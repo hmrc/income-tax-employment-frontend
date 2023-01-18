@@ -21,9 +21,11 @@ import config.AppConfig
 import models.AuthorisationRequest
 import play.api.mvc.{ActionBuilder, AnyContent}
 
+import scala.concurrent.ExecutionContext
+
 // TODO: This is obsolete, further and is not tested. Should be deleted
 object AuthorisedTaxYearAction {
   def authorisedTaxYearAction(taxYear: Int)(
-    implicit authAction: AuthorisedAction, appConfig: AppConfig
-  ): ActionBuilder[AuthorisationRequest, AnyContent] = authAction andThen taxYearAction(taxYear)(appConfig)
+    implicit authAction: AuthorisedAction, appConfig: AppConfig, ec: ExecutionContext
+  ): ActionBuilder[AuthorisationRequest, AnyContent] = authAction andThen taxYearAction(taxYear)
 }

@@ -22,7 +22,7 @@ import utils.SecureGCMCipher
 
 case class ExpensesCYAModel(expenses: ExpensesViewModel) {
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
     expenses = expenses.encrypted
   )
 }
@@ -36,7 +36,7 @@ object ExpensesCYAModel {
 
 case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
     ExpensesCYAModel(expenses = expenses.decrypted)
 }
 

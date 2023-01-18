@@ -34,7 +34,7 @@ class EmploymentUserDataSpec extends UnitTest
     "return EncryptedEmploymentUserData instance" in {
       val underTest = anEmploymentUserData.copy(employment = employmentCYAModel)
 
-      (employmentCYAModel.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentCYAModel)
+      (employmentCYAModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentCYAModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -66,7 +66,7 @@ class EmploymentUserDataSpec extends UnitTest
         lastUpdated = anEmploymentUserData.lastUpdated,
       )
 
-      (encryptedEmploymentCYAModel.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentCYAModel)
+      (encryptedEmploymentCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentCYAModel)
 
       val decryptedResult = underTest.decrypted
 

@@ -52,7 +52,7 @@ class UnignoreEmploymentServiceSpec extends UnitTest
       mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Right(()))
       verifySubmitEvent(anUnignoreEmploymentNRSModel)
 
-      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Right()
+      await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Right(())
     }
 
     "return a error result" in {

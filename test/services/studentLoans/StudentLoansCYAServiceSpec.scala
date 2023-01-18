@@ -287,7 +287,7 @@ class StudentLoansCYAServiceSpec extends UnitTest
           Some(100)
         )))))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)) shouldBe Right(())
 
     }
 
@@ -370,7 +370,7 @@ class StudentLoansCYAServiceSpec extends UnitTest
         )
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))) shouldBe Right(())
     }
   }
 }

@@ -34,7 +34,7 @@ class ExpensesCYAModelSpec extends UnitTest
     "return EncryptedExpensesCYAModel instance" in {
       val underTest = ExpensesCYAModel(expenses = expensesViewModel)
 
-      (expensesViewModel.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesViewModel)
+      (expensesViewModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesViewModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -46,7 +46,7 @@ class ExpensesCYAModelSpec extends UnitTest
     "return ExpensesCYAModel instance" in {
       val underTest = EncryptedExpensesCYAModel(expenses = encryptedExpensesViewModel)
 
-      (encryptedExpensesViewModel.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesViewModel)
+      (encryptedExpensesViewModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesViewModel)
 
       val decryptedResult = underTest.decrypted
 

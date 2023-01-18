@@ -128,15 +128,13 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
 
   implicit val actorSystem: ActorSystem = ActorSystem()
   private val actionsProvider = {
-    val mockAppConfig: AppConfig = new MockAppConfig().config()
+    implicit val mockAppConfig: AppConfig = new MockAppConfig().config()
     new ActionsProvider(
       mockAuthorisedAction,
       mockEmploymentSessionService,
       mockErrorHandler,
       new InYearUtil()(mockAppConfig),
-      mockRedirectsMapper,
-      mockAppConfig
-    )
+      mockRedirectsMapper)(ec, mockAppConfig)
   }
 
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController(
@@ -145,7 +143,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
     new InYearUtil(),
     mockErrorHandler,
     actionsProvider
-  )(stubMessagesControllerComponents, new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents(), new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   ".addNewEmployment" should {
     "redirect to add employment page when there is no session data and no prior employments" which {
@@ -207,7 +205,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       s"has an INTERNAL SERVER ERROR($INTERNAL_SERVER_ERROR) status when session data is cleared successfully" in {
         mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.oneEmploymentSourceData))
-        mockClear(Left())
+        mockClear(Left(()))
         mockInternalServerError(InternalServerError)
 
         val result: Future[Result] = controller().addNewEmployment(taxYearEOY)(fakeRequest.withSession(
@@ -226,7 +224,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
 
         val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
         result.header.status shouldBe OK
-        await(result.body.consumeData.map(_.utf8String)).contains("Mishima Zaibatsu")  shouldBe true
+        await(result.body.consumeData.map(_.utf8String)).contains("Mishima Zaibatsu") shouldBe true
       }
     }
 
@@ -237,7 +235,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
 
         val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
         result.header.status shouldBe OK
-        await(result.body.consumeData.map(_.utf8String)).contains("Violet Systems")  shouldBe true
+        await(result.body.consumeData.map(_.utf8String)).contains("Violet Systems") shouldBe true
       }
     }
 

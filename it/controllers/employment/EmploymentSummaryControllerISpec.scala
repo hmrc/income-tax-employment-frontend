@@ -19,7 +19,7 @@ package controllers.employment
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import play.api.http.HeaderNames
-import play.api.http.Status.{OK, SEE_OTHER, UNAUTHORIZED}
+import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData

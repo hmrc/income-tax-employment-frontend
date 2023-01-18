@@ -96,8 +96,8 @@ case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolea
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = EncryptedReimbursedCostsVouchersAndNonCashModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
+                textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = EncryptedReimbursedCostsVouchersAndNonCashModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     expensesQuestion = expensesQuestion.map(_.encrypted),
     expenses = expenses.map(_.encrypted),
@@ -130,7 +130,7 @@ case class EncryptedReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Opti
                                                            otherItemsQuestion: Option[EncryptedValue] = None,
                                                            otherItems: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
                   textAndKey: TextAndKey): ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     expensesQuestion = expensesQuestion.map(_.decrypted[Boolean]),

@@ -19,7 +19,6 @@ package controllers.expenses
 import forms.YesNoForm
 import models.mongo.ExpensesCYAModel
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -63,8 +62,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val document = Jsoup.parse(result.body)
 
-        implicit def documentSupplier: () => Document = () => document
-
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
           result.header("location").contains(overviewUrl(taxYear)) shouldBe true
@@ -79,8 +76,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         lazy val document = Jsoup.parse(result.body)
-
-        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
@@ -160,8 +155,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         lazy val document = Jsoup.parse(result.body)
-
-        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER

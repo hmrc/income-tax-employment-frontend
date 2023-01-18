@@ -75,8 +75,8 @@ case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): EncryptedAccommodationRelocationModel = EncryptedAccommodationRelocationModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
+                textAndKey: TextAndKey): EncryptedAccommodationRelocationModel = EncryptedAccommodationRelocationModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     accommodationQuestion = accommodationQuestion.map(_.encrypted),
     accommodation = accommodation.map(_.encrypted),
@@ -102,7 +102,7 @@ case class EncryptedAccommodationRelocationModel(sectionQuestion: Option[Encrypt
                                                  nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
                                                  nonQualifyingRelocationExpenses: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
                   textAndKey: TextAndKey): AccommodationRelocationModel = AccommodationRelocationModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     accommodationQuestion = accommodationQuestion.map(_.decrypted[Boolean]),

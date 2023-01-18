@@ -60,7 +60,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
     new DefaultRedirectService(),
     new InYearUtil(),
     mockErrorHandler
-  )(stubMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), mockAuthorisedAction)
+  )(stubMessagesControllerComponents(), ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), mockAuthorisedAction)
 
   private val nino = "AA123456A"
   private val employmentId = "223AB12399"

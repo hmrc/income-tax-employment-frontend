@@ -34,7 +34,7 @@ import views.html.details.EmploymentDatesView
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                                           mcc: MessagesControllerComponents,
@@ -42,8 +42,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                                           inYearAction: InYearUtil,
                                           errorHandler: ErrorHandler,
                                           employmentSessionService: EmploymentSessionService)
-                                         (implicit appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                         (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def datesForm: Form[EmploymentDates] = EmploymentDatesForm.employmentDatesForm
 

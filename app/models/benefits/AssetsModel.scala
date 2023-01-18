@@ -62,7 +62,7 @@ case class AssetsModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedAssetsModel = EncryptedAssetsModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedAssetsModel = EncryptedAssetsModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     assetsQuestion = assetsQuestion.map(_.encrypted),
     assets = assets.map(_.encrypted),
@@ -83,7 +83,7 @@ case class EncryptedAssetsModel(sectionQuestion: Option[EncryptedValue] = None,
                                 assetTransferQuestion: Option[EncryptedValue] = None,
                                 assetTransfer: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): AssetsModel = AssetsModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): AssetsModel = AssetsModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     assetsQuestion = assetsQuestion.map(_.decrypted[Boolean]),
     assets = assets.map(_.decrypted[BigDecimal]),

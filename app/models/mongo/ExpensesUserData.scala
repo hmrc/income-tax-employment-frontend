@@ -30,7 +30,7 @@ case class ExpensesUserData(sessionId: String,
                             expensesCya: ExpensesCYAModel,
                             lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -58,7 +58,7 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      expensesCya: EncryptedExpensesCYAModel,
                                      lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,

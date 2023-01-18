@@ -26,7 +26,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import views.html.details.EmployerPayAmountView
 
-class qEmployerPayAmountViewSpec extends ViewUnitTest {
+class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   private val employerName: String = "maggie"
   private val amount: BigDecimal = 100

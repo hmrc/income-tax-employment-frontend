@@ -16,11 +16,11 @@
 
 package helpers
 
-import java.net.URLEncoder
-
 import play.api.http.SecretConfiguration
 import play.api.libs.crypto.DefaultCookieSigner
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, PlainText}
+
+import java.net.URLEncoder
 
 object PlaySessionCookieBaker {
   private val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="

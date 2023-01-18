@@ -59,7 +59,7 @@ class NrsConnectorSpec extends ConnectorIntegrationTest {
     "return an OK response when successful" in {
       stubPost(url, OK, "{}")
 
-      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Right()
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Right(())
     }
 
     "return an InternalServerError" in {

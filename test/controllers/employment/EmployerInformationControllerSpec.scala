@@ -44,7 +44,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
     view,
     new InYearUtil(),
     mockEmploymentSessionService,
-  )(stubMessagesControllerComponents, appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   private val nino = "AA123456A"
   private val employmentId: String = "223/AB12399"

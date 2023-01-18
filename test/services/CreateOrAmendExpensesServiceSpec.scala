@@ -236,8 +236,8 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(ignoreExpenses = Some(true)))
-        status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
+        status(response.map(_.toOption.get)) shouldBe SEE_OTHER
+        redirectLocation(response.map(_.toOption.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 
@@ -247,8 +247,8 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
-        status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
+        status(response.map(_.toOption.get)) shouldBe SEE_OTHER
+        redirectLocation(response.map(_.toOption.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 
@@ -258,15 +258,15 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
         val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(expenses = Expenses()))
-        status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectLocation(response.map(_.right.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
+        status(response.map(_.toOption.get)) shouldBe SEE_OTHER
+        redirectLocation(response.map(_.toOption.get)) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
       }
     }
 
     "use the request model to make the api call and handle an error when the connector throws a Left" in {
       mockCreateOrAmendExpensesError(aUser.nino, taxYear, requests.CreateUpdateExpensesRequest(None, expensesModel))
       lazy val response: Future[Either[Result, Result]] = underTest.createOrUpdateExpensesResult(taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
-      status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
+      status(response.map(_.left.toOption.get)) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 

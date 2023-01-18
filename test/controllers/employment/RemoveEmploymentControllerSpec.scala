@@ -59,7 +59,7 @@ class RemoveEmploymentControllerSpec extends ControllerUnitTest
   implicit val actorSystem: ActorSystem = ActorSystem()
 
   private lazy val controller = new RemoveEmploymentController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     mockAuthorisedAction,
     new InYearUtil(),
     view,

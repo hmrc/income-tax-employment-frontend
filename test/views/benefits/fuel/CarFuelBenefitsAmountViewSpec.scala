@@ -34,8 +34,6 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
   private val employmentId = anEmploymentSource.employmentId
-  private val carFuelAmount: BigDecimal = 200
-
 
   object Selectors {
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"

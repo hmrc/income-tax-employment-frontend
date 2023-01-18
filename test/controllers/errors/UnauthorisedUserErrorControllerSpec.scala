@@ -26,7 +26,7 @@ class UnauthorisedUserErrorControllerSpec extends ControllerUnitTest with Defaul
 
   private val pageView: UnauthorisedUserErrorPageView = app.injector.instanceOf[UnauthorisedUserErrorPageView]
 
-  lazy val underTest = new UnauthorisedUserErrorController(pageView)(stubMessagesControllerComponents, appConfig)
+  lazy val underTest = new UnauthorisedUserErrorController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

@@ -140,7 +140,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
         mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
       )))
 
-      await(underTest.performSubmitNrsPayload(model, prior = None, aUser)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = None, aUser)) shouldBe Right(())
     }
 
     "send the event from the model when it's an amend" in {
@@ -231,7 +231,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
           )))
 
 
-      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses), aUser)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses), aUser)) shouldBe Right(())
 
     }
   }

@@ -56,8 +56,7 @@ class SelectEmployerControllerSpec extends ControllerUnitTest
       mockEmploymentSessionService,
       mockErrorHandler,
       new InYearUtil()(appConfig),
-      mockRedirectsMapper,
-      appConfig
+      mockRedirectsMapper
     )
   }
 
@@ -67,7 +66,7 @@ class SelectEmployerControllerSpec extends ControllerUnitTest
     mockUnignoreEmploymentService,
     mockEmploymentSessionService,
     mockErrorHandler,
-    new SelectEmployerForm)(stubMessagesControllerComponents, appConfig, ec)
+    new SelectEmployerForm)(stubMessagesControllerComponents(), appConfig, ec)
 
   private val nino = "AA123456A"
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

@@ -51,7 +51,7 @@ class MileageBenefitAmountControllerSpec extends ControllerUnitTest
     new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
-  )(stubMessagesControllerComponents, appConfig, ec)
+  )(stubMessagesControllerComponents(), appConfig, ec)
   private val nino = "AA123456A"
   val employmentId = "12345"
   val form: Form[BigDecimal] = AmountForm.amountForm("benefits.mileageBenefitAmount.error.empty.individual")

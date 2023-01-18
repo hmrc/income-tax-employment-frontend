@@ -36,7 +36,7 @@ case class StudentLoansCYAModel(uglDeduction: Boolean,
       None
     }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedStudentLoansCYAModel = EncryptedStudentLoansCYAModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedStudentLoansCYAModel = EncryptedStudentLoansCYAModel(
     uglDeduction = uglDeduction.encrypted,
     uglDeductionAmount = uglDeductionAmount.map(_.encrypted),
     pglDeduction = pglDeduction.encrypted,
@@ -54,7 +54,7 @@ case class EncryptedStudentLoansCYAModel(uglDeduction: EncryptedValue,
                                          pglDeduction: EncryptedValue,
                                          pglDeductionAmount: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): StudentLoansCYAModel = StudentLoansCYAModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): StudentLoansCYAModel = StudentLoansCYAModel(
     uglDeduction = uglDeduction.decrypted[Boolean],
     uglDeductionAmount = uglDeductionAmount.map(_.decrypted[BigDecimal]),
     pglDeduction = pglDeduction.decrypted[Boolean],

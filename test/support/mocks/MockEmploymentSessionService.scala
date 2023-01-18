@@ -28,7 +28,7 @@ import play.api.mvc.{Request, Result}
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait MockEmploymentSessionService extends MockFactory {
 
@@ -93,23 +93,17 @@ trait MockEmploymentSessionService extends MockFactory {
       .returns(Future.successful(result))
   }
 
-  def mockGetSessionDataOld(taxYear: Int, employmentId: String, result: Either[Result, Option[EmploymentUserData]])
-                           (implicit executionContext: ExecutionContext): CallHandler3[Int, String, AuthorisationRequest[_],
-    Future[Either[Result, Option[EmploymentUserData]]]] = {
-    (mockEmploymentSessionService.getSessionDataOld(_: Int, _: String)(_: AuthorisationRequest[_]))
-      .expects(taxYear, employmentId, *)
-      .returns(Future.successful(result))
-  }
-
-  def mockGetSessionDataResult(taxYear: Int, employmentId: String, result: Result)
-                              (implicit executionContext: ExecutionContext): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
+  def mockGetSessionDataResult(taxYear: Int,
+                               employmentId: String,
+                               result: Result): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *, *)
       .returns(Future.successful(result))
   }
 
-  def mockGetSessionDataAndReturnResult(taxYear: Int, employmentId: String, result: Result)
-                                       (implicit ec: ExecutionContext): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], AuthorisationRequest[_], Future[Result]] = {
+  def mockGetSessionDataAndReturnResult(taxYear: Int,
+                                        employmentId: String,
+                                        result: Result): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], AuthorisationRequest[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(_: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *, *, *)
       .returns(Future.successful(result))
@@ -118,8 +112,7 @@ trait MockEmploymentSessionService extends MockFactory {
   def mockCreateOrUpdateUserDataWith(taxYear: Int,
                                      employmentId: String,
                                      employmentCYAModel: EmploymentCYAModel,
-                                     result: Either[Unit, EmploymentUserData])
-                                    (implicit executionContext: ExecutionContext): CallHandler5[User, Int, String, EmploymentUserData, EmploymentCYAModel, Future[Either[Unit, EmploymentUserData]]] = {
+                                     result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, EmploymentCYAModel, Future[Either[Unit, EmploymentUserData]]] = {
     ((user: User, taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, employment: EmploymentCYAModel) =>
       mockEmploymentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, employment))
       .expects(*, taxYear, employmentId, *, employmentCYAModel)
@@ -149,12 +142,12 @@ trait MockEmploymentSessionService extends MockFactory {
       .once()
   }
 
-  def mockGetAndHandleExpenses(taxYear: Int, result: Result)(implicit authorisationRequest: AuthorisationRequest[_], hc: HeaderCarrier, ec: ExecutionContext):
-  CallHandler4[Int, (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result], AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
+  def mockGetAndHandleExpenses(taxYear: Int,
+                               result: Result): CallHandler4[Int, (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result], AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
     (mockEmploymentSessionService.getAndHandleExpenses(_: Int)(_: (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result])
     (_: AuthorisationRequest[_], _: HeaderCarrier))
       .expects(taxYear, *, *, *)
-      .returns(Future(result))
+      .returns(Future.successful(result))
   }
 
   def mockSubmitAndClear(taxYear: Int, employmentId: String, model: CreateUpdateEmploymentRequest, result: Either[Result, (Option[String], EmploymentUserData)]): CallHandler8[Int,
@@ -172,8 +165,7 @@ trait MockEmploymentSessionService extends MockFactory {
                                      isPriorSubmission: Boolean,
                                      hasPriorExpenses: Boolean,
                                      expensesCYAModel: ExpensesCYAModel,
-                                     result: Either[Unit, ExpensesUserData])
-                                    (implicit ec: ExecutionContext): CallHandler5[User, Int, Boolean, Boolean, ExpensesCYAModel, Future[Either[Unit, ExpensesUserData]]] = {
+                                     result: Either[Unit, ExpensesUserData]): CallHandler5[User, Int, Boolean, Boolean, ExpensesCYAModel, Future[Either[Unit, ExpensesUserData]]] = {
     (mockEmploymentSessionService.createOrUpdateExpensesUserData(_: User, _: Int, _: Boolean, _: Boolean, _: ExpensesCYAModel))
       .expects(*, taxYear, isPriorSubmission, hasPriorExpenses, expensesCYAModel)
       .returns(Future.successful(result))

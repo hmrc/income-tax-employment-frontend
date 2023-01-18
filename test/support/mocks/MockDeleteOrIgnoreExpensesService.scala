@@ -33,7 +33,7 @@ trait MockDeleteOrIgnoreExpensesService extends MockFactory {
     AllEmploymentData, Int, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
       (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: User, _: AllEmploymentData, _: Int)(_:HeaderCarrier))
         .expects(user.user, employmentData, taxYear, *)
-        .returns(Future.successful(Right()))
+        .returns(Future.successful(Right(())))
         .anyNumberOfTimes()
   }
 }

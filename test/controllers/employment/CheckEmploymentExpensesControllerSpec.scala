@@ -54,7 +54,7 @@ class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
   )(
     appConfig,
     mockAuthorisedAction,
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     ec
   )
 

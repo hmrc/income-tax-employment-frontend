@@ -83,8 +83,8 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): EncryptedMedicalChildcareEducationModel = EncryptedMedicalChildcareEducationModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
+                textAndKey: TextAndKey): EncryptedMedicalChildcareEducationModel = EncryptedMedicalChildcareEducationModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.encrypted),
     medicalInsurance = medicalInsurance.map(_.encrypted),
@@ -113,7 +113,7 @@ case class EncryptedMedicalChildcareEducationModel(sectionQuestion: Option[Encry
                                                    beneficialLoanQuestion: Option[EncryptedValue] = None,
                                                    beneficialLoan: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): MedicalChildcareEducationModel = MedicalChildcareEducationModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): MedicalChildcareEducationModel = MedicalChildcareEducationModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.decrypted[Boolean]),
     medicalInsurance = medicalInsurance.map(_.decrypted[BigDecimal]),

@@ -47,7 +47,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansCYAController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     view,
     mockStudentLoansCYAService,
     mockEmploymentSessionService,

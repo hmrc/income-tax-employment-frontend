@@ -70,7 +70,7 @@ class EmploymentTaxControllerSpec extends ControllerUnitTest
   implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 
   private lazy val underTest = new EmploymentTaxController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     mockAuthorisedAction,
     view,
     mockEmploymentSessionService,

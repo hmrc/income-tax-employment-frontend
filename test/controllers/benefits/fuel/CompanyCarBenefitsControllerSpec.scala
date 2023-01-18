@@ -85,7 +85,7 @@ class CompanyCarBenefitsControllerSpec extends ControllerUnitTest
     new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
-  )(stubMessagesControllerComponents, new MockAppConfig().config())
+  )(stubMessagesControllerComponents(), new MockAppConfig().config())
 
   ".show" should {
     "get user session data and return the result from the given execution block" in {

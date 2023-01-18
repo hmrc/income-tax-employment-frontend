@@ -18,15 +18,15 @@ package services.expenses
 
 import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import javax.inject.Inject
+import models.User
 import models.employment._
 import models.expenses.Expenses
 import models.requests.CreateUpdateExpensesRequest
-import models.{AuthorisationRequest, User}
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesService @Inject()(auditService: AuditService,

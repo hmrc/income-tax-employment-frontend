@@ -274,7 +274,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq()
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right(())
     }
     "send the events from the model when it's a create and theres existing data" in {
 
@@ -347,7 +347,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq(DecodedPriorEmploymentInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
     "send the events from the model when it's an amend" in {
 
@@ -430,7 +430,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
   }
 }

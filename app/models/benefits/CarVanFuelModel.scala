@@ -108,7 +108,7 @@ case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedCarVanFuelModel = EncryptedCarVanFuelModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedCarVanFuelModel = EncryptedCarVanFuelModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     carQuestion = carQuestion.map(_.encrypted),
     car = car.map(_.encrypted),
@@ -141,7 +141,7 @@ case class EncryptedCarVanFuelModel(sectionQuestion: Option[EncryptedValue] = No
                                     mileageQuestion: Option[EncryptedValue] = None,
                                     mileage: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): CarVanFuelModel = CarVanFuelModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): CarVanFuelModel = CarVanFuelModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     carQuestion = carQuestion.map(_.decrypted[Boolean]),
     car = car.map(_.decrypted[BigDecimal]),

@@ -139,7 +139,7 @@
 
     @govUkButton(Button(
         attributes = Map("id" -> "returnToOverviewPageBtn"),
-        preventDoubleClick = true,
+        preventDoubleClick = Some(true),
         content = Text(messages("common.return.overview.buttonText")),
         classes = "govuk-button govuk-!-margin-top-6",
         href = Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))

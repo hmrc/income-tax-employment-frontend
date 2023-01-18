@@ -34,7 +34,7 @@ class ExpensesUserDataSpec extends UnitTest
     "return EncryptedExpensesUserData instance" in {
       val underTest = anExpensesUserData.copy(expensesCya = expensesCya)
 
-      (expensesCya.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesCYAModel)
+      (expensesCya.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesCYAModel)
 
       val encryptedResponse = underTest.encrypted
 
@@ -62,7 +62,7 @@ class ExpensesUserDataSpec extends UnitTest
         lastUpdated = anExpensesUserData.lastUpdated,
       )
 
-      (encryptedExpensesCYAModel.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesCya)
+      (encryptedExpensesCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesCya)
 
       val decryptedResult = underTest.decrypted
 

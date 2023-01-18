@@ -16,9 +16,8 @@
 
 package support.builders.models.employment
 
-import EmploymentExpensesBuilder.anEmploymentExpenses
-import EmploymentSourceBuilder.anEmploymentSource
 import models.employment.AllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 
 object AllEmploymentDataBuilder {

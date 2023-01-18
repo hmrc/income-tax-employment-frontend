@@ -38,7 +38,7 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     employmentDetails.totalTaxToDate,
     isUsingCustomerData)
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
     employmentDetails = employmentDetails.encrypted,
     employmentBenefits = employmentBenefits.map(_.encrypted),
     studentLoansCYAModel = studentLoans.map(_.encrypted)
@@ -59,7 +59,7 @@ case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDet
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
                                        studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentCYAModel = EmploymentCYAModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails.decrypted,
     employmentBenefits = employmentBenefits.map(_.decrypted),
     studentLoans = studentLoansCYAModel.map(_.decrypted)
