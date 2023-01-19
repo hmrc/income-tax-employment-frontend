@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package filters
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import com.google.inject.Inject
 import play.api.http.HeaderNames
 import play.api.mvc._
 import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
-import play.api.mvc.SessionCookieBaker
-import play.api.mvc.CookieHeaderEncoding
+
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionIdFilter(override val mat: Materializer,
@@ -35,7 +33,7 @@ class SessionIdFilter(override val mat: Materializer,
                      ) extends Filter {
 
   @Inject
-  def this(mat: Materializer, ec: ExecutionContext, cb: SessionCookieBaker, cookieHeaderEncoding: CookieHeaderEncoding) {
+  def this(mat: Materializer, ec: ExecutionContext, cb: SessionCookieBaker, cookieHeaderEncoding: CookieHeaderEncoding) = {
     this(mat, UUID.randomUUID(), ec, cb, cookieHeaderEncoding)
   }
 
@@ -47,7 +45,7 @@ class SessionIdFilter(override val mat: Materializer,
 
       val cookies: String = {
         val session: Session = request.session + (SessionKeys.sessionId -> sessionId)
-        val cookies: Traversable[Cookie] = request.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
+        val cookies = request.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
         cookieHeaderEncoding.encodeCookieHeader(cookies.toSeq)
       }
 

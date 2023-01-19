@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ case class EmploymentDetails(employerName: String,
       cessationSectionFinished
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentDetails = EncryptedEmploymentDetails(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentDetails = EncryptedEmploymentDetails(
     employerName = employerName.encrypted,
     employerRef = employerRef.map(_.encrypted),
     startDate = startDate.map(_.encrypted),
@@ -88,7 +88,7 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
                                       totalTaxToDate: Option[EncryptedValue] = None,
                                       currentDataIsHmrcHeld: EncryptedValue) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentDetails = EmploymentDetails(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentDetails = EmploymentDetails(
     employerName = employerName.decrypted[String],
     employerRef = employerRef.map(_.decrypted[String]),
     startDate = startDate.map(_.decrypted[String]),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,13 +48,13 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
       "submission returns a 204" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NO_CONTENT, headers)
 
-        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right(())
       }
 
       "submission returns a 404" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NOT_FOUND, headers)
 
-        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino), Duration.Inf) shouldBe Right(())
       }
     }
 

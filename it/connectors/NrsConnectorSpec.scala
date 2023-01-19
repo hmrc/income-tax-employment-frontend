@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class NrsConnectorSpec extends ConnectorIntegrationTest {
     "return an OK response when successful" in {
       stubPost(url, OK, "{}")
 
-      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Right()
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Right(())
     }
 
     "return an InternalServerError" in {

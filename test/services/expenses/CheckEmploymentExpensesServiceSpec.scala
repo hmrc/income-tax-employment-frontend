@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
         mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
       )))
 
-      await(underTest.performSubmitNrsPayload(model, prior = None, aUser)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = None, aUser)) shouldBe Right(())
     }
 
     "send the event from the model when it's an amend" in {
@@ -231,7 +231,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
           )))
 
 
-      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses), aUser)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses), aUser)) shouldBe Right(())
 
     }
   }

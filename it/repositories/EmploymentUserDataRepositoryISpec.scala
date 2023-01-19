@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -201,7 +201,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       count mustBe 1
 
       private val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890")))
-      res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
+      res2.left.toOption.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
 
@@ -265,8 +265,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       private val findResult = await(employmentRepo.find(data.taxYear, data.employmentId, authRequestOne.user))
 
-      findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
-      findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+      findResult.toOption.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
+      findResult.toOption.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
     }
 
     "find a document in collection with all fields present" in new EmptyDatabase {
@@ -277,7 +277,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
         await(employmentRepo.find(employmentUserDataFull.taxYear, employmentUserDataFull.employmentId, authRequestOne.user))
       }
 
-      findResult mustBe Right(Some(employmentUserDataFull.copy(lastUpdated = findResult.right.get.get.lastUpdated)))
+      findResult mustBe Right(Some(employmentUserDataFull.copy(lastUpdated = findResult.toOption.get.get.lastUpdated)))
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {

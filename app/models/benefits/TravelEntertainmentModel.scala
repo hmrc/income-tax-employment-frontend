@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedTravelEntertainmentModel = EncryptedTravelEntertainmentModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedTravelEntertainmentModel = EncryptedTravelEntertainmentModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.encrypted),
     travelAndSubsistence = travelAndSubsistence.map(_.encrypted),
@@ -100,7 +100,7 @@ case class EncryptedTravelEntertainmentModel(sectionQuestion: Option[EncryptedVa
                                              entertainingQuestion: Option[EncryptedValue] = None,
                                              entertaining: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher,
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
                   textAndKey: TextAndKey): TravelEntertainmentModel = TravelEntertainmentModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.decrypted[Boolean]),

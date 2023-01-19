@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import views.html.errors.YouNeedAgentServicesView
 class YouNeedAgentServicesControllerSpec extends ControllerUnitTest with DefaultAwaitTimeout {
 
   private val pageView = app.injector.instanceOf[YouNeedAgentServicesView]
-  private val controller = new YouNeedAgentServicesController(pageView)(stubMessagesControllerComponents, appConfig)
+  private val controller = new YouNeedAgentServicesController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

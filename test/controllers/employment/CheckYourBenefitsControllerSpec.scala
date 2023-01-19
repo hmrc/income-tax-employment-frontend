@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
     new DefaultRedirectService(),
     new InYearUtil(),
     mockErrorHandler
-  )(stubMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), mockAuthorisedAction)
+  )(stubMessagesControllerComponents(), ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, slEnabled = slEnabled), mockAuthorisedAction)
 
   private val nino = "AA123456A"
   private val employmentId = "223AB12399"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig, authService: AuthService)
 
     implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authService.authorised.retrieve(affinityGroup) {
+    authService.authorised().retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)
       case Some(affinityGroup) => individualAuthentication(block, affinityGroup)(request, headerCarrier)
       case _ => logger.info(s"[AuthorisedAction][invokeBlock] - User failed to authenticate")
@@ -80,7 +80,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig, authService: AuthService)
   def individualAuthentication[A](block: AuthorisationRequest[A] => Future[Result], affinityGroup: AffinityGroup)
                                  (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
 
-    authService.authorised.retrieve(allEnrolments and confidenceLevel) {
+    authService.authorised().retrieve(allEnrolments and confidenceLevel) {
 
       case enrolments ~ userConfidence if userConfidence.level >= minimumConfidenceLevel =>
         val optionalMtdItId: Option[String] = enrolmentGetIdentifierValue(EnrolmentKeys.Individual, EnrolmentIdentifiers.individualId, enrolments)

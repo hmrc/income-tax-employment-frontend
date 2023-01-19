@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import utils.InYearUtil
 import views.html.studentLoans.StudentLoansQuestionView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents,
                                                view: StudentLoansQuestionView,
@@ -37,7 +37,7 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
                                                authAction: AuthorisedAction,
                                                inYearAction: InYearUtil,
                                                errorHandler: ErrorHandler)
-                                              (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+                                              (implicit ec: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import views.html.details.EmployerPayAmountView
 
-class qEmployerPayAmountViewSpec extends ViewUnitTest {
+class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   private val employerName: String = "maggie"
   private val amount: BigDecimal = 100

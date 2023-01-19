@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class EmploymentTaxControllerSpec extends ControllerUnitTest
   implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 
   private lazy val underTest = new EmploymentTaxController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     mockAuthorisedAction,
     view,
     mockEmploymentSessionService,

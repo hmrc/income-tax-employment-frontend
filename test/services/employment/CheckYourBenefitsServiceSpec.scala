@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest
           nonCash = aBenefits.nonCash
         )))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)(HeaderCarrier())) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)(HeaderCarrier())) shouldBe Right(())
 
     }
 
@@ -268,7 +268,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest
         )
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))(HeaderCarrier())) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))(HeaderCarrier())) shouldBe Right(())
     }
   }
 

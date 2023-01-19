@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
     mockCheckEmploymentDetailsService,
     new DefaultRedirectService(),
     mockErrorHandler
-  )(stubMessagesControllerComponents, ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), mockAuthorisedAction)
+  )(stubMessagesControllerComponents(), ec, new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), mockAuthorisedAction)
 
   private val nino = "AA123456A"
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

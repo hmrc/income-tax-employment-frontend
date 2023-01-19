@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,9 @@ class EmploymentCYAModelSpec extends UnitTest
         studentLoans = Some(studentLoans)
       )
 
-      (employmentDetails.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentDetails)
-      (employmentBenefits.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedBenefitsViewModel)
-      (studentLoans.encrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedStudentLoansCYAModel)
+      (employmentDetails.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentDetails)
+      (employmentBenefits.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedBenefitsViewModel)
+      (studentLoans.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedStudentLoansCYAModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -65,9 +65,9 @@ class EmploymentCYAModelSpec extends UnitTest
         studentLoansCYAModel = Some(encryptedStudentLoansCYAModel)
       )
 
-      (encryptedEmploymentDetails.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentDetails)
-      (encryptedBenefitsViewModel.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentBenefits)
-      (encryptedStudentLoansCYAModel.decrypted()(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(studentLoans)
+      (encryptedEmploymentDetails.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentDetails)
+      (encryptedBenefitsViewModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentBenefits)
+      (encryptedStudentLoansCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(studentLoans)
 
       val decryptedResult = underTest.decrypted
 

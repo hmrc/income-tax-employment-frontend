@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ trait MockDeleteOrIgnoreExpensesService extends MockFactory {
     AllEmploymentData, Int, HeaderCarrier, Future[Either[APIErrorModel, Unit]]] = {
       (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: User, _: AllEmploymentData, _: Int)(_:HeaderCarrier))
         .expects(user.user, employmentData, taxYear, *)
-        .returns(Future.successful(Right()))
+        .returns(Future.successful(Right(())))
         .anyNumberOfTimes()
   }
 }

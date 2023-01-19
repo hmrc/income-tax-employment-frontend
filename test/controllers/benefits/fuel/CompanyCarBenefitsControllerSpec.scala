@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ class CompanyCarBenefitsControllerSpec extends ControllerUnitTest
     new DefaultRedirectService(),
     mockErrorHandler,
     new FuelFormsProvider
-  )(stubMessagesControllerComponents, new MockAppConfig().config())
+  )(stubMessagesControllerComponents(), new MockAppConfig().config())
 
   ".show" should {
     "get user session data and return the result from the given execution block" in {

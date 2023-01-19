@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,18 +128,18 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
-  protected val redirectService = RedirectServiceStub
+  protected val redirectService: RedirectServiceStub.type = RedirectServiceStub
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config())
     //    .overrides(bind[RedirectService].toInstance(redirectService))
-    .build
+    .build()
 
   lazy val appWithFakeExternalCall: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(externalConfig)
-    .build
+    .build()
 
   lazy val appWithInvalidEncryptionKey: Application = GuiceApplicationBuilder()
     .configure(configWithInvalidEncryptionKey)

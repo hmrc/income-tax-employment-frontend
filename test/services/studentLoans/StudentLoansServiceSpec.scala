@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,9 @@ import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserD
 import support.mocks.MockEmploymentSessionService
 import support.{TaxYearProvider, UnitTest}
 
-import scala.concurrent.ExecutionContext
-
 class StudentLoansServiceSpec extends UnitTest
   with TaxYearProvider
   with MockEmploymentSessionService {
-
-  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val employmentId = "some-employment-id"
 

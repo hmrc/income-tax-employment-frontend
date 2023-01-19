@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class UnauthorisedUserErrorControllerSpec extends ControllerUnitTest with Defaul
 
   private val pageView: UnauthorisedUserErrorPageView = app.injector.instanceOf[UnauthorisedUserErrorPageView]
 
-  lazy val underTest = new UnauthorisedUserErrorController(pageView)(stubMessagesControllerComponents, appConfig)
+  lazy val underTest = new UnauthorisedUserErrorController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   "The show method" should {
     "return an OK response when .show() is called" in {

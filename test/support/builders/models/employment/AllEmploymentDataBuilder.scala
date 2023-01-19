@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package support.builders.models.employment
 
-import EmploymentExpensesBuilder.anEmploymentExpenses
-import EmploymentSourceBuilder.anEmploymentSource
 import models.employment.AllEmploymentData
+import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 
 object AllEmploymentDataBuilder {

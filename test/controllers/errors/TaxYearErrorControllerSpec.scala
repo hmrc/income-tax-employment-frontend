@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ class TaxYearErrorControllerSpec extends ControllerUnitTest with DefaultAwaitTim
 
   private val pageView = app.injector.instanceOf[TaxYearErrorTemplate]
 
-  private val underTest = new TaxYearErrorController(pageView)(stubMessagesControllerComponents, appConfig)
+  private val underTest = new TaxYearErrorController(pageView)(stubMessagesControllerComponents(), appConfig)
 
   ".show()" should {
     "return an OK response .show() is called" in {

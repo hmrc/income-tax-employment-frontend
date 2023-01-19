@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedUtilitiesAndServicesModel = EncryptedUtilitiesAndServicesModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedUtilitiesAndServicesModel = EncryptedUtilitiesAndServicesModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     telephoneQuestion = telephoneQuestion.map(_.encrypted),
     telephone = telephone.map(_.encrypted),
@@ -117,7 +117,7 @@ case class EncryptedUtilitiesAndServicesModel(sectionQuestion: Option[EncryptedV
                                               serviceQuestion: Option[EncryptedValue] = None,
                                               service: Option[EncryptedValue] = None) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): UtilitiesAndServicesModel = UtilitiesAndServicesModel(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): UtilitiesAndServicesModel = UtilitiesAndServicesModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     telephoneQuestion = telephoneQuestion.map(_.decrypted[Boolean]),
     telephone = telephone.map(_.decrypted[BigDecimal]),

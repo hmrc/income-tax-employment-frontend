@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package controllers.details
 
 import forms.details.EmploymentDatesForm
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, employmentDatesUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}

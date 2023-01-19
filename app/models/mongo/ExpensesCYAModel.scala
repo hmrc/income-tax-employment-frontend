@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import utils.SecureGCMCipher
 
 case class ExpensesCYAModel(expenses: ExpensesViewModel) {
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
     expenses = expenses.encrypted
   )
 }
@@ -36,7 +36,7 @@ object ExpensesCYAModel {
 
 case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
     ExpensesCYAModel(expenses = expenses.decrypted)
 }
 

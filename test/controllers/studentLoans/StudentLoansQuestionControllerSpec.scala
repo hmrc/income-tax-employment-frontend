@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ class StudentLoansQuestionControllerSpec extends ControllerUnitTest
     .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
     .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
 
-  private def controller(slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansQuestionController(
-    stubMessagesControllerComponents,
+  private def controller(slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean) = new StudentLoansQuestionController(
+    stubMessagesControllerComponents(),
     view,
     mockEmploymentSessionService,
     mockAuthorisedAction,
     new InYearUtil(),
-    mockErrorHandler)(appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
+    mockErrorHandler)(ec, appConfig = new MockAppConfig().config(slEnabled = slEnabled, isEmploymentEOYEnabled = isEmploymentEOYEnabled,
     taxYearErrorEnabled = taxYearErrorFeature))
 
   ".show" should {

@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@
         <div class="govuk-button-group">
             @govUkButton(Button(
                 attributes = Map("data-module" -> "govuk-button", "id" -> "remove-employer-button-id"),
-                preventDoubleClick = true,
+                preventDoubleClick = Some(true),
                 content = Text(messages("employment.removeEmployment.button")),
                 classes = "govuk-button--warning"
             ))

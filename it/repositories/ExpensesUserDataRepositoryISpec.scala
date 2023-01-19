@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right(())
       count mustBe 1
 
       val clearAttempt: Boolean = await(repo.clear(taxYear, authorisationRequestOne.user))
@@ -155,29 +155,29 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       count mustBe 0
 
       private val res = await(repo.createOrUpdate(expensesUserDataOne))
-      res mustBe Right()
+      res mustBe Right(())
       count mustBe 1
 
       private val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890")))
-      res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
+      res2.left.toOption.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right(())
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
       private val createAttempt = await(repo.createOrUpdate(expensesUserDataOne))
-      createAttempt mustBe Right()
+      createAttempt mustBe Right(())
       count mustBe 1
 
       private val updatedEmploymentDetails = expensesUserDataOne.expensesCya.expenses.copy(jobExpenses = Some(34234.00))
       private val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
       private val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
 
-      await(repo.createOrUpdate(updatedEmploymentUserData)) mustBe Right()
+      await(repo.createOrUpdate(updatedEmploymentUserData)) mustBe Right(())
       count mustBe 1
     }
   }
@@ -187,13 +187,13 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       private val now = DateTime.now(DateTimeZone.UTC)
       private val data = expensesUserDataOne.copy(lastUpdated = now)
 
-      await(repo.createOrUpdate(data)) mustBe Right()
+      await(repo.createOrUpdate(data)) mustBe Right(())
       count mustBe 1
 
       private val findResult = await(repo.find(data.taxYear, authorisationRequestOne.user))
 
-      findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
-      findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+      findResult.toOption.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
+      findResult.toOption.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
@@ -204,7 +204,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
       implicit val textAndKey: TextAndKey = TextAndKey(expensesUserDataOne.mtdItId, appConfig.encryptionKey)
-      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right(())
       count mustBe 1
 
       private val encryptedExpensesUserData: EncryptedExpensesUserData = expensesUserDataOne.encrypted

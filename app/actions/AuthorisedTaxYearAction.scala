@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import config.AppConfig
 import models.AuthorisationRequest
 import play.api.mvc.{ActionBuilder, AnyContent}
 
+import scala.concurrent.ExecutionContext
+
 // TODO: This is obsolete, further and is not tested. Should be deleted
 object AuthorisedTaxYearAction {
   def authorisedTaxYearAction(taxYear: Int)(
-    implicit authAction: AuthorisedAction, appConfig: AppConfig
-  ): ActionBuilder[AuthorisationRequest, AnyContent] = authAction andThen taxYearAction(taxYear)(appConfig)
+    implicit authAction: AuthorisedAction, appConfig: AppConfig, ec: ExecutionContext
+  ): ActionBuilder[AuthorisationRequest, AnyContent] = authAction andThen taxYearAction(taxYear)
 }

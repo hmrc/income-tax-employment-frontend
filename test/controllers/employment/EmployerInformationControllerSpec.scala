@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
     view,
     new InYearUtil(),
     mockEmploymentSessionService,
-  )(stubMessagesControllerComponents, appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   private val nino = "AA123456A"
   private val employmentId: String = "223/AB12399"

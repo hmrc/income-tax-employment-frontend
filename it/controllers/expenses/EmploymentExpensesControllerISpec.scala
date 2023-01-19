@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -162,8 +161,6 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         }
 
         lazy val document = Jsoup.parse(result.body)
-
-        implicit def documentSupplier: () => Document = () => document
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER

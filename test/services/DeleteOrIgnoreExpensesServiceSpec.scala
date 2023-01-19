@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
           val response = underTest.deleteOrIgnoreExpenses(aUser, data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Right()
+          await(response) shouldBe Right(())
         }
       }
 
@@ -164,7 +164,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
           val response = underTest.deleteOrIgnoreExpenses(aUser, data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Right()
+          await(response) shouldBe Right(())
         }
       }
 
@@ -190,7 +190,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
           val response = underTest.deleteOrIgnoreExpenses(aUser, data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)
 
-          await(response) shouldBe Right()
+          await(response) shouldBe Right(())
         }
       }
 
@@ -216,7 +216,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
           val response = underTest.deleteOrIgnoreExpenses(aUser, data(None, Some(customerExpenses)), taxYear)
 
-          await(response) shouldBe Right()
+          await(response) shouldBe Right(())
         }
       }
     }
@@ -226,7 +226,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
         val response = underTest.deleteOrIgnoreExpenses(aUser, data(None, None), taxYear)
 
-        await(response) shouldBe Right()
+        await(response) shouldBe Right(())
       }
 
       "the connector throws a Left" in {
@@ -294,7 +294,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       ))
       ).toNrsPayloadModel))
 
-      await(underTest.performSubmitNrsPayload(aUser, priorData)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, priorData)) shouldBe Right(())
     }
   }
 }

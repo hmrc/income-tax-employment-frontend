@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ case class ExpensesUserData(sessionId: String,
                             expensesCya: ExpensesCYAModel,
                             lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def encrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
+  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -58,7 +58,7 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      expensesCya: EncryptedExpensesCYAModel,
                                      lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def decrypted()(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
+  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,

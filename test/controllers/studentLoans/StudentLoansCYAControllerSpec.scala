@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
   private lazy val view: StudentLoansCYAView = app.injector.instanceOf[StudentLoansCYAView]
 
   private def controller(mimic: Boolean = false, slEnabled: Boolean = true, isEmploymentEOYEnabled: Boolean = true, taxYearErrorFeature: Boolean = true) = new StudentLoansCYAController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     view,
     mockStudentLoansCYAService,
     mockEmploymentSessionService,

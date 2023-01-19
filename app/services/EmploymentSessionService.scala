@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -413,7 +413,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
-        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${request.user.sessionId}")
+        if (optionalCya.toOption.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${request.user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
@@ -439,7 +439,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
-        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${request.user.sessionId}")
+        if (optionalCya.toOption.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${request.user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
@@ -521,7 +521,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optExpensesUserData.isRight) {
-        if (optExpensesUserData.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${request.user.sessionId}")
+        if (optExpensesUserData.toOption.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${request.user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)

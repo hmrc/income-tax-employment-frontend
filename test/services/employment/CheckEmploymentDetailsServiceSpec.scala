@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,7 +274,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq()
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right(())
     }
     "send the events from the model when it's a create and theres existing data" in {
 
@@ -347,7 +347,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       ), Seq(DecodedPriorEmploymentInfo("Mishima Zaibatsu", Some("223/AB12399")))
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
     "send the events from the model when it's an amend" in {
 
@@ -430,7 +430,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
       ))
 
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
   }
 }
