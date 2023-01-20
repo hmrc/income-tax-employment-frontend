@@ -84,7 +84,7 @@
             val startedDateString = if (employmentSource.startDate.isEmpty) messages("common.started.date.missing")
                                     else if (LocalDate.parse(employmentSource.startDate.get).isAfter(LocalDate.parse((taxYear - 1).toString + "-04-05"))) messages("common.started.date", translatedDateFormatter(LocalDate.parse(employmentSource.startDate.get)))
                                     else messages("common.started.before", (taxYear - 1).toString)
-            val employerDetails = employmentSource.employerName + """<br/>""" + s"""<span class="govuk-hint govuk-!-font-size-16">${startedDateString}</span>"""
+            val employerDetails = employmentSource.employerName + s"""<p class="govuk-hint govuk-!-font-size-16 govuk-!-margin-0">${startedDateString}</p>"""
             val message = if (isInYear) messages("common.view") else messages("common.change")
             val actions = if (isInYear) Seq((EmployerInformationController.show(taxYear, employmentSource.employmentId), message, Some(message + s" ${employmentSource.employerName}")))
                           else Seq(
