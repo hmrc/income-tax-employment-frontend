@@ -191,7 +191,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
@@ -212,7 +212,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(dayInputName, Selectors.daySelector, employmentStartDay)
@@ -224,7 +224,6 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
       }
 
       "render the 'start date' page with an error" when {
-
         "the day is empty" which {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
@@ -241,7 +240,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
@@ -271,7 +270,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, employmentStartDay)
@@ -301,7 +300,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
@@ -331,7 +330,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
@@ -361,7 +360,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
@@ -391,7 +390,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
@@ -421,7 +420,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
@@ -451,7 +450,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "abc")
@@ -481,7 +480,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
@@ -511,7 +510,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
@@ -541,7 +540,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
@@ -571,7 +570,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "1")
@@ -601,7 +600,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "06")
@@ -632,7 +631,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
+          fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, nowDatePlusOne.getDayOfMonth.toString)

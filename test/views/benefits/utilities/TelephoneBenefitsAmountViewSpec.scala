@@ -25,7 +25,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import views.html.benefits.utilities.TelephoneEmploymentBenefitsAmountView
+import views.html.benefits.utilities.TelephoneBenefitsAmountView
 
 class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
 
@@ -115,7 +115,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
 
   private def form(isAgent: Boolean): Form[BigDecimal] = new UtilitiesFormsProvider().telephoneBenefitsAmountForm(isAgent)
 
-  private lazy val underTest = inject[TelephoneEmploymentBenefitsAmountView]
+  private lazy val underTest = inject[TelephoneBenefitsAmountView]
 
   userScenarios.foreach { userScenario =>
     import Selectors._
@@ -131,7 +131,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         elementsNotOnPageCheck(contentSelector)
         textOnPageCheck(amountHint, hintTextSelector)
@@ -151,7 +151,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -170,7 +170,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -192,7 +192,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -214,7 +214,7 @@ class TelephoneBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)

@@ -120,8 +120,8 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -132,7 +132,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(true),taxYearEOY, employmentId, employerName)
+        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(true), taxYearEOY, employmentId, employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -142,7 +142,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
@@ -154,7 +154,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(false),taxYearEOY, employmentId, employerName)
+        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(false), taxYearEOY, employmentId, employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -164,7 +164,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
@@ -176,7 +176,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).bind(Map("value" -> "")),taxYearEOY, employmentId, employerName)
+        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).bind(Map("value" -> "")), taxYearEOY, employmentId, employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -186,7 +186,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)

@@ -32,14 +32,14 @@ import services.benefits.UtilitiesService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
-import views.html.benefits.utilities.TelephoneEmploymentBenefitsAmountView
+import views.html.benefits.utilities.TelephoneBenefitsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TelephoneBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                   inYearAction: InYearUtil,
-                                                  pageView: TelephoneEmploymentBenefitsAmountView,
+                                                  pageView: TelephoneBenefitsAmountView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   utilitiesService: UtilitiesService,
                                                   redirectService: RedirectService,

@@ -118,7 +118,7 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -136,7 +136,7 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -154,7 +154,7 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = true)
@@ -172,7 +172,7 @@ class CompanyVanFuelBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.yesSelector)
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))

@@ -118,7 +118,7 @@ class OtherBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
@@ -136,7 +136,7 @@ class OtherBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
@@ -154,7 +154,7 @@ class OtherBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
@@ -172,7 +172,7 @@ class OtherBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
