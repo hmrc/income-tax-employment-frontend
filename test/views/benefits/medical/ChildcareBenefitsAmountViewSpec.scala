@@ -137,7 +137,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         elementNotOnPageCheck(optionalParagraphTextSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
@@ -157,7 +157,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(expectedHintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
@@ -176,7 +176,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -198,7 +198,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -220,7 +220,7 @@ class ChildcareBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)

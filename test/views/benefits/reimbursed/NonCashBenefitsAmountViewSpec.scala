@@ -133,7 +133,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         elementNotOnPageCheck(ifItWasNotTextSelector)
         textOnPageCheck(expectedHintText, hintTextSelector)
@@ -154,7 +154,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -174,7 +174,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -197,7 +197,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
@@ -220,7 +220,7 @@ class NonCashBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)

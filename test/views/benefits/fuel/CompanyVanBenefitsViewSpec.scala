@@ -121,7 +121,7 @@ class CompanyVanBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -139,7 +139,7 @@ class CompanyVanBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -157,7 +157,7 @@ class CompanyVanBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedNoEntryErrorMessage, yesRadioButtonSelector)
 

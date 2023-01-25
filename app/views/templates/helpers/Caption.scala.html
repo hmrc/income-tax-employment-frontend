@@ -14,11 +14,8 @@
  * limitations under the License.
  *@
 
-@this(caption: Caption)
+@this()
 
-@(heading: String, captionOption: Option[String], extraClasses: String = "", size: String = "l")(implicit messages: Messages)
+@(caption: String, size: String = "l")(implicit messages: Messages)
 
-<h1 class="govuk-heading-@{size} @extraClasses">
-    @captionOption.map{ captionText => @caption(captionText, size) }
-    @messages(heading)
-</h1>
+<span class="govuk-caption-@{size} hmrc-caption-xl">@messages(caption)</span>

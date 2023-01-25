@@ -116,7 +116,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(userScenario.commonExpectedResults.radioTextYes, radioNumber = 1, checked = false)
         radioButtonCheck(userScenario.commonExpectedResults.radioTextNo, radioNumber = 2, checked = false)
@@ -134,7 +134,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.commonExpectedResults.errorText + userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.yesSelector)
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))

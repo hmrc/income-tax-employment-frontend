@@ -131,7 +131,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         elementsNotOnPageCheck(contentSelector)
         textOnPageCheck(amountHint, hintTextSelector)
@@ -151,7 +151,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -170,7 +170,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
         textOnPageCheck(amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -190,7 +190,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -212,7 +212,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
@@ -235,7 +235,7 @@ class OtherServicesBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        labelH1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption)
         textOnPageCheck(userScenario.commonExpectedResults.amountHint, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)

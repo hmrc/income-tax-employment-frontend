@@ -16,14 +16,14 @@
 
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Caption
 @import views.html.templates.helpers.ErrorSummary
-@import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.InputRadio
 @import controllers.tailorings.routes.EmploymentGatewayController
 
 @this(
     layout: Layout,
-    heading: Heading,
+    caption: Caption,
     errorSummary: ErrorSummary,
     formWithCsrf: FormWithCSRF,
     inputRadio: InputRadio,
@@ -34,20 +34,17 @@
 
 @titleForUse = @{messages(s"tailoring.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{titleForUse}
-
-@hasFormErrors = @{form.hasErrors}
-
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 
-    @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-4")
+    @caption(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString))
 
     @formWithCsrf(action = EmploymentGatewayController.submit(taxYear)) {
         @inputRadio(
             form = form,
-            legendHeading = Some(Html(headingForUse)),
+            legendAsHeading = true,
+            legendHeading = Some(Html(titleForUse)),
             legendHidden = true,
             inline = true
         )
