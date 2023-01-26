@@ -16,8 +16,8 @@
 
 package models.expenses
 
-import play.api.libs.json.{Json, OFormat}
-import utils.EncryptedValue
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
 
 case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
                     jobExpenses: Option[BigDecimal] = None,
@@ -82,5 +82,7 @@ case class EncryptedExpenses(businessTravelCosts: Option[EncryptedValue] = None,
                              mileageAllowanceRelief: Option[EncryptedValue] = None)
 
 object EncryptedExpenses {
-  implicit val format: OFormat[EncryptedExpenses] = Json.format[EncryptedExpenses]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val format: Format[EncryptedExpenses] = Json.format[EncryptedExpenses]
 }

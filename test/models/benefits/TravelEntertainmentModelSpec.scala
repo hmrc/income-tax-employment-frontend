@@ -18,12 +18,11 @@ package models.benefits
 
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
 import support.{TaxYearProvider, UnitTest}
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class TravelEntertainmentModelSpec extends UnitTest
   with TaxYearProvider
@@ -31,8 +30,8 @@ class TravelEntertainmentModelSpec extends UnitTest
 
   private val employmentId = "some-employment-id"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedTravelAndSubsistenceQuestion = EncryptedValue("encryptedTravelAndSubsistenceQuestion", "some-nonce")
@@ -169,13 +168,13 @@ class TravelEntertainmentModelSpec extends UnitTest
     "return EncryptedTravelEntertainmentModel instance" in {
       val underTest = aTravelEntertainmentModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.travelAndSubsistenceQuestion.get, textAndKey).returning(encryptedTravelAndSubsistenceQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.travelAndSubsistence.get, textAndKey).returning(encryptedTravelAndSubsistence)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.personalIncidentalExpensesQuestion.get, textAndKey).returning(encryptedPersonalIncidentalExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.personalIncidentalExpenses.get, textAndKey).returning(encryptedPersonalIncidentalExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.entertainingQuestion.get, textAndKey).returning(encryptedEntertainingQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.entertaining.get, textAndKey).returning(encryptedEntertaining)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.travelAndSubsistenceQuestion.get.toString, associatedText).returning(encryptedTravelAndSubsistenceQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.travelAndSubsistence.get.toString, associatedText).returning(encryptedTravelAndSubsistence)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.personalIncidentalExpensesQuestion.get.toString, associatedText).returning(encryptedPersonalIncidentalExpensesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.personalIncidentalExpenses.get.toString, associatedText).returning(encryptedPersonalIncidentalExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.entertainingQuestion.get.toString, associatedText).returning(encryptedEntertainingQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.entertaining.get.toString, associatedText).returning(encryptedEntertaining)
 
       underTest.encrypted shouldBe EncryptedTravelEntertainmentModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -201,21 +200,21 @@ class TravelEntertainmentModelSpec extends UnitTest
         entertaining = Some(encryptedEntertaining)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedTravelAndSubsistenceQuestion.value, encryptedTravelAndSubsistenceQuestion.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.travelAndSubsistenceQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedTravelAndSubsistence.value, encryptedTravelAndSubsistence.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.travelAndSubsistence.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedPersonalIncidentalExpensesQuestion.value, encryptedPersonalIncidentalExpensesQuestion.nonce, textAndKey, *)
-        .returning(value = aTravelEntertainmentModel.personalIncidentalExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedPersonalIncidentalExpenses.value, encryptedPersonalIncidentalExpenses.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.personalIncidentalExpenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedEntertainingQuestion.value, encryptedEntertainingQuestion.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.entertainingQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedEntertaining.value, encryptedEntertaining.nonce, textAndKey, *).returning(value = aTravelEntertainmentModel.entertaining.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = aTravelEntertainmentModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTravelAndSubsistenceQuestion, associatedText).returning(value = aTravelEntertainmentModel.travelAndSubsistenceQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTravelAndSubsistence, associatedText).returning(value = aTravelEntertainmentModel.travelAndSubsistence.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPersonalIncidentalExpensesQuestion, associatedText)
+        .returning(value = aTravelEntertainmentModel.personalIncidentalExpensesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPersonalIncidentalExpenses, associatedText).returning(value = aTravelEntertainmentModel.personalIncidentalExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEntertainingQuestion, associatedText).returning(value = aTravelEntertainmentModel.entertainingQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEntertaining, associatedText).returning(value = aTravelEntertainmentModel.entertaining.get.toString())
 
       underTest.decrypted shouldBe aTravelEntertainmentModel
     }

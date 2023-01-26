@@ -17,14 +17,11 @@
 package models.benefits
 
 import controllers.benefits.fuel.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
                            carQuestion: Option[Boolean] = None,
@@ -108,7 +105,7 @@ case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedCarVanFuelModel = EncryptedCarVanFuelModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedCarVanFuelModel = EncryptedCarVanFuelModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     carQuestion = carQuestion.map(_.encrypted),
     car = car.map(_.encrypted),
@@ -141,7 +138,7 @@ case class EncryptedCarVanFuelModel(sectionQuestion: Option[EncryptedValue] = No
                                     mileageQuestion: Option[EncryptedValue] = None,
                                     mileage: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): CarVanFuelModel = CarVanFuelModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): CarVanFuelModel = CarVanFuelModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     carQuestion = carQuestion.map(_.decrypted[Boolean]),
     car = car.map(_.decrypted[BigDecimal]),
@@ -157,5 +154,7 @@ case class EncryptedCarVanFuelModel(sectionQuestion: Option[EncryptedValue] = No
 }
 
 object EncryptedCarVanFuelModel {
-  implicit val formats: OFormat[EncryptedCarVanFuelModel] = Json.format[EncryptedCarVanFuelModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedCarVanFuelModel] = Json.format[EncryptedCarVanFuelModel]
 }

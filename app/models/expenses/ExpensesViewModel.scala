@@ -17,15 +17,12 @@
 package models.expenses
 
 import controllers.expenses.routes._
-import models.mongo.TextAndKey
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.{OFormat, __}
+import play.api.libs.json.{Format, Json, OFormat, __}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor, stringDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor, stringEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
                              jobExpensesQuestion: Option[Boolean] = None,
@@ -102,7 +99,7 @@ case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesViewModel = EncryptedExpensesViewModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedExpensesViewModel = EncryptedExpensesViewModel(
     claimingEmploymentExpenses = claimingEmploymentExpenses.encrypted,
     jobExpensesQuestion = jobExpensesQuestion.map(_.encrypted),
     jobExpenses = jobExpenses.map(_.encrypted),
@@ -199,7 +196,7 @@ case class EncryptedExpensesViewModel(claimingEmploymentExpenses: EncryptedValue
                                       submittedOn: Option[EncryptedValue],
                                       isUsingCustomerData: EncryptedValue) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesViewModel = ExpensesViewModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): ExpensesViewModel = ExpensesViewModel(
     claimingEmploymentExpenses = claimingEmploymentExpenses.decrypted[Boolean],
     jobExpensesQuestion = jobExpensesQuestion.map(_.decrypted[Boolean]),
     jobExpenses = jobExpenses.map(_.decrypted[BigDecimal]),
@@ -219,6 +216,8 @@ case class EncryptedExpensesViewModel(claimingEmploymentExpenses: EncryptedValue
 }
 
 object EncryptedExpensesViewModel {
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
 
   val firstSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
     Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (
@@ -243,7 +242,7 @@ object EncryptedExpensesViewModel {
       (__ \ "claimEmploymentExpenses").format[EncryptedValue]
     ).tupled
 
-  implicit val format: OFormat[EncryptedExpensesViewModel] = {
+  implicit val format: Format[EncryptedExpensesViewModel] = {
     (firstSetOfFields and secondSetOfFields).apply({
       case (
         (businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,

@@ -19,8 +19,9 @@ package models.mongo
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment.{EmploymentDetailsViewModel, EmploymentSource, EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
-import play.api.libs.json.{Json, OFormat}
-import utils.SecureGCMCipher
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
@@ -38,7 +39,7 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     employmentDetails.totalTaxToDate,
     isUsingCustomerData)
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
     employmentDetails = employmentDetails.encrypted,
     employmentBenefits = employmentBenefits.map(_.encrypted),
     studentLoansCYAModel = studentLoans.map(_.encrypted)
@@ -59,7 +60,7 @@ case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDet
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
                                        studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentCYAModel = EmploymentCYAModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails.decrypted,
     employmentBenefits = employmentBenefits.map(_.decrypted),
     studentLoans = studentLoansCYAModel.map(_.decrypted)
@@ -67,5 +68,7 @@ case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDet
 }
 
 object EncryptedEmploymentCYAModel {
-  implicit val format: OFormat[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val format: Format[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]
 }

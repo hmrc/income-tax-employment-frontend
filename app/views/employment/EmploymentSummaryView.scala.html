@@ -50,6 +50,27 @@
     <p class="govuk-notification-banner__heading">@messages(s"employment.employmentSummary.addEmployerOrRemoveExpenses")</p>
 }
 
+@actionsHtml(
+             isInYear: Boolean,
+             hiddenText: String,
+             message: String,
+             viewRoute: Call,
+             removeRoute: Call
+             ) = {
+    @if(isInYear) {
+        <a class='govuk-link' href=@viewRoute>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
+    } else {
+        <ul class='govuk-summary-list__actions-list'>
+            <li class='govuk-summary-list__actions-list-item'>
+                <a class='govuk-link' href=@viewRoute>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
+            </li>
+            <li class='govuk-summary-list__actions-list-item'>
+                <a class='govuk-link' href=@removeRoute>@messages("common.remove")<span class='govuk-visually-hidden'>@{" "} @{messages("common.remove")} @{s" $hiddenText"}</span></a>
+            </li>
+        </ul>
+    }
+}
+
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = isAgent) {
 
     @if(expensesExist && employments.isEmpty && !isInYear){
@@ -86,18 +107,24 @@
                                     else messages("common.started.before", (taxYear - 1).toString)
             val employerDetails = employmentSource.employerName + s"""<p class="govuk-hint govuk-!-font-size-16 govuk-!-margin-0">${startedDateString}</p>"""
             val message = if (isInYear) messages("common.view") else messages("common.change")
-            val actions = if (isInYear) Seq((EmployerInformationController.show(taxYear, employmentSource.employmentId), message, Some(message + s" ${employmentSource.employerName}")))
-                          else Seq(
-                            (EmployerInformationController.show(taxYear, employmentSource.employmentId), message, Some(message + s" ${employmentSource.employerName}")),
-                            (RemoveEmploymentController.show(taxYear, employmentSource.employmentId), messages("common.remove"), Some(messages("common.remove") + s" ${employmentSource.employerName}")))
-            val actionClasses = if (isInYear) "govuk-!-width-full, govuk-!-padding-right-4" else "govuk-!-width-full"
+            val hiddenText = employmentSource.employerName
+            val actionClasses = if (isInYear) "govuk-!-width-one-third, govuk-!-padding-right-4" else "govuk-!-width-one-third"
+
             summaryListRow(
                 key = HtmlContent(employerDetails),
-                value = HtmlContent(""),
+                value = HtmlContent(
+                    actionsHtml(
+                        isInYear,
+                        hiddenText,
+                        message,
+                        EmployerInformationController.show(taxYear, employmentSource.employmentId),
+                        RemoveEmploymentController.show(taxYear, employmentSource.employmentId)
+                    )
+                ),
                 keyClasses = "govuk-!-width-one-half govuk-!-font-weight-regular",
-                valueClasses = "govuk-!-display-none",
+                valueClasses = "govuk-!-width-one-half govuk-summary-list__actions",
                 actionClasses = actionClasses,
-                actions = actions
+                actions = Seq()
             )
         }
 
@@ -116,17 +143,23 @@
     @if(expensesExist) {
         @{
             val message = if (isInYear) messages("common.view") else messages("common.change")
-            val actions = if (isInYear) Seq((ExpensesInterruptPageController.show(taxYear), message, Some(message + " " + messages("employment.expenses.label"))))
-            else Seq((ExpensesInterruptPageController.show(taxYear), message, Some(message + " " + messages("employment.expenses.label"))),(RemoveExpensesController.show(taxYear), messages("common.remove"), Some(messages("common.remove") + " " + messages("employment.expenses.label"))))
             val actionClasses = if (isInYear) "govuk-!-width-one-half, govuk-!-padding-right-4" else "govuk-!-width-one-half"
-
+            val hiddenText = messages("employment.expenses.label")
             val expensesRow = summaryListRow(
                 key = HtmlContent(messages("employment.expenses.label")),
-                value = HtmlContent(""),
+                value = HtmlContent(
+                    actionsHtml(
+                        isInYear,
+                        hiddenText,
+                        message,
+                        ExpensesInterruptPageController.show(taxYear),
+                        RemoveExpensesController.show(taxYear)
+                    )
+                ),
                 keyClasses = "govuk-!-width-one-half govuk-!-font-weight-regular",
-                valueClasses = "govuk-!-display-none",
+                valueClasses = "govuk-!-width-one-half govuk-summary-list__actions",
                 actionClasses = actionClasses,
-                actions = actions
+                actions = Seq()
             )
 
             govukSummaryList(SummaryList(Seq(expensesRow)))

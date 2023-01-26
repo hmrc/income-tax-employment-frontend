@@ -16,13 +16,10 @@
 
 package models.benefits
 
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{booleanDecryptor, stringDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{booleanEncryptor, stringEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
                              accommodationRelocationModel: Option[AccommodationRelocationModel] = None,
@@ -97,7 +94,7 @@ case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
     reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards), reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)
   )
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedBenefitsViewModel = EncryptedBenefitsViewModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedBenefitsViewModel = EncryptedBenefitsViewModel(
     carVanFuelModel = carVanFuelModel.map(_.encrypted),
     accommodationRelocationModel = accommodationRelocationModel.map(_.encrypted),
     travelEntertainmentModel = travelEntertainmentModel.map(_.encrypted),
@@ -133,7 +130,7 @@ case class EncryptedBenefitsViewModel(carVanFuelModel: Option[EncryptedCarVanFue
                                       isUsingCustomerData: EncryptedValue,
                                       isBenefitsReceived: EncryptedValue) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): BenefitsViewModel = BenefitsViewModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): BenefitsViewModel = BenefitsViewModel(
     carVanFuelModel = carVanFuelModel.map(_.decrypted),
     accommodationRelocationModel = accommodationRelocationModel.map(_.decrypted),
     travelEntertainmentModel = travelEntertainmentModel.map(_.decrypted),
@@ -149,5 +146,7 @@ case class EncryptedBenefitsViewModel(carVanFuelModel: Option[EncryptedCarVanFue
 }
 
 object EncryptedBenefitsViewModel {
-  implicit val format: OFormat[EncryptedBenefitsViewModel] = Json.format[EncryptedBenefitsViewModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val format: Format[EncryptedBenefitsViewModel] = Json.format[EncryptedBenefitsViewModel]
 }

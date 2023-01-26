@@ -17,13 +17,12 @@
 package models.benefits
 
 import controllers.benefits.fuel.routes._
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Call
 import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import support.{TaxYearProvider, UnitTest}
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class CarVanFuelModelSpec extends UnitTest
   with TaxYearProvider
@@ -43,8 +42,8 @@ class CarVanFuelModelSpec extends UnitTest
   private val encryptedMileageQuestion = EncryptedValue("encryptedMileageQuestion", "some-nonce")
   private val encryptedMileage = EncryptedValue("encryptedMileage", "some-nonce")
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private def result(url: String): Option[Call] = Some(Call("GET", url))
 
@@ -106,17 +105,17 @@ class CarVanFuelModelSpec extends UnitTest
 
   "CarVanFuelModel.encrypted" should {
     "return EncryptedCarVanFuelModel instance" in {
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.carQuestion.get, textAndKey).returning(encryptedCarQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(aCarVanFuelModel.car.get, textAndKey).returning(encryptedCar)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.carFuelQuestion.get, textAndKey).returning(encryptedCarFuelQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(aCarVanFuelModel.carFuel.get, textAndKey).returning(encryptedCarFuel)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.vanQuestion.get, textAndKey).returning(encryptedVanQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(aCarVanFuelModel.van.get, textAndKey).returning(encryptedVan)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.vanFuelQuestion.get, textAndKey).returning(encryptedVanFuelQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(aCarVanFuelModel.vanFuel.get, textAndKey).returning(encryptedVanFuel)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(aCarVanFuelModel.mileageQuestion.get, textAndKey).returning(encryptedMileageQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(aCarVanFuelModel.mileage.get, textAndKey).returning(encryptedMileage)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.carQuestion.get.toString, associatedText).returning(encryptedCarQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.car.get.toString(), associatedText).returning(encryptedCar)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.carFuelQuestion.get.toString, associatedText).returning(encryptedCarFuelQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.carFuel.get.toString(), associatedText).returning(encryptedCarFuel)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.vanQuestion.get.toString, associatedText).returning(encryptedVanQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.van.get.toString(), associatedText).returning(encryptedVan)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.vanFuelQuestion.get.toString, associatedText).returning(encryptedVanFuelQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.vanFuel.get.toString(), associatedText).returning(encryptedVanFuel)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.mileageQuestion.get.toString, associatedText).returning(encryptedMileageQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(aCarVanFuelModel.mileage.get.toString(), associatedText).returning(encryptedMileage)
 
       aCarVanFuelModel.encrypted shouldBe EncryptedCarVanFuelModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -150,28 +149,28 @@ class CarVanFuelModelSpec extends UnitTest
         mileage = Some(encryptedMileage)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedCarQuestion.value, encryptedCarQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.carQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedCar.value, encryptedCar.nonce, textAndKey, *).returning(value = aCarVanFuelModel.car.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedCarFuelQuestion.value, encryptedCarFuelQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.carFuelQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedCarFuel.value, encryptedCarFuel.nonce, textAndKey, *).returning(value = aCarVanFuelModel.carFuel.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedVanQuestion.value, encryptedVanQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.vanQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedVan.value, encryptedVan.nonce, textAndKey, *).returning(value = aCarVanFuelModel.van.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedVanFuelQuestion.value, encryptedVanFuelQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.vanFuelQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedVanFuel.value, encryptedVanFuel.nonce, textAndKey, *).returning(value = aCarVanFuelModel.vanFuel.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedMileageQuestion.value, encryptedMileageQuestion.nonce, textAndKey, *).returning(value = aCarVanFuelModel.mileageQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedMileage.value, encryptedMileage.nonce, textAndKey, *).returning(value = aCarVanFuelModel.mileage.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = aCarVanFuelModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCarQuestion, associatedText).returning(value = aCarVanFuelModel.carQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCar, associatedText).returning(value = aCarVanFuelModel.car.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCarFuelQuestion, associatedText).returning(value = aCarVanFuelModel.carFuelQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCarFuel, associatedText).returning(value = aCarVanFuelModel.carFuel.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVanQuestion, associatedText).returning(value = aCarVanFuelModel.vanQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVan, associatedText).returning(value = aCarVanFuelModel.van.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVanFuelQuestion, associatedText).returning(value = aCarVanFuelModel.vanFuelQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVanFuel, associatedText).returning(value = aCarVanFuelModel.vanFuel.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedMileageQuestion, associatedText).returning(value = aCarVanFuelModel.mileageQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedMileage, associatedText).returning(value = aCarVanFuelModel.mileage.get.toString())
 
       underTest.decrypted shouldBe aCarVanFuelModel
     }

@@ -16,20 +16,19 @@
 
 package models.benefits
 
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.TaxYearUtils.taxYear
 import support.UnitTest
 import support.builders.models.benefits.BenefitsBuilder.aBenefits
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class BenefitsViewModelSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val mockCarVanFuelModel = mock[CarVanFuelModel]
   private val mockAccommodationRelocationModel = mock[AccommodationRelocationModel]
@@ -161,17 +160,17 @@ class BenefitsViewModelSpec extends UnitTest
         isBenefitsReceived = true
       )
 
-      (mockCarVanFuelModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedCarVanFuelModel)
-      (mockAccommodationRelocationModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedAccommodationRelocationModel)
-      (mockTravelEntertainmentModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedTravelEntertainmentModel)
-      (mockUtilitiesAndServicesModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedUtilitiesAndServicesModel)
-      (mockMedicalChildcareEducationModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedMedicalChildcareEducationModel)
-      (mockIncomeTaxAndCostsModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedIncomeTaxAndCostsModel)
-      (mockReimbursedCostsVouchersAndNonCashModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedReimbursedCostsVouchersAndNonCashModel)
-      (mockAssetsModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedAssetsModel)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.submittedOn.get, textAndKey).returning(encryptedSubmittedOn)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.isUsingCustomerData, textAndKey).returning(encryptedIsUsingCustomerData)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.isBenefitsReceived, textAndKey).returning(encryptedIsBenefitsReceived)
+      (mockCarVanFuelModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedCarVanFuelModel)
+      (mockAccommodationRelocationModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedAccommodationRelocationModel)
+      (mockTravelEntertainmentModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedTravelEntertainmentModel)
+      (mockUtilitiesAndServicesModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedUtilitiesAndServicesModel)
+      (mockMedicalChildcareEducationModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedMedicalChildcareEducationModel)
+      (mockIncomeTaxAndCostsModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedIncomeTaxAndCostsModel)
+      (mockReimbursedCostsVouchersAndNonCashModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedReimbursedCostsVouchersAndNonCashModel)
+      (mockAssetsModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedAssetsModel)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.submittedOn.get, associatedText).returning(encryptedSubmittedOn)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.isUsingCustomerData.toString, associatedText).returning(encryptedIsUsingCustomerData)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.isBenefitsReceived.toString, associatedText).returning(encryptedIsBenefitsReceived)
 
       underTest.encrypted shouldBe EncryptedBenefitsViewModel(
         carVanFuelModel = Some(encryptedCarVanFuelModel),
@@ -205,20 +204,20 @@ class BenefitsViewModelSpec extends UnitTest
         isBenefitsReceived = encryptedIsBenefitsReceived
       )
 
-      (encryptedCarVanFuelModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.carVanFuelModel.get)
-      (encryptedAccommodationRelocationModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.accommodationRelocationModel.get)
-      (encryptedTravelEntertainmentModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.travelEntertainmentModel.get)
-      (encryptedUtilitiesAndServicesModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.utilitiesAndServicesModel.get)
-      (encryptedMedicalChildcareEducationModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.medicalChildcareEducationModel.get)
-      (encryptedIncomeTaxAndCostsModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.incomeTaxAndCostsModel.get)
-      (encryptedReimbursedCostsVouchersAndNonCashModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.reimbursedCostsVouchersAndNonCashModel.get)
-      (encryptedAssetsModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(aBenefitsViewModel.assetsModel.get)
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedSubmittedOn.value, encryptedSubmittedOn.nonce, textAndKey, *).returning(value = s"$taxYear-03-11")
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedIsUsingCustomerData.value, encryptedIsUsingCustomerData.nonce, textAndKey, *).returning(value = aBenefitsViewModel.isUsingCustomerData)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedIsBenefitsReceived.value, encryptedIsBenefitsReceived.nonce, textAndKey, *).returning(value = aBenefitsViewModel.isBenefitsReceived)
+      (encryptedCarVanFuelModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.carVanFuelModel.get)
+      (encryptedAccommodationRelocationModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.accommodationRelocationModel.get)
+      (encryptedTravelEntertainmentModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.travelEntertainmentModel.get)
+      (encryptedUtilitiesAndServicesModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.utilitiesAndServicesModel.get)
+      (encryptedMedicalChildcareEducationModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.medicalChildcareEducationModel.get)
+      (encryptedIncomeTaxAndCostsModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.incomeTaxAndCostsModel.get)
+      (encryptedReimbursedCostsVouchersAndNonCashModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.reimbursedCostsVouchersAndNonCashModel.get)
+      (encryptedAssetsModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(aBenefitsViewModel.assetsModel.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSubmittedOn, associatedText).returning(value = s"$taxYear-03-11")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedIsUsingCustomerData, associatedText).returning(value = aBenefitsViewModel.isUsingCustomerData.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedIsBenefitsReceived, associatedText).returning(value = aBenefitsViewModel.isBenefitsReceived.toString)
 
       underTest.decrypted shouldBe aBenefitsViewModel.copy(submittedOn = Some(s"$taxYear-03-11"))
     }

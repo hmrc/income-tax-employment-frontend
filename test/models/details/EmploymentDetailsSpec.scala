@@ -16,18 +16,17 @@
 
 package models.details
 
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class EmploymentDetailsSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedEmployerName = EncryptedValue("encryptedEmployerName", "some-nonce")
   private val encryptedEmployerRef = EncryptedValue("encryptedEmployerRef", "some-nonce")
@@ -126,18 +125,18 @@ class EmploymentDetailsSpec extends UnitTest
     "return EncryptedEmploymentDetails" in {
       val underTest = anEmploymentDetails.copy(cessationDate = Some("some-cessation-date"), dateIgnored = Some("some-date-ignored"))
 
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.employerName, textAndKey).returning(encryptedEmployerName)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.employerRef.get, textAndKey).returning(encryptedEmployerRef)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.startDate.get, textAndKey).returning(encryptedStartDate)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.payrollId.get, textAndKey).returning(encryptedPayrollId)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.didYouLeaveQuestion.get, textAndKey).returning(encryptedDidYouLeaveQuestion)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.cessationDate.get, textAndKey).returning(encryptedCessationDate)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.dateIgnored.get, textAndKey).returning(encryptedDateIgnored)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.employmentSubmittedOn.get, textAndKey).returning(encryptedEmploymentSubmittedOn)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.employmentDetailsSubmittedOn.get, textAndKey).returning(encryptedEmploymentDetailsSubmittedOn)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.taxablePayToDate.get, textAndKey).returning(encryptedTaxablePayToDate)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.totalTaxToDate.get, textAndKey).returning(encryptedTotalTaxToDate)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.currentDataIsHmrcHeld, textAndKey).returning(encryptedCurrentDataIsHmrcHeld)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerName, associatedText).returning(encryptedEmployerName)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerRef.get, associatedText).returning(encryptedEmployerRef)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.startDate.get, associatedText).returning(encryptedStartDate)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.payrollId.get, associatedText).returning(encryptedPayrollId)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.didYouLeaveQuestion.get.toString, associatedText).returning(encryptedDidYouLeaveQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.cessationDate.get, associatedText).returning(encryptedCessationDate)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.dateIgnored.get, associatedText).returning(encryptedDateIgnored)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employmentSubmittedOn.get, associatedText).returning(encryptedEmploymentSubmittedOn)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employmentDetailsSubmittedOn.get, associatedText).returning(encryptedEmploymentDetailsSubmittedOn)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.taxablePayToDate.get.toString(), associatedText).returning(encryptedTaxablePayToDate)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.totalTaxToDate.get.toString(), associatedText).returning(encryptedTotalTaxToDate)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.currentDataIsHmrcHeld.toString, associatedText).returning(encryptedCurrentDataIsHmrcHeld)
 
       underTest.encrypted shouldBe EncryptedEmploymentDetails(
         employerName = encryptedEmployerName,
@@ -173,30 +172,30 @@ class EmploymentDetailsSpec extends UnitTest
         currentDataIsHmrcHeld = encryptedCurrentDataIsHmrcHeld
       )
 
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedEmployerName.value, encryptedEmployerName.nonce, textAndKey, *).returning("some-employer-name")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedEmployerRef.value, encryptedEmployerRef.nonce, textAndKey, *).returning("some-employer-ref")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedStartDate.value, encryptedStartDate.nonce, textAndKey, *).returning("some-start-date")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedPayrollId.value, encryptedPayrollId.nonce, textAndKey, *).returning("some-payroll-id")
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedDidYouLeaveQuestion.value, encryptedDidYouLeaveQuestion.nonce, textAndKey, *).returning(true)
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedCessationDate.value, encryptedCessationDate.nonce, textAndKey, *).returning("some-cessation-date")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedDateIgnored.value, encryptedDateIgnored.nonce, textAndKey, *).returning("some-date-ignored")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedEmploymentSubmittedOn.value, encryptedEmploymentSubmittedOn.nonce, textAndKey, *).returning("some-employment-submitted-on")
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedEmploymentDetailsSubmittedOn.value, encryptedEmploymentDetailsSubmittedOn.nonce, textAndKey, *).returning("some-employment-details-submitted-on")
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedTaxablePayToDate.value, encryptedTaxablePayToDate.nonce, textAndKey, *).returning(100)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedTotalTaxToDate.value, encryptedTotalTaxToDate.nonce, textAndKey, *).returning(200)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedCurrentDataIsHmrcHeld.value, encryptedCurrentDataIsHmrcHeld.nonce, textAndKey, *).returning(true)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerName, associatedText).returning("some-employer-name")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerRef, associatedText).returning("some-employer-ref")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedStartDate, associatedText).returning("some-start-date")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPayrollId, associatedText).returning("some-payroll-id")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedDidYouLeaveQuestion, associatedText).returning("true")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCessationDate, associatedText).returning("some-cessation-date")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedDateIgnored, associatedText).returning("some-date-ignored")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmploymentSubmittedOn, associatedText).returning("some-employment-submitted-on")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmploymentDetailsSubmittedOn, associatedText).returning("some-employment-details-submitted-on")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTaxablePayToDate, associatedText).returning("100")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTotalTaxToDate, associatedText).returning("200")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedCurrentDataIsHmrcHeld, associatedText).returning("true")
 
       encryptedEmploymentDetails.decrypted shouldBe EmploymentDetails(
         employerName = "some-employer-name",

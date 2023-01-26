@@ -19,13 +19,13 @@ package models.mongo
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 class EmploymentUserDataSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val employmentCYAModel = mock[EmploymentCYAModel]
   private val encryptedEmploymentCYAModel = mock[EncryptedEmploymentCYAModel]
@@ -34,7 +34,7 @@ class EmploymentUserDataSpec extends UnitTest
     "return EncryptedEmploymentUserData instance" in {
       val underTest = anEmploymentUserData.copy(employment = employmentCYAModel)
 
-      (employmentCYAModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentCYAModel)
+      (employmentCYAModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedEmploymentCYAModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -66,7 +66,7 @@ class EmploymentUserDataSpec extends UnitTest
         lastUpdated = anEmploymentUserData.lastUpdated,
       )
 
-      (encryptedEmploymentCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentCYAModel)
+      (encryptedEmploymentCYAModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(employmentCYAModel)
 
       val decryptedResult = underTest.decrypted
 

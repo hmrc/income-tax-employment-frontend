@@ -19,13 +19,13 @@ package models.mongo
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 class ExpensesUserDataSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedExpensesCYAModel = mock[EncryptedExpensesCYAModel]
   private val expensesCya = mock[ExpensesCYAModel]
@@ -34,7 +34,7 @@ class ExpensesUserDataSpec extends UnitTest
     "return EncryptedExpensesUserData instance" in {
       val underTest = anExpensesUserData.copy(expensesCya = expensesCya)
 
-      (expensesCya.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesCYAModel)
+      (expensesCya.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedExpensesCYAModel)
 
       val encryptedResponse = underTest.encrypted
 
@@ -62,7 +62,7 @@ class ExpensesUserDataSpec extends UnitTest
         lastUpdated = anExpensesUserData.lastUpdated,
       )
 
-      (encryptedExpensesCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesCya)
+      (encryptedExpensesCYAModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(expensesCya)
 
       val decryptedResult = underTest.decrypted
 

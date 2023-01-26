@@ -17,14 +17,11 @@
 package models.benefits
 
 import controllers.benefits.reimbursed.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolean] = None,
                                                   expensesQuestion: Option[Boolean] = None,
@@ -96,8 +93,8 @@ case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolea
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
-                textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = EncryptedReimbursedCostsVouchersAndNonCashModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): EncryptedReimbursedCostsVouchersAndNonCashModel = EncryptedReimbursedCostsVouchersAndNonCashModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     expensesQuestion = expensesQuestion.map(_.encrypted),
     expenses = expenses.map(_.encrypted),
@@ -130,8 +127,8 @@ case class EncryptedReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Opti
                                                            otherItemsQuestion: Option[EncryptedValue] = None,
                                                            otherItems: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     expensesQuestion = expensesQuestion.map(_.decrypted[Boolean]),
     expenses = expenses.map(_.decrypted[BigDecimal]),
@@ -147,5 +144,7 @@ case class EncryptedReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Opti
 }
 
 object EncryptedReimbursedCostsVouchersAndNonCashModel {
-  implicit val formats: OFormat[EncryptedReimbursedCostsVouchersAndNonCashModel] = Json.format[EncryptedReimbursedCostsVouchersAndNonCashModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedReimbursedCostsVouchersAndNonCashModel] = Json.format[EncryptedReimbursedCostsVouchersAndNonCashModel]
 }

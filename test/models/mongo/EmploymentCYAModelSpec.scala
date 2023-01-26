@@ -21,13 +21,13 @@ import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment.{EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 class EmploymentCYAModelSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val aesGcmAdCrypto: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val employmentDetails = mock[EmploymentDetails]
   private val employmentBenefits = mock[BenefitsViewModel]
@@ -45,9 +45,9 @@ class EmploymentCYAModelSpec extends UnitTest
         studentLoans = Some(studentLoans)
       )
 
-      (employmentDetails.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedEmploymentDetails)
-      (employmentBenefits.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedBenefitsViewModel)
-      (studentLoans.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedStudentLoansCYAModel)
+      (employmentDetails.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedEmploymentDetails)
+      (employmentBenefits.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedBenefitsViewModel)
+      (studentLoans.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedStudentLoansCYAModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -65,9 +65,9 @@ class EmploymentCYAModelSpec extends UnitTest
         studentLoansCYAModel = Some(encryptedStudentLoansCYAModel)
       )
 
-      (encryptedEmploymentDetails.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentDetails)
-      (encryptedBenefitsViewModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(employmentBenefits)
-      (encryptedStudentLoansCYAModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(studentLoans)
+      (encryptedEmploymentDetails.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(employmentDetails)
+      (encryptedBenefitsViewModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(employmentBenefits)
+      (encryptedStudentLoansCYAModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(studentLoans)
 
       val decryptedResult = underTest.decrypted
 

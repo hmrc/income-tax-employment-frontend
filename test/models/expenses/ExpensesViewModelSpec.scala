@@ -16,19 +16,18 @@
 
 package models.expenses
 
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class ExpensesViewModelSpec extends UnitTest
   with MockFactory
   with TaxYearHelper {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedClaimingEmploymentExpenses = EncryptedValue("encryptedClaimingEmploymentExpenses", "some-nonce")
   private val encryptedJobExpensesQuestion = EncryptedValue("encryptedJobExpensesQuestion", "some-nonce")
@@ -50,21 +49,21 @@ class ExpensesViewModelSpec extends UnitTest
     "return EncryptedExpensesViewModel instance" in {
       val underTest = anExpensesViewModel.copy(submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"))
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.claimingEmploymentExpenses, textAndKey).returning(encryptedClaimingEmploymentExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.jobExpensesQuestion.get, textAndKey).returning(encryptedJobExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.jobExpenses.get, textAndKey).returning(encryptedJobExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.flatRateJobExpensesQuestion.get, textAndKey).returning(encryptedFlatRateJobExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.flatRateJobExpenses.get, textAndKey).returning(encryptedFlatRateJobExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.professionalSubscriptionsQuestion.get, textAndKey).returning(encryptedProfessionalSubscriptionsQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.professionalSubscriptions.get, textAndKey).returning(encryptedProfessionalSubscriptions)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.otherAndCapitalAllowancesQuestion.get, textAndKey).returning(encryptedOtherAndCapitalAllowancesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.otherAndCapitalAllowances.get, textAndKey).returning(encryptedOtherAndCapitalAllowances)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.businessTravelCosts.get, textAndKey).returning(encryptedBusinessTravelCosts)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.hotelAndMealExpenses.get, textAndKey).returning(encryptedHotelAndMealExpenses)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.vehicleExpenses.get, textAndKey).returning(encryptedVehicleExpenses)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.mileageAllowanceRelief.get, textAndKey).returning(encryptedMileageAllowanceRelief)
-      (secureGCMCipher.encrypt(_: String)(_: TextAndKey)).expects(underTest.submittedOn.get, textAndKey).returning(encryptedSubmittedOn)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.isUsingCustomerData, textAndKey).returning(encryptedIsUsingCustomerData)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.claimingEmploymentExpenses.toString, associatedText).returning(encryptedClaimingEmploymentExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.jobExpensesQuestion.get.toString, associatedText).returning(encryptedJobExpensesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.jobExpenses.get.toString(), associatedText).returning(encryptedJobExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.flatRateJobExpensesQuestion.get.toString, associatedText).returning(encryptedFlatRateJobExpensesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.flatRateJobExpenses.get.toString(), associatedText).returning(encryptedFlatRateJobExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.professionalSubscriptionsQuestion.get.toString, associatedText).returning(encryptedProfessionalSubscriptionsQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.professionalSubscriptions.get.toString(), associatedText).returning(encryptedProfessionalSubscriptions)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.otherAndCapitalAllowancesQuestion.get.toString, associatedText).returning(encryptedOtherAndCapitalAllowancesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.otherAndCapitalAllowances.get.toString(), associatedText).returning(encryptedOtherAndCapitalAllowances)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.businessTravelCosts.get.toString(), associatedText).returning(encryptedBusinessTravelCosts)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.hotelAndMealExpenses.get.toString(), associatedText).returning(encryptedHotelAndMealExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.vehicleExpenses.get.toString(), associatedText).returning(encryptedVehicleExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.mileageAllowanceRelief.get.toString(), associatedText).returning(encryptedMileageAllowanceRelief)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.submittedOn.get, associatedText).returning(encryptedSubmittedOn)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.isUsingCustomerData.toString, associatedText).returning(encryptedIsUsingCustomerData)
 
       underTest.encrypted shouldBe EncryptedExpensesViewModel(
         claimingEmploymentExpenses = encryptedClaimingEmploymentExpenses,
@@ -106,38 +105,38 @@ class ExpensesViewModelSpec extends UnitTest
         isUsingCustomerData = encryptedIsUsingCustomerData
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedClaimingEmploymentExpenses.value, encryptedClaimingEmploymentExpenses.nonce, textAndKey, *).returning(value = anExpensesViewModel.claimingEmploymentExpenses)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedJobExpensesQuestion.value, encryptedJobExpensesQuestion.nonce, textAndKey, *).returning(value = anExpensesViewModel.jobExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedJobExpenses.value, encryptedJobExpenses.nonce, textAndKey, *).returning(value = anExpensesViewModel.jobExpenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedFlatRateJobExpensesQuestion.value, encryptedFlatRateJobExpensesQuestion.nonce, textAndKey, *).returning(value = anExpensesViewModel.flatRateJobExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedFlatRateJobExpenses.value, encryptedFlatRateJobExpenses.nonce, textAndKey, *).returning(value = anExpensesViewModel.flatRateJobExpenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedProfessionalSubscriptionsQuestion.value, encryptedProfessionalSubscriptionsQuestion.nonce, textAndKey, *)
-        .returning(value = anExpensesViewModel.professionalSubscriptionsQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedProfessionalSubscriptions.value, encryptedProfessionalSubscriptions.nonce, textAndKey, *).returning(value = anExpensesViewModel.professionalSubscriptions.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedOtherAndCapitalAllowancesQuestion.value, encryptedOtherAndCapitalAllowancesQuestion.nonce, textAndKey, *)
-        .returning(value = anExpensesViewModel.otherAndCapitalAllowancesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedOtherAndCapitalAllowances.value, encryptedOtherAndCapitalAllowances.nonce, textAndKey, *).returning(value = anExpensesViewModel.otherAndCapitalAllowances.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedBusinessTravelCosts.value, encryptedBusinessTravelCosts.nonce, textAndKey, *).returning(value = anExpensesViewModel.businessTravelCosts.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedHotelAndMealExpenses.value, encryptedHotelAndMealExpenses.nonce, textAndKey, *).returning(value = anExpensesViewModel.hotelAndMealExpenses.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedVehicleExpenses.value, encryptedVehicleExpenses.nonce, textAndKey, *).returning(value = anExpensesViewModel.vehicleExpenses.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedMileageAllowanceRelief.value, encryptedMileageAllowanceRelief.nonce, textAndKey, *).returning(value = anExpensesViewModel.mileageAllowanceRelief.get)
-      (secureGCMCipher.decrypt[String](_: String, _: String)(_: TextAndKey, _: Converter[String]))
-        .expects(encryptedSubmittedOn.value, encryptedSubmittedOn.nonce, textAndKey, *).returning(value = s"${taxYearEOY - 1}-01-04T05:01:01Z")
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedIsUsingCustomerData.value, encryptedIsUsingCustomerData.nonce, textAndKey, *).returning(value = anExpensesViewModel.isUsingCustomerData)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedClaimingEmploymentExpenses, associatedText).returning(value = anExpensesViewModel.claimingEmploymentExpenses.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedJobExpensesQuestion, associatedText).returning(value = anExpensesViewModel.jobExpensesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedJobExpenses, associatedText).returning(value = anExpensesViewModel.jobExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedFlatRateJobExpensesQuestion, associatedText).returning(value = anExpensesViewModel.flatRateJobExpensesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedFlatRateJobExpenses, associatedText).returning(value = anExpensesViewModel.flatRateJobExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedProfessionalSubscriptionsQuestion, associatedText)
+        .returning(value = anExpensesViewModel.professionalSubscriptionsQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedProfessionalSubscriptions, associatedText).returning(value = anExpensesViewModel.professionalSubscriptions.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedOtherAndCapitalAllowancesQuestion, associatedText)
+        .returning(value = anExpensesViewModel.otherAndCapitalAllowancesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedOtherAndCapitalAllowances, associatedText).returning(value = anExpensesViewModel.otherAndCapitalAllowances.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedBusinessTravelCosts, associatedText).returning(value = anExpensesViewModel.businessTravelCosts.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedHotelAndMealExpenses, associatedText).returning(value = anExpensesViewModel.hotelAndMealExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVehicleExpenses, associatedText).returning(value = anExpensesViewModel.vehicleExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedMileageAllowanceRelief, associatedText).returning(value = anExpensesViewModel.mileageAllowanceRelief.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSubmittedOn, associatedText).returning(value = s"${taxYearEOY - 1}-01-04T05:01:01Z")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedIsUsingCustomerData, associatedText).returning(value = anExpensesViewModel.isUsingCustomerData.toString)
 
       underTest.decrypted shouldBe anExpensesViewModel.copy(submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"))
     }

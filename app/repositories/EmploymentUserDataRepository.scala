@@ -29,9 +29,9 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
+import utils.AesGcmAdCrypto
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
-import utils.SecureGCMCipher
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +39,7 @@ import scala.util.Try
 
 @Singleton
 class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)
-                                                (implicit ec: ExecutionContext, secureGCMCipher: SecureGCMCipher)
+                                                (implicit ec: ExecutionContext, aesGcmAdCrypto: AesGcmAdCrypto)
   extends PlayMongoRepository[EncryptedEmploymentUserData](
     mongoComponent = mongo,
     collectionName = "employmentUserData",
@@ -65,7 +65,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
       case Right(encryptedData) =>
         Try {
           encryptedData.map { encryptedEmploymentUserData =>
-            implicit val textAndKey: TextAndKey = TextAndKey(encryptedEmploymentUserData.mtdItId, appConfig.encryptionKey)
+            implicit val associatedText: String = encryptedEmploymentUserData.mtdItId
             encryptedEmploymentUserData.decrypted
           }
         }.toEither match {
@@ -80,7 +80,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
     lazy val start = "[EmploymentUserDataRepositoryImpl][update]"
 
     Try {
-      implicit val textAndKey: TextAndKey = TextAndKey(userData.mtdItId, appConfig.encryptionKey)
+      implicit val associatedText: String = userData.mtdItId
       userData.encrypted
     }.toEither match {
       case Left(t: Throwable) => Future.successful(handleEncryptionDecryptionException(t.asInstanceOf[Exception], start))

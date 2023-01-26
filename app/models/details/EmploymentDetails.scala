@@ -16,13 +16,10 @@
 
 package models.details
 
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor, stringDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor, stringEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class EmploymentDetails(employerName: String,
                              employerRef: Option[String] = None,
@@ -55,7 +52,7 @@ case class EmploymentDetails(employerName: String,
       cessationSectionFinished
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentDetails = EncryptedEmploymentDetails(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentDetails = EncryptedEmploymentDetails(
     employerName = employerName.encrypted,
     employerRef = employerRef.map(_.encrypted),
     startDate = startDate.map(_.encrypted),
@@ -88,7 +85,7 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
                                       totalTaxToDate: Option[EncryptedValue] = None,
                                       currentDataIsHmrcHeld: EncryptedValue) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentDetails = EmploymentDetails(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentDetails = EmploymentDetails(
     employerName = employerName.decrypted[String],
     employerRef = employerRef.map(_.decrypted[String]),
     startDate = startDate.map(_.decrypted[String]),
@@ -105,5 +102,7 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
 }
 
 object EncryptedEmploymentDetails {
-  implicit val format: OFormat[EncryptedEmploymentDetails] = Json.format[EncryptedEmploymentDetails]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val format: Format[EncryptedEmploymentDetails] = Json.format[EncryptedEmploymentDetails]
 }

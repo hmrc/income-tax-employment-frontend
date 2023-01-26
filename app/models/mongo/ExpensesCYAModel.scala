@@ -17,12 +17,13 @@
 package models.mongo
 
 import models.expenses.{EncryptedExpensesViewModel, Expenses, ExpensesViewModel}
-import play.api.libs.json.{Json, OFormat}
-import utils.SecureGCMCipher
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 case class ExpensesCYAModel(expenses: ExpensesViewModel) {
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedExpensesCYAModel = EncryptedExpensesCYAModel(
     expenses = expenses.encrypted
   )
 }
@@ -36,10 +37,12 @@ object ExpensesCYAModel {
 
 case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesCYAModel =
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): ExpensesCYAModel =
     ExpensesCYAModel(expenses = expenses.decrypted)
 }
 
 object EncryptedExpensesCYAModel {
-  implicit val format: OFormat[EncryptedExpensesCYAModel] = Json.format[EncryptedExpensesCYAModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val format: Format[EncryptedExpensesCYAModel] = Json.format[EncryptedExpensesCYAModel]
 }

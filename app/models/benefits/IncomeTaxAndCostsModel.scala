@@ -17,14 +17,11 @@
 package models.benefits
 
 import controllers.benefits.income.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class IncomeTaxAndCostsModel(sectionQuestion: Option[Boolean] = None,
                                   incomeTaxPaidByDirectorQuestion: Option[Boolean] = None,
@@ -60,7 +57,7 @@ case class IncomeTaxAndCostsModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedIncomeTaxAndCostsModel = EncryptedIncomeTaxAndCostsModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedIncomeTaxAndCostsModel = EncryptedIncomeTaxAndCostsModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     incomeTaxPaidByDirectorQuestion = incomeTaxPaidByDirectorQuestion.map(_.encrypted),
     incomeTaxPaidByDirector = incomeTaxPaidByDirector.map(_.encrypted),
@@ -81,7 +78,7 @@ case class EncryptedIncomeTaxAndCostsModel(sectionQuestion: Option[EncryptedValu
                                            paymentsOnEmployeesBehalfQuestion: Option[EncryptedValue] = None,
                                            paymentsOnEmployeesBehalf: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     incomeTaxPaidByDirectorQuestion = incomeTaxPaidByDirectorQuestion.map(_.decrypted[Boolean]),
     incomeTaxPaidByDirector = incomeTaxPaidByDirector.map(_.decrypted[BigDecimal]),
@@ -91,5 +88,7 @@ case class EncryptedIncomeTaxAndCostsModel(sectionQuestion: Option[EncryptedValu
 }
 
 object EncryptedIncomeTaxAndCostsModel {
-  implicit val formats: OFormat[EncryptedIncomeTaxAndCostsModel] = Json.format[EncryptedIncomeTaxAndCostsModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedIncomeTaxAndCostsModel] = Json.format[EncryptedIncomeTaxAndCostsModel]
 }

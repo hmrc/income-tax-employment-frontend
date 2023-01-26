@@ -17,14 +17,11 @@
 package models.benefits
 
 import controllers.benefits.accommodation.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.CypherSyntax._
+import utils.AesGcmAdCrypto
 
 case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
                                         accommodationQuestion: Option[Boolean] = None,
@@ -75,8 +72,8 @@ case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
-                textAndKey: TextAndKey): EncryptedAccommodationRelocationModel = EncryptedAccommodationRelocationModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): EncryptedAccommodationRelocationModel = EncryptedAccommodationRelocationModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     accommodationQuestion = accommodationQuestion.map(_.encrypted),
     accommodation = accommodation.map(_.encrypted),
@@ -102,8 +99,8 @@ case class EncryptedAccommodationRelocationModel(sectionQuestion: Option[Encrypt
                                                  nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
                                                  nonQualifyingRelocationExpenses: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): AccommodationRelocationModel = AccommodationRelocationModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): AccommodationRelocationModel = AccommodationRelocationModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     accommodationQuestion = accommodationQuestion.map(_.decrypted[Boolean]),
     accommodation = accommodation.map(_.decrypted[BigDecimal]),
@@ -115,5 +112,7 @@ case class EncryptedAccommodationRelocationModel(sectionQuestion: Option[Encrypt
 }
 
 object EncryptedAccommodationRelocationModel {
-  implicit val formats: OFormat[EncryptedAccommodationRelocationModel] = Json.format[EncryptedAccommodationRelocationModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedAccommodationRelocationModel] = Json.format[EncryptedAccommodationRelocationModel]
 }

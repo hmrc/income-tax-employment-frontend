@@ -31,7 +31,7 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_EXPENSES_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +39,7 @@ import scala.util.Try
 
 @Singleton
 class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)
-                                              (implicit ec: ExecutionContext, secureGCMCipher: SecureGCMCipher)
+                                              (implicit ec: ExecutionContext, aesGcmAdCrypto: AesGcmAdCrypto)
   extends PlayMongoRepository[EncryptedExpensesUserData](
     mongoComponent = mongo,
     collectionName = "expensesUserData",
@@ -71,7 +71,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
       case Right(encryptedData) =>
         Try {
           encryptedData.map { encryptedExpensesUserData: EncryptedExpensesUserData =>
-            implicit val textAndKey: TextAndKey = TextAndKey(encryptedExpensesUserData.mtdItId, appConfig.encryptionKey)
+            implicit val associatedText: String = encryptedExpensesUserData.mtdItId
             encryptedExpensesUserData.decrypted
           }
         }.toEither match {
@@ -85,7 +85,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
     lazy val start = "[ExpensesUserDataRepositoryImpl][update]"
 
     Try {
-      implicit val textAndKey: TextAndKey = TextAndKey(expensesUserData.mtdItId, appConfig.encryptionKey)
+      implicit val associatedText: String = expensesUserData.mtdItId
       expensesUserData.encrypted
     }.toEither match {
       case Left(t: Throwable) => Future.successful(handleEncryptionDecryptionException(t.asInstanceOf[Exception], start))

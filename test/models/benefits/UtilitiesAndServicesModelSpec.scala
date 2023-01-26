@@ -18,13 +18,12 @@ package models.benefits
 
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Call
 import support.UnitTest
 import support.builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class UtilitiesAndServicesModelSpec extends UnitTest
   with TaxYearHelper
@@ -32,8 +31,8 @@ class UtilitiesAndServicesModelSpec extends UnitTest
 
   private val employmentId = "employmentId"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedTelephoneQuestion = EncryptedValue("encryptedTelephoneQuestion", "some-nonce")
@@ -138,16 +137,17 @@ class UtilitiesAndServicesModelSpec extends UnitTest
     "return EncryptedUtilitiesAndServicesModel instance" in {
       val underTest = aUtilitiesAndServicesModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.telephoneQuestion.get, textAndKey).returning(encryptedTelephoneQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.telephone.get, textAndKey).returning(encryptedTelephone)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.employerProvidedServicesQuestion.get, textAndKey).returning(encryptedEmployerProvidedServicesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.employerProvidedServices.get, textAndKey).returning(encryptedEmployerProvidedServices)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.employerProvidedProfessionalSubscriptionsQuestion.get, textAndKey)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.telephoneQuestion.get.toString, associatedText).returning(encryptedTelephoneQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.telephone.get.toString(), associatedText).returning(encryptedTelephone)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerProvidedServicesQuestion.get.toString, associatedText).returning(encryptedEmployerProvidedServicesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerProvidedServices.get.toString(), associatedText).returning(encryptedEmployerProvidedServices)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerProvidedProfessionalSubscriptionsQuestion.get.toString, associatedText)
         .returning(encryptedEmployerProvidedProfessionalSubscriptionsQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.employerProvidedProfessionalSubscriptions.get, textAndKey).returning(encryptedEmployerProvidedProfessionalSubscriptions)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.serviceQuestion.get, textAndKey).returning(encryptedServiceQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.service.get, textAndKey).returning(encryptedService)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerProvidedProfessionalSubscriptions.get.toString(), associatedText)
+        .returning(encryptedEmployerProvidedProfessionalSubscriptions)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.serviceQuestion.get.toString, associatedText).returning(encryptedServiceQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.service.get.toString(), associatedText).returning(encryptedService)
 
       underTest.encrypted shouldBe EncryptedUtilitiesAndServicesModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -177,27 +177,27 @@ class UtilitiesAndServicesModelSpec extends UnitTest
         service = Some(encryptedService)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedTelephoneQuestion.value, encryptedTelephoneQuestion.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.telephoneQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedTelephone.value, encryptedTelephone.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.telephone.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedEmployerProvidedServicesQuestion.value, encryptedEmployerProvidedServicesQuestion.nonce, textAndKey, *)
-        .returning(value = aUtilitiesAndServicesModel.employerProvidedServicesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedEmployerProvidedServices.value, encryptedEmployerProvidedServices.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.employerProvidedServices.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedEmployerProvidedProfessionalSubscriptionsQuestion.value, encryptedEmployerProvidedProfessionalSubscriptionsQuestion.nonce, textAndKey, *)
-        .returning(value = aUtilitiesAndServicesModel.employerProvidedProfessionalSubscriptionsQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedEmployerProvidedProfessionalSubscriptions.value, encryptedEmployerProvidedProfessionalSubscriptions.nonce, textAndKey, *)
-        .returning(value = aUtilitiesAndServicesModel.employerProvidedProfessionalSubscriptions.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedServiceQuestion.value, encryptedServiceQuestion.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.serviceQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedService.value, encryptedService.nonce, textAndKey, *).returning(value = aUtilitiesAndServicesModel.service.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = aUtilitiesAndServicesModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTelephoneQuestion, associatedText).returning(value = aUtilitiesAndServicesModel.telephoneQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTelephone, associatedText).returning(value = aUtilitiesAndServicesModel.telephone.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerProvidedServicesQuestion, associatedText)
+        .returning(value = aUtilitiesAndServicesModel.employerProvidedServicesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerProvidedServices, associatedText).returning(value = aUtilitiesAndServicesModel.employerProvidedServices.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerProvidedProfessionalSubscriptionsQuestion, associatedText)
+        .returning(value = aUtilitiesAndServicesModel.employerProvidedProfessionalSubscriptionsQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEmployerProvidedProfessionalSubscriptions, associatedText)
+        .returning(value = aUtilitiesAndServicesModel.employerProvidedProfessionalSubscriptions.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedServiceQuestion, associatedText).returning(value = aUtilitiesAndServicesModel.serviceQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedService, associatedText).returning(value = aUtilitiesAndServicesModel.service.get.toString())
 
       underTest.decrypted shouldBe aUtilitiesAndServicesModel
     }

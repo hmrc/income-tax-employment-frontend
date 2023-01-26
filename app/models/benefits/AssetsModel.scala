@@ -18,14 +18,11 @@ package models.benefits
 
 import controllers.benefits.assets.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class AssetsModel(sectionQuestion: Option[Boolean] = None,
                        assetsQuestion: Option[Boolean] = None,
@@ -62,7 +59,7 @@ case class AssetsModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedAssetsModel = EncryptedAssetsModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedAssetsModel = EncryptedAssetsModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     assetsQuestion = assetsQuestion.map(_.encrypted),
     assets = assets.map(_.encrypted),
@@ -83,7 +80,7 @@ case class EncryptedAssetsModel(sectionQuestion: Option[EncryptedValue] = None,
                                 assetTransferQuestion: Option[EncryptedValue] = None,
                                 assetTransfer: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): AssetsModel = AssetsModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): AssetsModel = AssetsModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     assetsQuestion = assetsQuestion.map(_.decrypted[Boolean]),
     assets = assets.map(_.decrypted[BigDecimal]),
@@ -93,5 +90,7 @@ case class EncryptedAssetsModel(sectionQuestion: Option[EncryptedValue] = None,
 }
 
 object EncryptedAssetsModel {
-  implicit val formats: OFormat[EncryptedAssetsModel] = Json.format[EncryptedAssetsModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedAssetsModel] = Json.format[EncryptedAssetsModel]
 }

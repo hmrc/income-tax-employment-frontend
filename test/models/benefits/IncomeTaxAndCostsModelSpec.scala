@@ -17,12 +17,12 @@
 package models.benefits
 
 import controllers.benefits.income.routes._
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils. TaxYearHelper
 
 class IncomeTaxAndCostsModelSpec extends UnitTest
   with TaxYearHelper
@@ -30,8 +30,8 @@ class IncomeTaxAndCostsModelSpec extends UnitTest
 
   private val employmentId = "some-employment-id"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedIncomeTaxPaidByDirectorQuestion = EncryptedValue("encryptedIncomeTaxPaidByDirectorQuestion", "some-nonce")
@@ -134,11 +134,11 @@ class IncomeTaxAndCostsModelSpec extends UnitTest
     "return EncryptedIncomeTaxAndCostsModel instance" in {
       val underTest = anIncomeTaxAndCostsModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.incomeTaxPaidByDirectorQuestion.get, textAndKey).returning(encryptedIncomeTaxPaidByDirectorQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.incomeTaxPaidByDirector.get, textAndKey).returning(encryptedIncomeTaxPaidByDirector)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.paymentsOnEmployeesBehalfQuestion.get, textAndKey).returning(encryptedPaymentsOnEmployeesBehalfQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.paymentsOnEmployeesBehalf.get, textAndKey).returning(encryptedPaymentsOnEmployeesBehalf)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.incomeTaxPaidByDirectorQuestion.get.toString, associatedText).returning(encryptedIncomeTaxPaidByDirectorQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.incomeTaxPaidByDirector.get.toString(), associatedText).returning(encryptedIncomeTaxPaidByDirector)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.paymentsOnEmployeesBehalfQuestion.get.toString, associatedText).returning(encryptedPaymentsOnEmployeesBehalfQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.paymentsOnEmployeesBehalf.get.toString(), associatedText).returning(encryptedPaymentsOnEmployeesBehalf)
 
       underTest.encrypted shouldBe EncryptedIncomeTaxAndCostsModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -160,18 +160,18 @@ class IncomeTaxAndCostsModelSpec extends UnitTest
         paymentsOnEmployeesBehalf = Some(encryptedPaymentsOnEmployeesBehalf)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedIncomeTaxPaidByDirectorQuestion.value, encryptedIncomeTaxPaidByDirectorQuestion.nonce, textAndKey, *)
-        .returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirectorQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedIncomeTaxPaidByDirector.value, encryptedIncomeTaxPaidByDirector.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirector.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedPaymentsOnEmployeesBehalfQuestion.value, encryptedPaymentsOnEmployeesBehalfQuestion.nonce, textAndKey, *)
-        .returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalfQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedPaymentsOnEmployeesBehalf.value, encryptedPaymentsOnEmployeesBehalf.nonce, textAndKey, *).returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalf.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = anIncomeTaxAndCostsModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedIncomeTaxPaidByDirectorQuestion, associatedText)
+        .returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirectorQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedIncomeTaxPaidByDirector, associatedText).returning(value = anIncomeTaxAndCostsModel.incomeTaxPaidByDirector.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPaymentsOnEmployeesBehalfQuestion, associatedText)
+        .returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalfQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPaymentsOnEmployeesBehalf, associatedText).returning(value = anIncomeTaxAndCostsModel.paymentsOnEmployeesBehalf.get.toString())
 
       underTest.decrypted shouldBe anIncomeTaxAndCostsModel
     }
