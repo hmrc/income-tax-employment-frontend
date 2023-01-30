@@ -18,8 +18,9 @@ package models.mongo
 
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 case class ExpensesUserData(sessionId: String,
                             mtdItId: String,
@@ -30,7 +31,7 @@ case class ExpensesUserData(sessionId: String,
                             expensesCya: ExpensesCYAModel,
                             lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedExpensesUserData = EncryptedExpensesUserData(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedExpensesUserData = EncryptedExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -58,7 +59,7 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      expensesCya: EncryptedExpensesCYAModel,
                                      lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): ExpensesUserData = ExpensesUserData(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): ExpensesUserData = ExpensesUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -71,8 +72,9 @@ case class EncryptedExpensesUserData(sessionId: String,
 }
 
 object EncryptedExpensesUserData extends MongoJodaFormats {
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
 
   implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
 
-  implicit val format: OFormat[EncryptedExpensesUserData] = Json.format[EncryptedExpensesUserData]
+  implicit val format: Format[EncryptedExpensesUserData] = Json.format[EncryptedExpensesUserData]
 }

@@ -16,13 +16,11 @@
 
 package models.employment
 
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
+
 
 case class StudentLoansCYAModel(uglDeduction: Boolean,
                                 uglDeductionAmount: Option[BigDecimal] = None,
@@ -36,7 +34,7 @@ case class StudentLoansCYAModel(uglDeduction: Boolean,
       None
     }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedStudentLoansCYAModel = EncryptedStudentLoansCYAModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedStudentLoansCYAModel = EncryptedStudentLoansCYAModel(
     uglDeduction = uglDeduction.encrypted,
     uglDeductionAmount = uglDeductionAmount.map(_.encrypted),
     pglDeduction = pglDeduction.encrypted,
@@ -54,7 +52,7 @@ case class EncryptedStudentLoansCYAModel(uglDeduction: EncryptedValue,
                                          pglDeduction: EncryptedValue,
                                          pglDeductionAmount: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): StudentLoansCYAModel = StudentLoansCYAModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): StudentLoansCYAModel = StudentLoansCYAModel(
     uglDeduction = uglDeduction.decrypted[Boolean],
     uglDeductionAmount = uglDeductionAmount.map(_.decrypted[BigDecimal]),
     pglDeduction = pglDeduction.decrypted[Boolean],
@@ -64,5 +62,7 @@ case class EncryptedStudentLoansCYAModel(uglDeduction: EncryptedValue,
 
 
 object EncryptedStudentLoansCYAModel {
-  implicit val formats: OFormat[EncryptedStudentLoansCYAModel] = Json.format[EncryptedStudentLoansCYAModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedStudentLoansCYAModel] = Json.format[EncryptedStudentLoansCYAModel]
 }

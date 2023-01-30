@@ -18,14 +18,11 @@ package models.benefits
 
 import controllers.benefits.medical.routes._
 import controllers.employment.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = None,
                                           medicalInsuranceQuestion: Option[Boolean] = None,
@@ -83,8 +80,8 @@ case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = Non
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher,
-                textAndKey: TextAndKey): EncryptedMedicalChildcareEducationModel = EncryptedMedicalChildcareEducationModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): EncryptedMedicalChildcareEducationModel = EncryptedMedicalChildcareEducationModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.encrypted),
     medicalInsurance = medicalInsurance.map(_.encrypted),
@@ -113,7 +110,7 @@ case class EncryptedMedicalChildcareEducationModel(sectionQuestion: Option[Encry
                                                    beneficialLoanQuestion: Option[EncryptedValue] = None,
                                                    beneficialLoan: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): MedicalChildcareEducationModel = MedicalChildcareEducationModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): MedicalChildcareEducationModel = MedicalChildcareEducationModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     medicalInsuranceQuestion = medicalInsuranceQuestion.map(_.decrypted[Boolean]),
     medicalInsurance = medicalInsurance.map(_.decrypted[BigDecimal]),
@@ -127,5 +124,7 @@ case class EncryptedMedicalChildcareEducationModel(sectionQuestion: Option[Encry
 }
 
 object EncryptedMedicalChildcareEducationModel {
-  implicit val formats: OFormat[EncryptedMedicalChildcareEducationModel] = Json.format[EncryptedMedicalChildcareEducationModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedMedicalChildcareEducationModel] = Json.format[EncryptedMedicalChildcareEducationModel]
 }

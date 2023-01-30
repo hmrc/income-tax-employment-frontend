@@ -18,14 +18,11 @@ package models.benefits
 
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
                                      telephoneQuestion: Option[Boolean] = None,
@@ -87,7 +84,7 @@ case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedUtilitiesAndServicesModel = EncryptedUtilitiesAndServicesModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedUtilitiesAndServicesModel = EncryptedUtilitiesAndServicesModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     telephoneQuestion = telephoneQuestion.map(_.encrypted),
     telephone = telephone.map(_.encrypted),
@@ -117,7 +114,7 @@ case class EncryptedUtilitiesAndServicesModel(sectionQuestion: Option[EncryptedV
                                               serviceQuestion: Option[EncryptedValue] = None,
                                               service: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): UtilitiesAndServicesModel = UtilitiesAndServicesModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): UtilitiesAndServicesModel = UtilitiesAndServicesModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     telephoneQuestion = telephoneQuestion.map(_.decrypted[Boolean]),
     telephone = telephone.map(_.decrypted[BigDecimal]),
@@ -131,5 +128,7 @@ case class EncryptedUtilitiesAndServicesModel(sectionQuestion: Option[EncryptedV
 }
 
 object EncryptedUtilitiesAndServicesModel {
-  implicit val formats: OFormat[EncryptedUtilitiesAndServicesModel] = Json.format[EncryptedUtilitiesAndServicesModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedUtilitiesAndServicesModel] = Json.format[EncryptedUtilitiesAndServicesModel]
 }

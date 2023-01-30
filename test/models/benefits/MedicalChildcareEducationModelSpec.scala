@@ -18,12 +18,11 @@ package models.benefits
 
 import controllers.benefits.medical.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class MedicalChildcareEducationModelSpec extends UnitTest
   with TaxYearHelper
@@ -31,8 +30,8 @@ class MedicalChildcareEducationModelSpec extends UnitTest
 
   private val employmentId = "some-employment-id"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedMedicalInsuranceQuestion = EncryptedValue("encryptedMedicalInsuranceQuestion", "some-nonce")
@@ -211,15 +210,15 @@ class MedicalChildcareEducationModelSpec extends UnitTest
     "return EncryptedMedicalChildcareEducationModel instance" in {
       val underTest = aMedicalChildcareEducationModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.medicalInsuranceQuestion.get, textAndKey).returning(encryptedMedicalInsuranceQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.medicalInsurance.get, textAndKey).returning(encryptedMedicalInsurance)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.nurseryPlacesQuestion.get, textAndKey).returning(encryptedNurseryPlacesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.nurseryPlaces.get, textAndKey).returning(encryptedNurseryPlaces)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.educationalServicesQuestion.get, textAndKey).returning(encryptedEducationalServicesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.educationalServices.get, textAndKey).returning(encryptedEducationalServices)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.beneficialLoanQuestion.get, textAndKey).returning(encryptedBeneficialLoanQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.beneficialLoan.get, textAndKey).returning(encryptedBeneficialLoan)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.medicalInsuranceQuestion.get.toString, associatedText).returning(encryptedMedicalInsuranceQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.medicalInsurance.get.toString(), associatedText).returning(encryptedMedicalInsurance)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.nurseryPlacesQuestion.get.toString, associatedText).returning(encryptedNurseryPlacesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.nurseryPlaces.get.toString(), associatedText).returning(encryptedNurseryPlaces)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.educationalServicesQuestion.get.toString, associatedText).returning(encryptedEducationalServicesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.educationalServices.get.toString(), associatedText).returning(encryptedEducationalServices)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.beneficialLoanQuestion.get.toString, associatedText).returning(encryptedBeneficialLoanQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.beneficialLoan.get.toString(), associatedText).returning(encryptedBeneficialLoan)
 
       underTest.encrypted shouldBe EncryptedMedicalChildcareEducationModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -249,25 +248,25 @@ class MedicalChildcareEducationModelSpec extends UnitTest
         beneficialLoan = Some(encryptedBeneficialLoan)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedMedicalInsuranceQuestion.value, encryptedMedicalInsuranceQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.medicalInsuranceQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedMedicalInsurance.value, encryptedMedicalInsurance.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.medicalInsurance.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedNurseryPlacesQuestion.value, encryptedNurseryPlacesQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.nurseryPlacesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedNurseryPlaces.value, encryptedNurseryPlaces.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.nurseryPlaces.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedEducationalServicesQuestion.value, encryptedEducationalServicesQuestion.nonce, textAndKey, *)
-        .returning(value = aMedicalChildcareEducationModel.educationalServicesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedEducationalServices.value, encryptedEducationalServices.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.educationalServices.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedBeneficialLoanQuestion.value, encryptedBeneficialLoanQuestion.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.beneficialLoanQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedBeneficialLoan.value, encryptedBeneficialLoan.nonce, textAndKey, *).returning(value = aMedicalChildcareEducationModel.beneficialLoan.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = aMedicalChildcareEducationModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedMedicalInsuranceQuestion, associatedText).returning(value = aMedicalChildcareEducationModel.medicalInsuranceQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedMedicalInsurance, associatedText).returning(value = aMedicalChildcareEducationModel.medicalInsurance.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedNurseryPlacesQuestion, associatedText).returning(value = aMedicalChildcareEducationModel.nurseryPlacesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedNurseryPlaces, associatedText).returning(value = aMedicalChildcareEducationModel.nurseryPlaces.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEducationalServicesQuestion, associatedText)
+        .returning(value = aMedicalChildcareEducationModel.educationalServicesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedEducationalServices, associatedText).returning(value = aMedicalChildcareEducationModel.educationalServices.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedBeneficialLoanQuestion, associatedText).returning(value = aMedicalChildcareEducationModel.beneficialLoanQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedBeneficialLoan, associatedText).returning(value = aMedicalChildcareEducationModel.beneficialLoan.get.toString())
 
       underTest.decrypted shouldBe aMedicalChildcareEducationModel
     }

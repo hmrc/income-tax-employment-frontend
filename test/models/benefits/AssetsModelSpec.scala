@@ -18,12 +18,11 @@ package models.benefits
 
 import controllers.benefits.assets.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class AssetsModelSpec extends UnitTest
   with TaxYearHelper
@@ -31,8 +30,8 @@ class AssetsModelSpec extends UnitTest
 
   private val employmentId = "employmentId"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedAssetsQuestion = EncryptedValue("encryptedAssetsQuestion", "some-nonce")
@@ -101,11 +100,11 @@ class AssetsModelSpec extends UnitTest
     " return EncryptedAssetsModel instance" in {
       val underTest = anAssetsModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAssetsModel.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAssetsModel.assetsQuestion.get, textAndKey).returning(encryptedAssetsQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(anAssetsModel.assets.get, textAndKey).returning(encryptedAssets)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAssetsModel.assetTransferQuestion.get, textAndKey).returning(encryptedAssetTransferQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(anAssetsModel.assetTransfer.get, textAndKey).returning(encryptedAssetTransfer)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAssetsModel.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAssetsModel.assetsQuestion.get.toString, associatedText).returning(encryptedAssetsQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAssetsModel.assets.get.toString(), associatedText).returning(encryptedAssets)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAssetsModel.assetTransferQuestion.get.toString, associatedText).returning(encryptedAssetTransferQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAssetsModel.assetTransfer.get.toString(), associatedText).returning(encryptedAssetTransfer)
 
       underTest.encrypted shouldBe EncryptedAssetsModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -127,16 +126,16 @@ class AssetsModelSpec extends UnitTest
         assetTransfer = Some(encryptedAssetTransfer)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = anAssetsModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedAssetsQuestion.value, encryptedAssetsQuestion.nonce, textAndKey, *).returning(value = anAssetsModel.assetsQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedAssets.value, encryptedAssets.nonce, textAndKey, *).returning(value = anAssetsModel.assets.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedAssetTransferQuestion.value, encryptedAssetTransferQuestion.nonce, textAndKey, *).returning(value = anAssetsModel.assetTransferQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedAssetTransfer.value, encryptedAssetTransfer.nonce, textAndKey, *).returning(value = anAssetsModel.assetTransfer.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = anAssetsModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedAssetsQuestion, associatedText).returning(value = anAssetsModel.assetsQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedAssets, associatedText).returning(value = anAssetsModel.assets.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedAssetTransferQuestion, associatedText).returning(value = anAssetsModel.assetTransferQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedAssetTransfer, associatedText).returning(value = anAssetsModel.assetTransfer.get.toString())
 
       underTest.decrypted shouldBe anAssetsModel
     }

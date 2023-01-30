@@ -17,12 +17,11 @@
 package models.benefits
 
 import controllers.benefits.accommodation.routes._
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import support.{TaxYearProvider, UnitTest}
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class AccommodationRelocationModelSpec extends UnitTest
   with TaxYearProvider
@@ -30,8 +29,8 @@ class AccommodationRelocationModelSpec extends UnitTest
 
   private val employmentId = "employmentId"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedAccommodationQuestion = EncryptedValue("encryptedAccommodationQuestion", "some-nonce")
@@ -177,15 +176,16 @@ class AccommodationRelocationModelSpec extends UnitTest
 
   "AccommodationRelocationModel.encrypted" should {
     "return AccommodationRelocationModel instance" in {
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAccommodationRelocationModel.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAccommodationRelocationModel.accommodationQuestion.get, textAndKey).returning(encryptedAccommodationQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(anAccommodationRelocationModel.accommodation.get, textAndKey).returning(encryptedAccommodation)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAccommodationRelocationModel.qualifyingRelocationExpensesQuestion.get, textAndKey)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.accommodationQuestion.get.toString, associatedText).returning(encryptedAccommodationQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.accommodation.get.toString(), associatedText).returning(encryptedAccommodation)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.qualifyingRelocationExpensesQuestion.get.toString, associatedText)
         .returning(encryptedQualifyingRelocationExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(anAccommodationRelocationModel.qualifyingRelocationExpenses.get, textAndKey).returning(encryptedQualifyingRelocationExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(anAccommodationRelocationModel.nonQualifyingRelocationExpensesQuestion.get, textAndKey)
+      (secureGCMCipher.encrypt(_: String)(_: String))
+        .expects(anAccommodationRelocationModel.qualifyingRelocationExpenses.get.toString(), associatedText).returning(encryptedQualifyingRelocationExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.nonQualifyingRelocationExpensesQuestion.get.toString, associatedText)
         .returning(encryptedNonQualifyingRelocationExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(anAccommodationRelocationModel.nonQualifyingRelocationExpenses.get, textAndKey)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(anAccommodationRelocationModel.nonQualifyingRelocationExpenses.get.toString(), associatedText)
         .returning(encryptedNonQualifyingRelocationExpenses)
 
       anAccommodationRelocationModel.encrypted shouldBe EncryptedAccommodationRelocationModel(
@@ -212,24 +212,24 @@ class AccommodationRelocationModelSpec extends UnitTest
         nonQualifyingRelocationExpenses = Some(encryptedNonQualifyingRelocationExpenses)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = anAccommodationRelocationModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedAccommodationQuestion.value, encryptedAccommodationQuestion.nonce, textAndKey, *).returning(value = anAccommodationRelocationModel.accommodationQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedAccommodation.value, encryptedAccommodation.nonce, textAndKey, *).returning(value = anAccommodationRelocationModel.accommodation.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedQualifyingRelocationExpensesQuestion.value, encryptedQualifyingRelocationExpensesQuestion.nonce, textAndKey, *)
-        .returning(value = anAccommodationRelocationModel.qualifyingRelocationExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedQualifyingRelocationExpenses.value, encryptedQualifyingRelocationExpenses.nonce, textAndKey, *)
-        .returning(value = anAccommodationRelocationModel.qualifyingRelocationExpenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedNonQualifyingRelocationExpensesQuestion.value, encryptedNonQualifyingRelocationExpensesQuestion.nonce, textAndKey, *)
-        .returning(value = anAccommodationRelocationModel.nonQualifyingRelocationExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedNonQualifyingRelocationExpenses.value, encryptedNonQualifyingRelocationExpenses.nonce, textAndKey, *)
-        .returning(value = anAccommodationRelocationModel.nonQualifyingRelocationExpenses.get)
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedSectionQuestion, associatedText).returning(anAccommodationRelocationModel.sectionQuestion.get.toString)
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedAccommodationQuestion, associatedText).returning(value = anAccommodationRelocationModel.accommodationQuestion.get.toString)
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedAccommodation, associatedText).returning(value = anAccommodationRelocationModel.accommodation.get.toString())
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedQualifyingRelocationExpensesQuestion, associatedText)
+              .returning(value = anAccommodationRelocationModel.qualifyingRelocationExpensesQuestion.get.toString)
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedQualifyingRelocationExpenses, associatedText)
+              .returning(value = anAccommodationRelocationModel.qualifyingRelocationExpenses.get.toString())
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedNonQualifyingRelocationExpensesQuestion, associatedText)
+              .returning(value = anAccommodationRelocationModel.nonQualifyingRelocationExpensesQuestion.get.toString)
+            (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+              .expects(encryptedNonQualifyingRelocationExpenses, associatedText)
+              .returning(value = anAccommodationRelocationModel.nonQualifyingRelocationExpenses.get.toString())
 
 
       underTest.decrypted shouldBe anAccommodationRelocationModel

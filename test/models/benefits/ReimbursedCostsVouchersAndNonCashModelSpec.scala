@@ -18,12 +18,11 @@ package models.benefits
 
 import controllers.benefits.reimbursed.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher, TaxYearHelper}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest
   with TaxYearHelper
@@ -31,8 +30,8 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest
 
   private val employmentId = "employmentId"
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedSectionQuestion = EncryptedValue("encryptedSectionQuestion", "some-nonce")
   private val encryptedExpensesQuestion = EncryptedValue("encryptedExpensesQuestion", "some-nonce")
@@ -153,17 +152,17 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest
     "return EncryptedReimbursedCostsVouchersAndNonCashModel instance" in {
       val underTest = aReimbursedCostsVouchersAndNonCashModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.sectionQuestion.get, textAndKey).returning(encryptedSectionQuestion)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.expensesQuestion.get, textAndKey).returning(encryptedExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.expenses.get, textAndKey).returning(encryptedExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.taxableExpensesQuestion.get, textAndKey).returning(encryptedTaxableExpensesQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.taxableExpenses.get, textAndKey).returning(encryptedTaxableExpenses)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.vouchersAndCreditCardsQuestion.get, textAndKey).returning(encryptedVouchersAndCreditCardsQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.vouchersAndCreditCards.get, textAndKey).returning(encryptedVouchersAndCreditCards)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.nonCashQuestion.get, textAndKey).returning(encryptedNonCashQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.nonCash.get, textAndKey).returning(encryptedNonCash)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.otherItemsQuestion.get, textAndKey).returning(encryptedOtherItemsQuestion)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.otherItems.get, textAndKey).returning(encryptedOtherItems)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.sectionQuestion.get.toString, associatedText).returning(encryptedSectionQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.expensesQuestion.get.toString, associatedText).returning(encryptedExpensesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.expenses.get.toString(), associatedText).returning(encryptedExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.taxableExpensesQuestion.get.toString, associatedText).returning(encryptedTaxableExpensesQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.taxableExpenses.get.toString(), associatedText).returning(encryptedTaxableExpenses)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.vouchersAndCreditCardsQuestion.get.toString, associatedText).returning(encryptedVouchersAndCreditCardsQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.vouchersAndCreditCards.get.toString(), associatedText).returning(encryptedVouchersAndCreditCards)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.nonCashQuestion.get.toString, associatedText).returning(encryptedNonCashQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.nonCash.get.toString(), associatedText).returning(encryptedNonCash)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.otherItemsQuestion.get.toString, associatedText).returning(encryptedOtherItemsQuestion)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.otherItems.get.toString(), associatedText).returning(encryptedOtherItems)
 
       underTest.encrypted shouldBe EncryptedReimbursedCostsVouchersAndNonCashModel(
         sectionQuestion = Some(encryptedSectionQuestion),
@@ -197,29 +196,29 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest
         otherItems = Some(encryptedOtherItems)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedSectionQuestion.value, encryptedSectionQuestion.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.sectionQuestion.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedExpensesQuestion.value, encryptedExpensesQuestion.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.expensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedExpenses.value, encryptedExpenses.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.expenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedTaxableExpensesQuestion.value, encryptedTaxableExpensesQuestion.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.taxableExpensesQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedTaxableExpenses.value, encryptedTaxableExpenses.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.taxableExpenses.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedVouchersAndCreditCardsQuestion.value, encryptedVouchersAndCreditCardsQuestion.nonce, textAndKey, *)
-        .returning(value = aReimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCardsQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedVouchersAndCreditCards.value, encryptedVouchersAndCreditCards.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCards.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedNonCashQuestion.value, encryptedNonCashQuestion.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.nonCashQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedNonCash.value, encryptedNonCash.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.nonCash.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedOtherItemsQuestion.value, encryptedOtherItemsQuestion.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.otherItemsQuestion.get)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedOtherItems.value, encryptedOtherItems.nonce, textAndKey, *).returning(value = aReimbursedCostsVouchersAndNonCashModel.otherItems.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedSectionQuestion, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.sectionQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedExpensesQuestion, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.expensesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedExpenses, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.expenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTaxableExpensesQuestion, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.taxableExpensesQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedTaxableExpenses, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.taxableExpenses.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVouchersAndCreditCardsQuestion, associatedText)
+        .returning(value = aReimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCardsQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedVouchersAndCreditCards, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCards.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedNonCashQuestion, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.nonCashQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedNonCash, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.nonCash.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedOtherItemsQuestion, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.otherItemsQuestion.get.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedOtherItems, associatedText).returning(value = aReimbursedCostsVouchersAndNonCashModel.otherItems.get.toString())
 
       underTest.decrypted shouldBe aReimbursedCostsVouchersAndNonCashModel
     }

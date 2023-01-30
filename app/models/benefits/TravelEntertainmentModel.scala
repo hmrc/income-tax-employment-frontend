@@ -18,14 +18,11 @@ package models.benefits
 
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.TextAndKey
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
-import utils.DecryptableSyntax.DecryptableOps
-import utils.DecryptorInstances.{bigDecimalDecryptor, booleanDecryptor}
-import utils.EncryptableSyntax.EncryptableOps
-import utils.EncryptorInstances.{bigDecimalEncryptor, booleanEncryptor}
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
+import utils.CypherSyntax.{DecryptableOps, EncryptableOps}
 
 case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
                                     travelAndSubsistenceQuestion: Option[Boolean] = None,
@@ -75,7 +72,7 @@ case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
     }
   }
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedTravelEntertainmentModel = EncryptedTravelEntertainmentModel(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedTravelEntertainmentModel = EncryptedTravelEntertainmentModel(
     sectionQuestion = sectionQuestion.map(_.encrypted),
     travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.encrypted),
     travelAndSubsistence = travelAndSubsistence.map(_.encrypted),
@@ -100,8 +97,8 @@ case class EncryptedTravelEntertainmentModel(sectionQuestion: Option[EncryptedVa
                                              entertainingQuestion: Option[EncryptedValue] = None,
                                              entertaining: Option[EncryptedValue] = None) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher,
-                  textAndKey: TextAndKey): TravelEntertainmentModel = TravelEntertainmentModel(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto,
+                associatedText: String): TravelEntertainmentModel = TravelEntertainmentModel(
     sectionQuestion = sectionQuestion.map(_.decrypted[Boolean]),
     travelAndSubsistenceQuestion = travelAndSubsistenceQuestion.map(_.decrypted[Boolean]),
     travelAndSubsistence = travelAndSubsistence.map(_.decrypted[BigDecimal]),
@@ -113,5 +110,7 @@ case class EncryptedTravelEntertainmentModel(sectionQuestion: Option[EncryptedVa
 }
 
 object EncryptedTravelEntertainmentModel {
-  implicit val formats: OFormat[EncryptedTravelEntertainmentModel] = Json.format[EncryptedTravelEntertainmentModel]
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+
+  implicit val formats: Format[EncryptedTravelEntertainmentModel] = Json.format[EncryptedTravelEntertainmentModel]
 }

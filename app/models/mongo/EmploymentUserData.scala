@@ -19,10 +19,11 @@ package models.mongo
 import controllers.employment.routes.CheckEmploymentDetailsController
 import models.question.{Question, QuestionsJourney}
 import org.joda.time.{DateTime, DateTimeZone}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
+import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 case class EmploymentUserData(sessionId: String,
                               mtdItId: String,
@@ -35,7 +36,7 @@ case class EmploymentUserData(sessionId: String,
                               employment: EmploymentCYAModel,
                               lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def encrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EncryptedEmploymentUserData = EncryptedEmploymentUserData(
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentUserData = EncryptedEmploymentUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -76,7 +77,7 @@ case class EncryptedEmploymentUserData(sessionId: String,
                                        employment: EncryptedEmploymentCYAModel,
                                        lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
 
-  def decrypted(implicit secureGCMCipher: SecureGCMCipher, textAndKey: TextAndKey): EmploymentUserData = EmploymentUserData(
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentUserData = EmploymentUserData(
     sessionId = sessionId,
     mtdItId = mtdItId,
     nino = nino,
@@ -91,6 +92,7 @@ case class EncryptedEmploymentUserData(sessionId: String,
 }
 
 object EncryptedEmploymentUserData extends MongoJodaFormats {
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
 
   implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
 

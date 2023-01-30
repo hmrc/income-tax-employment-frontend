@@ -32,14 +32,14 @@ import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.mongo.MongoUtils
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
-import utils.{IntegrationTest, SecureGCMCipher}
+import utils.{AesGcmAdCrypto, IntegrationTest}
 
 import scala.concurrent.Future
 
 class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
   private val employmentRepo: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
-  private implicit val secureGCMCipher: SecureGCMCipher = app.injector.instanceOf[SecureGCMCipher]
+  private implicit val secureGCMCipher: AesGcmAdCrypto = app.injector.instanceOf[AesGcmAdCrypto]
 
   private def count: Long = await(employmentRepo.collection.countDocuments().toFuture())
 
@@ -150,20 +150,18 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     "fail to add data" in new EmptyDatabase {
       countFromOtherDatabase mustBe 0
       val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(employmentUserDataOne))
-      res mustBe Left(EncryptionDecryptionError(
-        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for encrypt Invalid AES key length: 2 bytes"))
+      res mustBe Left(EncryptionDecryptionError("Failed encrypting data"))
     }
   }
 
   "find with invalid encryption" should {
     "fail to find data" in new EmptyDatabase {
-      implicit val textAndKey: TextAndKey = TextAndKey(employmentUserDataOne.mtdItId, appConfig.encryptionKey)
+      implicit val associatedText: String = employmentUserDataOne.mtdItId
       countFromOtherDatabase mustBe 0
       await(repoWithInvalidEncryption.collection.insertOne(employmentUserDataOne.encrypted).toFuture())
       countFromOtherDatabase mustBe 1
       private val res = await(repoWithInvalidEncryption.find(employmentUserDataOne.taxYear, employmentIdOne, authRequestOne.user))
-      res mustBe Left(EncryptionDecryptionError(
-        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
+      res mustBe Left(EncryptionDecryptionError("Failed encrypting data"))
     }
   }
 
@@ -240,7 +238,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       count mustBe 2
       private val maybeData: Option[EncryptedEmploymentUserData] = await(find(employmentUserDataTwo)(authRequestTwo))
-      implicit val textAndKey: TextAndKey = TextAndKey(maybeData.get.mtdItId, appConfig.encryptionKey)
+      implicit val associatedText: String = maybeData.get.mtdItId
       maybeData.get.decrypted mustBe employmentUserDataTwo
     }
 
@@ -288,7 +286,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
-      implicit val textAndKey: TextAndKey = TextAndKey(employmentUserDataOne.mtdItId, appConfig.encryptionKey)
+      implicit val associatedText: String = employmentUserDataOne.mtdItId
       await(employmentRepo.createOrUpdate(employmentUserDataOne)) mustBe Right(())
       count mustBe 1
 

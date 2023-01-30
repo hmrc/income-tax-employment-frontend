@@ -19,13 +19,13 @@ package models.mongo
 import models.expenses.{EncryptedExpensesViewModel, ExpensesViewModel}
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
-import utils.SecureGCMCipher
+import utils.AesGcmAdCrypto
 
 class ExpensesCYAModelSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val expensesViewModel = mock[ExpensesViewModel]
   private val encryptedExpensesViewModel = mock[EncryptedExpensesViewModel]
@@ -34,7 +34,7 @@ class ExpensesCYAModelSpec extends UnitTest
     "return EncryptedExpensesCYAModel instance" in {
       val underTest = ExpensesCYAModel(expenses = expensesViewModel)
 
-      (expensesViewModel.encrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(encryptedExpensesViewModel)
+      (expensesViewModel.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedExpensesViewModel)
 
       val encryptedResult = underTest.encrypted
 
@@ -46,7 +46,7 @@ class ExpensesCYAModelSpec extends UnitTest
     "return ExpensesCYAModel instance" in {
       val underTest = EncryptedExpensesCYAModel(expenses = encryptedExpensesViewModel)
 
-      (encryptedExpensesViewModel.decrypted(_: SecureGCMCipher, _: TextAndKey)).expects(*, *).returning(expensesViewModel)
+      (encryptedExpensesViewModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(expensesViewModel)
 
       val decryptedResult = underTest.decrypted
 

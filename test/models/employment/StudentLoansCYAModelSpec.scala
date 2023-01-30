@@ -16,19 +16,18 @@
 
 package models.employment
 
-import models.mongo.TextAndKey
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.{JsObject, Json}
 import support.UnitTest
 import support.builders.models.employment.StudentLoansCYAModelBuilder.aStudentLoansCYAModel
-import utils.TypeCaster.Converter
-import utils.{EncryptedValue, SecureGCMCipher}
+import uk.gov.hmrc.crypto.EncryptedValue
+import utils.AesGcmAdCrypto
 
 class StudentLoansCYAModelSpec extends UnitTest
   with MockFactory {
 
-  private implicit val secureGCMCipher: SecureGCMCipher = mock[SecureGCMCipher]
-  private implicit val textAndKey: TextAndKey = TextAndKey("some-associated-text", "some-aes-key")
+  private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
+  private implicit val associatedText: String = "some-associated-text"
 
   private val encryptedUglDeduction = EncryptedValue("encryptedUglDeduction", "some-nonce")
   private val encryptedUglDeductionAmount = EncryptedValue("encryptedUglDeductionAmount", "some-nonce")
@@ -86,10 +85,10 @@ class StudentLoansCYAModelSpec extends UnitTest
     "return EncryptedStudentLoansCYAModel instance" in {
       val underTest = aStudentLoansCYAModel
 
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.uglDeduction, textAndKey).returning(encryptedUglDeduction)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.uglDeductionAmount.get, textAndKey).returning(encryptedUglDeductionAmount)
-      (secureGCMCipher.encrypt(_: Boolean)(_: TextAndKey)).expects(underTest.pglDeduction, textAndKey).returning(encryptedPglDeduction)
-      (secureGCMCipher.encrypt(_: BigDecimal)(_: TextAndKey)).expects(underTest.pglDeductionAmount.get, textAndKey).returning(encryptedPglDeductionAmount)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.uglDeduction.toString, associatedText).returning(encryptedUglDeduction)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.uglDeductionAmount.get.toString(), associatedText).returning(encryptedUglDeductionAmount)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.pglDeduction.toString, associatedText).returning(encryptedPglDeduction)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.pglDeductionAmount.get.toString(), associatedText).returning(encryptedPglDeductionAmount)
 
       underTest.encrypted shouldBe EncryptedStudentLoansCYAModel(
         uglDeduction = encryptedUglDeduction,
@@ -109,14 +108,14 @@ class StudentLoansCYAModelSpec extends UnitTest
         pglDeductionAmount = Some(encryptedPglDeductionAmount)
       )
 
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedUglDeduction.value, encryptedUglDeduction.nonce, textAndKey, *).returning(value = aStudentLoansCYAModel.uglDeduction)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedUglDeductionAmount.value, encryptedUglDeductionAmount.nonce, textAndKey, *).returning(value = aStudentLoansCYAModel.uglDeductionAmount.get)
-      (secureGCMCipher.decrypt[Boolean](_: String, _: String)(_: TextAndKey, _: Converter[Boolean]))
-        .expects(encryptedPglDeduction.value, encryptedPglDeduction.nonce, textAndKey, *).returning(value = aStudentLoansCYAModel.pglDeduction)
-      (secureGCMCipher.decrypt[BigDecimal](_: String, _: String)(_: TextAndKey, _: Converter[BigDecimal]))
-        .expects(encryptedPglDeductionAmount.value, encryptedPglDeductionAmount.nonce, textAndKey, *).returning(value = aStudentLoansCYAModel.pglDeductionAmount.get)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedUglDeduction, associatedText).returning(value = aStudentLoansCYAModel.uglDeduction.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedUglDeductionAmount, associatedText).returning(value = aStudentLoansCYAModel.uglDeductionAmount.get.toString())
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPglDeduction, associatedText).returning(value = aStudentLoansCYAModel.pglDeduction.toString)
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedPglDeductionAmount, associatedText).returning(value = aStudentLoansCYAModel.pglDeductionAmount.get.toString())
 
       underTest.decrypted shouldBe aStudentLoansCYAModel
     }
