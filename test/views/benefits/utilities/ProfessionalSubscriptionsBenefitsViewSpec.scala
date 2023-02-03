@@ -36,7 +36,7 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
     val continueButtonSelector = "#main-content > div > div > form > button"
     val formSelector = "#main-content > div > div > form"
 
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
   }
 
   trait CommonExpectedResults {
@@ -134,8 +134,8 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -154,8 +154,8 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -175,8 +175,8 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -196,8 +196,8 @@ class ProfessionalSubscriptionsBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.checkWithEmployerText, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorMessage, yesRadioSelector)

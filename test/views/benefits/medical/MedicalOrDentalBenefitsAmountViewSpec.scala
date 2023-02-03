@@ -36,7 +36,7 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
   private val amountInputName = "amount"
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"
@@ -148,8 +148,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(2))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -169,8 +169,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(2))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "100")
@@ -190,8 +190,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(2))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)
@@ -213,8 +213,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(index = 3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(index = 1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(index = 2))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedWrongFormatErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)
@@ -236,8 +236,8 @@ class MedicalOrDentalBenefitsAmountViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(2))
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedMaxErrorMessage, Some(amountInputName))
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
         textOnPageCheck(hintText, hintTextSelector)

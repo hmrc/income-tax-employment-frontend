@@ -116,7 +116,7 @@ class EmploymentGatewayViewSpec extends ViewUnitTest {
         import userScenario.commonExpectedResults._
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
@@ -137,7 +137,7 @@ class EmploymentGatewayViewSpec extends ViewUnitTest {
         import userScenario.commonExpectedResults._
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)

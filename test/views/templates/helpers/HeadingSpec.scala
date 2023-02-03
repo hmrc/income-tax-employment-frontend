@@ -38,10 +38,8 @@ class HeadingSpec extends ViewUnitTest {
     "show the caption before the heading" in {
       val htmlFormat = underTest(heading, Some(caption), size = size)
       val document: Document = Jsoup.parse(htmlFormat.body)
-      val headingAndCaption = document.select(s"h1.govuk-heading-$size").text().trim
-
-      headingAndCaption.startsWith(caption) shouldBe true
-      headingAndCaption.endsWith(heading) shouldBe true
+      document.select("span:nth-child(1)").text() shouldBe caption
+      document.select("h1:nth-child(2)").text() shouldBe heading
     }
 
     "show only the heading when no caption is provided" in {

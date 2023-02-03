@@ -121,7 +121,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         captionCheck(expectedCaption(taxYearEOY))
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -142,7 +142,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
@@ -164,7 +164,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
@@ -186,7 +186,7 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption(taxYearEOY))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)

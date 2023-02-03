@@ -41,39 +41,38 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val cannotUpdateInfoSelector = "#main-content > div > div > div.govuk-inset-text"
     val employersSelector = "#employer-h2"
 
-    def yourEmpInfoSelector(id: Int): String = s"#main-content > div > div > p:nth-child($id)"
+    def yourEmpInfoSelector(id: Int): String = s"#main-content > div > div > p:nth-of-type($id)"
 
-    def employerNameSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(5) > div:nth-child($id) > dt"
+    def employerNameSelector(id: Int): String = s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($id) > dt"
 
     val employerNameSelector = "#main-content > div > div > dl:nth-child(4) > div > dt"
     val employerNameInYearSelector = "#main-content > div > div > dl:nth-child(5) > div > dt"
 
-    def employerNameEOYSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dt"
+    def employerNameEOYSelector(id: Int): String = s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($id) > dt"
 
-    def viewEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(5) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
+    def viewEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($id) > dd.govuk-summary-list__actions > a"
 
-    def changeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
+    def changeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
 
-    def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-child(4) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
+    def removeEmployerSelector(id: Int): String = s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($id) > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
 
     val expensesHeadingSelector = "#expenses-h2"
 
-    def expensesLineSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dt"
+    def expensesLineSelector(expensesOnly: Boolean = false): String = s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-of-type(2)"} > div > dt"
 
     val thisIsATotalSelector = s"#total-of-expenses"
-    val noEmployersSelector = "#main-content > div > div > p:nth-child(4)"
-    val viewExpensesSelector = "#main-content > div > div > dl:nth-child(8) > div > dd.govuk-summary-list__actions > a"
-    val addAnotherSelector = "#main-content > div > div > p:nth-child(5) > a"
+    val viewExpensesSelector = "#main-content > div > div > dl:nth-of-type(2) > div > dd.govuk-summary-list__actions > a"
+    val addAnotherSelector = s"#main-content > div > div > p:nth-of-type(2) > a"
 
     def changeExpensesSelector(expensesOnly: Boolean = false): String =
-      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
+      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-of-type(2)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(1) > a"
 
     def removeExpensesSelector(expensesOnly: Boolean = false): String =
-      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-child(8)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
+      s"#main-content > div > div > ${if (expensesOnly) "dl" else "dl:nth-of-type(2)"} > div > dd.govuk-summary-list__actions > ul > li:nth-child(2) > a"
 
     val addExpensesSelector = s"#add-expenses"
 
-    def addEmployerSelector = "#main-content > div > div > p.govuk-body > a"
+    val addEmployerSelector = "#main-content > div > div > p.govuk-body > a"
 
     val addSelector = "#main-content > div > div > dl:nth-child(7) > div > dd > a"
     val cannotAddSelector = "#main-content > div > div > p:nth-child(7)"
@@ -232,7 +231,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           h1Check(expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(employers, employersSelector)
-          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
+          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(1))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
           linkCheck(s"$change $change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
           linkCheck(s"$remove $remove $name", removeEmployerSelector(1), RemoveEmploymentController.show(taxYearEOY, employmentId).url)
@@ -261,7 +260,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           h1Check(expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(employers, employersSelector)
-          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
+          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(1))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYearEOY - 1), employerNameEOYSelector(id = 1))
           linkCheck(s"$change $change $name", changeEmployerSelector(1), EmployerInformationController.show(taxYearEOY, employmentId).url)
           linkCheck(s"$remove $remove $name", removeEmployerSelector(1), RemoveEmploymentController.show(taxYearEOY, employmentId).url)
@@ -289,7 +288,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           captionCheck(expectedCaption(taxYear))
           textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
           textOnPageCheck(employers, employersSelector)
-          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
+          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(1))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
           linkCheck(s"$view $view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))
@@ -315,7 +314,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           captionCheck(expectedCaption(taxYear))
           textOnPageCheck(specific.cannotUpdateInfo, cannotUpdateInfoSelector)
           textOnPageCheck(employers, employersSelector)
-          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(4))
+          textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(1))
           textOnPageCheck(name + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 1))
           linkCheck(s"$view $view $name", viewEmployerSelector(1), EmployerInformationController.show(taxYear, employmentId).url)
           textOnPageCheck(employerName2 + " " + startedDateBeforeString(taxYear - 1), employerNameSelector(id = 2))

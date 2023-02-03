@@ -27,7 +27,7 @@ import views.html.expenses.ExpensesInterruptPageView
 class ExpensesInterruptPageViewSpec extends ViewUnitTest {
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > p:nth-of-type($index)"
 
     val continueButtonSelector: String = "button.govuk-button"
   }
@@ -106,9 +106,9 @@ class ExpensesInterruptPageViewSpec extends ViewUnitTest {
         titleCheck(expectedTitle, userScenario.isWelsh)
         h1Check(expectedTitle)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample1, paragraphSelector(2))
-        textOnPageCheck(expectedExample2, paragraphSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample3, paragraphSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample1, paragraphSelector(1))
+        textOnPageCheck(expectedExample2, paragraphSelector(2))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample3, paragraphSelector(3))
         buttonCheck(buttonText, continueButtonSelector)
         welshToggleCheck(userScenario.isWelsh)
       }

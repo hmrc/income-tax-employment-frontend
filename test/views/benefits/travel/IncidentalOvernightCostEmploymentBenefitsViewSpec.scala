@@ -37,7 +37,7 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
 
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
   }
 
   trait SpecificExpectedResults {
@@ -130,8 +130,8 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
-        textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 1))
+        textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -150,8 +150,8 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 2))
-        textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 1))
+        textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 2))
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -172,8 +172,8 @@ class IncidentalOvernightCostEmploymentBenefitsViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 3))
-          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 4))
+          textOnPageCheck(userScenario.specificExpectedResults.get.costInformation, paragraphTextSelector(index = 1))
+          textOnPageCheck(allowanceInformation, paragraphTextSelector(index = 2))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)

@@ -36,8 +36,8 @@ class ReceiveOwnCarMileageBenefitViewSpec extends ViewUnitTest {
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val p1Selector = "#main-content > div > div > p:nth-child(2)"
-    val p2Selector = "#main-content > div > div > p:nth-child(3)"
+    val p1Selector = "#main-content > div > div > p:nth-of-type(1)"
+    val p2Selector = "#main-content > div > div > p:nth-of-type(2)"
   }
 
   trait SpecificExpectedResults {

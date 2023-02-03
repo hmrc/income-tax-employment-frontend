@@ -98,7 +98,7 @@ class TaxYearErrorTemplateSpec extends ViewUnitTest {
 
         titleCheck(h1Expected, userScenario.isWelsh)
         welshToggleCheck(userScenario.isWelsh)
-        h1Check(h1Expected, "xl")
+        h1Check(h1Expected, size = "xl")
         textOnPageCheck(p1Expected, p1Selector)
         textOnPageCheck(p2Expected, p2Selector)
         textOnPageCheck(p3Expected, p3Selector)
@@ -119,7 +119,7 @@ class TaxYearErrorTemplateSpec extends ViewUnitTest {
 
         titleCheck(h1Expected, userScenario.isWelsh)
         welshToggleCheck(userScenario.isWelsh)
-        h1Check(h1Expected, "xl")
+        h1Check(h1Expected, size = "xl")
         textOnPageCheck(p1ExpectedSingle, p1Selector)
         textOnPageCheck(p2Expected, p2Selector)
         textOnPageCheck(p3Expected, p3Selector)

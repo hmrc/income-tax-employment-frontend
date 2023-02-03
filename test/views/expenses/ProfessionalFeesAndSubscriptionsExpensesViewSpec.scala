@@ -33,7 +33,7 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
   private val professionalFeesLink = "https://www.gov.uk/tax-relief-for-employees/professional-fees-and-subscriptions"
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
 
@@ -144,7 +144,7 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
           linkCheck(userScenario.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
@@ -166,7 +166,7 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
           linkCheck(userScenario.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
@@ -188,7 +188,7 @@ class ProfessionalFeesAndSubscriptionsExpensesViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 3))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(index = 1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample1, bulletListSelector(index = 1))
           textOnPageCheck(userScenario.specificExpectedResults.get.expectedExample2, bulletListSelector(index = 2))
           linkCheck(userScenario.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)

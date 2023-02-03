@@ -37,7 +37,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
 
   object Selectors {
 
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
@@ -145,7 +145,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(2))
+        textOnPageCheck(enterTotalText, paragraphSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         elementNotOnPageCheck(ifItWasNotTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -166,7 +166,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 2))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -186,7 +186,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 3))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -209,7 +209,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 3))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "123.33.33")
@@ -232,7 +232,7 @@ class IncomeTaxBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         captionCheck(expectedCaption)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 3))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "100,000,000,000")

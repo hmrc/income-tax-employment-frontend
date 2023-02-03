@@ -125,10 +125,7 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
   }
 
   object Selectors {
-    val paragraphSelector = "#main-content > div > div > p:nth-child(2)"
-    val paragraphSelector_2 = "#main-content > div > div > p:nth-child(3)"
-    val paragraphSelectorError = "#main-content > div > div > p:nth-child(3)"
-    val paragraphSelectorError_2 = "#main-content > div > div > p:nth-child(4)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
     val checkboxHint = "#studentLoans-hint"
 
     val checkboxUgl = "#studentLoans"
@@ -172,8 +169,8 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         titleCheck(title, scenarioData.isWelsh)
         h1Check(heading)
         captionCheck(caption)
-        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector)
-        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector_2)
+        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector(1))
+        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector(2))
         hintTextCheck(checkboxHint, Selectors.checkboxHint)
         textOnPageCheck(checkboxUgl, Selectors.checkboxUglText)
         inputFieldValueCheck("studentLoans[]", Selectors.checkboxUgl, "ugl")
@@ -197,8 +194,8 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         titleCheck(title, scenarioData.isWelsh)
         h1Check(heading)
         captionCheck(caption)
-        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector)
-        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector_2)
+        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector(1))
+        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector(2))
         hintTextCheck(checkboxHint, Selectors.checkboxHint)
         textOnPageCheck(checkboxUgl, Selectors.checkboxUglText)
         hintTextCheck(checkboxUglHint, Selectors.checkboxUglHint)
@@ -222,8 +219,8 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         titleCheck(title, scenarioData.isWelsh)
         h1Check(heading)
         captionCheck(caption)
-        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector)
-        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector_2)
+        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector(1))
+        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector(2))
         hintTextCheck(checkboxHint, Selectors.checkboxHint)
         textOnPageCheck(checkboxUgl, Selectors.checkboxUglText)
         hintTextCheck(checkboxUglHint, Selectors.checkboxUglHint)
@@ -247,8 +244,8 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         titleCheck(expectedErrorTitle, scenarioData.isWelsh)
         h1Check(heading)
         captionCheck(caption)
-        textOnPageCheck(paragraphText_1, Selectors.paragraphSelectorError)
-        textOnPageCheck(paragraphText_2, Selectors.paragraphSelectorError_2)
+        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector(1))
+        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector(2))
         hintTextCheck(checkboxHint, Selectors.checkboxHint)
         textOnPageCheck(checkboxUgl, Selectors.checkboxUglText)
         hintTextCheck(checkboxUglHint, Selectors.checkboxUglHint)
@@ -274,8 +271,8 @@ class StudentLoansQuestionViewSpec extends ViewUnitTest {
         titleCheck(expectedErrorTitle, scenarioData.isWelsh)
         h1Check(heading)
         captionCheck(caption)
-        textOnPageCheck(paragraphText_1, Selectors.paragraphSelectorError)
-        textOnPageCheck(paragraphText_2, Selectors.paragraphSelectorError_2)
+        textOnPageCheck(paragraphText_1, Selectors.paragraphSelector(1))
+        textOnPageCheck(paragraphText_2, Selectors.paragraphSelector(2))
         hintTextCheck(checkboxHint, Selectors.checkboxHint)
         textOnPageCheck(checkboxUgl, Selectors.checkboxUglText)
         hintTextCheck(checkboxUglHint, Selectors.checkboxUglHint)

@@ -72,7 +72,7 @@ class IndividualUnauthorisedViewSpec extends ViewUnitTest {
 
         titleCheck(validTitle, userScenario.isWelsh)
         welshToggleCheck(userScenario.isWelsh)
-        h1Check(validTitle, "xl")
+        h1Check(validTitle, size = "xl")
         textOnPageCheck(pageContent, paragraphSelector)
         linkCheck(linkContent, linkSelector, signUpForMTDLink)
       }
