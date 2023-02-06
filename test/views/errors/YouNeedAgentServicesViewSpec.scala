@@ -75,7 +75,7 @@ class YouNeedAgentServicesViewSpec extends ViewUnitTest {
 
         titleCheck(h1Expected, userScenario.isWelsh)
         welshToggleCheck(userScenario.isWelsh)
-        h1Check(h1Expected, "xl")
+        h1Check(h1Expected, size = "xl")
         textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", p1Selector)
         linkCheck(createAnAgentText, createAnAgentLinkSelector, createAnAgentLink)
       }

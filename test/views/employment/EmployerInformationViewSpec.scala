@@ -46,11 +46,11 @@ class EmployerInformationViewSpec extends ViewUnitTest {
     def studentLoansLinkSelector(welshLang: Boolean): String = if (welshLang) "#benthyciadau-myfyrwyr_link" else "#student-loans_link"
 
     def summaryListKeySelector(i: Int): String = {
-      s"#main-content > div > div > dl:nth-child(3) > div:nth-child($i) > dt"
+      s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($i) > dt"
     }
 
     def summaryListStatusTagsSelector(i: Int): String = {
-      s"#main-content > div > div > dl:nth-child(3) > div:nth-child($i) > dd"
+      s"#main-content > div > div > dl:nth-of-type(1) > div:nth-child($i) > dd"
     }
 
     def summaryListStatusTagsSelectorEOY(i: Int): String = {

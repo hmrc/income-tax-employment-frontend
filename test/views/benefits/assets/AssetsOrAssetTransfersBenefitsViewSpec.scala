@@ -33,7 +33,7 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val paragraphSelector: Int => String = (index: Int) => s"#main-content > div > div > p.govuk-body:nth-child($index)"
+    val paragraphSelector: Int => String = (index: Int) => s"#main-content > div > div > p.govuk-body:nth-of-type($index)"
     val bullet1Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(1)"
     val bullet2Selector: String = "#main-content > div > div > ul.govuk-list > li:nth-child(2)"
     val continueButtonSelector: String = "#continue"
@@ -139,8 +139,8 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(3))
+        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(2))
         textOnPageCheck(expectedBullet1, bullet1Selector)
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedBullet2, bullet2Selector)
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
@@ -161,8 +161,8 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(2))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(3))
+        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(2))
         textOnPageCheck(expectedBullet1, bullet1Selector)
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedBullet2, bullet2Selector)
         radioButtonCheck(yesText, 1, checked = true)
@@ -183,8 +183,8 @@ class AssetsOrAssetTransfersBenefitsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(3))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(4))
+        textOnPageCheck(expectedDescriptionParagraph, paragraphSelector(1))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedIncludesParagraph, paragraphSelector(2))
         textOnPageCheck(expectedBullet1, bullet1Selector)
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedBullet2, bullet2Selector)
         radioButtonCheck(yesText, radioNumber = 1, checked = false)

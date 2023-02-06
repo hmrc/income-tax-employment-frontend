@@ -35,7 +35,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val paragraphTextSelector: Int => String = (i: Int) => s"#main-content > div > div > p:nth-child($i)"
+    val paragraphTextSelector: Int => String = (i: Int) => s"#main-content > div > div > p:nth-of-type($i)"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"
@@ -143,8 +143,8 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(2))
-        elementNotOnPageCheck(paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(1))
+        elementNotOnPageCheck(paragraphTextSelector(2))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -165,7 +165,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(2))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -186,7 +186,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -210,7 +210,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "123.33.33")
@@ -234,7 +234,7 @@ class BeneficialLoansAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.youCanFindText, paragraphTextSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "100,000,000,000")

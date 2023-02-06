@@ -91,7 +91,7 @@ class UnauthorisedUserErrorPageViewSpec extends ViewUnitTest {
 
         titleCheck(h1Expected, userScenario.isWelsh)
         welshToggleCheck(userScenario.isWelsh)
-        h1Check(h1Expected, "xl")
+        h1Check(h1Expected, size = "xl")
         textOnPageCheck(youCanText, p1Selector)
         textOnPageCheck(s"$goToTheText $incomeTaxHomePageText $forMoreInformationText", p2Selector)
         linkCheck(incomeTaxHomePageText, incomeTaxHomePageLinkSelector, incomeTaxHomePageLink)

@@ -28,13 +28,13 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import views.html.benefits.medical.ChildcareBenefitsView
 
-class ChildcareBenefitdsViewSpec extends ViewUnitTest {
+class ChildcareBenefitsViewSpec extends ViewUnitTest {
 
   private val employmentId: String = "employmentId"
   private val exemptLink: String = "https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     val onlyNeedLinkSelector: String = "#exempt-link"
     val continueButtonSelector: String = "#continue"
@@ -140,10 +140,10 @@ class ChildcareBenefitdsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(index = 2))
-        textOnPageCheck(expectedWeOnly, paragraphSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(index = 1))
+        textOnPageCheck(expectedWeOnly, paragraphSelector(2))
         linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(index = 3))
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -162,10 +162,10 @@ class ChildcareBenefitdsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-        textOnPageCheck(expectedWeOnly, paragraphSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(1))
+        textOnPageCheck(expectedWeOnly, paragraphSelector(2))
         linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(3))
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -184,10 +184,10 @@ class ChildcareBenefitdsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
-        textOnPageCheck(expectedWeOnly, paragraphSelector(3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(1))
+        textOnPageCheck(expectedWeOnly, paragraphSelector(2))
         linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(3))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
         buttonCheck(expectedButtonText, continueButtonSelector)
@@ -206,10 +206,10 @@ class ChildcareBenefitdsViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(3))
-        textOnPageCheck(expectedWeOnly, paragraphSelector(4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedTheseAre, paragraphSelector(1))
+        textOnPageCheck(expectedWeOnly, paragraphSelector(2))
         linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(5))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedCheckWith, paragraphSelector(3))
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)

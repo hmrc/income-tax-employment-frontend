@@ -36,7 +36,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
   private val employmentId = anEmploymentSource.employmentId
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
@@ -141,7 +141,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, userScenario.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 2))
+        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -161,7 +161,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, userScenario.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 2))
+        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -181,7 +181,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
+        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
@@ -204,7 +204,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
+        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "123.33.33")
@@ -227,7 +227,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 3))
+        textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "100,000,000,000")

@@ -47,11 +47,11 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
     val returnToEmployerSelector = "#returnToEmployerBtn"
     val changeLinkCssSelector = ".govuk-summary-list__actions"
 
-    def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
+    def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dt"
 
-    def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
+    def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value"
 
-    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > h2:nth-child($i)"
+    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > h2:nth-of-type($i)"
   }
 
   trait SpecificExpectedResults {
@@ -705,145 +705,145 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
         captionCheck(common.expectedCaption())
         textOnPageCheck(specific.expectedP1, Selectors.p1)
         textOnPageCheck(specific.expectedP2(), Selectors.p2)
-        textOnPageCheck(common.employerName, fieldHeaderSelector(4))
-        textOnPageCheck(common.benefitsReceived, fieldNameSelector(5, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(5, 1), "for benefits question")
-        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(6))
-        textOnPageCheck(common.carSubheading, fieldNameSelector(7, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 1), "for vehicles section question")
-        textOnPageCheck(common.companyCar, fieldNameSelector(7, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 2), "for carQuestion")
-        textOnPageCheck(common.companyCarAmount, fieldNameSelector(7, 3))
-        textOnPageCheck("£100", fieldAmountSelector(7, 3), "car")
-        textOnPageCheck(common.fuelForCompanyCar, fieldNameSelector(7, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 4), "for carFuelQuestion")
-        textOnPageCheck(common.fuelForCompanyCarAmount, fieldNameSelector(7, 5))
-        textOnPageCheck("£200", fieldAmountSelector(7, 5), "carFuel")
-        textOnPageCheck(common.companyVan, fieldNameSelector(7, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 6), "for vanQuestion")
-        textOnPageCheck(common.companyVanAmount, fieldNameSelector(7, 7))
-        textOnPageCheck("£300", fieldAmountSelector(7, 7), "van")
-        textOnPageCheck(common.fuelForCompanyVan, fieldNameSelector(7, 8))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 8), "for vanFuelQuestion")
-        textOnPageCheck(common.fuelForCompanyVanAmount, fieldNameSelector(7, 9))
-        textOnPageCheck("£400", fieldAmountSelector(7, 9), "vanFuel")
-        textOnPageCheck(common.mileageBenefit, fieldNameSelector(7, 10))
-        textOnPageCheck(common.yes, fieldAmountSelector(7, 10), "for mileageQuestion")
-        textOnPageCheck(common.mileageBenefitAmount, fieldNameSelector(7, 11))
-        textOnPageCheck("£500", fieldAmountSelector(7, 11), "mileage")
-        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(8))
-        textOnPageCheck(common.accommodationSubheading, fieldNameSelector(9, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(9, 1), "for accommodation section question")
-        textOnPageCheck(common.accommodation, fieldNameSelector(9, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(9, 2), "for accommodationQuestion")
-        textOnPageCheck(common.accommodationAmount, fieldNameSelector(9, 3))
-        textOnPageCheck("£100", fieldAmountSelector(9, 3), "for accommodation")
-        textOnPageCheck(common.qualifyingRelocationCosts, fieldNameSelector(9, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(9, 4), "for qualifyingRelocationExpensesQuestion")
-        textOnPageCheck(common.qualifyingRelocationCostsAmount, fieldNameSelector(9, 5))
-        textOnPageCheck("£200", fieldAmountSelector(9, 5), "qualifyingRelocationExpenses")
-        textOnPageCheck(common.nonQualifyingRelocationCosts, fieldNameSelector(9, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(9, 6), "for nonQualifyingRelocationExpensesQuestion")
-        textOnPageCheck(common.nonQualifyingRelocationCostsAmount, fieldNameSelector(9, 7))
-        textOnPageCheck("£300", fieldAmountSelector(9, 7), "nonQualifyingRelocationExpenses")
-        textOnPageCheck(common.travelHeader, fieldHeaderSelector(10))
-        textOnPageCheck(common.travelSubheading, fieldNameSelector(11, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(11, 1), "for travel section question")
-        textOnPageCheck(common.travelAndSubsistence, fieldNameSelector(11, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(11, 2), "for travelAndSubsistenceQuestion")
-        textOnPageCheck(common.travelAndSubsistenceAmount, fieldNameSelector(11, 3))
-        textOnPageCheck("£100", fieldAmountSelector(11, 3), "travelAndSubsistence")
-        textOnPageCheck(common.personalCosts, fieldNameSelector(11, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(11, 4), "for personalIncidentalExpensesQuestion")
-        textOnPageCheck(common.personalCostsAmount, fieldNameSelector(11, 5))
-        textOnPageCheck("£200", fieldAmountSelector(11, 5), "personalIncidentalExpenses")
-        textOnPageCheck(common.entertainment, fieldNameSelector(11, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(11, 6), "for entertainingQuestion")
-        textOnPageCheck(common.entertainmentAmount, fieldNameSelector(11, 7))
-        textOnPageCheck("£300", fieldAmountSelector(11, 7), "entertaining")
-        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(12))
-        textOnPageCheck(common.utilitiesSubheading, fieldNameSelector(13, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(13, 1), "for utilities section question")
-        textOnPageCheck(common.telephone, fieldNameSelector(13, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(13, 2), "for telephoneQuestion")
-        textOnPageCheck(common.telephoneAmount, fieldNameSelector(13, 3))
-        textOnPageCheck("£100", fieldAmountSelector(13, 3), "telephone")
-        textOnPageCheck(common.servicesProvided, fieldNameSelector(13, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(13, 4), "for employerProvidedServicesQuestion")
-        textOnPageCheck(common.servicesProvidedAmount, fieldNameSelector(13, 5))
-        textOnPageCheck("£200", fieldAmountSelector(13, 5), "employerProvidedServices")
-        textOnPageCheck(common.profSubscriptions, fieldNameSelector(13, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(13, 6), "for employerProvidedProfessionalSubscriptionsQuestion")
-        textOnPageCheck(common.profSubscriptionsAmount, fieldNameSelector(13, 7))
-        textOnPageCheck("£300", fieldAmountSelector(13, 7), "employerProvidedProfessionalSubscriptions")
-        textOnPageCheck(common.otherServices, fieldNameSelector(13, 8))
-        textOnPageCheck(common.yes, fieldAmountSelector(13, 8), "for serviceQuestion")
-        textOnPageCheck(common.otherServicesAmount, fieldNameSelector(13, 9))
-        textOnPageCheck("£400", fieldAmountSelector(13, 9), "service")
-        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(14), "for medical section header")
-        textOnPageCheck(common.medicalSubheading, fieldNameSelector(15, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(15, 1), "for medical section question")
-        textOnPageCheck(common.medicalIns, fieldNameSelector(15, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(15, 2), "for medicalInsuranceQuestion")
-        textOnPageCheck(common.medicalInsAmount, fieldNameSelector(15, 3))
-        textOnPageCheck("£100", fieldAmountSelector(15, 3), "medicalInsurance")
-        textOnPageCheck(common.nursery, fieldNameSelector(15, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(15, 4), "for nurseryPlacesQuestion")
-        textOnPageCheck(common.nurseryAmount, fieldNameSelector(15, 5))
-        textOnPageCheck("£200", fieldAmountSelector(15, 5), "nurseryPlaces")
-        textOnPageCheck(common.educational, fieldNameSelector(15, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(15, 6), "for educationalServicesQuestion")
-        textOnPageCheck(common.educationalAmount, fieldNameSelector(15, 7))
-        textOnPageCheck("£300", fieldAmountSelector(15, 7), "educationalServices")
-        textOnPageCheck(common.beneficialLoans, fieldNameSelector(15, 8))
-        textOnPageCheck(common.yes, fieldAmountSelector(15, 8), "for beneficialLoanQuestion")
-        textOnPageCheck(common.beneficialLoansAmount, fieldNameSelector(15, 9))
-        textOnPageCheck("£400", fieldAmountSelector(15, 9), "beneficialLoan")
-        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(16))
-        textOnPageCheck(common.incomeTaxSubheading, fieldNameSelector(17, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(17, 1), "for income tax section question")
-        textOnPageCheck(common.incomeTaxPaid, fieldNameSelector(17, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(17, 2), "for incomeTaxPaidByDirectorQuestion")
-        textOnPageCheck(common.incomeTaxPaidAmount, fieldNameSelector(17, 3))
-        textOnPageCheck("£255", fieldAmountSelector(17, 3), "incomeTaxPaidByDirector")
-        textOnPageCheck(common.incurredCostsPaid, fieldNameSelector(17, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(17, 4), "for paymentsOnEmployeesBehalfQuestion")
-        textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(17, 5))
-        textOnPageCheck("£255", fieldAmountSelector(17, 5), "paymentsOnEmployeesBehalf")
-        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(18), "for reimbursed section header")
-        textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(19, 1))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 1), "for reimbursements section question")
-        textOnPageCheck(common.nonTaxable, fieldNameSelector(19, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 2), "for expensesQuestion")
-        textOnPageCheck(common.nonTaxableAmount, fieldNameSelector(19, 3))
-        textOnPageCheck("£100", fieldAmountSelector(19, 3), "expenses")
-        textOnPageCheck(common.taxableCosts, fieldNameSelector(19, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 4), "for taxableExpensesQuestion")
-        textOnPageCheck(common.taxableCostsAmount, fieldNameSelector(19, 5))
-        textOnPageCheck("£200", fieldAmountSelector(19, 5), "taxableExpenses")
-        textOnPageCheck(common.vouchers, fieldNameSelector(19, 6))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 6), "for vouchersAndCreditCardsQuestion")
-        textOnPageCheck(common.vouchersAmount, fieldNameSelector(19, 7))
-        textOnPageCheck("£300", fieldAmountSelector(19, 7), "vouchersAndCreditCards")
-        textOnPageCheck(common.nonCash, fieldNameSelector(19, 8))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 8), "for nonCashQuestion")
-        textOnPageCheck(common.nonCashAmount, fieldNameSelector(19, 9))
-        textOnPageCheck("£400", fieldAmountSelector(19, 9), "nonCash")
-        textOnPageCheck(common.otherBenefits, fieldNameSelector(19, 10))
-        textOnPageCheck(common.yes, fieldAmountSelector(19, 10), "for otherItemsQuestion")
-        textOnPageCheck(common.otherBenefitsAmount, fieldNameSelector(19, 11))
-        textOnPageCheck("£500", fieldAmountSelector(19, 11), "otherItems")
-        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(20))
-        textOnPageCheck(common.assetsSubheading, fieldNameSelector(21, 1), "subHeading")
-        textOnPageCheck(common.yes, fieldAmountSelector(21, 1), "for assets section question")
-        textOnPageCheck(common.assets, fieldNameSelector(21, 2))
-        textOnPageCheck(common.yes, fieldAmountSelector(21, 2), "for assetsQuestion")
-        textOnPageCheck(common.assetsAmount, fieldNameSelector(21, 3))
-        textOnPageCheck("£100", fieldAmountSelector(21, 3), "assets")
-        textOnPageCheck(common.assetTransfers, fieldNameSelector(21, 4))
-        textOnPageCheck(common.yes, fieldAmountSelector(21, 4), "for assetTransferQuestion")
-        textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(21, 5))
-        textOnPageCheck("£200", fieldAmountSelector(21, 5), "assetTransfer")
+        textOnPageCheck(common.employerName, fieldHeaderSelector(1))
+        textOnPageCheck(common.benefitsReceived, fieldNameSelector(1, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(1, 1), "for benefits question")
+        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(2))
+        textOnPageCheck(common.carSubheading, fieldNameSelector(2, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 1), "for vehicles section question")
+        textOnPageCheck(common.companyCar, fieldNameSelector(2, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 2), "for carQuestion")
+        textOnPageCheck(common.companyCarAmount, fieldNameSelector(2, 3))
+        textOnPageCheck("£100", fieldAmountSelector(2, 3), "car")
+        textOnPageCheck(common.fuelForCompanyCar, fieldNameSelector(2, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 4), "for carFuelQuestion")
+        textOnPageCheck(common.fuelForCompanyCarAmount, fieldNameSelector(2, 5))
+        textOnPageCheck("£200", fieldAmountSelector(2, 5), "carFuel")
+        textOnPageCheck(common.companyVan, fieldNameSelector(2, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 6), "for vanQuestion")
+        textOnPageCheck(common.companyVanAmount, fieldNameSelector(2, 7))
+        textOnPageCheck("£300", fieldAmountSelector(2, 7), "van")
+        textOnPageCheck(common.fuelForCompanyVan, fieldNameSelector(2, 8))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 8), "for vanFuelQuestion")
+        textOnPageCheck(common.fuelForCompanyVanAmount, fieldNameSelector(2, 9))
+        textOnPageCheck("£400", fieldAmountSelector(2, 9), "vanFuel")
+        textOnPageCheck(common.mileageBenefit, fieldNameSelector(2, 10))
+        textOnPageCheck(common.yes, fieldAmountSelector(2, 10), "for mileageQuestion")
+        textOnPageCheck(common.mileageBenefitAmount, fieldNameSelector(2, 11))
+        textOnPageCheck("£500", fieldAmountSelector(2, 11), "mileage")
+        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(3))
+        textOnPageCheck(common.accommodationSubheading, fieldNameSelector(3, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(3, 1), "for accommodation section question")
+        textOnPageCheck(common.accommodation, fieldNameSelector(3, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(3, 2), "for accommodationQuestion")
+        textOnPageCheck(common.accommodationAmount, fieldNameSelector(3, 3))
+        textOnPageCheck("£100", fieldAmountSelector(3, 3), "for accommodation")
+        textOnPageCheck(common.qualifyingRelocationCosts, fieldNameSelector(3, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(3, 4), "for qualifyingRelocationExpensesQuestion")
+        textOnPageCheck(common.qualifyingRelocationCostsAmount, fieldNameSelector(3, 5))
+        textOnPageCheck("£200", fieldAmountSelector(3, 5), "qualifyingRelocationExpenses")
+        textOnPageCheck(common.nonQualifyingRelocationCosts, fieldNameSelector(3, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(3, 6), "for nonQualifyingRelocationExpensesQuestion")
+        textOnPageCheck(common.nonQualifyingRelocationCostsAmount, fieldNameSelector(3, 7))
+        textOnPageCheck("£300", fieldAmountSelector(3, 7), "nonQualifyingRelocationExpenses")
+        textOnPageCheck(common.travelHeader, fieldHeaderSelector(4))
+        textOnPageCheck(common.travelSubheading, fieldNameSelector(4, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(4, 1), "for travel section question")
+        textOnPageCheck(common.travelAndSubsistence, fieldNameSelector(4, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(4, 2), "for travelAndSubsistenceQuestion")
+        textOnPageCheck(common.travelAndSubsistenceAmount, fieldNameSelector(4, 3))
+        textOnPageCheck("£100", fieldAmountSelector(4, 3), "travelAndSubsistence")
+        textOnPageCheck(common.personalCosts, fieldNameSelector(4, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(4, 4), "for personalIncidentalExpensesQuestion")
+        textOnPageCheck(common.personalCostsAmount, fieldNameSelector(4, 5))
+        textOnPageCheck("£200", fieldAmountSelector(4, 5), "personalIncidentalExpenses")
+        textOnPageCheck(common.entertainment, fieldNameSelector(4, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(4, 6), "for entertainingQuestion")
+        textOnPageCheck(common.entertainmentAmount, fieldNameSelector(4, 7))
+        textOnPageCheck("£300", fieldAmountSelector(4, 7), "entertaining")
+        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(5))
+        textOnPageCheck(common.utilitiesSubheading, fieldNameSelector(5, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(5, 1), "for utilities section question")
+        textOnPageCheck(common.telephone, fieldNameSelector(5, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(5, 2), "for telephoneQuestion")
+        textOnPageCheck(common.telephoneAmount, fieldNameSelector(5, 3))
+        textOnPageCheck("£100", fieldAmountSelector(5, 3), "telephone")
+        textOnPageCheck(common.servicesProvided, fieldNameSelector(5, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(5, 4), "for employerProvidedServicesQuestion")
+        textOnPageCheck(common.servicesProvidedAmount, fieldNameSelector(5, 5))
+        textOnPageCheck("£200", fieldAmountSelector(5, 5), "employerProvidedServices")
+        textOnPageCheck(common.profSubscriptions, fieldNameSelector(5, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(5, 6), "for employerProvidedProfessionalSubscriptionsQuestion")
+        textOnPageCheck(common.profSubscriptionsAmount, fieldNameSelector(5, 7))
+        textOnPageCheck("£300", fieldAmountSelector(5, 7), "employerProvidedProfessionalSubscriptions")
+        textOnPageCheck(common.otherServices, fieldNameSelector(5, 8))
+        textOnPageCheck(common.yes, fieldAmountSelector(5, 8), "for serviceQuestion")
+        textOnPageCheck(common.otherServicesAmount, fieldNameSelector(5, 9))
+        textOnPageCheck("£400", fieldAmountSelector(5, 9), "service")
+        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(6), "for medical section header")
+        textOnPageCheck(common.medicalSubheading, fieldNameSelector(6, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(6, 1), "for medical section question")
+        textOnPageCheck(common.medicalIns, fieldNameSelector(6, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(6, 2), "for medicalInsuranceQuestion")
+        textOnPageCheck(common.medicalInsAmount, fieldNameSelector(6, 3))
+        textOnPageCheck("£100", fieldAmountSelector(6, 3), "medicalInsurance")
+        textOnPageCheck(common.nursery, fieldNameSelector(6, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(6, 4), "for nurseryPlacesQuestion")
+        textOnPageCheck(common.nurseryAmount, fieldNameSelector(6, 5))
+        textOnPageCheck("£200", fieldAmountSelector(6, 5), "nurseryPlaces")
+        textOnPageCheck(common.educational, fieldNameSelector(6, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(6, 6), "for educationalServicesQuestion")
+        textOnPageCheck(common.educationalAmount, fieldNameSelector(6, 7))
+        textOnPageCheck("£300", fieldAmountSelector(6, 7), "educationalServices")
+        textOnPageCheck(common.beneficialLoans, fieldNameSelector(6, 8))
+        textOnPageCheck(common.yes, fieldAmountSelector(6, 8), "for beneficialLoanQuestion")
+        textOnPageCheck(common.beneficialLoansAmount, fieldNameSelector(6, 9))
+        textOnPageCheck("£400", fieldAmountSelector(6, 9), "beneficialLoan")
+        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(7))
+        textOnPageCheck(common.incomeTaxSubheading, fieldNameSelector(7, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(7, 1), "for income tax section question")
+        textOnPageCheck(common.incomeTaxPaid, fieldNameSelector(7, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(7, 2), "for incomeTaxPaidByDirectorQuestion")
+        textOnPageCheck(common.incomeTaxPaidAmount, fieldNameSelector(7, 3))
+        textOnPageCheck("£255", fieldAmountSelector(7, 3), "incomeTaxPaidByDirector")
+        textOnPageCheck(common.incurredCostsPaid, fieldNameSelector(7, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(7, 4), "for paymentsOnEmployeesBehalfQuestion")
+        textOnPageCheck(common.incurredCostsPaidAmount, fieldNameSelector(7, 5))
+        textOnPageCheck("£255", fieldAmountSelector(7, 5), "paymentsOnEmployeesBehalf")
+        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(8), "for reimbursed section header")
+        textOnPageCheck(common.reimbursedSubheading, fieldNameSelector(8, 1))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 1), "for reimbursements section question")
+        textOnPageCheck(common.nonTaxable, fieldNameSelector(8, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 2), "for expensesQuestion")
+        textOnPageCheck(common.nonTaxableAmount, fieldNameSelector(8, 3))
+        textOnPageCheck("£100", fieldAmountSelector(8, 3), "expenses")
+        textOnPageCheck(common.taxableCosts, fieldNameSelector(8, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 4), "for taxableExpensesQuestion")
+        textOnPageCheck(common.taxableCostsAmount, fieldNameSelector(8, 5))
+        textOnPageCheck("£200", fieldAmountSelector(8, 5), "taxableExpenses")
+        textOnPageCheck(common.vouchers, fieldNameSelector(8, 6))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 6), "for vouchersAndCreditCardsQuestion")
+        textOnPageCheck(common.vouchersAmount, fieldNameSelector(8, 7))
+        textOnPageCheck("£300", fieldAmountSelector(8, 7), "vouchersAndCreditCards")
+        textOnPageCheck(common.nonCash, fieldNameSelector(8, 8))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 8), "for nonCashQuestion")
+        textOnPageCheck(common.nonCashAmount, fieldNameSelector(8, 9))
+        textOnPageCheck("£400", fieldAmountSelector(8, 9), "nonCash")
+        textOnPageCheck(common.otherBenefits, fieldNameSelector(8, 10))
+        textOnPageCheck(common.yes, fieldAmountSelector(8, 10), "for otherItemsQuestion")
+        textOnPageCheck(common.otherBenefitsAmount, fieldNameSelector(8, 11))
+        textOnPageCheck("£500", fieldAmountSelector(8, 11), "otherItems")
+        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(9))
+        textOnPageCheck(common.assetsSubheading, fieldNameSelector(9, 1), "subHeading")
+        textOnPageCheck(common.yes, fieldAmountSelector(9, 1), "for assets section question")
+        textOnPageCheck(common.assets, fieldNameSelector(9, 2))
+        textOnPageCheck(common.yes, fieldAmountSelector(9, 2), "for assetsQuestion")
+        textOnPageCheck(common.assetsAmount, fieldNameSelector(9, 3))
+        textOnPageCheck("£100", fieldAmountSelector(9, 3), "assets")
+        textOnPageCheck(common.assetTransfers, fieldNameSelector(9, 4))
+        textOnPageCheck(common.yes, fieldAmountSelector(9, 4), "for assetTransferQuestion")
+        textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(9, 5))
+        textOnPageCheck("£200", fieldAmountSelector(9, 5), "assetTransfer")
         elementsNotOnPageCheck(changeLinkCssSelector)
         buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
         welshToggleCheck(userScenario.isWelsh)
@@ -861,154 +861,154 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
         h1Check(specific.expectedH1)
         captionCheck(common.expectedCaption(taxYear - 1))
         textOnPageCheck(specific.expectedP1, Selectors.p1)
-        textOnPageCheck(common.employerName, fieldHeaderSelector(3))
-        changeAmountRowCheck(common.benefitsReceived, common.yes, 4, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
+        textOnPageCheck(common.employerName, fieldHeaderSelector(1))
+        changeAmountRowCheck(common.benefitsReceived, common.yes, 1, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
           ReceiveAnyBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(5))
+        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(2))
 
-        changeAmountRowCheck(common.carSubheading, common.yes, 6, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}",
+        changeAmountRowCheck(common.carSubheading, common.yes, 2, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}",
           CarVanFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.companyCar, common.yes, 6, 2, s"${common.changeText} ${specific.companyCarHiddenText}",
+        changeAmountRowCheck(common.companyCar, common.yes, 2, 2, s"${common.changeText} ${specific.companyCarHiddenText}",
           CompanyCarBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.companyCarAmount, "£100", 6, 3, s"${common.changeText} ${specific.companyCarAmountHiddenText}",
+        changeAmountRowCheck(common.companyCarAmount, "£100", 2, 3, s"${common.changeText} ${specific.companyCarAmountHiddenText}",
           CompanyCarBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.fuelForCompanyCar, common.yes, 6, 4, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}",
+        changeAmountRowCheck(common.fuelForCompanyCar, common.yes, 2, 4, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}",
           CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.fuelForCompanyCarAmount, "£200", 6, 5, s"${common.changeText} ${specific.fuelForCompanyCarAmountHiddenText}",
+        changeAmountRowCheck(common.fuelForCompanyCarAmount, "£200", 2, 5, s"${common.changeText} ${specific.fuelForCompanyCarAmountHiddenText}",
           CarFuelBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.companyVan, common.yes, 6, 6, s"${common.changeText} ${specific.companyVanHiddenText}",
+        changeAmountRowCheck(common.companyVan, common.yes, 2, 6, s"${common.changeText} ${specific.companyVanHiddenText}",
           CompanyVanBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 6, 8, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}",
+        changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 2, 8, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}",
           CompanyVanFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.companyVanAmount, "£300", 6, 7, s"${common.changeText} ${specific.companyVanAmountHiddenText}",
+        changeAmountRowCheck(common.companyVanAmount, "£300", 2, 7, s"${common.changeText} ${specific.companyVanAmountHiddenText}",
           CompanyVanBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.fuelForCompanyVanAmount, "£400", 6, 9, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}",
+        changeAmountRowCheck(common.fuelForCompanyVanAmount, "£400", 2, 9, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}",
           CompanyVanFuelBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.mileageBenefit, common.yes, 6, 10, s"${common.changeText} ${specific.mileageBenefitHiddenText}",
+        changeAmountRowCheck(common.mileageBenefit, common.yes, 2, 10, s"${common.changeText} ${specific.mileageBenefitHiddenText}",
           ReceiveOwnCarMileageBenefitController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.mileageBenefitAmount, "£500", 6, 11, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}",
+        changeAmountRowCheck(common.mileageBenefitAmount, "£500", 2, 11, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}",
           MileageBenefitAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(7))
-        changeAmountRowCheck(common.accommodationSubheading, common.yes, 8, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
+        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(3))
+        changeAmountRowCheck(common.accommodationSubheading, common.yes, 3, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
           AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.accommodation, common.yes, 8, 2, s"${common.changeText} ${specific.accommodationHiddenText}",
+        changeAmountRowCheck(common.accommodation, common.yes, 3, 2, s"${common.changeText} ${specific.accommodationHiddenText}",
           LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.accommodationAmount, "£100", 8, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
+        changeAmountRowCheck(common.accommodationAmount, "£100", 3, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
           LivingAccommodationBenefitAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.qualifyingRelocationCosts, common.yes, 8, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
+        changeAmountRowCheck(common.qualifyingRelocationCosts, common.yes, 3, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
           QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.qualifyingRelocationCostsAmount, "£200", 8, 5, s"${common.changeText} ${specific.qualifyingRelocationCostsAmountHiddenText}",
+        changeAmountRowCheck(common.qualifyingRelocationCostsAmount, "£200", 3, 5, s"${common.changeText} ${specific.qualifyingRelocationCostsAmountHiddenText}",
           QualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.yes, 8, 6, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
+        changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.yes, 3, 6, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
           NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonQualifyingRelocationCostsAmount, "£300", 8, 7, s"${common.changeText} ${specific.nonQualifyingRelocationCostsAmountHiddenText}",
+        changeAmountRowCheck(common.nonQualifyingRelocationCostsAmount, "£300", 3, 7, s"${common.changeText} ${specific.nonQualifyingRelocationCostsAmountHiddenText}",
           NonQualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.travelHeader, fieldHeaderSelector(9))
-        changeAmountRowCheck(common.travelSubheading, common.yes, 10, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}",
+        textOnPageCheck(common.travelHeader, fieldHeaderSelector(4))
+        changeAmountRowCheck(common.travelSubheading, common.yes, 4, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}",
           TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.travelAndSubsistence, common.yes, 10, 2, s"${common.changeText} ${specific.travelAndSubsistenceHiddenText}",
+        changeAmountRowCheck(common.travelAndSubsistence, common.yes, 4, 2, s"${common.changeText} ${specific.travelAndSubsistenceHiddenText}",
           TravelAndSubsistenceBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.travelAndSubsistenceAmount, "£100", 10, 3, s"${common.changeText} ${specific.travelAndSubsistenceAmountHiddenText}",
+        changeAmountRowCheck(common.travelAndSubsistenceAmount, "£100", 4, 3, s"${common.changeText} ${specific.travelAndSubsistenceAmountHiddenText}",
           TravelOrSubsistenceBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.personalCosts, common.yes, 10, 4, s"${common.changeText} ${specific.personalCostsHiddenText}",
+        changeAmountRowCheck(common.personalCosts, common.yes, 4, 4, s"${common.changeText} ${specific.personalCostsHiddenText}",
           IncidentalOvernightCostEmploymentBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.personalCostsAmount, "£200", 10, 5, s"${common.changeText} ${specific.personalCostsAmountHiddenText}",
+        changeAmountRowCheck(common.personalCostsAmount, "£200", 4, 5, s"${common.changeText} ${specific.personalCostsAmountHiddenText}",
           IncidentalCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.entertainment, common.yes, 10, 6, s"${common.changeText} ${specific.entertainmentHiddenText}",
+        changeAmountRowCheck(common.entertainment, common.yes, 4, 6, s"${common.changeText} ${specific.entertainmentHiddenText}",
           EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.entertainmentAmount, "£300", 10, 7, s"${common.changeText} ${specific.entertainmentAmountHiddenText}",
+        changeAmountRowCheck(common.entertainmentAmount, "£300", 4, 7, s"${common.changeText} ${specific.entertainmentAmountHiddenText}",
           EntertainmentBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(11))
-        changeAmountRowCheck(common.utilitiesSubheading, common.yes, 12, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
+        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(5))
+        changeAmountRowCheck(common.utilitiesSubheading, common.yes, 5, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
           UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.telephone, common.yes, 12, 2, s"${common.changeText} ${specific.telephoneHiddenText}",
+        changeAmountRowCheck(common.telephone, common.yes, 5, 2, s"${common.changeText} ${specific.telephoneHiddenText}",
           TelephoneBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.telephoneAmount, "£100", 12, 3, s"${common.changeText} ${specific.telephoneAmountHiddenText}",
+        changeAmountRowCheck(common.telephoneAmount, "£100", 5, 3, s"${common.changeText} ${specific.telephoneAmountHiddenText}",
           TelephoneBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.servicesProvided, common.yes, 12, 4, s"${common.changeText} ${specific.servicesProvidedHiddenText}",
+        changeAmountRowCheck(common.servicesProvided, common.yes, 5, 4, s"${common.changeText} ${specific.servicesProvidedHiddenText}",
           EmployerProvidedServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.servicesProvidedAmount, "£200", 12, 5, s"${common.changeText} ${specific.servicesProvidedAmountHiddenText}",
+        changeAmountRowCheck(common.servicesProvidedAmount, "£200", 5, 5, s"${common.changeText} ${specific.servicesProvidedAmountHiddenText}",
           EmployerProvidedServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.profSubscriptions, common.yes, 12, 6, s"${common.changeText} ${specific.profSubscriptionsHiddenText}",
+        changeAmountRowCheck(common.profSubscriptions, common.yes, 5, 6, s"${common.changeText} ${specific.profSubscriptionsHiddenText}",
           ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.profSubscriptionsAmount, "£300", 12, 7, s"${common.changeText} ${specific.profSubscriptionsAmountHiddenText}",
+        changeAmountRowCheck(common.profSubscriptionsAmount, "£300", 5, 7, s"${common.changeText} ${specific.profSubscriptionsAmountHiddenText}",
           ProfessionalSubscriptionsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.otherServices, common.yes, 12, 8, s"${common.changeText} ${specific.otherServicesHiddenText}",
+        changeAmountRowCheck(common.otherServices, common.yes, 5, 8, s"${common.changeText} ${specific.otherServicesHiddenText}",
           OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.otherServicesAmount, "£400", 12, 9, s"${common.changeText} ${specific.otherServicesAmountHiddenText}",
+        changeAmountRowCheck(common.otherServicesAmount, "£400", 5, 9, s"${common.changeText} ${specific.otherServicesAmountHiddenText}",
           OtherServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(13), "for medical section header")
-        changeAmountRowCheck(common.medicalSubheading, common.yes, 14, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
+        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(6), "for medical section header")
+        changeAmountRowCheck(common.medicalSubheading, common.yes, 6, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
           MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.medicalIns, common.yes, 14, 2, s"${common.changeText} ${specific.medicalInsHiddenText}",
+        changeAmountRowCheck(common.medicalIns, common.yes, 6, 2, s"${common.changeText} ${specific.medicalInsHiddenText}",
           MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.medicalInsAmount, "£100", 14, 3, s"${common.changeText} ${specific.medicalInsAmountHiddenText}",
+        changeAmountRowCheck(common.medicalInsAmount, "£100", 6, 3, s"${common.changeText} ${specific.medicalInsAmountHiddenText}",
           MedicalOrDentalBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nursery, common.yes, 14, 4, s"${common.changeText} ${specific.nurseryHiddenText}",
+        changeAmountRowCheck(common.nursery, common.yes, 6, 4, s"${common.changeText} ${specific.nurseryHiddenText}",
           ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nurseryAmount, "£200", 14, 5, s"${common.changeText} ${specific.nurseryAmountHiddenText}",
+        changeAmountRowCheck(common.nurseryAmount, "£200", 6, 5, s"${common.changeText} ${specific.nurseryAmountHiddenText}",
           ChildcareBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.educational, common.yes, 14, 6, s"${common.changeText} ${specific.educationalHiddenText}",
+        changeAmountRowCheck(common.educational, common.yes, 6, 6, s"${common.changeText} ${specific.educationalHiddenText}",
           EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.educationalAmount, "£300", 14, 7, s"${common.changeText} ${specific.educationalAmountHiddenText}",
+        changeAmountRowCheck(common.educationalAmount, "£300", 6, 7, s"${common.changeText} ${specific.educationalAmountHiddenText}",
           EducationalServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.beneficialLoans, common.yes, 14, 8, s"${common.changeText} ${specific.beneficialLoansHiddenText}",
+        changeAmountRowCheck(common.beneficialLoans, common.yes, 6, 8, s"${common.changeText} ${specific.beneficialLoansHiddenText}",
           BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.beneficialLoansAmount, "£400", 14, 9, s"${common.changeText} ${specific.beneficialLoansAmountHiddenText}",
+        changeAmountRowCheck(common.beneficialLoansAmount, "£400", 6, 9, s"${common.changeText} ${specific.beneficialLoansAmountHiddenText}",
           BeneficialLoansAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(15))
-        changeAmountRowCheck(common.incomeTaxSubheading, common.yes, 16, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
+        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(7))
+        changeAmountRowCheck(common.incomeTaxSubheading, common.yes, 7, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
           IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.incomeTaxPaid, common.yes, 16, 2, s"${common.changeText} ${specific.incomeTaxPaidHiddenText}",
+        changeAmountRowCheck(common.incomeTaxPaid, common.yes, 7, 2, s"${common.changeText} ${specific.incomeTaxPaidHiddenText}",
           IncomeTaxBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.incomeTaxPaidAmount, "£255", 16, 3, s"${common.changeText} ${specific.incomeTaxPaidAmountHiddenText}",
+        changeAmountRowCheck(common.incomeTaxPaidAmount, "£255", 7, 3, s"${common.changeText} ${specific.incomeTaxPaidAmountHiddenText}",
           IncomeTaxBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.incurredCostsPaid, common.yes, 16, 4, s"${common.changeText} ${specific.incurredCostsPaidHiddenText}",
+        changeAmountRowCheck(common.incurredCostsPaid, common.yes, 7, 4, s"${common.changeText} ${specific.incurredCostsPaidHiddenText}",
           IncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.incurredCostsPaidAmount, "£255", 16, 5, s"${common.changeText} ${specific.incurredCostsPaidAmountHiddenText}",
+        changeAmountRowCheck(common.incurredCostsPaidAmount, "£255", 7, 5, s"${common.changeText} ${specific.incurredCostsPaidAmountHiddenText}",
           IncurredCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(17), "for reimbursed section header")
-        changeAmountRowCheck(common.reimbursedSubheading, common.yes, 18, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
+        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(8), "for reimbursed section header")
+        changeAmountRowCheck(common.reimbursedSubheading, common.yes, 8, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
           ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
 
-        changeAmountRowCheck(common.nonTaxable, common.yes, 18, 2, s"${common.changeText} ${specific.nonTaxableHiddenText}",
+        changeAmountRowCheck(common.nonTaxable, common.yes, 8, 2, s"${common.changeText} ${specific.nonTaxableHiddenText}",
           NonTaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonTaxableAmount, "£100", 18, 3, s"${common.changeText} ${specific.nonTaxableAmountHiddenText}",
+        changeAmountRowCheck(common.nonTaxableAmount, "£100", 8, 3, s"${common.changeText} ${specific.nonTaxableAmountHiddenText}",
           NonTaxableCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.taxableCosts, common.yes, 18, 4, s"${common.changeText} ${specific.taxableCostsHiddenText}",
+        changeAmountRowCheck(common.taxableCosts, common.yes, 8, 4, s"${common.changeText} ${specific.taxableCostsHiddenText}",
           TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.taxableCostsAmount, "£200", 18, 5, s"${common.changeText} ${specific.taxableCostsAmountHiddenText}",
+        changeAmountRowCheck(common.taxableCostsAmount, "£200", 8, 5, s"${common.changeText} ${specific.taxableCostsAmountHiddenText}",
           TaxableCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.vouchers, common.yes, 18, 6, s"${common.changeText} ${specific.vouchersHiddenText}",
+        changeAmountRowCheck(common.vouchers, common.yes, 8, 6, s"${common.changeText} ${specific.vouchersHiddenText}",
           VouchersBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.vouchersAmount, "£300", 18, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}",
+        changeAmountRowCheck(common.vouchersAmount, "£300", 8, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}",
           VouchersBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonCash, common.yes, 18, 8, s"${common.changeText} ${specific.nonCashHiddenText}",
+        changeAmountRowCheck(common.nonCash, common.yes, 8, 8, s"${common.changeText} ${specific.nonCashHiddenText}",
           NonCashBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonCashAmount, "£400", 18, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}",
+        changeAmountRowCheck(common.nonCashAmount, "£400", 8, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}",
           NonCashBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.otherBenefits, common.yes, 18, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}",
+        changeAmountRowCheck(common.otherBenefits, common.yes, 8, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}",
           OtherBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.otherBenefitsAmount, "£500", 18, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}",
+        changeAmountRowCheck(common.otherBenefitsAmount, "£500", 8, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}",
           OtherBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(19), "for section")
-        changeAmountRowCheck(common.assetsSubheading, common.yes, 20, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}",
+        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(9), "for section")
+        changeAmountRowCheck(common.assetsSubheading, common.yes, 9, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}",
           AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.assets, common.yes, 20, 2, s"${common.changeText} ${specific.assetsHiddenText}",
+        changeAmountRowCheck(common.assets, common.yes, 9, 2, s"${common.changeText} ${specific.assetsHiddenText}",
           AssetsBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.assetsAmount, "£100", 20, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}",
+        changeAmountRowCheck(common.assetsAmount, "£100", 9, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}",
           AssetsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.assetTransfers, common.yes, 20, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}",
+        changeAmountRowCheck(common.assetTransfers, common.yes, 9, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}",
           AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.assetTransfersAmount, "£200", 20, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}",
+        changeAmountRowCheck(common.assetTransfersAmount, "£200", 9, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}",
           AssetsTransfersBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
         buttonCheck(common.saveAndContinue)
@@ -1042,49 +1042,49 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
         h1Check(specific.expectedH1)
         captionCheck(common.expectedCaption(taxYear - 1))
-        textOnPageCheck(common.employerName, fieldHeaderSelector(2))
-        changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
+        textOnPageCheck(common.employerName, fieldHeaderSelector(1))
+        changeAmountRowCheck(common.benefitsReceived, common.yes, 1, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
           ReceiveAnyBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(4))
+        textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(2))
 
-        changeAmountRowCheck(common.carSubheading, common.no, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}",
+        changeAmountRowCheck(common.carSubheading, common.no, 2, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}",
           CarVanFuelBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(6))
-        changeAmountRowCheck(common.accommodationSubheading, common.yes, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
+        textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(3))
+        changeAmountRowCheck(common.accommodationSubheading, common.yes, 3, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
           AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.accommodation, common.yes, 7, 2, s"${common.changeText} ${specific.accommodationHiddenText}",
+        changeAmountRowCheck(common.accommodation, common.yes, 3, 2, s"${common.changeText} ${specific.accommodationHiddenText}",
           LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.accommodationAmount, "£100", 7, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
+        changeAmountRowCheck(common.accommodationAmount, "£100", 3, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
           LivingAccommodationBenefitAmountController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.qualifyingRelocationCosts, common.no, 7, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
+        changeAmountRowCheck(common.qualifyingRelocationCosts, common.no, 3, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
           QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.no, 7, 5, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
+        changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.no, 3, 5, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
           NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.travelHeader, fieldHeaderSelector(8))
-        changeAmountRowCheck(common.travelSubheading, common.no, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}",
+        textOnPageCheck(common.travelHeader, fieldHeaderSelector(4))
+        changeAmountRowCheck(common.travelSubheading, common.no, 4, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}",
           TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(10))
-        changeAmountRowCheck(common.utilitiesSubheading, common.no, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
+        textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(5))
+        changeAmountRowCheck(common.utilitiesSubheading, common.no, 5, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
           UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12), "for medical section header")
-        changeAmountRowCheck(common.medicalSubheading, common.no, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
+        textOnPageCheck(common.medicalHeader, fieldHeaderSelector(6), "for medical section header")
+        changeAmountRowCheck(common.medicalSubheading, common.no, 6, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
           MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(14))
-        changeAmountRowCheck(common.incomeTaxSubheading, common.no, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
+        textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(7))
+        changeAmountRowCheck(common.incomeTaxSubheading, common.no, 7, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
           IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16), "for reimbursed section header")
-        changeAmountRowCheck(common.reimbursedSubheading, common.no, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
+        textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(8), "for reimbursed section header")
+        changeAmountRowCheck(common.reimbursedSubheading, common.no, 8, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
           ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18), "for section")
-        changeAmountRowCheck(common.assetsSubheading, common.no, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}",
+        textOnPageCheck(common.assetsHeader, fieldHeaderSelector(9), "for section")
+        changeAmountRowCheck(common.assetsSubheading, common.no, 9, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}",
           AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
 
         buttonCheck(common.saveAndContinue)
@@ -1158,7 +1158,7 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
         captionCheck(common.expectedCaption(taxYear - 1))
         textOnPageCheck(specific.expectedP1, Selectors.p1)
 
-        changeAmountRowCheck(common.benefitsReceived, common.no, 4, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
+        changeAmountRowCheck(common.benefitsReceived, common.no, 1, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}",
           ReceiveAnyBenefitsController.show(taxYearEOY, employmentId).url)
 
         buttonCheck(common.saveAndContinue)

@@ -36,7 +36,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
   private val amountInputName = "amount"
 
   object Selectors {
-    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     val hintTextSelector = "#amount-hint"
     val inputSelector = "#amount"
@@ -140,7 +140,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(2))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(1))
         textOnPageCheck(userScenario.commonExpectedResults.hintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "")
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)
@@ -159,7 +159,7 @@ class CompanyCarBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 2))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(index = 1))
         textOnPageCheck(userScenario.commonExpectedResults.hintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
         buttonCheck(userScenario.commonExpectedResults.continueButtonText, continueButtonSelector)

@@ -118,7 +118,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
@@ -136,7 +136,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
@@ -154,7 +154,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
@@ -172,7 +172,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        fieldSetH1Check(userScenario.specificExpectedResults.get.expectedH1)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
         captionCheck(expectedCaption)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)

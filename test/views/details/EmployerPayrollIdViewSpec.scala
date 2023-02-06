@@ -31,10 +31,10 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
   private val employmentId = "001"
 
   object Selectors {
-    val paragraph0Selector = "#main-content > div > div > p.govuk-body:first-of-type"
-    val paragraph2Selector = "p.govuk-body:nth-child(3)"
-    val paragraph3Selector = "p.govuk-body:nth-child(4)"
-    val paragraph4Selector = "p.govuk-body:nth-child(5)"
+    val paragraph1Selector = "#main-content > div > div > p.govuk-body:nth-of-type(1)"
+    val paragraph2Selector = "#main-content > div > div > p.govuk-body:nth-of-type(2)"
+    val paragraph3Selector = "#main-content > div > div > p.govuk-body:nth-of-type(3)"
+    val paragraph4Selector = "#main-content > div > div > p.govuk-body:nth-of-type(4)"
     val hintTextSelector = "#payrollId-hint"
     val inputSelector = "#payrollId"
     val continueButtonSelector = "#continue"
@@ -149,11 +149,11 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph0Selector)
+        textOnPageCheck(get.paragraph1, paragraph1Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph3Selector)
+        textOnPageCheck(get.paragraph2, paragraph2Selector)
         textOnPageCheck(hintText, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -172,11 +172,11 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         titleCheck(get.expectedTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph0Selector)
+        textOnPageCheck(get.paragraph1, paragraph1Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph3Selector)
+        textOnPageCheck(get.paragraph2, paragraph2Selector)
         textOnPageCheck(hintText, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "123456")
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -196,11 +196,11 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph2Selector)
+        textOnPageCheck(get.paragraph1, paragraph1Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph4Selector)
+        textOnPageCheck(get.paragraph2, paragraph2Selector)
         textOnPageCheck(hintText, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, tooLonPayrollId)
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -223,11 +223,11 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         titleCheck(get.expectedErrorTitle, user.isWelsh)
         h1Check(get.expectedH1)
         captionCheck(expectedCaption)
-        textOnPageCheck(get.paragraph1, paragraph2Selector)
+        textOnPageCheck(get.paragraph1, paragraph1Selector)
         textOnPageCheck(bullet1, bulletSelector(1))
         textOnPageCheck(bullet2, bulletSelector(2))
         textOnPageCheck(bullet3, bulletSelector(3))
-        textOnPageCheck(get.paragraph2, paragraph4Selector)
+        textOnPageCheck(get.paragraph2, paragraph2Selector)
         textOnPageCheck(hintText, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, payrollId)
         buttonCheck(continueButtonText, continueButtonSelector)

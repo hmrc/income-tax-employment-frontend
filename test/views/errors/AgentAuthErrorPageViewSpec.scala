@@ -83,7 +83,7 @@ class AgentAuthErrorPageViewSpec extends ViewUnitTest {
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(h1Expected, isWelsh = userScenario.isWelsh)
-        h1Check(h1Expected, "xl")
+        h1Check(h1Expected, size = "xl")
         textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
         linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
         buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))

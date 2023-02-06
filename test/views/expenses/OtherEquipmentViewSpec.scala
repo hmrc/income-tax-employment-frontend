@@ -30,7 +30,7 @@ import views.html.expenses.OtherEquipmentView
 class OtherEquipmentViewSpec extends ViewUnitTest {
 
   object Selectors {
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
 
     def bulletListSelector(index: Int): String = s"#main-content > div > div > ul > li:nth-child($index)"
 
@@ -131,7 +131,7 @@ class OtherEquipmentViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(1))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
           radioButtonCheck(yesText, 1, checked = false)
@@ -152,7 +152,7 @@ class OtherEquipmentViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(1))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
           radioButtonCheck(yesText, 1, checked = true)
@@ -173,7 +173,7 @@ class OtherEquipmentViewSpec extends ViewUnitTest {
           titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(expectedParagraphText, paragraphSelector(2))
+          textOnPageCheck(expectedParagraphText, paragraphSelector(1))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
           radioButtonCheck(yesText, 1, checked = false)

@@ -38,7 +38,7 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
     val formSelector: String = "#main-content > div > div > form"
     val amountSelector = "#amount"
 
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
   }
 
   trait CommonExpectedResults {
@@ -140,8 +140,8 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 2))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 1))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 2))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
         buttonCheck(buttonText, continueButtonSelector)
@@ -160,8 +160,8 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 2))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 3))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 1))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 2))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, newAmount.toString)
         buttonCheck(buttonText, continueButtonSelector)
@@ -180,8 +180,8 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 1))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 2))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
         buttonCheck(buttonText, continueButtonSelector)
@@ -203,8 +203,8 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 1))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 2))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "123.33.33")
         buttonCheck(buttonText, continueButtonSelector)
@@ -226,8 +226,8 @@ class TravelAndOvernightAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 3))
-        textOnPageCheck(totalAmountText, paragraphSelector(index = 4))
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(index = 1))
+        textOnPageCheck(totalAmountText, paragraphSelector(index = 2))
         hintTextCheck(hintText)
         inputFieldValueCheck(amountInputName, Selectors.amountSelector, "100,000,000,000")
         buttonCheck(buttonText, continueButtonSelector)

@@ -81,7 +81,7 @@ class NotFoundTemplateSpec extends UnitTest
 
       titleCheck(h1Expected, isWelsh = false)
       welshToggleCheck("English")
-      h1Check(h1Expected, "xl")
+      h1Check(h1Expected, size = "xl")
 
       textOnPageCheck(p1Expected,Selectors.p1Selector)
       textOnPageCheck(p2Expected,Selectors.p2Selector)
@@ -99,7 +99,7 @@ class NotFoundTemplateSpec extends UnitTest
 
       titleCheck(h1Expected, isWelsh = true)
       welshToggleCheck("Welsh")
-      h1Check(h1Expected, "xl")
+      h1Check(h1Expected, size = "xl")
 
       textOnPageCheck(p1Expected,Selectors.p1Selector)
       textOnPageCheck(p2Expected,Selectors.p2Selector)

@@ -18,7 +18,5 @@
 
 @(heading: String, captionOption: Option[String], extraClasses: String = "", size: String = "l")(implicit messages: Messages)
 
-<h1 class="govuk-heading-@{size} @extraClasses">
-    @captionOption.map{ captionText => @caption(captionText, size) }
-    @messages(heading)
-</h1>
+@captionOption.map{ captionText => @caption(captionText, size) }
+<h1 id="page-heading" class="govuk-heading-@{size} @extraClasses">@messages(heading)</h1>

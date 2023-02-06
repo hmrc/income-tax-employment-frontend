@@ -42,7 +42,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
 
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-child($index)"
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
   }
 
   trait CommonExpectedResults {
@@ -146,7 +146,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(2))
+        textOnPageCheck(enterTotalText, paragraphSelector(1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -166,7 +166,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 2))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         textOnPageCheck(expectedHintText, hintTextSelector)
         inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
         buttonCheck(continueButtonText, continueButtonSelector)
@@ -186,7 +186,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(3))
+        textOnPageCheck(enterTotalText, paragraphSelector(1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -209,7 +209,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 3))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, value = "123.33.33")
@@ -232,7 +232,7 @@ class IncurredCostsBenefitsAmountViewSpec extends ViewUnitTest {
         titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         captionCheck(expectedCaption)
-        textOnPageCheck(enterTotalText, paragraphSelector(index = 3))
+        textOnPageCheck(enterTotalText, paragraphSelector(index = 1))
         hintTextCheck(expectedHintText, hintTextSelector)
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountInputName, inputSelector, "100,000,000,000")

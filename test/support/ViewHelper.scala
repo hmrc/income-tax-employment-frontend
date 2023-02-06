@@ -63,19 +63,13 @@ trait ViewHelper {
     }
   }
 
-  def h1Check(header: String, size: String = "l")(implicit document: Document): Unit = {
+  def h1Check(header: String, isFieldSetH1: Boolean = false, size: String = "l")(implicit document: Document): Unit = {
     s"have a page heading of '$header'" in {
-      val headingAndCaption = document.select(s"h1.govuk-heading-$size").text()
-      val caption = document.select(s"h1 > span.govuk-caption-$size").text()
-
-      headingAndCaption.replace(caption, "").trim shouldBe header
-    }
-  }
-
-  def fieldSetH1Check(heading: String)(implicit document: Document): Unit = {
-    s"have a page heading of '$heading'" in {
-      val documentHeading = document.select("h1.govuk-fieldset__heading").text()
-      documentHeading shouldBe heading
+      if(isFieldSetH1) {
+        document.select("h1.govuk-fieldset__heading").text shouldBe header
+      } else {
+        document.select(s"h1.govuk-heading-$size").text shouldBe header
+      }
     }
   }
 
@@ -121,12 +115,12 @@ trait ViewHelper {
   def changeAmountRowCheck(item: String, value: String, section: Int, row: Int, changeHiddenText: String, href: String)
                           (implicit document: Document): Unit = {
 
-    def benefitsItemSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
+    def benefitsItemSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dt"
 
     def benefitsAmountSelector(section: Int, row: Int): String =
-      s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
+      s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value"
 
-    def benefitsChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
+    def benefitsChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd > a"
 
     textOnPageCheck(item, benefitsItemSelector(section, row))
     textOnPageCheck(value, benefitsAmountSelector(section, row), s"for the value of the $item field")
