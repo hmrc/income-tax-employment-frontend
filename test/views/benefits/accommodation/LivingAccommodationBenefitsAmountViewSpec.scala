@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.LivingAccommodationBenefitAmountPageBuilder.aLivingAccommodationBenefitAmountPage
 import views.html.benefits.accommodation.LivingAccommodationBenefitsAmountView
 
 class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
@@ -33,7 +34,7 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
   private val employmentId = "employmentId"
-  private val livingAccommodationBenefitAmount = 123.45
+  private val amount = 123.45
 
   object Selectors {
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > p:nth-of-type($index)"
@@ -121,7 +122,7 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[BigDecimal] = new AccommodationFormsProvider().livingAccommodationAmountForm(isAgent)
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = new AccommodationFormsProvider().livingAccommodationAmountForm(isAgent)
 
   private lazy val underTest = inject[LivingAccommodationBenefitsAmountView]
 
@@ -130,11 +131,12 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
     import userScenario.commonExpectedResults._
     import userScenario.specificExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "should render How much was your total living accommodation benefit? page with no value when theres no cya data" which {
+      "render page with no value when theres no prefilled data data" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = aLivingAccommodationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -151,11 +153,12 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "should render How much was your total living accommodation benefit? page with prefilling when there is cya data" which {
+      "render page with prefilled form when there is amount" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = livingAccommodationBenefitAmount), employmentId)
+        val pageModel = aLivingAccommodationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).fill(amount))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -165,18 +168,19 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
         textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
-        inputFieldValueCheck(amountInputName, inputAmountField, livingAccommodationBenefitAmount.toString)
+        inputFieldValueCheck(amountInputName, inputAmountField, amount.toString)
 
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(LivingAccommodationBenefitAmountController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "should render the How much was your Living accommodation benefit? page with an error when theres no input" which {
+      "render page with an error when theres no input" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
+        val pageModel = aLivingAccommodationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -195,11 +199,12 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.emptyErrorText)
       }
 
-      "render the How much was your total living accommodation benefit? page with an error when the amount is invalid" which {
+      "render page with an error when the amount is invalid" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "not valid")), employmentId)
+        val pageModel = aLivingAccommodationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "not valid")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -218,11 +223,12 @@ class LivingAccommodationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.wrongFormatErrorText)
       }
 
-      "should render the How much was your total living accommodation benefit? page with an error when the amount is too big" which {
+      "render page with an error when the amount is too big" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
+        val pageModel = aLivingAccommodationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

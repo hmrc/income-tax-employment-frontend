@@ -16,13 +16,14 @@
 
 package utils
 
-import controllers.benefits.accommodation.AccommodationRelocationBenefitsController
+import controllers.benefits.accommodation.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, LivingAccommodationBenefitsController}
+import support.TaxYearProvider
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.mocks.MockRedirectService
 
 class RedirectsMapperSpec extends support.UnitTest
   with MockRedirectService
-  with TaxYearHelper {
+  with TaxYearProvider {
 
   private val employmentId = "employmentId"
 
@@ -40,6 +41,22 @@ class RedirectsMapperSpec extends support.UnitTest
       val clazz = classOf[AccommodationRelocationBenefitsController]
 
       mockAccommodationRelocationBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from accommodationBenefitsAmountRedirects when LivingAccommodationBenefitAmountController class is given" in {
+      val clazz = classOf[LivingAccommodationBenefitAmountController]
+
+      mockAccommodationBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from commonAccommodationBenefitsRedirects when LivingAccommodationBenefitsController class is given" in {
+      val clazz = classOf[LivingAccommodationBenefitsController]
+
+      mockCommonAccommodationBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }

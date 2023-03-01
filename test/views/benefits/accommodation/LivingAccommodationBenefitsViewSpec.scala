@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.LivingAccommodationBenefitsPageBuilder.aLivingAccommodationBenefitsPage
 import views.html.benefits.accommodation.LivingAccommodationBenefitsView
 
 class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
@@ -129,7 +130,7 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[Boolean] = new AccommodationFormsProvider().livingAccommodationForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AccommodationFormsProvider().livingAccommodationForm(isAgent)
 
   private lazy val underTest = inject[LivingAccommodationBenefitsView]
 
@@ -137,11 +138,12 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
     import Selectors._
     import userScenario.commonExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the 'Did you get any accommodation benefits?' page with no pre-filled radio buttons" which {
+      "render page with no pre-filled radio buttons" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
+        val pageModel = aLivingAccommodationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -160,11 +162,12 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render the 'Did you get any accommodation benefits?' page with the 'yes' radio button pre-filled and cya data" which {
+      "render page with the 'yes' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).fill(value = true), taxYearEOY, employmentId)
+        val pageModel = aLivingAccommodationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = true))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -183,11 +186,12 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render the 'Did you get any accommodation benefits?' page with the 'no' radio button pre-filled and no prior benefits exist" which {
+      "render page with the 'no' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).fill(value = false), taxYearEOY, employmentId)
+        val pageModel = aLivingAccommodationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = false))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -210,7 +214,8 @@ class LivingAccommodationBenefitsViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY, employmentId)
+        val pageModel = aLivingAccommodationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

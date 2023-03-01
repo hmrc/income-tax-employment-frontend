@@ -16,8 +16,7 @@
 
 package controllers.benefits.accommodation
 
-import controllers.benefits.accommodation.routes.LivingAccommodationBenefitsController
-import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
+import controllers.benefits.accommodation.routes.{LivingAccommodationBenefitAmountController, QualifyingRelocationBenefitsController}
 import forms.YesNoForm
 import forms.benefits.accommodation.AccommodationFormsProvider
 import models.employment.EmploymentBenefitsType
@@ -31,9 +30,9 @@ import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
-import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
+import views.html.benefits.accommodation.LivingAccommodationBenefitsView
 
-class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
+class LivingAccommodationBenefitsControllerSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockActionsProvider
   with MockAccommodationService
@@ -41,10 +40,10 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
   with MockErrorHandler {
 
   private val employmentId = "employmentId"
-  private val pageView = inject[AccommodationRelocationBenefitsView]
+  private val pageView = inject[LivingAccommodationBenefitsView]
   private val formsProvider = new AccommodationFormsProvider()
 
-  private lazy val underTest = new AccommodationRelocationBenefitsController(
+  private lazy val underTest = new LivingAccommodationBenefitsController(
     mockActionsProvider,
     pageView,
     mockAccommodationService,
@@ -52,7 +51,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     mockErrorHandler,
     formsProvider)
 
-  private val clazz = classOf[AccommodationRelocationBenefitsController]
+  private val clazz = classOf[LivingAccommodationBenefitsController]
 
   ".show" should {
     "return successful response" in {
@@ -76,9 +75,9 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
       contentType(result) shouldBe Some("text/html")
     }
 
-    "handle internal server error when save operation fails with database error" in {
+    "handle internal server error when accommodationService.updateAccommodationQuestion(...) fails" in {
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
+      mockUpdateAccommodationQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
       mockInternalServerError(InternalServerError)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
@@ -87,24 +86,24 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "save section question and return correct result when question value is true" in {
+    "save question and return correct result when question value is true" in {
       val result: Result = mock[Result]
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, LivingAccommodationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockUpdateAccommodationQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel, LivingAccommodationBenefitAmountController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
 
       await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
     }
 
-    "save section question and return correct result when question value is false" in {
+    "save question and return correct result when question value is false" in {
       val result: Result = mock[Result]
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockUpdateAccommodationQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel, QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
 

@@ -45,17 +45,17 @@ class AccommodationRelocationBenefitsController @Inject()(actionsProvider: Actio
                                                          (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearWithSessionData(
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
     clazz = classOf[AccommodationRelocationBenefitsController]
-  ).async { implicit request =>
+  ) { implicit request =>
     val form = formsProvider.accommodationRelocationForm(request.user.isAgent)
-    Future.successful(Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData))))
+    Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearWithSessionData(
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,

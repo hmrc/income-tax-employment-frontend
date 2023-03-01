@@ -16,9 +16,8 @@
 
 package controllers.benefits.accommodation
 
-import controllers.benefits.accommodation.routes.LivingAccommodationBenefitsController
-import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
-import forms.YesNoForm
+import controllers.benefits.accommodation.routes.QualifyingRelocationBenefitsController
+import forms.AmountForm
 import forms.benefits.accommodation.AccommodationFormsProvider
 import models.employment.EmploymentBenefitsType
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK}
@@ -31,9 +30,9 @@ import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
-import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
+import views.html.benefits.accommodation.LivingAccommodationBenefitsAmountView
 
-class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
+class LivingAccommodationBenefitAmountControllerSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockActionsProvider
   with MockAccommodationService
@@ -41,10 +40,10 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
   with MockErrorHandler {
 
   private val employmentId = "employmentId"
-  private val pageView = inject[AccommodationRelocationBenefitsView]
+  private val pageView = inject[LivingAccommodationBenefitsAmountView]
   private val formsProvider = new AccommodationFormsProvider()
 
-  private lazy val underTest = new AccommodationRelocationBenefitsController(
+  private lazy val underTest = new LivingAccommodationBenefitAmountController(
     mockActionsProvider,
     pageView,
     mockAccommodationService,
@@ -52,7 +51,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     mockErrorHandler,
     formsProvider)
 
-  private val clazz = classOf[AccommodationRelocationBenefitsController]
+  private val clazz = classOf[LivingAccommodationBenefitAmountController]
 
   ".show" should {
     "return successful response" in {
@@ -69,44 +68,32 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     "render page with error when validation of form fails" in {
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "")
       val result = underTest.submit(taxYearEOY, employmentId).apply(request)
 
       status(result) shouldBe BAD_REQUEST
       contentType(result) shouldBe Some("text/html")
     }
 
-    "handle internal server error when save operation fails with database error" in {
+    "handle internal server error when accommodationService.updateAccommodation(...) fails" in {
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
+      mockUpdateAccommodation(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Left(()))
       mockInternalServerError(InternalServerError)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
       val result = underTest.submit(taxYearEOY, employmentId)(request)
 
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "save section question and return correct result when question value is true" in {
+    "save amount and perform correct redirect" in {
       val result: Result = mock[Result]
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, LivingAccommodationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockUpdateAccommodation(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel, QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
-
-      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
-    }
-
-    "save section question and return correct result when question value is false" in {
-      val result: Result = mock[Result]
-
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
-      mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
-
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
 
       await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
     }

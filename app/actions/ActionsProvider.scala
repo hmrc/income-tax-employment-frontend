@@ -35,10 +35,10 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 inYearUtil: InYearUtil,
                                 redirectsMapper: RedirectsMapper)(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
-  def endOfYearWithSessionData(taxYear: Int,
-                               employmentId: String,
-                               employmentType: EmploymentType,
-                               clazz: Class[_]): ActionBuilder[UserSessionDataRequest, AnyContent] =
+  def endOfYearSessionDataWithRedirects(taxYear: Int,
+                                        employmentId: String,
+                                        employmentType: EmploymentType,
+                                        clazz: Class[_]): ActionBuilder[UserSessionDataRequest, AnyContent] =
     authAction
       .andThen(TaxYearAction.taxYearAction(taxYear))
       .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
