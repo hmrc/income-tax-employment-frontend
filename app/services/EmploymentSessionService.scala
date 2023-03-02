@@ -68,6 +68,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     incomeTaxUserDataConnector.get(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
+  @deprecated("Use getSessionData(...) instead")
   def getSessionDataResult(taxYear: Int, employmentId: String)
                           (result: Option[EmploymentUserData] => Future[Result])
                           (implicit request: AuthorisationRequest[_]): Future[Result] = {

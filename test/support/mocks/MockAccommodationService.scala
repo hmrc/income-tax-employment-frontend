@@ -39,4 +39,26 @@ trait MockAccommodationService extends MockFactory {
       .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
       .returns(Future.successful(result))
   }
+
+  def mockUpdateAccommodationQuestion(user: User,
+                                      taxYear: Int,
+                                      employmentId: String,
+                                      originalEmploymentUserData: EmploymentUserData,
+                                      questionValue: Boolean,
+                                      result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAccommodationService.updateAccommodationQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateAccommodation(user: User,
+                              taxYear: Int,
+                              employmentId: String,
+                              originalEmploymentUserData: EmploymentUserData,
+                              amount: BigDecimal,
+                              result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, BigDecimal, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAccommodationService.updateAccommodation(_: User, _: Int, _: String, _: EmploymentUserData, _: BigDecimal))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, amount)
+      .returns(Future.successful(result))
+  }
 }

@@ -17,7 +17,6 @@
 package controllers.benefits.accommodation
 
 import forms.YesNoForm
-import models.benefits.AccommodationRelocationModel
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -27,7 +26,7 @@ import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAc
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
+import utils.PageUrls.{fullUrl, livingAccommodationBenefitsAmountUrl, livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -37,7 +36,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the 'Did you get any accommodation benefits?' page with no pre-filled radio buttons" which {
+    "render page with no pre-filled radio buttons" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -52,7 +51,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
       }
     }
 
-    "redirect to the overview page when the tax year isn't valid for EOY" which {
+    "redirect to the overview page when in year" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
@@ -65,72 +64,9 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
-
-    "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
   }
 
   ".submit" should {
-    "return an error when a form is submitted with no entry" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has an BAD REQUEST($BAD_REQUEST) status" in {
-        result.status shouldBe BAD_REQUEST
-      }
-    }
-
     "update accommodationQuestion to Some(true) when user chooses yes and prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       implicit lazy val result: WSResponse = {
@@ -177,7 +113,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
       }
     }
 
-    "redirect to the overview page when the tax year isn't valid for EOY" which {
+    "redirect to the overview page when in year" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
@@ -191,51 +127,18 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
       }
     }
 
-    "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
-      lazy val result: WSResponse = {
+    "return an error when a form is submitted with no entry" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has a SEE_OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+      s"has an BAD REQUEST($BAD_REQUEST) status" in {
+        result.status shouldBe BAD_REQUEST
       }
     }
   }
