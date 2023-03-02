@@ -62,12 +62,34 @@ trait MockAccommodationService extends MockFactory {
       .returns(Future.successful(result))
   }
 
-  def mockUpdateQualifyingExpensesQuestion(user: User,
+  def mockUpdateNonQualifyingExpensesQuestion(user: User,
+                                              taxYear: Int,
+                                              employmentId: String,
+                                              originalEmploymentUserData: EmploymentUserData,
+                                              questionValue: Boolean,
+                                              result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAccommodationService.updateNonQualifyingExpensesQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateNonQualifyingExpenses(user: User,
                                       taxYear: Int,
                                       employmentId: String,
                                       originalEmploymentUserData: EmploymentUserData,
-                                      questionValue: Boolean,
-                                      result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+                                      amount: BigDecimal,
+                                      result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, BigDecimal, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAccommodationService.updateNonQualifyingExpenses(_: User, _: Int, _: String, _: EmploymentUserData, _: BigDecimal))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, amount)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateQualifyingExpensesQuestion(user: User,
+                                           taxYear: Int,
+                                           employmentId: String,
+                                           originalEmploymentUserData: EmploymentUserData,
+                                           questionValue: Boolean,
+                                           result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
     (mockAccommodationService.updateQualifyingExpensesQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
       .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
       .returns(Future.successful(result))

@@ -37,6 +37,10 @@ class RedirectsMapper @Inject()(redirectService: RedirectService) {
       redirectService.accommodationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[LivingAccommodationBenefitsController] =>
       redirectService.commonAccommodationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[NonQualifyingRelocationBenefitsController] =>
+      redirectService.nonQualifyingRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[NonQualifyingRelocationBenefitsAmountController] =>
+      redirectService.nonQualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[QualifyingRelocationBenefitsAmountController] =>
       redirectService.qualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[QualifyingRelocationBenefitsController] =>

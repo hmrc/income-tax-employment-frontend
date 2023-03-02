@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsAmountController
+
+@import models.benefits.pages.NonQualifyingRelocationBenefitAmountPage
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Caption
@@ -30,19 +34,19 @@
     button: Button
 )
 
-@(taxYear: Int, form: Form[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(pageModel: NonQualifyingRelocationBenefitAmountPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleText = @{messages(s"benefits.nonQualifyingRelocationBenefitAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleText = @{messages(s"benefits.nonQualifyingRelocationBenefitAmount.title.${if(pageModel.isAgent) "agent" else "individual"}")}
 
-@layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+@layout(pageTitle = titleText, taxYear = Some(pageModel.taxYear), hasErrors = pageModel.form.hasErrors) {
 
-    @errorSummary(form.errors)
+    @errorSummary(pageModel.form.errors)
 
-    @caption(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString))
+    @caption(messages("benefits.caption", (pageModel.taxYear - 1).toString, pageModel.taxYear.toString))
 
-    @formWithCsrf(controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsAmountController.submit(taxYear, empId)) {
+    @formWithCsrf(NonQualifyingRelocationBenefitsAmountController.submit(pageModel.taxYear, pageModel.employmentId)) {
         @inputText(
-            form,
+            pageModel.form,
             id = "amount",
             name = "amount",
             isPageHeading = true,

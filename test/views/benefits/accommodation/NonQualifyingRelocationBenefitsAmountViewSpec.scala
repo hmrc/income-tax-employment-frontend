@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.NonQualifyingRelocationBenefitAmountPageBuilder.aNonQualifyingRelocationBenefitAmountPage
 import views.html.benefits.accommodation.NonQualifyingRelocationBenefitsAmountView
 
 class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
@@ -114,7 +115,7 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[BigDecimal] = new AccommodationFormsProvider().nonQualifyingRelocationAmountForm(isAgent)
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = new AccommodationFormsProvider().nonQualifyingRelocationAmountForm(isAgent)
 
   private lazy val underTest = inject[NonQualifyingRelocationBenefitsAmountView]
 
@@ -123,11 +124,12 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
     import userScenario.commonExpectedResults._
     import userScenario.specificExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the non-qualifying relocation benefits amount page without pre-filled form and without replay text" which {
+      "render page with no value when theres no prefilled data" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = aNonQualifyingRelocationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -144,11 +146,12 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render the non-qualifying relocation benefits amount page with pre-filled amount" which {
+      "render page with prefilled form when there is amount" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 300), employmentId)
+        val pageModel = aNonQualifyingRelocationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).fill(value = 300))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -163,11 +166,12 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "should render non qualifying relocation question amount page with empty error text when there no input" which {
+      "render page with an error when theres no input" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
+        val pageModel = aNonQualifyingRelocationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -185,11 +189,12 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.emptyErrorText)
       }
 
-      "should render the non qualifying relocation question amount page with invalid format text when input is in incorrect format" which {
+      "render page with an error when the amount is invalid" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
+        val pageModel = aNonQualifyingRelocationBenefitAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -207,11 +212,13 @@ class NonQualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.invalidFormatErrorText)
       }
 
-      "should render the non qualifying relocation question page with max error when input > 100,000,000,000" which {
+      "render page with an error when the amount is too big" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "9999999999999999999999999999")), employmentId)
+        val pageModel = aNonQualifyingRelocationBenefitAmountPage
+          .copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "9999999999999999999999999999")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
