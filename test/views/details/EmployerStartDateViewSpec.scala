@@ -17,10 +17,10 @@
 package views.details
 
 import controllers.details.routes.EmployerStartDateController
-import forms.details.EmploymentDateForm
+import forms.details.DateForm
 import models.AuthorisationRequest
 import models.details.EmploymentDetails
-import models.employment.EmploymentDate
+import models.employment.DateFormData
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -158,12 +158,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val forExample = "Er enghraifft, 12 11 2007"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   object CyaModel {
     val cya: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true,
@@ -174,7 +174,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     )
   }
 
-  private val form = EmploymentDateForm
+  private val form = DateForm
   private val underTest = inject[EmployerStartDateView]
 
   userScenarios.foreach { userScenario =>
@@ -186,7 +186,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form.employmentStartDateForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+        val htmlFormat = underTest(form.dateForm(), taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -206,7 +206,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form.employmentStartDateForm.fill(EmploymentDate(employmentStartDay, employmentStartMonth, employmentStartYear)),
+        val htmlFormat = underTest(form.dateForm().fill(DateFormData(employmentStartDay, employmentStartMonth, employmentStartYear)),
           taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -228,12 +228,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> employmentStartMonth,
-              EmploymentDateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> employmentStartMonth,
+              DateForm.day -> ""))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -258,12 +258,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> "",
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> "",
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -288,12 +288,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "",
-              EmploymentDateForm.month -> employmentStartMonth,
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "",
+              DateForm.month -> employmentStartMonth,
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -318,12 +318,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> "",
-              EmploymentDateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> "",
+              DateForm.day -> ""))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -348,12 +348,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "",
-              EmploymentDateForm.month -> employmentStartMonth,
-              EmploymentDateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "",
+              DateForm.month -> employmentStartMonth,
+              DateForm.day -> ""))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -378,12 +378,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "",
-              EmploymentDateForm.month -> "",
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "",
+              DateForm.month -> "",
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -408,12 +408,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "",
-              EmploymentDateForm.month -> "",
-              EmploymentDateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "",
+              DateForm.month -> "",
+              DateForm.day -> ""))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -438,12 +438,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> employmentStartMonth,
-              EmploymentDateForm.day -> "abc"))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> employmentStartMonth,
+              DateForm.day -> "abc"))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -468,12 +468,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> "abc",
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> "abc",
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -498,12 +498,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "abc",
-              EmploymentDateForm.month -> employmentStartMonth,
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "abc",
+              DateForm.month -> employmentStartMonth,
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -528,12 +528,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> employmentStartYear,
-              EmploymentDateForm.month -> "13",
-              EmploymentDateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> employmentStartYear,
+              DateForm.month -> "13",
+              DateForm.day -> employmentStartDay))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -558,12 +558,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> "1900",
-              EmploymentDateForm.month -> "1",
-              EmploymentDateForm.day -> "1"))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> "1900",
+              DateForm.month -> "1",
+              DateForm.day -> "1"))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -588,12 +588,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> taxYearEOY.toString,
-              EmploymentDateForm.month -> "04",
-              EmploymentDateForm.day -> "06"))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> taxYearEOY.toString,
+              DateForm.month -> "04",
+              DateForm.day -> "06"))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
@@ -619,12 +619,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val nowDatePlusOne = LocalDate.now().plusDays(1)
-          val filledForm = form.employmentStartDateForm.bind(
-            Map(EmploymentDateForm.year -> nowDatePlusOne.getYear.toString,
-              EmploymentDateForm.month -> nowDatePlusOne.getMonthValue.toString,
-              EmploymentDateForm.day -> nowDatePlusOne.getDayOfMonth.toString))
-          val validatedForm = filledForm.copy(errors = EmploymentDateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, EmploymentDateForm.startDate))
+          val filledForm = form.dateForm().bind(
+            Map(DateForm.year -> nowDatePlusOne.getYear.toString,
+              DateForm.month -> nowDatePlusOne.getMonthValue.toString,
+              DateForm.day -> nowDatePlusOne.getDayOfMonth.toString))
+          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
+            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
 
           val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 

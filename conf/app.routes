@@ -41,6 +41,9 @@ POST        /:taxYear/details/employer-paye-reference                           
 GET         /:taxYear/details/employment-start-date                                  controllers.details.EmployerStartDateController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/details/employment-start-date                                  controllers.details.EmployerStartDateController.submit(taxYear: Int, employmentId: String)
 
+GET         /:taxYear/details/employment-end-date                                    controllers.details.EmployerEndDateController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/details/employment-end-date                                    controllers.details.EmployerEndDateController.submit(taxYear: Int, employmentId: String)
+
 GET         /:taxYear/details/leave-employer                                         controllers.details.DidYouLeaveEmployerController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/details/leave-employer                                         controllers.details.DidYouLeaveEmployerController.submit(taxYear: Int, employmentId: String)
 
@@ -282,8 +285,8 @@ POST        /:taxYear/benefits/assets-to-keep-amount                            
 GET         /:taxYear/expenses/claim-employment-expenses                             controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
 POST        /:taxYear/expenses/claim-employment-expenses                             controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
 
-GET        /:taxYear/remove-expenses                                              controllers.expenses.RemoveExpensesController.show(taxYear: Int)
-POST       /:taxYear/remove-expenses                                              controllers.expenses.RemoveExpensesController.submit(taxYear: Int)
+GET         /:taxYear/remove-expenses                                                controllers.expenses.RemoveExpensesController.show(taxYear: Int)
+POST        /:taxYear/remove-expenses                                                controllers.expenses.RemoveExpensesController.submit(taxYear: Int)
 
 #################       Employment expenses details pages      #####################
 
@@ -330,8 +333,8 @@ POST        /:taxYear/student-loans/check-student-loans-repayments              
 
 #############################       Tailorings      #############################
 
-GET         /:taxYear/income-from-employment                                        controllers.tailorings.EmploymentGatewayController.show(taxYear: Int)
-POST        /:taxYear/income-from-employment                                        controllers.tailorings.EmploymentGatewayController.submit(taxYear: Int)
+GET         /:taxYear/income-from-employment                                         controllers.tailorings.EmploymentGatewayController.show(taxYear: Int)
+POST        /:taxYear/income-from-employment                                         controllers.tailorings.EmploymentGatewayController.submit(taxYear: Int)
 
 
 ###########################     Error pages     ####################################
@@ -345,5 +348,3 @@ GET         /error/you-need-client-authorisation                                
 GET         /error/not-authorised-to-use-service                                     controllers.errors.UnauthorisedUserErrorController.show
 
 GET         /error/you-need-agent-services-account                                   controllers.errors.YouNeedAgentServicesController.show
-
-

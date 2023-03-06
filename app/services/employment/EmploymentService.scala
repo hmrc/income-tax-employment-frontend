@@ -17,7 +17,7 @@
 package services.employment
 
 import models.User
-import models.employment.EmploymentDate
+import models.employment.DateFormData
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
@@ -43,7 +43,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
                       taxYear: Int,
                       employmentId: String,
                       originalEmploymentUserData: EmploymentUserData,
-                      startedDate: EmploymentDate): Future[Either[Unit, EmploymentUserData]] = {
+                      startedDate: DateFormData): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val leaveDate = cya.employmentDetails.cessationDate
     lazy val leaveDateLocalDate = LocalDate.parse(leaveDate.get)
@@ -88,13 +88,13 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCessationDate(user: User,
-                          taxYear: Int,
-                          employmentId: String,
-                          originalEmploymentUserData: EmploymentUserData,
-                          cessationDate: String): Future[Either[Unit, EmploymentUserData]] = {
+  def updateEndDate(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    endDate: String): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(cessationDate)))
+    val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(endDate)))
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }

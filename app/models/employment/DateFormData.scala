@@ -17,20 +17,25 @@
 package models.employment
 
 import play.api.libs.json.{Json, OFormat}
+import utils.DateTimeUtil.localDateTimeFormat
 
 import java.time.LocalDate
 
-case class EmploymentDate(amountDay: String,
-                          amountMonth: String,
-                          amountYear: String
-                         ){
+case class DateFormData(amountDay: String,
+                        amountMonth: String,
+                        amountYear: String) {
 
   def toLocalDate: LocalDate = LocalDate.of(amountYear.toInt, amountMonth.toInt, amountDay.toInt)
 
 }
 
-object EmploymentDate {
-  implicit val format: OFormat[EmploymentDate] = Json.format[EmploymentDate]
+object DateFormData {
+  implicit val format: OFormat[DateFormData] = Json.format[DateFormData]
+
+  def apply(dateString: String): DateFormData = {
+    val parsedDate = LocalDate.parse(dateString, localDateTimeFormat)
+    DateFormData(parsedDate.getDayOfMonth.toString, parsedDate.getMonthValue.toString, parsedDate.getYear.toString)
+  }
 }
 
 

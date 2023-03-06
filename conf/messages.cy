@@ -272,6 +272,33 @@ employment.employmentStartDate.title.individual = Pryd y gwnaethoch ddechrau gwe
 
 #################       Employment end date messages        ########################################
 
+employment.employmentEndDate.error.beforeStartDate.agent = The date your client left must be after the date your client started, {0}
+employment.employmentEndDate.error.beforeStartDate.individual = The date you left must be after the date you started, {0}
+employment.employmentEndDate.error.incompleteAll.agent = Enter the date your client’s employment ended
+employment.employmentEndDate.error.incompleteAll.individual = Enter the date your employment ended
+employment.employmentEndDate.error.incompleteDay.agent = The date your client left must include a day
+employment.employmentEndDate.error.incompleteDay.individual = The date you left must include a day
+employment.employmentEndDate.error.incompleteDayMonth.agent = The date your client left must include a day and month
+employment.employmentEndDate.error.incompleteDayMonth.individual = The date you left must include a day and month
+employment.employmentEndDate.error.incompleteDayYear.agent = The date your client left must include a day and year
+employment.employmentEndDate.error.incompleteDayYear.individual = The date you left must include a day and year
+employment.employmentEndDate.error.incompleteMonth.agent = The date your client left must include a month
+employment.employmentEndDate.error.incompleteMonth.individual = The date you left must include a month
+employment.employmentEndDate.error.incompleteMonthYear.agent = The date your client left must include a month and year
+employment.employmentEndDate.error.incompleteMonthYear.individual = The date you left must include a month and year
+employment.employmentEndDate.error.incompleteYear.agent = The date your client left must include a year
+employment.employmentEndDate.error.incompleteYear.individual = The date you left must include a year
+employment.employmentEndDate.error.invalidDate.agent = The date your client left must be a real date
+employment.employmentEndDate.error.invalidDate.individual = The date you left must be a real date
+employment.employmentEndDate.error.tooLongAgo.agent = The date your client left must be the same as or after 6 April {0}
+employment.employmentEndDate.error.tooLongAgo.individual = The date you left must be the same as or after 6 April {0}
+employment.employmentEndDate.error.tooRecent.agent = The date your client left must be the same as or before 5 April {0}
+employment.employmentEndDate.error.tooRecent.individual = The date you left must be the same as or before 5 April {0}
+employment.employmentEndDate.heading.agent = When did your client leave {0}?
+employment.employmentEndDate.heading.individual = When did you leave {0}?
+
+#################       Employment end date messages used by old page with start and end dates (/employment-dates)       ########################################
+
 employment.employmentLeaveDate.error.beforeStartDate.agent = Does dim modd i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn {0}
 employment.employmentLeaveDate.error.beforeStartDate.individual = Does dim modd i’r dyddiad y gwnaethoch adael eich cyflogaeth fod cyn {0}
 employment.employmentLeaveDate.error.incompleteAll.agent = Nodwch y dyddiad y gwnaeth eich cleient adael ei gyflogaeth

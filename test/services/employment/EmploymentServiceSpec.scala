@@ -16,7 +16,7 @@
 
 package services.employment
 
-import models.employment.EmploymentDate
+import models.employment.DateFormData
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
@@ -57,7 +57,7 @@ class EmploymentServiceSpec extends UnitTest
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = DateFormData("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -71,7 +71,7 @@ class EmploymentServiceSpec extends UnitTest
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = DateFormData("2", "1", s"$taxYearEOY"))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -115,15 +115,16 @@ class EmploymentServiceSpec extends UnitTest
     }
   }
 
-  "updateCessationDate" should {
+  "updateEndDate" should {
     "set cessationDate" in {
       val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
-      val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("some-date"))
+      val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-02"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateCessationDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, cessationDate = "some-date")) shouldBe Right(expectedEmploymentUserData)
+      await(underTest.updateEndDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, endDate = s"$taxYearEOY-01-02")) shouldBe
+        Right(expectedEmploymentUserData)
     }
   }
 

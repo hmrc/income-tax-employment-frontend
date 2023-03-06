@@ -56,7 +56,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
 
   ".show" should {
     "return successful response" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
 
       val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
 
@@ -67,7 +67,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
 
   ".submit" should {
     "render page with error when validation of form fails" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "")
       val result = underTest.submit(taxYearEOY, employmentId).apply(request)
@@ -77,7 +77,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     }
 
     "handle internal server error when save operation fails with database error" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
       mockInternalServerError(InternalServerError)
 
@@ -90,7 +90,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     "save section question and return correct result when question value is true" in {
       val result: Result = mock[Result]
 
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
       mockBenefitsSubmitRedirect(anEmploymentCYAModel, LivingAccommodationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
@@ -102,7 +102,7 @@ class AccommodationRelocationBenefitsControllerSpec extends ControllerUnitTest
     "save section question and return correct result when question value is false" in {
       val result: Result = mock[Result]
 
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockSaveSectionQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
       mockBenefitsSubmitRedirect(anEmploymentCYAModel, TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 

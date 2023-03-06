@@ -18,14 +18,14 @@ package models.employment
 
 import java.time.LocalDate
 
-case class EmploymentDates(startDate: Option[EmploymentDate],
-                           endDate: Option[EmploymentDate]){
+case class EmploymentDates(startDate: Option[DateFormData],
+                           endDate: Option[DateFormData]) {
 
   def startDateToLocalDate: Option[LocalDate] =
-    startDate.map (employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
+    startDate.map(employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
 
   def endDateToLocalDate: Option[LocalDate] =
-    endDate.map (employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
+    endDate.map(employmentDate => LocalDate.of(employmentDate.amountYear.toInt, employmentDate.amountMonth.toInt, employmentDate.amountDay.toInt))
 }
 
 object EmploymentDates {
@@ -36,11 +36,11 @@ object EmploymentDates {
                 endDay: String,
                 endMonth: String,
                 endYear: String): EmploymentDates = EmploymentDates(
-    startDate = Some(EmploymentDate(startDay,startMonth,startYear)),
-    endDate = Some(EmploymentDate(endDay,endMonth,endYear))
+    startDate = Some(DateFormData(startDay, startMonth, startYear)),
+    endDate = Some(DateFormData(endDay, endMonth, endYear))
   )
 
-  def formUnapply(form: EmploymentDates): Option[(String,String,String,String,String,String)] = Some(
+  def formUnapply(form: EmploymentDates): Option[(String, String, String, String, String, String)] = Some(
     (
       form.startDate.map(_.amountDay).getOrElse(""),
       form.startDate.map(_.amountMonth).getOrElse(""),

@@ -35,6 +35,14 @@ class ActionsProvider @Inject()(authAction: AuthorisedAction,
                                 inYearUtil: InYearUtil,
                                 redirectsMapper: RedirectsMapper)(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
+  def endOfYearSessionData(taxYear: Int,
+                           employmentId: String,
+                           employmentType: EmploymentType): ActionBuilder[UserSessionDataRequest, AnyContent] =
+    authAction
+      .andThen(TaxYearAction.taxYearAction(taxYear))
+      .andThen(EndOfYearFilterAction(taxYear, inYearUtil, appConfig))
+      .andThen(UserSessionDataRequestRefinerAction(taxYear, employmentId, employmentType, employmentSessionService, errorHandler, appConfig))
+
   def endOfYearSessionDataWithRedirects(taxYear: Int,
                                         employmentId: String,
                                         employmentType: EmploymentType,

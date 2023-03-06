@@ -16,7 +16,7 @@
 
 package controllers.details
 
-import forms.details.EmploymentDateForm
+import forms.details.DateForm
 import models.details.EmploymentDetails
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.HeaderNames
@@ -90,14 +90,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     s"return a BAD_REQUEST($BAD_REQUEST) status" when {
 
       "the day is empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
-          EmploymentDateForm.day -> "")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01",
+          DateForm.day -> "")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -106,14 +106,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the month is empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -122,14 +122,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the year is empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "", EmploymentDateForm.month -> "01",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "", DateForm.month -> "01",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -138,14 +138,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the day and month are empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "",
-          EmploymentDateForm.day -> "")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "",
+          DateForm.day -> "")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -154,14 +154,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the day and year are empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "", EmploymentDateForm.month -> "01",
-          EmploymentDateForm.day -> "")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "", DateForm.month -> "01",
+          DateForm.day -> "")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -170,14 +170,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the year and month are empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "", EmploymentDateForm.month -> "",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "", DateForm.month -> "",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -186,14 +186,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the day, month and year are empty" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "", EmploymentDateForm.month -> "",
-          EmploymentDateForm.day -> "")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "", DateForm.month -> "",
+          DateForm.day -> "")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -202,14 +202,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the day is invalid" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
-          EmploymentDateForm.day -> "abc")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01",
+          DateForm.day -> "abc")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -218,14 +218,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the month is invalid" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "abc",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "abc",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -234,14 +234,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the year is invalid" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "abc", EmploymentDateForm.month -> "01",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "abc", DateForm.month -> "01",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -250,14 +250,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the date is an invalid date i.e. month is set to 13" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "13",
-          EmploymentDateForm.day -> "01")
+        lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "13",
+          DateForm.day -> "01")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -266,14 +266,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the data is too long ago (must be after 1st January 1900)" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "1900", EmploymentDateForm.month -> "1",
-          EmploymentDateForm.day -> "1")
+        lazy val form: Map[String, String] = Map(DateForm.year -> "1900", DateForm.month -> "1",
+          DateForm.day -> "1")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -282,14 +282,14 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "the date is a too recent date i.e. after 5thApril" which {
-        lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> taxYearEOY.toString, EmploymentDateForm.month -> "04",
-          EmploymentDateForm.day -> "06")
+        lazy val form: Map[String, String] = Map(DateForm.year -> taxYearEOY.toString, DateForm.month -> "04",
+          DateForm.day -> "06")
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -300,15 +300,15 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       "the date is not in the past" which {
         val nowDatePlusOne = LocalDate.now().plusDays(1)
         lazy val form: Map[String, String] = Map(
-          EmploymentDateForm.year -> nowDatePlusOne.getYear.toString,
-          EmploymentDateForm.month -> nowDatePlusOne.getMonthValue.toString,
-          EmploymentDateForm.day -> nowDatePlusOne.getDayOfMonth.toString)
+          DateForm.year -> nowDatePlusOne.getYear.toString,
+          DateForm.month -> nowDatePlusOne.getMonthValue.toString,
+          DateForm.day -> nowDatePlusOne.getDayOfMonth.toString)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -321,7 +321,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   "redirect the user to the overview page when it is not end of year" which {
     lazy val result: WSResponse = {
       authoriseAgentOrIndividual(isAgent = false)
-      urlPost(fullUrl(employmentStartDateUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      urlPost(fullUrl(employmentStartDateUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
     }
 
     "has an SEE_OTHER(303) status" in {
@@ -331,15 +331,12 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   "create a new cya model with the employer start date" which {
-
-    lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> s"${taxYearEOY - 1}", EmploymentDateForm.month -> "01",
-      EmploymentDateForm.day -> "01")
-
+    lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01", DateForm.day -> "01")
     lazy val result: WSResponse = {
       dropEmploymentDB()
       insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
       authoriseAgentOrIndividual(isAgent = false)
-      urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
     }
 
     "redirects to the check your details page" in {

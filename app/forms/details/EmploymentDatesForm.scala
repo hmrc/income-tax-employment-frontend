@@ -26,7 +26,8 @@ import utils.ViewUtils
 import java.time.LocalDate
 import scala.util.Try
 
-//TODO - unit test the form validation and error message keys
+// TODO - unit test the form validation and error message keys
+// TODO: Should be deleted when EndDatePage is used
 object EmploymentDatesForm extends InputFilters {
 
   val startAmountDay: String = "startAmount-day"
@@ -43,7 +44,6 @@ object EmploymentDatesForm extends InputFilters {
 
   def employmentDatesForm: Form[EmploymentDates] = Form(
     mapping(
-
       startAmountDay -> trimmedText.transform[String](filter, identity),
       startAmountMonth -> trimmedText.transform[String](filter, identity),
       startAmountYear -> trimmedText.transform[String](filter, identity),
@@ -51,7 +51,6 @@ object EmploymentDatesForm extends InputFilters {
       endAmountDay -> trimmedText.transform[String](filter, identity),
       endAmountMonth -> trimmedText.transform[String](filter, identity),
       endAmountYear -> trimmedText.transform[String](filter, identity)
-
     )(EmploymentDates.formApply)(EmploymentDates.formUnapply)
   )
 

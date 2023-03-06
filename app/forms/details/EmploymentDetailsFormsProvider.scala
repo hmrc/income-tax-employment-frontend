@@ -16,8 +16,12 @@
 
 package forms.details
 
+import forms.details.DateForm.verifyEndDate
 import forms.{AmountForm, YesNoForm}
+import models.employment.DateFormData
 import play.api.data.Form
+
+import java.time.LocalDate
 
 class EmploymentDetailsFormsProvider {
 
@@ -36,4 +40,12 @@ class EmploymentDetailsFormsProvider {
     wrongFormatKey = "employment.employmentTax.error.format",
     exceedsMaxAmountKey = "employment.employmentTax.error.max"
   )
+
+  def validatedEndDateForm(dateForm: Form[DateFormData],
+                           taxYear: Int,
+                           isAgent: Boolean,
+                           pageNameAsKey: String,
+                           startDate: LocalDate): Form[DateFormData] = {
+    dateForm.copy(errors = verifyEndDate(dateForm.get, taxYear, isAgent, pageNameAsKey, startDate))
+  }
 }

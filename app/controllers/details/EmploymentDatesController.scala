@@ -22,7 +22,7 @@ import controllers.details.routes.EmployerPayrollIdController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDatesForm
 import models.details.EmploymentDetails
-import models.employment.{EmploymentDate, EmploymentDates}
+import models.employment.{DateFormData, EmploymentDates}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -44,7 +44,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                                           employmentSessionService: EmploymentSessionService)
                                          (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def datesForm: Form[EmploymentDates] = EmploymentDatesForm.employmentDatesForm
+  private def datesForm(): Form[EmploymentDates] = EmploymentDatesForm.employmentDatesForm
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -53,11 +53,11 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
           case (startDate, endDate) =>
             val parsedStartDate: Option[LocalDate] = startDate.map(LocalDate.parse(_, localDateTimeFormat))
             val parsedEndDate: Option[LocalDate] = endDate.map(LocalDate.parse(_, localDateTimeFormat))
-            val filledForm: Form[EmploymentDates] = datesForm.fill( //TODO - unit tests unfilled forms and pre-filled forms conditions
+            val filledForm: Form[EmploymentDates] = datesForm().fill( //TODO - unit tests unfilled forms and pre-filled forms conditions
               EmploymentDates(
-                parsedStartDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString,
+                parsedStartDate.map(localDate => DateFormData(localDate.getDayOfMonth.toString,
                   localDate.getMonthValue.toString, localDate.getYear.toString)),
-                parsedEndDate.map(localDate => EmploymentDate(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
+                parsedEndDate.map(localDate => DateFormData(localDate.getDayOfMonth.toString, localDate.getMonthValue.toString, localDate.getYear.toString))))
             Future.successful(Ok(pageView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
             Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -69,7 +69,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        val newForm = datesForm.bindFromRequest()
+        val newForm = datesForm().bindFromRequest()
         newForm.copy(errors = EmploymentDatesForm.verifyDates(newForm.get, taxYear, request.user.isAgent)).fold(
           { formWithErrors =>
             Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
