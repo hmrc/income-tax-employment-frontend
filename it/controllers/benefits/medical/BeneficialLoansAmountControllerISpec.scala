@@ -120,7 +120,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to income tax section" in {
@@ -141,7 +141,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(hasPriorBenefits = false, benefits = benefitsViewModel))
-        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to income tax and costs yes no page" in {
@@ -160,7 +160,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -173,7 +173,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {

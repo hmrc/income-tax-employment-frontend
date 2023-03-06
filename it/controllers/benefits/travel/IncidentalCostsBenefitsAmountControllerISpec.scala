@@ -162,7 +162,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val model = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(model))))
-        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to the entertaining page" in {
@@ -186,7 +186,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
           .copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to the entertaining question page" in {
@@ -221,7 +221,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false,
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "",
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -238,7 +238,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
@@ -254,7 +254,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {

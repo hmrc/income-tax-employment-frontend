@@ -168,7 +168,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(fullUrl(checkYourExpensesUrl(taxYear)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYear)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
@@ -182,7 +182,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has a url of expenses show method" in {
@@ -199,7 +199,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         insertExpensesCyaData(expensesUserData(ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))))
 
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has a url of expenses show method" in {
@@ -217,7 +217,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         insertExpensesCyaData(expensesUserData(ExpensesCYAModel(anExpensesViewModel.copy(
           professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))))
 
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has a url of expenses show method" in {
@@ -243,7 +243,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         stubPutWithHeadersCheck(s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has an SEE OTHER status and cyaData cleared as data was submitted" in {
@@ -262,7 +262,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         insertExpensesCyaData(expensesUserData(ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
 
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
@@ -279,7 +279,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYear - 1)
         insertExpensesCyaData(expensesUserData(ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
-        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {

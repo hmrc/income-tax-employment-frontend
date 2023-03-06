@@ -194,7 +194,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -208,7 +208,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithCarAmount))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
@@ -227,7 +227,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your benefits page" in {
@@ -246,7 +246,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your benefits page" in {
@@ -265,7 +265,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYear, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYear, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -280,7 +280,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {

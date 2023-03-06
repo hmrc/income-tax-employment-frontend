@@ -116,7 +116,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(cya())
-        urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)),  headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {

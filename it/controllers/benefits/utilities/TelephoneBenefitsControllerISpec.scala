@@ -182,7 +182,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -200,7 +200,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -223,7 +223,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             .copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the telephone amount page" in {
@@ -240,7 +240,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYear, employmentId)), body = "", follow = false,
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYear, employmentId)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -258,7 +258,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -282,7 +282,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -300,7 +300,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = None)))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(telephoneBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

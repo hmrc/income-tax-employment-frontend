@@ -104,7 +104,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -120,7 +120,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER status" in {
@@ -141,7 +141,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER status" in {
@@ -168,7 +168,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER status" in {
@@ -188,7 +188,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER status" in {
@@ -201,7 +201,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {

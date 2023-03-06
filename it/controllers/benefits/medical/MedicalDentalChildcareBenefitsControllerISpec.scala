@@ -137,7 +137,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> ""), follow = false,
+          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> ""),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -156,7 +156,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
           val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the income tax section" in {
@@ -177,7 +177,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
             .copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the medical dental page" in {
@@ -200,7 +200,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -215,7 +215,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {

@@ -104,8 +104,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val taxYearInUse = if(scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
-      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
+      val taxYearInUse = if (scenarioData.commonExpectedResults.isEndOfYear) taxYearEOY else taxYear
+      val welshLang = if (scenarioData.isWelsh) "Welsh" else "English"
 
       s"render the page for $inYearText, for an $affinityText when there is $prior in $welshLang" when {
 
@@ -260,7 +260,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if (scenarioData.isAgent) "agent" else "individual"
       val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      val welshLang = if(scenarioData.isWelsh) "Welsh" else "English"
+      val welshLang = if (scenarioData.isWelsh) "Welsh" else "English"
 
       lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
         Seq(),
@@ -331,7 +331,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               url(taxYearEOY),
               "{}",
               scenarioData.isWelsh,
-              follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
@@ -384,14 +383,13 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               url(taxYearEOY),
               "{}",
               scenarioData.isWelsh,
-              follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY, extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)))
             )
           }
 
           result.headers("Location").headOption shouldBe
             Some(
-              if(scenarioData.commonExpectedResults.hasPrior) claimEmploymentExpensesUrl(taxYearEOY) else checkYourExpensesUrl(taxYearEOY)
+              if (scenarioData.commonExpectedResults.hasPrior) claimEmploymentExpensesUrl(taxYearEOY) else checkYourExpensesUrl(taxYearEOY)
             )
         }
       }
@@ -450,7 +448,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               url(taxYearEOY),
               "{}",
               scenarioData.isWelsh,
-              follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }
@@ -467,7 +464,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             authoriseIndividual()
             userDataStub(incomeTaxUserData, nino, taxYearEOY)
 
-            urlPost(url(taxYearEOY), "{}", scenarioData.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlPost(url(taxYearEOY), "{}", scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY))
@@ -521,7 +518,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               url(taxYearEOY),
               "{}",
               scenarioData.isWelsh,
-              follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
             )
           }

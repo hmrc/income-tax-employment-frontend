@@ -122,7 +122,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> ""))
       }
 
@@ -138,7 +138,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
         }
 
@@ -158,7 +158,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -175,7 +175,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
 
@@ -194,7 +194,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYear, employmentId)), follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYear, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
 

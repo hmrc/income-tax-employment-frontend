@@ -207,7 +207,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -228,7 +228,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -247,7 +247,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -263,7 +263,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(van = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -278,7 +278,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanFuelQuestion = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -293,7 +293,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanFuelQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -308,7 +308,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanFuelQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -323,7 +323,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -338,7 +338,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(Some(aCarVanFuelModel.copy(vanQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {
@@ -353,7 +353,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         val benefitsViewModel = BenefitsViewModel(None, isUsingCustomerData = true)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER status" in {

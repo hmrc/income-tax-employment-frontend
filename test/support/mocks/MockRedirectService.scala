@@ -27,15 +27,6 @@ trait MockRedirectService extends MockFactory {
 
   protected val mockRedirectService: RedirectService = mock[RedirectService]
 
-  def mockAccommodationRelocationBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
-                                                   taxYear: Int,
-                                                   employmentId: String,
-                                                   result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
-    (mockRedirectService.accommodationRelocationBenefitsRedirects(_: EmploymentCYAModel, _: Int, _: String))
-      .expects(employmentCYAModel, taxYear, employmentId)
-      .returns(result)
-  }
-
   def mockCommonAccommodationBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
                                                taxYear: Int,
                                                employmentId: String,
@@ -45,11 +36,38 @@ trait MockRedirectService extends MockFactory {
       .returns(result)
   }
 
+  def mockAccommodationRelocationBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
+                                                   taxYear: Int,
+                                                   employmentId: String,
+                                                   result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.accommodationRelocationBenefitsRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
   def mockAccommodationBenefitsAmountRedirects(employmentCYAModel: EmploymentCYAModel,
                                                taxYear: Int,
                                                employmentId: String,
                                                result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
     (mockRedirectService.accommodationBenefitsAmountRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
+  def mockQualifyingRelocationBenefitsAmountRedirects(employmentCYAModel: EmploymentCYAModel,
+                                                      taxYear: Int,
+                                                      employmentId: String,
+                                                      result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.qualifyingRelocationBenefitsAmountRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
+  def mockQualifyingRelocationBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
+                                                      taxYear: Int,
+                                                      employmentId: String,
+                                                      result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.qualifyingRelocationBenefitsRedirects(_: EmploymentCYAModel, _: Int, _: String))
       .expects(employmentCYAModel, taxYear, employmentId)
       .returns(result)
   }

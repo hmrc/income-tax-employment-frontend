@@ -161,7 +161,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has a redirect to the van fuel benefits page" in {
@@ -183,7 +183,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has a redirect to the company van fuel page" in {
@@ -204,7 +204,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(vanBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -217,7 +217,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(vanBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {

@@ -140,7 +140,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -156,7 +156,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -179,7 +179,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = None)))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the non cash benefits question page" in {
@@ -201,7 +201,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCards = None)))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the vouchers or credit cards amount page" in {
@@ -218,7 +218,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
     "redirect the user to the overview page when it is in year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -233,7 +233,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -253,7 +253,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true)))))
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -269,7 +269,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {

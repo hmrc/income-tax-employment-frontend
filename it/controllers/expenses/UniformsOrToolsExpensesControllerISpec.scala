@@ -95,7 +95,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -112,7 +112,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -133,7 +133,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           val expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = None, flatRateJobExpenses = Some(10.00))
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = expenses)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -151,7 +151,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         lazy val document = Jsoup.parse(result.body)
@@ -168,7 +168,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {

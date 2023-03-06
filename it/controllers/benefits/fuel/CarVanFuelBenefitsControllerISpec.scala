@@ -85,7 +85,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -101,7 +101,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -121,7 +121,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the accommodation relocation page" in {
@@ -142,7 +142,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the company car page" in {
@@ -164,7 +164,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the company car page" in {
@@ -185,7 +185,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the company car page" in {
@@ -203,7 +203,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -218,7 +218,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carVanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {

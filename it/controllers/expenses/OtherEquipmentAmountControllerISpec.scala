@@ -181,7 +181,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -212,7 +212,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -229,7 +229,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -261,7 +261,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -275,7 +275,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

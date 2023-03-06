@@ -182,7 +182,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           urlPost(
             url(taxYearEOY),
             body = Map("amount" -> "1234"),
-            follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
           )
         }
@@ -223,7 +222,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           urlPost(
             url(taxYearEOY),
             body = Map("amount" -> "1234"),
-            follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
           )
         }

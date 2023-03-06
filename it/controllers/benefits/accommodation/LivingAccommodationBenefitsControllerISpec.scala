@@ -77,7 +77,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
           .copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -100,7 +100,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = None)))
           .copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -118,7 +118,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {

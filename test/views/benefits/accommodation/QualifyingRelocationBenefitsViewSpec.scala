@@ -26,11 +26,13 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.QualifyingRelocationBenefitsAmountPageBuilder.aQualifyingRelocationBenefitsAmountPage
+import support.builders.models.benefits.pages.QualifyingRelocationBenefitsPageBuilder.aQualifyingRelocationBenefitsPage
 import views.html.benefits.accommodation.QualifyingRelocationBenefitsView
 
 class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
 
-  private val employmentId = "employmentId"
+  private val employmentId = aQualifyingRelocationBenefitsAmountPage.employmentId
 
   trait SpecificExpectedResults {
     val expectedTitle: String
@@ -110,7 +112,7 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[Boolean] = new AccommodationFormsProvider().qualifyingRelocationForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AccommodationFormsProvider().qualifyingRelocationForm(isAgent)
 
   private lazy val underTest = inject[QualifyingRelocationBenefitsView]
 
@@ -118,11 +120,12 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
     import Selectors._
     import userScenario.commonExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render page with correct content and no radio buttons selected when no cya data" which {
+      "render page with no pre-filled radio buttons" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
+        val pageModel = aQualifyingRelocationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -139,11 +142,12 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(noText, radioNumber = 2, checked = false)
       }
 
-      "render page with correct content and yes button selected when there cya data for the question set as true" which {
+      "render page with the 'yes' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).fill(value = true), taxYearEOY, employmentId)
+        val pageModel = aQualifyingRelocationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = true))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -160,11 +164,34 @@ class QualifyingRelocationBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(noText, radioNumber = 2, checked = false)
       }
 
-      "return an error when a form is submitted with no entry" which {
+      "render page with the 'no' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY, employmentId)
+        val pageModel = aQualifyingRelocationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = false))
+        val htmlFormat = underTest(pageModel)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        captionCheck(expectedCaption(taxYearEOY))
+        buttonCheck(expectedButtonText, continueButtonSelector)
+        formPostLinkCheck(QualifyingRelocationBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        welshToggleCheck(userScenario.isWelsh)
+
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedContent + " " + userScenario.commonExpectedResults.expectedExample1, contentSelector)
+
+        radioButtonCheck(yesText, radioNumber = 1, checked = false)
+        radioButtonCheck(noText, radioNumber = 2, checked = true)
+      }
+
+      "render page with error when a form is submitted with no entry" which {
+        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+        val pageModel = aQualifyingRelocationBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

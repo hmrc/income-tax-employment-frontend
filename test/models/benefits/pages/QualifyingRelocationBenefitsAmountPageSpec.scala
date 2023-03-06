@@ -25,18 +25,17 @@ import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewMo
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-class LivingAccommodationBenefitAmountPageSpec extends UnitTest {
+class QualifyingRelocationBenefitsAmountPageSpec extends UnitTest {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
-  private val anyEmploymentUserData = anEmploymentUserData
-  private val form = new AccommodationFormsProvider().livingAccommodationAmountForm(isAgent = aUser.isAgent)
+  private val form = new AccommodationFormsProvider().qualifyingRelocationAmountForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
       val formWithErrors = form.bind(Map(AmountForm.amount -> ""))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anyEmploymentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe QualifyingRelocationBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -44,11 +43,11 @@ class LivingAccommodationBenefitAmountPageSpec extends UnitTest {
       )
     }
 
-    "create page model with empty form when accommodation amount is missing" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+    "create page model with empty form when qualifyingRelocationExpenses amount is missing" in {
+      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe QualifyingRelocationBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -56,11 +55,11 @@ class LivingAccommodationBenefitAmountPageSpec extends UnitTest {
       )
     }
 
-    "create page model with form populated from the accommodationRelocationModel accommodation value" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = Some(123))))
+    "create page model with form populated from the accommodationRelocationModel qualifyingRelocationExpenses value" in {
+      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = Some(123))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe QualifyingRelocationBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,

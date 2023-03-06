@@ -87,7 +87,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(didYouLeaveUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
@@ -101,7 +101,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -116,7 +116,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
           didYouLeaveQuestion = None, hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "redirects to the start date page" in {
         result.status shouldBe SEE_OTHER
@@ -133,7 +133,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None,
           didYouLeaveQuestion = None, hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(didYouLeaveUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "redirects to the employments dates page" in {
         result.status shouldBe SEE_OTHER

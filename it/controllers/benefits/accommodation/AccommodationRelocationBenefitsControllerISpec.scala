@@ -56,7 +56,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to living accommodation Benefits page" in {
@@ -74,7 +74,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to travel entertainment page" in {
@@ -93,7 +93,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status and redirects to living accommodation page" in {

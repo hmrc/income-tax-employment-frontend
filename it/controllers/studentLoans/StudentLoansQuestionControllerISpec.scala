@@ -174,7 +174,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -211,7 +211,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           ))
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -247,7 +247,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           ))
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -282,7 +282,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
             )
           ))
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -318,7 +318,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           ))
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -354,7 +354,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           ))
           userDataStub(IncomeTaxUserData(), nino, taxYearEOY)
 
-          urlPost(url(taxYearEOY), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(url(taxYearEOY), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         result.status shouldBe SEE_OTHER

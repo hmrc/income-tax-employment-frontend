@@ -107,7 +107,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a BAD REQUEST($BAD_REQUEST) status" in {
@@ -123,7 +123,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the assets amount page" in {
@@ -145,7 +145,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the check your benefits page" in {
@@ -169,7 +169,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the assets transfers page" in {
@@ -190,7 +190,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -206,7 +206,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -221,7 +221,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {

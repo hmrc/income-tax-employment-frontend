@@ -85,7 +85,7 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = true)
-          urlPost(fullUrl(removeExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(removeExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER ($SEE_OTHER) status" in {
@@ -99,7 +99,7 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = true)
           userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-          urlPost(fullUrl(removeExpensesUrl(taxYearEOY)), body = "", follow = false,
+          urlPost(fullUrl(removeExpensesUrl(taxYearEOY)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -117,7 +117,7 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
           authoriseAgentOrIndividual(isAgent = true)
           userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
           userDataStubDeleteExpenses(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY, "ALL")
-          urlPost(fullUrl(removeExpensesUrl(taxYearEOY)), body = "", follow = false,
+          urlPost(fullUrl(removeExpensesUrl(taxYearEOY)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

@@ -122,7 +122,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(anEmploymentUserData)
-          urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -137,7 +137,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -157,7 +157,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -179,7 +179,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = emptyAssets)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the assets question page" in {
@@ -198,7 +198,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -213,7 +213,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -234,7 +234,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(isBenefitsReceived = false)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(assetsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {

@@ -104,7 +104,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -120,7 +120,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))))
-        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -143,7 +143,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has a SEE_OTHER(303) status" in {
@@ -165,7 +165,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -180,7 +180,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(fullUrl(professionalFeesExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {

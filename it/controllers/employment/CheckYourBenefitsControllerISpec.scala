@@ -212,7 +212,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
@@ -228,7 +228,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId))
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       result.status shouldBe INTERNAL_SERVER_ERROR
@@ -239,7 +239,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has a url of benefits show method" in {
@@ -274,7 +274,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
           extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
       }
 
@@ -350,7 +350,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "return a redirect to the check employment information page" in {
@@ -385,7 +385,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", CREATED,
           Json.toJson(model).toString(), """{"employmentId":"id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "return a redirect to the check employment information page" in {
@@ -423,7 +423,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the employment summary page" in {
@@ -464,7 +464,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the employer information page" in {

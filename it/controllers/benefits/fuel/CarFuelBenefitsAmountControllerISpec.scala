@@ -206,7 +206,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarFuel))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
       }
 
@@ -229,7 +229,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarFuel, isPriorSubmission = false))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
       }
 
@@ -250,7 +250,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarFuelQuestion, hasPriorBenefits = false))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
@@ -265,7 +265,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarFuelQuestion, hasPriorBenefits = false))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
@@ -280,7 +280,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarFuelQuestion))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
@@ -295,7 +295,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarVanFuelQuestion, hasPriorBenefits = false))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
@@ -310,7 +310,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false))
-        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 

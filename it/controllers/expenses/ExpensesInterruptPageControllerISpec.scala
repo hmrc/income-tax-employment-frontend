@@ -82,7 +82,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = true)
-          urlPost(fullUrl(startEmploymentExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER ($SEE_OTHER) status" in {
@@ -95,7 +95,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = true)
-          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a INTERNAL_SERVER_ERROR ($INTERNAL_SERVER_ERROR) status" in {
@@ -109,7 +109,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           authoriseAgentOrIndividual(isAgent = true)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER ($SEE_OTHER) status" in {
@@ -123,7 +123,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = true)
           userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYearEOY)
-          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER ($SEE_OTHER) status" in {

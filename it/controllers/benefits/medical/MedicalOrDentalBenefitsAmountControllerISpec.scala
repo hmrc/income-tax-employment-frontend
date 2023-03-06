@@ -169,7 +169,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -189,7 +189,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -209,7 +209,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -224,7 +224,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYear, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYear, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -239,7 +239,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsuranceQuestion = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -254,7 +254,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsuranceQuestion = Some(false), medicalInsurance = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -269,7 +269,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsuranceQuestion = None, medicalInsurance = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)), form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {

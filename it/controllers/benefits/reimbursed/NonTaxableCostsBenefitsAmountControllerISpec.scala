@@ -156,7 +156,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to check your benefits page" in {
@@ -179,7 +179,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(hasPriorBenefits = false, benefits = benefitsViewModel))
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the taxable costs page" in {
@@ -201,7 +201,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -214,7 +214,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -230,7 +230,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(hasPriorBenefits = false, benefits = benefitsViewModel))
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -246,7 +246,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(hasPriorBenefits = false, benefits = benefitsViewModel))
-        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {

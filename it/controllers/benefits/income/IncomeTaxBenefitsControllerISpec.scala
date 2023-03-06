@@ -132,7 +132,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -147,7 +147,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -170,7 +170,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the incurred costs page" in {
@@ -194,7 +194,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           .copy(reimbursedCostsVouchersAndNonCashModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the income tax amount page" in {
@@ -211,7 +211,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     "redirect the user to the overview page when it is in year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -226,7 +226,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -242,7 +242,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
@@ -258,7 +258,7 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {

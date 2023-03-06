@@ -244,7 +244,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           urlPost(
             url(taxYearEOY),
             body = Map("amount" -> pglDeductionAmount.toString),
-            follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
           )
         }
@@ -283,7 +282,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         urlPost(
           url(taxYearEOY),
           body = Map("amount" -> ""),
-          follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
         )
       }
@@ -323,7 +321,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         urlPost(
           url(taxYearEOY),
           body = Map("amount" -> "abc"),
-          follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
         )
       }

@@ -16,7 +16,7 @@
 
 package models.benefits.pages
 
-import forms.AmountForm
+import forms.YesNoForm
 import forms.benefits.accommodation.AccommodationFormsProvider
 import support.UnitTest
 import support.builders.models.UserBuilder.aUser
@@ -25,18 +25,17 @@ import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewMo
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-class LivingAccommodationBenefitAmountPageSpec extends UnitTest {
+class QualifyingRelocationBenefitsPageSpec extends UnitTest {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
-  private val anyEmploymentUserData = anEmploymentUserData
-  private val form = new AccommodationFormsProvider().livingAccommodationAmountForm(isAgent = aUser.isAgent)
+  private val questionForm = new AccommodationFormsProvider().qualifyingRelocationForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
-      val formWithErrors = form.bind(Map(AmountForm.amount -> ""))
+      val formWithErrors = questionForm.bind(Map(YesNoForm.yesNo -> ""))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anyEmploymentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe QualifyingRelocationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -44,27 +43,27 @@ class LivingAccommodationBenefitAmountPageSpec extends UnitTest {
       )
     }
 
-    "create page model with empty form when accommodation amount is missing" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+    "create page model with form populated from the accommodationRelocationModel qualifyingRelocationExpensesQuestion" in {
+      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(false))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe QualifyingRelocationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
-        form = form
+        form = questionForm.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
       )
     }
 
-    "create page model with form populated from the accommodationRelocationModel accommodation value" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = Some(123))))
+    "create page model with empty form" in {
+      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = None)
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe LivingAccommodationBenefitAmountPage(
+      QualifyingRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe QualifyingRelocationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
-        form = form.bind(Map(AmountForm.amount -> "123"))
+        form = questionForm
       )
     }
   }

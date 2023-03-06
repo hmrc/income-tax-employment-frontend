@@ -146,7 +146,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
               flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))))
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -170,7 +170,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
               flatRateJobExpensesQuestion = None, isUsingCustomerData = true))))
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -187,7 +187,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -221,7 +221,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), body = form, follow = false,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYear)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -236,7 +236,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(uniformsClothesToolsExpensesAmountUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

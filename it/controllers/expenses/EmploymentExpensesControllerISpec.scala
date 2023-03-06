@@ -79,7 +79,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -96,7 +96,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -127,7 +127,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           authoriseAgentOrIndividual(isAgent = false)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
-          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -156,7 +156,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYear)), body = "", follow = false,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYear)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 

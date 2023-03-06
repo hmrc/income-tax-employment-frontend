@@ -78,7 +78,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
           dropEmploymentDB()
           insertCyaData(employmentDetailsWithCessationDate)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -99,7 +99,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
         dropEmploymentDB()
         insertCyaData(employmentDetailsWithCessationDate)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -111,7 +111,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employmentDatesUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(employmentDatesUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {

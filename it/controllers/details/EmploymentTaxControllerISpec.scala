@@ -24,11 +24,11 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
@@ -139,7 +139,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(cya())
-          urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -153,7 +153,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(cya())
-          urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "abc123"), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "abc123"), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -168,7 +168,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(cya())
           urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "9999999999999999999999999999"),
-            follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has the correct status" in {
@@ -182,7 +182,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(cya())
-        urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
@@ -199,7 +199,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(cya())
-        urlPost(fullUrl(howMuchTaxUrl(taxYear, employmentId)), body = Map("amount" -> "100"), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(howMuchTaxUrl(taxYear, employmentId)), body = Map("amount" -> "100"), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {

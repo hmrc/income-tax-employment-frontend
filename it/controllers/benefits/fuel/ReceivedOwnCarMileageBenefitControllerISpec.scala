@@ -114,8 +114,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -129,7 +128,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check employment benefits page" in {
@@ -152,7 +151,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         val mileage = benefitsWithEmptyMileage
         insertCyaData(anEmploymentUserDataWithBenefits(mileage, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check employment benefits page" in {
@@ -173,7 +172,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage amount page" in {
@@ -193,7 +192,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage amount page" in {
@@ -224,7 +223,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     def url: WSResponse = if (isSubmitTest) {
       urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
     } else {
-      urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), follow = false,
+      urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)),
         headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
     }
 

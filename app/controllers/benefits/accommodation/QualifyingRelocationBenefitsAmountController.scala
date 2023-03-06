@@ -16,30 +16,27 @@
 
 package controllers.benefits.accommodation
 
-import actions.AuthorisedAction
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.FormUtils
 import forms.benefits.accommodation.AccommodationFormsProvider
-import models.AuthorisationRequest
+import models.UserSessionDataRequest
+import models.benefits.pages.{QualifyingRelocationBenefitsAmountPage => PageModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.RedirectService
 import services.benefits.AccommodationService
-import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.benefits.accommodation.QualifyingRelocationBenefitsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class QualifyingRelocationBenefitsAmountController @Inject()(authAction: AuthorisedAction,
-                                                             inYearAction: InYearUtil,
+class QualifyingRelocationBenefitsAmountController @Inject()(actionsProvider: ActionsProvider,
                                                              pageView: QualifyingRelocationBenefitsAmountView,
-                                                             employmentSessionService: EmploymentSessionService,
                                                              accommodationService: AccommodationService,
                                                              redirectService: RedirectService,
                                                              errorHandler: ErrorHandler,
@@ -47,45 +44,37 @@ class QualifyingRelocationBenefitsAmountController @Inject()(authAction: Authori
                                                             (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-          val form = fillForm(formsProvider.qualifyingRelocationAmountForm(request.user.isAgent), cyaAmount)
-
-          Future.successful(Ok(pageView(taxYear, form, employmentId)))
-        }
-      }
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[QualifyingRelocationBenefitsAmountController]
+  ) { implicit request =>
+    val form = formsProvider.qualifyingRelocationAmountForm(request.user.isAgent)
+    Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          formsProvider.qualifyingRelocationAmountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => {
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
-            },
-            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
-          )
-        }
-      }
-    }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[QualifyingRelocationBenefitsAmountController]
+  ).async { implicit request =>
+    formsProvider.qualifyingRelocationAmountForm(request.user.isAgent).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      amount => handleSuccessForm(taxYear, employmentId, amount)
+    )
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    accommodationService.updateQualifyingExpenses(request.user, taxYear, employmentId, employmentUserData, amount).map {
+  private def handleSuccessForm(taxYear: Int,
+                                employmentId: String,
+                                amount: BigDecimal)
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    accommodationService.updateQualifyingExpenses(request.user, taxYear, employmentId, request.employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
-  }
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    redirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
   }
 }

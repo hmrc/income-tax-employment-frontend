@@ -23,163 +23,89 @@ import support.builders.models.AuthorisationRequestBuilder.anAuthorisationReques
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, nonQualifyingRelocationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsAmountUrl}
+import utils.PageUrls.{fullUrl, nonQualifyingRelocationBenefitsUrl, qualifyingRelocationBenefitsAmountUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val employmentId = "employmentId"
+  private val employmentId = aHmrcEmploymentSource.employmentId
 
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the qualifying relocation benefits amount page without pre-filled form" which {
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+    "redirect to Overview Page when in year" in {
+      val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an OK status" in {
-        getInputFieldValue() shouldBe ""
-        result.status shouldBe OK
-      }
-    }
-
-    "render the qualifying relocation benefits amount page with pre-filled form" which {
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData)
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an OK status" in {
-        getInputFieldValue() shouldBe "200"
-        result.status shouldBe OK
-      }
-    }
-
-    "redirect user to the check your benefits page when there is no cya data" which {
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to overview page if the user tries to hit this page with current taxYear" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+    }
+
+    "render page successfully" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        result.status shouldBe OK
       }
     }
   }
 
   ".submit" should {
-    "should render qualifying relocation benefits amount page with empty error text when there no input" which {
+    "redirect to Overview page when in year" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYear, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
 
-      "has an BAD_REQUEST status" in {
-        result.status shouldBe BAD_REQUEST
-      }
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
     }
 
-    "redirect to non qualifying relocation page when a valid form is submitted and prior benefits exist" when {
+    "render page with an error when validation fails" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map[String, String]())
+      }
+
+      result.status shouldBe BAD_REQUEST
+    }
+
+    "persist data and redirect to next page" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      "updates the CYA model with the new value" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        val qualifyingRelocationAmount = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-        qualifyingRelocationAmount shouldBe Some(100.0)
-      }
-    }
-
-    "redirect to non qualifying relocation benefits page when a valid form is submitted and no prior benefits exist" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      "updates the CYA model with the new value" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        val qualifyingRelocationAmount = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-        qualifyingRelocationAmount shouldBe Some(100.0)
-      }
-    }
-
-    "redirect to the check your benefits page when there is no cya data" when {
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
-      "has an SEE_OTHER(303) status" in {
+      "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect the user to the overview page when it is not end of year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        urlPost(fullUrl(qualifyingRelocationBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
+        result.header("location").contains(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
-      "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        val qualifyingRelocationAmount = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
+        qualifyingRelocationAmount shouldBe Some(100.0)
       }
     }
   }

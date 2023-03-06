@@ -120,7 +120,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to educational services page" in {
@@ -142,7 +142,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, hasPriorBenefits = false))
-        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to educational services yes no page" in {
@@ -161,7 +161,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -174,7 +174,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {

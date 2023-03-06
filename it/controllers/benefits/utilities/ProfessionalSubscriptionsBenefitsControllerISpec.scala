@@ -138,7 +138,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update the utilitiesAndServicesModel model and redirect to other services benefits page" in {
@@ -160,7 +160,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
           .copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -180,7 +180,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYear, employmentId)), body = "", follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYear, employmentId)), body = "",
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -195,7 +195,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {

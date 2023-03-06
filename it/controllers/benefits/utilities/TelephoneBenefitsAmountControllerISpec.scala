@@ -139,7 +139,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
       }
 
@@ -154,7 +154,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
       }
 
       "has an SEE_OTHER status" in {
@@ -175,7 +175,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephone = None, telephoneQuestion = None)))
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -191,7 +191,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephone = None, telephoneQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -206,7 +206,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "200"))
       }
 
       "has an SEE_OTHER status" in {
@@ -226,7 +226,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -239,7 +239,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
+        urlPost(fullUrl(telephoneBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
 
       "has an SEE_OTHER(303) status" in {

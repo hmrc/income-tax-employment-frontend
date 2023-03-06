@@ -107,7 +107,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -124,7 +124,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the telephone benefits page" in {
@@ -143,7 +143,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -157,7 +157,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
     "redirect to overview page if the user tries to hit this page with current taxYear" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -173,7 +173,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {

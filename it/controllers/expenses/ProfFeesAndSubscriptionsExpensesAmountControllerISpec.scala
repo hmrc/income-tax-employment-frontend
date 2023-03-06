@@ -144,7 +144,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -158,7 +158,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
-        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -174,7 +174,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
-        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -189,7 +189,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, ExpensesCYAModel(expensesViewModel())))
-        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
