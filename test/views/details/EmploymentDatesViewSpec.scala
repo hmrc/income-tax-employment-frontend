@@ -19,7 +19,7 @@ package views.details
 import controllers.details.routes.EmploymentDatesController
 import forms.details.EmploymentDatesForm
 import models.AuthorisationRequest
-import models.employment.{EmploymentDate, EmploymentDates}
+import models.employment.{DateFormData, EmploymentDates}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -218,9 +218,9 @@ class EmploymentDatesViewSpec extends ViewUnitTest {
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-//    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-//    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-//    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    //    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    //    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    //    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
@@ -261,8 +261,8 @@ class EmploymentDatesViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(form.employmentDatesForm.fill(EmploymentDates(
-          Some(EmploymentDate(employmentStartDay, employmentStartMonth, employmentStartYear)),
-          Some(EmploymentDate(employmentEndDay, employmentEndMonth, employmentEndYear)))),
+          Some(DateFormData(employmentStartDay, employmentStartMonth, employmentStartYear)),
+          Some(DateFormData(employmentEndDay, employmentEndMonth, employmentEndYear)))),
           taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)

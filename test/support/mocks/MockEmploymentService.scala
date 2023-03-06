@@ -16,10 +16,27 @@
 
 package support.mocks
 
+import models.User
+import models.mongo.EmploymentUserData
+import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import services.employment.EmploymentService
+
+import scala.concurrent.Future
 
 trait MockEmploymentService extends MockFactory {
 
   val mockEmploymentService: EmploymentService = mock[EmploymentService]
+
+  def mockUpdateEndDate(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        endDate: String,
+                        result: Either[Unit, EmploymentUserData]
+                       ): CallHandler5[User, Int, String, EmploymentUserData, String, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockEmploymentService.updateEndDate(_: User, _: Int, _: String, _: EmploymentUserData, _: String))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, endDate)
+      .returns(Future.successful(result))
+  }
 }

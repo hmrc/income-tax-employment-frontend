@@ -55,7 +55,7 @@ class LivingAccommodationBenefitAmountControllerSpec extends ControllerUnitTest
 
   ".show" should {
     "return successful response" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
 
       val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
 
@@ -66,7 +66,7 @@ class LivingAccommodationBenefitAmountControllerSpec extends ControllerUnitTest
 
   ".submit" should {
     "render page with error when validation of form fails" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "")
       val result = underTest.submit(taxYearEOY, employmentId).apply(request)
@@ -76,7 +76,7 @@ class LivingAccommodationBenefitAmountControllerSpec extends ControllerUnitTest
     }
 
     "handle internal server error when accommodationService.updateAccommodation(...) fails" in {
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateAccommodation(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Left(()))
       mockInternalServerError(InternalServerError)
 
@@ -89,7 +89,7 @@ class LivingAccommodationBenefitAmountControllerSpec extends ControllerUnitTest
     "save amount and perform correct redirect" in {
       val result: Result = mock[Result]
 
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz)
+      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateAccommodation(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Right(anEmploymentUserData))
       mockBenefitsSubmitRedirect(anEmploymentCYAModel, QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 

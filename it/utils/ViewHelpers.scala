@@ -68,7 +68,7 @@ trait ViewHelpers {
   def urlPost[T](url: String,
                  body: T,
                  welsh: Boolean = false,
-                 follow: Boolean = true,
+                 follow: Boolean = false,
                  headers: Seq[(String, String)] = Seq())
                 (implicit wsClient: WSClient, bodyWritable: BodyWritable[T]): WSResponse = {
 

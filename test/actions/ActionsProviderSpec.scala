@@ -57,6 +57,33 @@ class ActionsProviderSpec extends ControllerUnitTest
     new InYearUtil,
     mockRedirectsMapper)
 
+  ".endOfYearSessionData" should {
+    "redirect to UnauthorisedUserErrorController when authentication fails" in {
+      mockFailToAuthenticate()
+
+      val underTest = actionsProvider.endOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType)(anyBlock)
+
+      await(underTest(fakeIndividualRequest(taxYearEOY))) shouldBe Redirect(UnauthorisedUserErrorController.show)
+    }
+
+    "redirect to Income Tax Submission Overview when in year" in {
+      mockAuthAsIndividual(Some(aUser.nino))
+
+      val underTest = actionsProvider.endOfYearSessionData(taxYear, employmentId, EmploymentDetailsType)(anyBlock)
+
+      await(underTest(fakeIndividualRequest(taxYear))) shouldBe Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
+
+    "return successful response" in {
+      mockAuthAsIndividual(Some(aUser.nino))
+      mockGetSessionData(taxYearEOY, employmentId, aUser, result = Right(Some(anEmploymentUserData)))
+
+      val underTest = actionsProvider.endOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType)(anyBlock)
+
+      status(underTest(fakeIndividualRequest(taxYearEOY))) shouldBe OK
+    }
+  }
+
   ".endOfYearSessionDataWithRedirects" should {
     "redirect to UnauthorisedUserErrorController when authentication fails" in {
       mockFailToAuthenticate()

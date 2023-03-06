@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package support.builders.models
+package support.builders.models.benefits.pages
 
-import models.UserSessionDataRequest
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
-import support.builders.models.UserBuilder.aUser
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import forms.details.DateForm.dateForm
+import models.benefits.pages.EmployerEndDatePage
+import support.TaxYearUtils
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 
-object UserSessionDataRequestBuilder {
+object EmployerEndDatePageBuilder {
 
-  val aUserSessionDataRequest: UserSessionDataRequest[AnyContent] = UserSessionDataRequest(
-    employmentUserData = anEmploymentUserData,
-    user = aUser,
-    request = FakeRequest()
+  val anEmployerEndDatePage: EmployerEndDatePage = EmployerEndDatePage(
+    taxYear = TaxYearUtils.taxYearEOY,
+    employmentId = "employmentId",
+    employerName = anEmploymentDetails.employerName,
+    isAgent = false,
+    form = dateForm()
   )
 }

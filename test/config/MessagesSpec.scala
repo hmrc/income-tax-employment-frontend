@@ -50,6 +50,9 @@ class MessagesSpec extends UnitTest with ViewHelper with GuiceOneAppPerSuite {
     "employment.employmentDetails.insetText.agent",
     "employment.employmentInfo.p1.individual",
     "employment.employmentInfo.p1.agent",
+    // TODO: Remove once EmploymentDatesPage is removed
+    "employment.employmentLeaveDate.heading.agent",
+    "employment.employmentLeaveDate.heading.individual",
     "payeRef.paragraphNew.individual",
     "payeRef.paragraphNew.agent",
     "checkYourBenefits.reimbursedHeader",
