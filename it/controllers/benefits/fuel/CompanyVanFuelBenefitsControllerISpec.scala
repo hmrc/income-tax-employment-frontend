@@ -111,7 +111,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -125,7 +125,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage page" in {
@@ -146,7 +146,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage benefits page" in {
@@ -167,7 +167,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the van fuel amount benefits page" in {
@@ -187,7 +187,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the van fuel amount benefits page" in {
@@ -206,7 +206,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
       }
 
       "has an SEE_OTHER status" in {
@@ -221,7 +221,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
       }
 
       "has an SEE_OTHER status" in {
@@ -236,7 +236,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
+        urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
       }
 
       "has an SEE_OTHER status" in {

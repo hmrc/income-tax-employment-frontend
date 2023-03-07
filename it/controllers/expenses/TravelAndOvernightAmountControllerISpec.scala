@@ -148,7 +148,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(travelAmountExpensesUrl(taxYear)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYear)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "redirect to the overview page" in {
@@ -166,7 +166,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the CYA page" in {
@@ -189,7 +189,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Uniforms Work Clothes or Tools question page" in {
@@ -211,7 +211,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           ExpensesCYAModel(expensesViewModel(None))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Business Travel and Overnight question page" in {

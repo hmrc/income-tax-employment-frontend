@@ -175,7 +175,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -194,7 +194,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -221,7 +221,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             .copy(utilitiesAndServicesModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -240,7 +240,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -255,7 +255,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -277,7 +277,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -294,7 +294,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = None)))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+          urlPost(fullUrl(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

@@ -88,7 +88,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -104,7 +104,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val expensesViewModel = ExpensesViewModel(claimingEmploymentExpenses = true, Some(true), isUsingCustomerData = false)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel)))
-        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -134,7 +134,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -157,7 +157,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -172,7 +172,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       dropExpensesDB()
       authoriseAgentOrIndividual(isAgent = false)
       userDataStub(anIncomeTaxUserData, nino, taxYear)
-      urlPost(fullUrl(businessTravelExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      urlPost(fullUrl(businessTravelExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
     }
 
     "has a url of overview page" in {

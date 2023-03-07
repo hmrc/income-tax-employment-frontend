@@ -138,7 +138,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           .copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(model))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -159,7 +159,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -183,7 +183,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           .copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -204,7 +204,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -216,7 +216,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(entertainmentExpensesBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {

@@ -129,7 +129,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         val data = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true, anEmploymentCYAModel)
         insertCyaData(data)
-        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body,  headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "status SEE_OTHER" in {

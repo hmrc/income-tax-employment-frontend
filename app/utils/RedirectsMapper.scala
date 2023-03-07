@@ -26,6 +26,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class RedirectsMapper @Inject()(redirectService: RedirectService) {
 
+  //scalastyle:off
   def mapToRedirects(clazz: Class[_],
                      taxYear: Int,
                      employmentId: String,
@@ -36,6 +37,11 @@ class RedirectsMapper @Inject()(redirectService: RedirectService) {
       redirectService.accommodationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[LivingAccommodationBenefitsController] =>
       redirectService.commonAccommodationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[QualifyingRelocationBenefitsAmountController] =>
+      redirectService.qualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[QualifyingRelocationBenefitsController] =>
+      redirectService.qualifyingRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
     case _ => throw new IllegalArgumentException(s"${clazz.toString} could not be matched with redirects.")
   }
+  //scalastyle:on
 }

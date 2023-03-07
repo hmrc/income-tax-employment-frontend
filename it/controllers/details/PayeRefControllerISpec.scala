@@ -145,7 +145,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
         dropEmploymentDB()
         insertCyaData(cya())
         val form = Map(PayeRefForm.payeRef -> payeRef)
-        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
+        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
       }
 
       "has an SEE_OTHER status" in {

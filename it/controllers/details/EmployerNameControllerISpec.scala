@@ -24,8 +24,8 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
-import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -76,7 +76,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -88,7 +88,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerNameUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(employerNameUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
@@ -100,7 +100,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
@@ -115,7 +115,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName)))
-        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the next question page (PAYE reference)" in {
@@ -131,7 +131,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(employerName = employerName))))
-        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "redirects to employment details CYA page" in {
         result.status shouldBe SEE_OTHER

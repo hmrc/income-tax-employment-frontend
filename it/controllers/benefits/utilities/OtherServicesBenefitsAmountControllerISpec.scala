@@ -171,7 +171,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
         }
 
@@ -193,7 +193,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
         }
 
@@ -213,7 +213,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -229,7 +229,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYear, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYear, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
         }
 
@@ -246,7 +246,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = None)))
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -262,7 +262,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = Some(false))))
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
@@ -277,7 +277,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
-          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+          urlPost(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)),
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 

@@ -122,7 +122,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER ($SEE_OTHER) status" in {
@@ -136,7 +136,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
-          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), body = "", follow = false,
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -151,7 +151,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -170,7 +170,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(modelWithMultipleSources)), nino, taxYearEOY)
           userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, employmentId, "CUSTOMER")
-          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -187,7 +187,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           userDataStub(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY)
           userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, employmentId, "HMRC-HELD")
           userDataStubDeleteExpenses(IncomeTaxUserData(Some(anAllEmploymentData)), nino, taxYearEOY, "HMRC-HELD")
-          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", follow = false,
+          urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 

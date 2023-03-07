@@ -54,7 +54,7 @@ class SelectEmploymentControllerSpec extends IntegrationTest with ViewHelpers {
 
         stubDeleteWithHeadersCheck(url, NO_CONTENT, "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(selectEmployerUrl(taxYearEOY)), body = Map("value" -> "employmentId"), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(selectEmployerUrl(taxYearEOY)), body = Map("value" -> "employmentId"), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER

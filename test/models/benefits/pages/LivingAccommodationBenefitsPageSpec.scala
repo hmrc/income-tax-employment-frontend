@@ -30,17 +30,16 @@ class LivingAccommodationBenefitsPageSpec extends UnitTest {
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
   private val anyEmploymentUserData = anEmploymentUserData
-  private val user = aUser
-  private val questionForm = new AccommodationFormsProvider().livingAccommodationForm(isAgent = user.isAgent)
+  private val questionForm = new AccommodationFormsProvider().livingAccommodationForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
       val formWithErrors = questionForm.bind(Map(YesNoForm.yesNo -> ""))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, formWithErrors, anyEmploymentUserData) shouldBe LivingAccommodationBenefitsPage(
+      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anyEmploymentUserData) shouldBe LivingAccommodationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = user.isAgent,
+        isAgent = aUser.isAgent,
         form = formWithErrors
       )
     }
@@ -49,10 +48,10 @@ class LivingAccommodationBenefitsPageSpec extends UnitTest {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
+      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = user.isAgent,
+        isAgent = aUser.isAgent,
         form = questionForm.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
       )
     }
@@ -61,10 +60,10 @@ class LivingAccommodationBenefitsPageSpec extends UnitTest {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = None)
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
+      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = user.isAgent,
+        isAgent = aUser.isAgent,
         form = questionForm
       )
     }

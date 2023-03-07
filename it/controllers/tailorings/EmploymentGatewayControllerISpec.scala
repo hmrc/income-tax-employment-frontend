@@ -63,7 +63,7 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe SEE_OTHER
       result.headers("Location").contains(controllers.employment.routes.EmploymentSummaryController.show(taxYearEOY).url) shouldBe true
@@ -73,7 +73,7 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe SEE_OTHER
       result.headers("Location").contains(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)) shouldBe true
@@ -83,7 +83,7 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe BAD_REQUEST
     }

@@ -58,7 +58,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
           .copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
+        urlPost(fullUrl(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> 100.toString))
       }
 

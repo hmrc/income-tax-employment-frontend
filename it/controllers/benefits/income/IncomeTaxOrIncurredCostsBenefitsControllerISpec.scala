@@ -97,7 +97,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -110,7 +110,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
@@ -126,7 +126,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the income tax question page" in {
@@ -147,7 +147,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the income tax question page" in {
@@ -167,7 +167,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your benefits page" in {
@@ -188,7 +188,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the reimbursed section page" in {

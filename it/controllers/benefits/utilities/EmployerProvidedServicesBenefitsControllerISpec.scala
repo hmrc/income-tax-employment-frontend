@@ -140,7 +140,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYear, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no),
-          follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -156,7 +156,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel(sectionQuestion = None)))
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -174,7 +174,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel(sectionQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -191,7 +191,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel(sectionQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = Map(YesNoForm.yesNo -> YesNoForm.no),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -211,7 +211,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedServicesQuestion = Some(false))))
           .copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -236,7 +236,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -260,7 +260,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -284,7 +284,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
-        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {

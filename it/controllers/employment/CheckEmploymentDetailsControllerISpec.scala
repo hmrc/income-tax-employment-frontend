@@ -381,7 +381,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2022)
-        urlPost(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -395,7 +395,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -438,7 +438,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", CREATED,
           Json.toJson(model).toString(), """{"employmentId":"id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -481,7 +481,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -517,7 +517,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", CREATED,
           Json.toJson(model).toString(), """{"employmentId": "id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
           extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))), body = "{}")
       }
 
@@ -534,7 +534,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, "001")), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, "001")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = "{}")
       }
 
       "has an SEE OTHER status" in {

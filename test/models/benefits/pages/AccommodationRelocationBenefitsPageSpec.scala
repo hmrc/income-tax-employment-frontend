@@ -30,17 +30,16 @@ class AccommodationRelocationBenefitsPageSpec extends UnitTest {
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
   private val anyEmploymentUserData = anEmploymentUserData
-  private val user = aUser
-  private val form = new AccommodationFormsProvider().accommodationRelocationForm(isAgent = user.isAgent)
+  private val form = new AccommodationFormsProvider().accommodationRelocationForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
       val formWithErrors = form.bind(Map(YesNoForm.yesNo -> ""))
 
-      AccommodationRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, formWithErrors, anyEmploymentUserData) shouldBe AccommodationRelocationBenefitsPage(
+      AccommodationRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anyEmploymentUserData) shouldBe AccommodationRelocationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = user.isAgent,
+        isAgent = aUser.isAgent,
         form = formWithErrors
       )
     }
@@ -49,10 +48,10 @@ class AccommodationRelocationBenefitsPageSpec extends UnitTest {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(sectionQuestion = Some(false))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      AccommodationRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, form, employmentUserData) shouldBe AccommodationRelocationBenefitsPage(
+      AccommodationRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe AccommodationRelocationBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = user.isAgent,
+        isAgent = aUser.isAgent,
         form = form.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
       )
     }

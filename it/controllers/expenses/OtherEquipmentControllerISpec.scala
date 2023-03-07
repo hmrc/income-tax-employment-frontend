@@ -90,7 +90,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
@@ -106,7 +106,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel(Some(false)))))
-        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
@@ -129,7 +129,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
-          urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has a SEE_OTHER(303) status" in {
@@ -151,7 +151,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(otherEquipmentExpensesUrl(taxYearEOY)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -166,7 +166,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(otherEquipmentExpensesUrl(taxYear)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
