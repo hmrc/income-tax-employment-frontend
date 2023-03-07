@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.AssetsBenefitsAmountPageBuilder.anAssetsBenefitsAmountPage
 import views.html.benefits.assets.AssetsBenefitsAmountView
 
 class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
@@ -67,7 +68,6 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
 
     val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
@@ -131,7 +131,7 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[BigDecimal] = new AssetsFormsProvider().assetsAmountForm(isAgent)
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = new AssetsFormsProvider().assetsAmountForm(isAgent)
 
   private lazy val underTest = inject[AssetsBenefitsAmountView]
 
@@ -143,7 +143,8 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = anAssetsBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -165,7 +166,8 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 100), employmentId)
+        val pageModel = anAssetsBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).fill(100))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -188,7 +190,8 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
+          val pageModel = anAssetsBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -213,7 +216,8 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
+          val pageModel = anAssetsBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -238,7 +242,8 @@ class AssetsBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
+          val pageModel = anAssetsBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

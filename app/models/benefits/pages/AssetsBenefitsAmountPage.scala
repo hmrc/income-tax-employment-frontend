@@ -20,18 +20,18 @@ import models.User
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 
-case class LivingAccommodationBenefitAmountPage(taxYear: Int, employmentId: String, isAgent: Boolean, form: Form[BigDecimal])
+case class AssetsBenefitsAmountPage(taxYear: Int, employmentId: String, isAgent: Boolean, form: Form[BigDecimal])
 
-object LivingAccommodationBenefitAmountPage {
+object AssetsBenefitsAmountPage {
 
   def apply(taxYear: Int,
             employmentId: String,
             user: User,
             form: Form[BigDecimal],
-            employmentUserData: EmploymentUserData): LivingAccommodationBenefitAmountPage = {
-    val optAmount: Option[BigDecimal] = employmentUserData.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
+            employmentUserData: EmploymentUserData): AssetsBenefitsAmountPage = {
+    val optAmount: Option[BigDecimal] = employmentUserData.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets))
 
-    LivingAccommodationBenefitAmountPage(
+    AssetsBenefitsAmountPage(
       taxYear = taxYear,
       employmentId = employmentId,
       isAgent = user.isAgent,

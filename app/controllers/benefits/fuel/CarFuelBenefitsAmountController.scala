@@ -18,15 +18,11 @@ package controllers.benefits.fuel
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.fuel.routes.{CompanyCarFuelBenefitsController, CompanyVanBenefitsController}
-import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
+import controllers.benefits.fuel.routes.CompanyVanBenefitsController
 import forms.benefits.fuel.FuelFormsProvider
 import models.UserSessionDataRequest
 import models.benefits.pages.{CarFuelBenefitsAmountPage => PageModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
-import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService
@@ -45,7 +41,7 @@ class CarFuelBenefitsAmountController @Inject()(actionsProvider: ActionsProvider
                                                 errorHandler: ErrorHandler,
                                                 formsProvider: FuelFormsProvider)
                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,

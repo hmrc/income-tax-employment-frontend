@@ -17,7 +17,7 @@
 package utils
 
 import controllers.benefits.accommodation._
-import controllers.benefits.assets.{AssetTransfersBenefitsAmountController, AssetTransfersBenefitsController}
+import controllers.benefits.assets._
 import controllers.benefits.fuel.{CarFuelBenefitsAmountController, CarVanFuelBenefitsController}
 import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
@@ -50,6 +50,12 @@ class RedirectsMapper @Inject()(redirectService: RedirectService) {
       redirectService.qualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
 
     // Assets redirects
+    case _ if clazz == classOf[AssetsOrAssetTransfersBenefitsController] =>
+      redirectService.assetsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[AssetsBenefitsController] =>
+      redirectService.commonAssetsModelRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[AssetsBenefitsAmountController] =>
+      redirectService.assetsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[AssetTransfersBenefitsController] =>
       redirectService.assetTransferRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[AssetTransfersBenefitsAmountController] =>
