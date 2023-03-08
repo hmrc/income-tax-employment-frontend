@@ -16,7 +16,7 @@
 
 package views.benefits.assets
 
-import controllers.benefits.assets.routes.AssetTransfersBenefitsController
+import controllers.benefits.assets.routes.AssetsTransfersBenefitsController
 import forms.YesNoForm
 import forms.benefits.assets.AssetsFormsProvider
 import models.AuthorisationRequest
@@ -26,9 +26,10 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import views.html.benefits.assets.AssetTransfersBenefitsView
+import support.builders.models.benefits.pages.AssetsTransfersBenefitsPageBuilder.anAssetsTransfersBenefitsPage
+import views.html.benefits.assets.AssetsTransfersBenefitsView
 
-class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
+class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
 
   private val employmentId: String = "employmentId"
 
@@ -107,19 +108,20 @@ class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[Boolean] = new AssetsFormsProvider().assetTransfersForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AssetsFormsProvider().assetTransfersForm(isAgent)
 
-  private lazy val underTest = inject[AssetTransfersBenefitsView]
+  private lazy val underTest = inject[AssetsTransfersBenefitsView]
 
   userScenarios.foreach { userScenario =>
     import Selectors._
     import userScenario.commonExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render 'asset transfers' yes/no page with the correct content with no pre-filling" which {
+      "render page with no pre-filled radio buttons" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
+        val pageModel = anAssetsTransfersBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -130,15 +132,16 @@ class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render 'asset transfers' yes/no page with the correct content with yes pre-filled" which {
+      "render page with the 'yes' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).fill(value = true), taxYearEOY, employmentId)
+        val pageModel = anAssetsTransfersBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = true))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -149,7 +152,27 @@ class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        welshToggleCheck(userScenario.isWelsh)
+      }
+
+      "render page with the 'no' radio button pre-filled" which {
+        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+        val pageModel = anAssetsTransfersBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = false))
+        val htmlFormat = underTest(pageModel)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
+        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        captionCheck(expectedCaption)
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph, paragraphSelector)
+        radioButtonCheck(yesText, radioNumber = 1, checked = false)
+        radioButtonCheck(noText, radioNumber = 2, checked = true)
+        buttonCheck(expectedButtonText, continueButtonSelector)
+        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -157,7 +180,8 @@ class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY, employmentId)
+        val pageModel = anAssetsTransfersBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -168,7 +192,7 @@ class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
 
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)

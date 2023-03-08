@@ -17,6 +17,7 @@
 package utils
 
 import controllers.benefits.accommodation._
+import controllers.benefits.assets.{AssetsTransfersBenefitsController, AssetsTransfersBenefitsAmountController}
 import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
 import services.RedirectService
@@ -31,20 +32,28 @@ class RedirectsMapper @Inject()(redirectService: RedirectService) {
                      taxYear: Int,
                      employmentId: String,
                      employmentCYAModel: EmploymentCYAModel): Seq[ConditionalRedirect] = clazz match {
+    // Accommodation redirects
     case _ if clazz == classOf[AccommodationRelocationBenefitsController] =>
       redirectService.accommodationRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
-    case _ if clazz == classOf[LivingAccommodationBenefitAmountController] =>
-      redirectService.accommodationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[LivingAccommodationBenefitsController] =>
       redirectService.commonAccommodationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[LivingAccommodationBenefitAmountController] =>
+      redirectService.accommodationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[NonQualifyingRelocationBenefitsController] =>
       redirectService.nonQualifyingRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[NonQualifyingRelocationBenefitsAmountController] =>
       redirectService.nonQualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
-    case _ if clazz == classOf[QualifyingRelocationBenefitsAmountController] =>
-      redirectService.qualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[QualifyingRelocationBenefitsController] =>
       redirectService.qualifyingRelocationBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[QualifyingRelocationBenefitsAmountController] =>
+      redirectService.qualifyingRelocationBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
+
+    // Assets redirects
+    case _ if clazz == classOf[AssetsTransfersBenefitsController] =>
+      redirectService.assetTransferRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[AssetsTransfersBenefitsAmountController] =>
+      redirectService.assetTransferAmountRedirects(employmentCYAModel, taxYear, employmentId)
+
     case _ => throw new IllegalArgumentException(s"${clazz.toString} could not be matched with redirects.")
   }
   //scalastyle:on
