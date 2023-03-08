@@ -61,6 +61,22 @@ class RedirectsMapperSpec extends support.UnitTest
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
 
+    "return redirects from commonAccommodationBenefitsRedirects when NonQualifyingRelocationBenefitsAmountController class is given" in {
+      val clazz = classOf[NonQualifyingRelocationBenefitsAmountController]
+
+      mockNonQualifyingRelocationAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from commonAccommodationBenefitsRedirects when NonQualifyingRelocationBenefitsController class is given" in {
+      val clazz = classOf[NonQualifyingRelocationBenefitsController]
+
+      mockNonQualifyingRelocationBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
     "return redirects from qualifyingRelocationBenefitsAmountRedirects when QualifyingRelocationBenefitsAmountController class is given" in {
       val clazz = classOf[QualifyingRelocationBenefitsAmountController]
 

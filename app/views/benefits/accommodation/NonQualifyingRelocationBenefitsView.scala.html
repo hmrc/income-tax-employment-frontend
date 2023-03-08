@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsController
+
+@import models.benefits.pages.NonQualifyingRelocationBenefitsPage
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.ErrorSummary
@@ -29,29 +33,29 @@
     button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(pageModel: NonQualifyingRelocationBenefitsPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.nonQualifyingRelocationQuestion.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"benefits.nonQualifyingRelocationQuestion.title.${if(pageModel.isAgent) "agent" else "individual"}")}
 
 @headingForUse = @{titleForUse}
 
-@hasFormErrors = @{form.hasErrors}
+@hasFormErrors = @{pageModel.form.hasErrors}
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(pageModel.taxYear), hasErrors = hasFormErrors, isAgent = pageModel.isAgent) {
 
-    @errorSummary(form.errors.distinct)
+    @errorSummary(pageModel.form.errors.distinct)
 
-    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-4")
+    @heading(headingForUse, Some(messages("benefits.caption", (pageModel.taxYear - 1).toString, pageModel.taxYear.toString)), "govuk-!-margin-bottom-4")
 
-    <p class="govuk-body">@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.${if(request.user.isAgent) "agent" else "individual"}")}</p>
+    <p class="govuk-body">@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.${if(pageModel.isAgent) "agent" else "individual"}")}</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li>@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.${if(request.user.isAgent) "agent" else "individual"}")}</li>
-        <li>@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.${if(request.user.isAgent) "agent" else "individual"}")}</li>
+        <li>@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.${if(pageModel.isAgent) "agent" else "individual"}")}</li>
+        <li>@{messages(s"benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.${if(pageModel.isAgent) "agent" else "individual"}")}</li>
     </ul>
 
-    @formWithCsrf(action = controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = NonQualifyingRelocationBenefitsController.submit(pageModel.taxYear, pageModel.employmentId)) {
         @inputRadio(
-            form = form,
+            form = pageModel.form,
             legendHeading = Some(Html(headingForUse)),
             legendHidden = true,
             inline = true
