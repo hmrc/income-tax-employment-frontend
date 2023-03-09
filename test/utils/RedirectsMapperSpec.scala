@@ -17,7 +17,8 @@
 package utils
 
 import controllers.benefits.accommodation._
-import controllers.benefits.assets.{AssetsTransfersBenefitsController, AssetsTransfersBenefitsAmountController}
+import controllers.benefits.assets.{AssetTransfersBenefitsAmountController, AssetTransfersBenefitsController}
+import controllers.benefits.fuel.{CarFuelBenefitsAmountController, CarVanFuelBenefitsController}
 import support.TaxYearProvider
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.mocks.MockRedirectService
@@ -95,7 +96,7 @@ class RedirectsMapperSpec extends support.UnitTest
     }
 
     "return redirects from assetTransferRedirects when AssetTransfersBenefitsController class is given" in {
-      val clazz = classOf[AssetsTransfersBenefitsController]
+      val clazz = classOf[AssetTransfersBenefitsController]
 
       mockAssetTransferRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
@@ -103,9 +104,25 @@ class RedirectsMapperSpec extends support.UnitTest
     }
 
     "return redirects from assetTransferAmountRedirects when AssetsTransfersBenefitsAmountController class is given" in {
-      val clazz = classOf[AssetsTransfersBenefitsAmountController]
+      val clazz = classOf[AssetTransfersBenefitsAmountController]
 
       mockAssetTransferAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from commonBenefitsRedirects when CarVanFuelBenefitsController class is given" in {
+      val clazz = classOf[CarVanFuelBenefitsController]
+
+      mockCommonBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from carFuelBenefitsAmountRedirects when CarFuelBenefitsAmountController class is given" in {
+      val clazz = classOf[CarFuelBenefitsAmountController]
+
+      mockCarFuelBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }

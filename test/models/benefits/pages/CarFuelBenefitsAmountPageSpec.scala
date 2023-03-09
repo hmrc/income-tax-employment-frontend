@@ -17,25 +17,25 @@
 package models.benefits.pages
 
 import forms.AmountForm
-import forms.benefits.assets.AssetsFormsProvider
+import forms.benefits.fuel.FuelFormsProvider
 import support.UnitTest
 import support.builders.models.UserBuilder.aUser
-import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-class AssetsTransfersBenefitsAmountPageSpec extends UnitTest {
+class CarFuelBenefitsAmountPageSpec extends UnitTest {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
-  private val form = new AssetsFormsProvider().assetTransfersAmountForm(isAgent = aUser.isAgent)
+  private val amountForm = new FuelFormsProvider().carFuelAmountForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
-      val formWithErrors = form.bind(Map(AmountForm.amount -> ""))
+      val formWithErrors = amountForm.bind(Map(AmountForm.amount -> ""))
 
-      AssetsTransfersBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe AssetsTransfersBenefitsAmountPage(
+      CarFuelBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe CarFuelBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -43,27 +43,27 @@ class AssetsTransfersBenefitsAmountPageSpec extends UnitTest {
       )
     }
 
-    "create page model with empty form when assetTransfer amount is missing" in {
-      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransfer = None)))
+    "create page model with empty form when carFuel amount is missing" in {
+      val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuel = None)))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      AssetsTransfersBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe AssetsTransfersBenefitsAmountPage(
+      CarFuelBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, amountForm, employmentUserData) shouldBe CarFuelBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
-        form = form
+        form = amountForm
       )
     }
 
     "create page model with form populated from the assetsModel assetTransfer value" in {
-      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransfer = Some(123))))
+      val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuel = Some(123))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      AssetsTransfersBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe AssetsTransfersBenefitsAmountPage(
+      CarFuelBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, aUser, amountForm, employmentUserData) shouldBe CarFuelBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
-        form = form.bind(Map(AmountForm.amount -> "123"))
+        form = amountForm.bind(Map(AmountForm.amount -> "123"))
       )
     }
   }

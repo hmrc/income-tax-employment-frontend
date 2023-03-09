@@ -16,7 +16,7 @@
 
 package views.benefits.assets
 
-import controllers.benefits.assets.routes.AssetsTransfersBenefitsController
+import controllers.benefits.assets.routes.AssetTransfersBenefitsController
 import forms.YesNoForm
 import forms.benefits.assets.AssetsFormsProvider
 import models.AuthorisationRequest
@@ -27,9 +27,9 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.benefits.pages.AssetsTransfersBenefitsPageBuilder.anAssetsTransfersBenefitsPage
-import views.html.benefits.assets.AssetsTransfersBenefitsView
+import views.html.benefits.assets.AssetTransfersBenefitsView
 
-class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
+class AssetTransfersBenefitsViewSpec extends ViewUnitTest {
 
   private val employmentId: String = "employmentId"
 
@@ -110,7 +110,7 @@ class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
 
   private def yesNoForm(isAgent: Boolean): Form[Boolean] = new AssetsFormsProvider().assetTransfersForm(isAgent)
 
-  private lazy val underTest = inject[AssetsTransfersBenefitsView]
+  private lazy val underTest = inject[AssetTransfersBenefitsView]
 
   userScenarios.foreach { userScenario =>
     import Selectors._
@@ -132,7 +132,7 @@ class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -152,7 +152,7 @@ class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = true)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -172,7 +172,7 @@ class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = true)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -192,7 +192,7 @@ class AssetsTransfersBenefitsViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        formPostLinkCheck(AssetTransfersBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
 
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)

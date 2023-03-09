@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.CarVanFuelBenefitsPageBuilder.aCarVanFuelBenefitsPage
 import views.html.benefits.fuel.CarVanFuelBenefitsView
 
 class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
@@ -105,7 +106,7 @@ class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[Boolean] = new FuelFormsProvider().carVanFuelForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new FuelFormsProvider().carVanFuelForm(isAgent)
 
   private lazy val underTest = inject[CarVanFuelBenefitsView]
 
@@ -113,11 +114,12 @@ class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
       import Selectors._
       import userScenario.commonExpectedResults._
-      "render page with no pre-filled data" which {
+      "render page with no pre-filled radio buttons" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
+        val pageModel = aCarVanFuelBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -132,11 +134,12 @@ class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render page with 'yes' radio button prefilled" which {
+      "render page with the 'yes' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).fill(value = true), taxYearEOY, employmentId)
+        val pageModel = aCarVanFuelBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = true))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -151,11 +154,32 @@ class CarVanFuelBenefitsViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
+      "render page with the 'no' radio button pre-filled" which {
+        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+        val pageModel = aCarVanFuelBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).fill(value = false))
+        val htmlFormat = underTest(pageModel)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
+        h1Check(userScenario.specificExpectedResults.get.expectedH1)
+        captionCheck(expectedCaption(taxYearEOY))
+        textOnPageCheck(thisIncludes, thisIncludesSelector)
+        radioButtonCheck(yesText, radioNumber = 1, checked = false)
+        radioButtonCheck(noText, radioNumber = 2, checked = true)
+        buttonCheck(expectedButtonText, continueButtonSelector)
+        formPostLinkCheck(CarVanFuelBenefitsController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+        welshToggleCheck(userScenario.isWelsh)
+      }
+
       "return an error when a user submits an empty form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY, employmentId)
+        val pageModel = aCarVanFuelBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

@@ -409,11 +409,11 @@
                     toSummaryListRow("checkYourBenefits.assetsAmount", bigDecimalCurrency(amount.toString), optRoot)
                 }),
                 benefits.assetsModel.flatMap(_.assetTransferQuestion).map( question => {
-                    val optRoot = if (isInYear) None else Some(AssetsTransfersBenefitsController.show(taxYear, employmentId))
+                    val optRoot = if (isInYear) None else Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
                     toSummaryListRow("checkYourBenefits.assetTransfers", mapToYesNo(question), optRoot)
                 }),
                 benefits.assetsModel.flatMap(_.assetTransfer).map(amount => {
-                    val optRoot = if (isInYear) None else Some(AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
+                    val optRoot = if (isInYear) None else Some(AssetTransfersBenefitsAmountController.show(taxYear, employmentId))
                     toSummaryListRow("checkYourBenefits.assetTransfersAmount", bigDecimalCurrency(amount.toString), optRoot)
                 })
             ).flatten

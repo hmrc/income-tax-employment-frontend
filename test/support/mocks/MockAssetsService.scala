@@ -29,11 +29,11 @@ trait MockAssetsService extends MockFactory {
   protected val mockAssetsService: AssetsService = mock[AssetsService]
 
   def mockUpdateAssetTransferQuestion(user: User,
-                              taxYear: Int,
-                              employmentId: String,
-                              originalEmploymentUserData: EmploymentUserData,
-                              questionValue: Boolean,
-                              result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+                                      taxYear: Int,
+                                      employmentId: String,
+                                      originalEmploymentUserData: EmploymentUserData,
+                                      questionValue: Boolean,
+                                      result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
     (mockAssetsService.updateAssetTransferQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
       .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
       .returns(Future.successful(result))

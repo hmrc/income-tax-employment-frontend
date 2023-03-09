@@ -17,25 +17,25 @@
 package models.benefits.pages
 
 import forms.YesNoForm
-import forms.benefits.assets.AssetsFormsProvider
+import forms.benefits.fuel.FuelFormsProvider
 import support.UnitTest
 import support.builders.models.UserBuilder.aUser
-import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import support.builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-class AssetsTransfersBenefitsPageSpec extends UnitTest {
+class CarVanFuelBenefitsPageSpec extends UnitTest {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
-  private val questionForm = new AssetsFormsProvider().assetTransfersForm(isAgent = aUser.isAgent)
+  private val questionForm = new FuelFormsProvider().carVanFuelForm(isAgent = aUser.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
       val formWithErrors = questionForm.bind(Map(YesNoForm.yesNo -> ""))
 
-      AssetsTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe AssetsTransfersBenefitsPage(
+      CarVanFuelBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anEmploymentUserData) shouldBe CarVanFuelBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -43,11 +43,11 @@ class AssetsTransfersBenefitsPageSpec extends UnitTest {
       )
     }
 
-    "create page model with form populated from the assetsModel assetTransferQuestion" in {
-      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = Some(false))))
+    "create page model with form populated from the carVanFuelModel sectionQuestion" in {
+      val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(sectionQuestion = Some(false))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      AssetsTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe AssetsTransfersBenefitsPage(
+      CarVanFuelBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe CarVanFuelBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,
@@ -56,10 +56,10 @@ class AssetsTransfersBenefitsPageSpec extends UnitTest {
     }
 
     "create page model with empty form" in {
-      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = None)
+      val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = None)
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      AssetsTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe AssetsTransfersBenefitsPage(
+      CarVanFuelBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe CarVanFuelBenefitsPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
         isAgent = aUser.isAgent,

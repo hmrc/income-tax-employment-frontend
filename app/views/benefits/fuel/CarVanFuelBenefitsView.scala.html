@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
+
+@import models.benefits.pages.CarVanFuelBenefitsPage
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.ErrorSummary
@@ -29,26 +33,22 @@
     button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(pageModel: CarVanFuelBenefitsPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.carVanFuel.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"benefits.carVanFuel.title.${if(pageModel.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{titleForUse}
+@layout(pageTitle = titleForUse, taxYear = Some(pageModel.taxYear), hasErrors = pageModel.form.hasErrors, isAgent = pageModel.isAgent) {
 
-@hasFormErrors = @{form.hasErrors}
+    @errorSummary(pageModel.form.errors.distinct)
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
-
-    @errorSummary(form.errors.distinct)
-
-    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-4")
+    @heading(titleForUse, Some(messages("benefits.caption", (pageModel.taxYear - 1).toString, pageModel.taxYear.toString)), "govuk-!-margin-bottom-4")
 
     <p class="govuk-body">@{messages("benefits.carVanFuel.thisIncludes")}</p>
 
-    @formWithCsrf(action = controllers.benefits.fuel.routes.CarVanFuelBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = CarVanFuelBenefitsController.submit(pageModel.taxYear, pageModel.employmentId)) {
         @inputRadio(
-            form = form,
-            legendHeading = Some(Html(headingForUse)),
+            form = pageModel.form,
+            legendHeading = Some(Html(titleForUse)),
             legendHidden = true,
             inline = true
         )

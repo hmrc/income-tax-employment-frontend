@@ -20,22 +20,22 @@ import models.User
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 
-case class AssetsTransfersBenefitsPage(taxYear: Int, employmentId: String, isAgent: Boolean, form: Form[Boolean])
+case class CarFuelBenefitsAmountPage(taxYear: Int, employmentId: String, isAgent: Boolean, form: Form[BigDecimal])
 
-object AssetsTransfersBenefitsPage {
+object CarFuelBenefitsAmountPage {
 
   def apply(taxYear: Int,
             employmentId: String,
             user: User,
-            form: Form[Boolean],
-            employmentUserData: EmploymentUserData): AssetsTransfersBenefitsPage = {
-    val optQuestionValue = employmentUserData.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetTransferQuestion))
+            form: Form[BigDecimal],
+            employmentUserData: EmploymentUserData): CarFuelBenefitsAmountPage = {
+    val optAmount = employmentUserData.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
 
-    AssetsTransfersBenefitsPage(
+    CarFuelBenefitsAmountPage(
       taxYear = taxYear,
       employmentId = employmentId,
       isAgent = user.isAgent,
-      form = optQuestionValue.fold(form)(questionValue => if (form.hasErrors) form else form.fill(questionValue))
+      form = optAmount.fold(form)(questionValue => if (form.hasErrors) form else form.fill(questionValue))
     )
   }
 }

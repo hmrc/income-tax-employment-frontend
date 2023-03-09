@@ -1007,9 +1007,9 @@ class CheckYourBenefitsViewSpec extends ViewUnitTest {
         changeAmountRowCheck(common.assetsAmount, "£100", 9, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}",
           AssetsBenefitsAmountController.show(taxYearEOY, employmentId).url)
         changeAmountRowCheck(common.assetTransfers, common.yes, 9, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}",
-          AssetsTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+          AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
         changeAmountRowCheck(common.assetTransfersAmount, "£200", 9, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}",
-          AssetsTransfersBenefitsAmountController.show(taxYearEOY, employmentId).url)
+          AssetTransfersBenefitsAmountController.show(taxYearEOY, employmentId).url)
 
         buttonCheck(common.saveAndContinue)
         welshToggleCheck(userScenario.isWelsh)

@@ -86,7 +86,7 @@ class DefaultRedirectService extends RedirectService {
   def carFuelBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     val carFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion))
 
-    carFuelBenefitsRedirects(cya, taxYear, employmentId) ++
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(carFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(carFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
@@ -681,7 +681,7 @@ class DefaultRedirectService extends RedirectService {
     commonAssetsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(assetsQuestion.isEmpty, AssetsBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(assetsQuestion.contains(false), AssetsTransfersBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
+        ConditionalRedirect(assetsQuestion.contains(false), AssetTransfersBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
         ConditionalRedirect(assetsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(true))
       )
   }
@@ -698,7 +698,7 @@ class DefaultRedirectService extends RedirectService {
 
     assetTransferRedirects(cya, taxYear, employmentId) ++
       Seq(
-        ConditionalRedirect(assetTransferQuestion.isEmpty, AssetsTransfersBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(assetTransferQuestion.isEmpty, AssetTransfersBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(assetTransferQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId))
       )
   }

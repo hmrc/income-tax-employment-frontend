@@ -18,7 +18,7 @@ package controllers.benefits.assets
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.assets.routes.{AssetsTransfersBenefitsController, AssetsBenefitsAmountController}
+import controllers.benefits.assets.routes.{AssetTransfersBenefitsController, AssetsBenefitsAmountController}
 import forms.benefits.assets.AssetsFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -85,7 +85,7 @@ class AssetsBenefitsController @Inject()(authAction: AuthorisedAction,
         val nextPage = if (questionValue) {
           AssetsBenefitsAmountController.show(taxYear, employmentId)
         } else {
-          AssetsTransfersBenefitsController.show(taxYear, employmentId)
+          AssetTransfersBenefitsController.show(taxYear, employmentId)
         }
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }

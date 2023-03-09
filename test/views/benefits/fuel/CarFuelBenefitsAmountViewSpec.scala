@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.CarFuelBenefitsAmountPageBuilder.aCarFuelBenefitsAmountPage
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import views.html.benefits.fuel.CarFuelBenefitsAmountView
 
@@ -121,7 +122,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[BigDecimal] = new FuelFormsProvider().carFuelAmountForm(isAgent)
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = new FuelFormsProvider().carFuelAmountForm(isAgent)
 
   private lazy val underTest = inject[CarFuelBenefitsAmountView]
 
@@ -130,11 +131,12 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
     import userScenario.commonExpectedResults._
     import userScenario.specificExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render amount page with no prefilled data" which {
+      "render page without pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = aCarFuelBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -150,11 +152,12 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render page with prefilling when there previous amount" which {
+      "render page with pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = aCarFuelBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).fill(200))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -164,7 +167,7 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         textOnPageCheck(get.expectedContent, paragraphTextSelector(index = 1))
         textOnPageCheck(hintText, hintTextSelector)
         textOnPageCheck(poundPrefixText, poundPrefixSelector)
-        inputFieldValueCheck(amountInputName, inputSelector, value = "")
+        inputFieldValueCheck(amountInputName, inputSelector, value = "200")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(CarFuelBenefitsAmountController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
@@ -174,7 +177,8 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
+        val pageModel = aCarFuelBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -193,11 +197,12 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.emptyErrorText)
       }
 
-      "render page with error when a form is submitted with incorrectly formatted amount" which {
+      "a form is submitted with an incorrectly formatted amount" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
+        val pageModel = aCarFuelBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -216,11 +221,12 @@ class CarFuelBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.wrongFormatErrorText)
       }
 
-      "render page with error when a form is submitted and the amount is over the maximum limit" which {
+      "a form is submitted and the amount is over the maximum limit" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
+        val pageModel = aCarFuelBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
