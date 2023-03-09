@@ -86,7 +86,7 @@ class AssetsModelSpec extends UnitTest
 
     "return assetTransfer yes no page" in {
       anAssetsModel.copy(assetTransferQuestion = None).assetTransferSectionFinished(taxYear, employmentId) shouldBe
-        Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
+        Some(AssetsTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
 

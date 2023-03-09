@@ -17,6 +17,7 @@
 package utils
 
 import controllers.benefits.accommodation._
+import controllers.benefits.assets.{AssetsTransfersBenefitsController, AssetsTransfersBenefitsAmountController}
 import support.TaxYearProvider
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.mocks.MockRedirectService
@@ -45,14 +46,6 @@ class RedirectsMapperSpec extends support.UnitTest
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
 
-    "return redirects from accommodationBenefitsAmountRedirects when LivingAccommodationBenefitAmountController class is given" in {
-      val clazz = classOf[LivingAccommodationBenefitAmountController]
-
-      mockAccommodationBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
-
-      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
-    }
-
     "return redirects from commonAccommodationBenefitsRedirects when LivingAccommodationBenefitsController class is given" in {
       val clazz = classOf[LivingAccommodationBenefitsController]
 
@@ -61,10 +54,10 @@ class RedirectsMapperSpec extends support.UnitTest
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
 
-    "return redirects from commonAccommodationBenefitsRedirects when NonQualifyingRelocationBenefitsAmountController class is given" in {
-      val clazz = classOf[NonQualifyingRelocationBenefitsAmountController]
+    "return redirects from accommodationBenefitsAmountRedirects when LivingAccommodationBenefitAmountController class is given" in {
+      val clazz = classOf[LivingAccommodationBenefitAmountController]
 
-      mockNonQualifyingRelocationAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+      mockAccommodationBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
@@ -77,10 +70,10 @@ class RedirectsMapperSpec extends support.UnitTest
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
 
-    "return redirects from qualifyingRelocationBenefitsAmountRedirects when QualifyingRelocationBenefitsAmountController class is given" in {
-      val clazz = classOf[QualifyingRelocationBenefitsAmountController]
+    "return redirects from commonAccommodationBenefitsRedirects when NonQualifyingRelocationBenefitsAmountController class is given" in {
+      val clazz = classOf[NonQualifyingRelocationBenefitsAmountController]
 
-      mockQualifyingRelocationBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+      mockNonQualifyingRelocationAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
@@ -89,6 +82,30 @@ class RedirectsMapperSpec extends support.UnitTest
       val clazz = classOf[QualifyingRelocationBenefitsController]
 
       mockQualifyingRelocationBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from qualifyingRelocationBenefitsAmountRedirects when QualifyingRelocationBenefitsAmountController class is given" in {
+      val clazz = classOf[QualifyingRelocationBenefitsAmountController]
+
+      mockQualifyingRelocationBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from assetTransferRedirects when AssetTransfersBenefitsController class is given" in {
+      val clazz = classOf[AssetsTransfersBenefitsController]
+
+      mockAssetTransferRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from assetTransferAmountRedirects when AssetsTransfersBenefitsAmountController class is given" in {
+      val clazz = classOf[AssetsTransfersBenefitsAmountController]
+
+      mockAssetTransferAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }

@@ -1661,7 +1661,7 @@ class DefaultRedirectServiceSpec extends UnitTest
           EmploymentBenefitsType)(cya => underTest.assetsAmountRedirects(cya, taxYearEOY, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        await(response).header.headers.getOrElse("Location", "/") shouldBe AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url
+        await(response).header.headers.getOrElse("Location", "/") shouldBe AssetsTransfersBenefitsController.show(taxYearEOY, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets amount' page" +
         "but the Assets question is empty" in {
@@ -1691,7 +1691,7 @@ class DefaultRedirectServiceSpec extends UnitTest
           EmploymentBenefitsType)(cya => underTest.assetTransferAmountRedirects(cya, taxYearEOY, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        await(response).header.headers.getOrElse("Location", "/") shouldBe AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url
+        await(response).header.headers.getOrElse("Location", "/") shouldBe AssetsTransfersBenefitsController.show(taxYearEOY, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets transfer amount' page" +
         "but the Assets transfer question is false" in {

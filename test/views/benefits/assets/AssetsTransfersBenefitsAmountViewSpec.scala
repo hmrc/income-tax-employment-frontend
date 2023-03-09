@@ -26,11 +26,12 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.AssetsTransfersBenefitsAmountPageBuilder.anAssetsTransfersBenefitsAmountPage
 import views.html.benefits.assets.AssetsTransfersBenefitsAmountView
 
 class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
 
-  private val employmentId: String = "employmentId"
+  private val employmentId: String = anAssetsTransfersBenefitsAmountPage.employmentId
   private val amount: BigDecimal = 200
   private val amountFieldName = "amount"
   private val expectedErrorHref = "#amount"
@@ -130,7 +131,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[BigDecimal] = new AssetsFormsProvider().assetTransfersAmountForm(isAgent)
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = new AssetsFormsProvider().assetTransfersAmountForm(isAgent)
 
   private lazy val underTest = inject[AssetsTransfersBenefitsAmountView]
 
@@ -138,11 +139,12 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
     import Selectors._
     import userScenario.commonExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the assets amount page with no prefilled data" which {
+      "render page without pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent), employmentId)
+        val pageModel = anAssetsTransfersBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -161,11 +163,12 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render page with a pre-filled amount field" which {
+      "render page with pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).fill(value = 200), employmentId)
+        val pageModel = anAssetsTransfersBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).fill(200))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -188,7 +191,8 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "")), employmentId)
+          val pageModel = anAssetsTransfersBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -213,7 +217,8 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")), employmentId)
+          val pageModel = anAssetsTransfersBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "123.33.33")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -238,7 +243,8 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(taxYearEOY, form(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")), employmentId)
+          val pageModel = anAssetsTransfersBenefitsAmountPage.copy(isAgent = userScenario.isAgent, form = amountForm(userScenario.isAgent).bind(Map(AmountForm.amount -> "100,000,000,000")))
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

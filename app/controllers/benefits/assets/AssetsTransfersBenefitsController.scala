@@ -14,43 +14,43 @@
  * limitations under the License.
  */
 
-package controllers.benefits.accommodation
+package controllers.benefits.assets
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.accommodation.routes._
-import forms.benefits.accommodation.AccommodationFormsProvider
+import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
+import controllers.employment.routes.CheckYourBenefitsController
+import forms.benefits.assets.AssetsFormsProvider
 import models.UserSessionDataRequest
-import models.benefits.pages.{QualifyingRelocationBenefitsPage => PageModel}
+import models.benefits.pages.{AssetsTransfersBenefitsPage => PageModel}
 import models.employment.EmploymentBenefitsType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService
-import services.benefits.AccommodationService
+import services.benefits.AssetsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.benefits.accommodation.QualifyingRelocationBenefitsView
+import views.html.benefits.assets.AssetsTransfersBenefitsView
 
 import javax.inject.Inject
-import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
-class QualifyingRelocationBenefitsController @Inject()(actionsProvider: ActionsProvider,
-                                                       pageView: QualifyingRelocationBenefitsView,
-                                                       accommodationService: AccommodationService,
-                                                       redirectService: RedirectService,
-                                                       errorHandler: ErrorHandler,
-                                                       formsProvider: AccommodationFormsProvider)
-                                                      (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+class AssetsTransfersBenefitsController @Inject()(actionsProvider: ActionsProvider,
+                                                  pageView: AssetsTransfersBenefitsView,
+                                                  assetsService: AssetsService,
+                                                  redirectService: RedirectService,
+                                                  errorHandler: ErrorHandler,
+                                                  formsProvider: AssetsFormsProvider)
+                                                 (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    clazz = classOf[QualifyingRelocationBenefitsController]
+    clazz = classOf[AssetsTransfersBenefitsController]
   ) { implicit request =>
-    val form = formsProvider.qualifyingRelocationForm(request.user.isAgent)
+    val form = formsProvider.assetTransfersForm(request.user.isAgent)
     Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
@@ -58,10 +58,10 @@ class QualifyingRelocationBenefitsController @Inject()(actionsProvider: ActionsP
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    clazz = classOf[QualifyingRelocationBenefitsController]
+    clazz = classOf[AssetsTransfersBenefitsController]
   ).async { implicit request =>
-    formsProvider.qualifyingRelocationForm(request.user.isAgent).bindFromRequest().fold(
-      formWithErrors => successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+    formsProvider.assetTransfersForm(request.user.isAgent).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
       yesNo => handleSuccessForm(taxYear, employmentId, yesNo)
     )
   }
@@ -70,19 +70,15 @@ class QualifyingRelocationBenefitsController @Inject()(actionsProvider: ActionsP
                                 employmentId: String,
                                 questionValue: Boolean)
                                (implicit request: UserSessionDataRequest[_]): Future[Result] = {
-    accommodationService.updateQualifyingExpensesQuestion(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
+    assetsService.updateAssetTransferQuestion(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = if (questionValue) {
-          QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId)
+          AssetsTransfersBenefitsAmountController.show(taxYear, employmentId)
         } else {
-          NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)
+          CheckYourBenefitsController.show(taxYear, employmentId)
         }
-
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 }
-
-
-

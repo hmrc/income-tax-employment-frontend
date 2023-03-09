@@ -124,7 +124,7 @@ class QualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
     import userScenario.commonExpectedResults._
     import userScenario.specificExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the qualifying relocation benefits amount page without pre-filled form" which {
+      "render page without pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -145,7 +145,7 @@ class QualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "render the qualifying relocation benefits amount page with pre-filled form" which {
+      "render page with pre-filled form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -165,7 +165,7 @@ class QualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
       }
 
-      "should render qualifying relocation benefits amount page with empty error text when there no input" which {
+      "render page with empty error text when there no input" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -188,7 +188,7 @@ class QualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.emptyErrorText)
       }
 
-      "should render qualifying relocation benefits amount page with wrong format text when input is in incorrect format" which {
+      "render page with wrong format text when input is in incorrect format" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -211,7 +211,7 @@ class QualifyingRelocationBenefitsAmountViewSpec extends ViewUnitTest {
         errorAboveElementCheck(get.wrongFormatErrorText)
       }
 
-      "should render qualifying relocation benefits amount page with max error when input >= 100,000,000,000" which {
+      "should page with max error when input >= 100,000,000,000" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 

@@ -55,7 +55,7 @@ case class AssetsModel(sectionQuestion: Option[Boolean] = None,
     assetTransferQuestion match {
       case Some(true) => if (assetTransfer.isDefined) None else Some(AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
+      case None => Some(AssetsTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
 
