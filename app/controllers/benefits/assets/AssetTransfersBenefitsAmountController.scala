@@ -18,39 +18,40 @@ package controllers.benefits.assets
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
 import controllers.employment.routes.CheckYourBenefitsController
+import forms.FormUtils
 import forms.benefits.assets.AssetsFormsProvider
 import models.UserSessionDataRequest
-import models.benefits.pages.{AssetsTransfersBenefitsPage => PageModel}
+import models.benefits.pages.{AssetTransfersBenefitsAmountPage => PageModel}
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentUserData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.RedirectService
 import services.benefits.AssetsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.benefits.assets.AssetsTransfersBenefitsView
+import views.html.benefits.assets.AssetTransfersBenefitsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AssetsTransfersBenefitsController @Inject()(actionsProvider: ActionsProvider,
-                                                  pageView: AssetsTransfersBenefitsView,
-                                                  assetsService: AssetsService,
-                                                  redirectService: RedirectService,
-                                                  errorHandler: ErrorHandler,
-                                                  formsProvider: AssetsFormsProvider)
-                                                 (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper {
+class AssetTransfersBenefitsAmountController @Inject()(actionsProvider: ActionsProvider,
+                                                       pageView: AssetTransfersBenefitsAmountView,
+                                                       assetsService: AssetsService,
+                                                       redirectService: RedirectService,
+                                                       errorHandler: ErrorHandler,
+                                                       formsProvider: AssetsFormsProvider)
+                                                      (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    clazz = classOf[AssetsTransfersBenefitsController]
+    clazz = classOf[AssetTransfersBenefitsAmountController]
   ) { implicit request =>
-    val form = formsProvider.assetTransfersForm(request.user.isAgent)
+    val form = formsProvider.assetTransfersAmountForm(request.user.isAgent)
     Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
@@ -58,26 +59,20 @@ class AssetsTransfersBenefitsController @Inject()(actionsProvider: ActionsProvid
     taxYear = taxYear,
     employmentId = employmentId,
     employmentType = EmploymentBenefitsType,
-    clazz = classOf[AssetsTransfersBenefitsController]
+    clazz = classOf[AssetTransfersBenefitsAmountController]
   ).async { implicit request =>
-    formsProvider.assetTransfersForm(request.user.isAgent).bindFromRequest().fold(
+    formsProvider.assetTransfersAmountForm(request.user.isAgent).bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
-      yesNo => handleSuccessForm(taxYear, employmentId, yesNo)
+      amount => handleSuccessForm(taxYear, employmentId, request.employmentUserData, amount)
     )
   }
 
-  private def handleSuccessForm(taxYear: Int,
-                                employmentId: String,
-                                questionValue: Boolean)
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
                                (implicit request: UserSessionDataRequest[_]): Future[Result] = {
-    assetsService.updateAssetTransferQuestion(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
+    assetsService.updateAssetTransfer(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
-        val nextPage = if (questionValue) {
-          AssetsTransfersBenefitsAmountController.show(taxYear, employmentId)
-        } else {
-          CheckYourBenefitsController.show(taxYear, employmentId)
-        }
+        val nextPage = CheckYourBenefitsController.show(taxYear, employmentId)
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }

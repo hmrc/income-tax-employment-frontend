@@ -16,7 +16,7 @@
 
 package views.benefits.assets
 
-import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
+import controllers.benefits.assets.routes.AssetTransfersBenefitsAmountController
 import forms.AmountForm
 import forms.benefits.assets.AssetsFormsProvider
 import models.AuthorisationRequest
@@ -27,9 +27,9 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.benefits.pages.AssetsTransfersBenefitsAmountPageBuilder.anAssetsTransfersBenefitsAmountPage
-import views.html.benefits.assets.AssetsTransfersBenefitsAmountView
+import views.html.benefits.assets.AssetTransfersBenefitsAmountView
 
-class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
+class AssetTransfersBenefitsAmountViewSpec extends ViewUnitTest {
 
   private val employmentId: String = anAssetsTransfersBenefitsAmountPage.employmentId
   private val amount: BigDecimal = 200
@@ -133,7 +133,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
 
   private def amountForm(isAgent: Boolean): Form[BigDecimal] = new AssetsFormsProvider().assetTransfersAmountForm(isAgent)
 
-  private lazy val underTest = inject[AssetsTransfersBenefitsAmountView]
+  private lazy val underTest = inject[AssetTransfersBenefitsAmountView]
 
   userScenarios.foreach { userScenario =>
     import Selectors._
@@ -158,7 +158,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
+        formPostLinkCheck(AssetTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
 
         welshToggleCheck(userScenario.isWelsh)
       }
@@ -181,7 +181,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
         textOnPageCheck(currencyPrefix, currencyPrefixSelector)
         inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
         buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(AssetsTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
+        formPostLinkCheck(AssetTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
 
         welshToggleCheck(userScenario.isWelsh)
       }
@@ -205,7 +205,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(AssetsTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
+          formPostLinkCheck(AssetTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedErrorNoEntry, Some(amountFieldName))
@@ -231,7 +231,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, value = "123.33.33")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(AssetsTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
+          formPostLinkCheck(AssetTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountFieldName))
@@ -257,7 +257,7 @@ class AssetsTransfersBenefitsAmountViewSpec extends ViewUnitTest {
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, value = "100,000,000,000")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(AssetsTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
+          formPostLinkCheck(AssetTransfersBenefitsAmountController.submit(taxYearEOY, employmentId).url, formSelector)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountFieldName))

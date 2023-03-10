@@ -16,16 +16,16 @@
 
 package support.builders.models.benefits.pages
 
-import forms.benefits.assets.AssetsFormsProvider
-import models.benefits.pages.AssetTransfersBenefitsPage
+import forms.benefits.fuel.FuelFormsProvider
+import models.benefits.pages.CarVanFuelBenefitsPage
 import support.TaxYearUtils
 
-object AssetsTransfersBenefitsPageBuilder {
+object CarVanFuelBenefitsPageBuilder {
 
-  val anAssetsTransfersBenefitsPage: AssetTransfersBenefitsPage = AssetTransfersBenefitsPage(
+  val aCarVanFuelBenefitsPage: CarVanFuelBenefitsPage = CarVanFuelBenefitsPage(
     taxYear = TaxYearUtils.taxYearEOY,
     employmentId = "employmentId",
     isAgent = false,
-    form = new AssetsFormsProvider().assetTransfersForm(isAgent = false)
+    form = new FuelFormsProvider().carVanFuelForm(isAgent = false)
   )
 }

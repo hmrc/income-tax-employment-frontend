@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import controllers.benefits.fuel.routes.CarFuelBenefitsAmountController
+
+@import models.benefits.pages.CarFuelBenefitsAmountPage
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.ErrorSummary
@@ -30,29 +34,24 @@
     button: Button
 )
 
-@(taxYear: Int, form: Form[BigDecimal], empId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(pageModel: CarFuelBenefitsAmountPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleText = @{messages(s"benefits.carFuelAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleText = @{messages(s"benefits.carFuelAmount.title.${if(pageModel.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{messages(s"benefits.carFuelAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@layout(pageTitle = titleText, taxYear = Some(pageModel.taxYear), hasErrors = pageModel.form.hasErrors) {
 
-@paragraphText = @{messages(s"benefits.carFuelAmount.paragraph.${if (request.user.isAgent) "agent" else "individual"}")}
+    @errorSummary(pageModel.form.errors)
 
-
-@layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
-
-    @errorSummary(form.errors)
-
-    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+    @heading(titleText, Some(messages("benefits.caption", (pageModel.taxYear - 1).toString, pageModel.taxYear.toString)), "govuk-!-margin-bottom-2")
     
-    <p class="govuk-body">@paragraphText</p>
+    <p class="govuk-body">@{messages(s"benefits.carFuelAmount.paragraph.${if (pageModel.isAgent) "agent" else "individual"}")}</p>
 
-    @formWithCsrf(controllers.benefits.fuel.routes.CarFuelBenefitsAmountController.submit(taxYear, empId)) {
+    @formWithCsrf(CarFuelBenefitsAmountController.submit(pageModel.taxYear, pageModel.employmentId)) {
         @inputText(
-            form,
+            form = pageModel.form,
             id = "amount",
             name = "amount",
-            label = headingForUse,
+            label = titleText,
             hint = Some(messages("common.currency.hint")),
             labelHidden = true,
             currency = true

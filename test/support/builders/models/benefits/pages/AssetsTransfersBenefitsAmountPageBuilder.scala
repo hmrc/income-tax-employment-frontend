@@ -17,12 +17,12 @@
 package support.builders.models.benefits.pages
 
 import forms.benefits.assets.AssetsFormsProvider
-import models.benefits.pages.AssetsTransfersBenefitsAmountPage
+import models.benefits.pages.AssetTransfersBenefitsAmountPage
 import support.TaxYearUtils
 
 object AssetsTransfersBenefitsAmountPageBuilder {
 
-  val anAssetsTransfersBenefitsAmountPage: AssetsTransfersBenefitsAmountPage = AssetsTransfersBenefitsAmountPage(
+  val anAssetsTransfersBenefitsAmountPage: AssetTransfersBenefitsAmountPage = AssetTransfersBenefitsAmountPage(
     taxYear = TaxYearUtils.taxYearEOY,
     employmentId = "employmentId",
     isAgent = false,

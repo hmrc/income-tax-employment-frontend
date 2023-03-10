@@ -274,11 +274,11 @@ POST        /:taxYear/benefits/assets-available-for-use                         
 GET         /:taxYear/benefits/assets-available-for-use-amount                       controllers.benefits.assets.AssetsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/benefits/assets-available-for-use-amount                       controllers.benefits.assets.AssetsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetsTransfersBenefitsController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetsTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetTransfersBenefitsController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET         /:taxYear/benefits/assets-to-keep-amount                                 controllers.benefits.assets.AssetsTransfersBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/benefits/assets-to-keep-amount                                 controllers.benefits.assets.AssetsTransfersBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET         /:taxYear/benefits/assets-to-keep-amount                                 controllers.benefits.assets.AssetTransfersBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/benefits/assets-to-keep-amount                                 controllers.benefits.assets.AssetTransfersBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 #################       Employment expenses pages      #############################
 

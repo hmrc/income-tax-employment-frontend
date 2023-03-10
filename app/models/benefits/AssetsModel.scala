@@ -53,9 +53,9 @@ case class AssetsModel(sectionQuestion: Option[Boolean] = None,
 
   def assetTransferSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     assetTransferQuestion match {
-      case Some(true) => if (assetTransfer.isDefined) None else Some(AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (assetTransfer.isDefined) None else Some(AssetTransfersBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(AssetsTransfersBenefitsController.show(taxYear, employmentId))
+      case None => Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
 

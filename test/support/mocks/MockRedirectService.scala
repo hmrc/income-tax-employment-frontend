@@ -109,10 +109,19 @@ trait MockRedirectService extends MockFactory {
   }
 
   def mockCommonBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
-                                  taxYear: Int,
-                                  employmentId: String,
-                                  result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+                                         taxYear: Int,
+                                         employmentId: String,
+                                         result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
     (mockRedirectService.commonBenefitsRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
+  def mockCarFuelBenefitsAmountRedirects(employmentCYAModel: EmploymentCYAModel,
+                                         taxYear: Int,
+                                         employmentId: String,
+                                         result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.carFuelBenefitsAmountRedirects(_: EmploymentCYAModel, _: Int, _: String))
       .expects(employmentCYAModel, taxYear, employmentId)
       .returns(result)
   }

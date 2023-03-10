@@ -16,31 +16,30 @@
 
 package controllers.benefits.fuel
 
-import actions.AuthorisedAction
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyCarFuelBenefitsController, CompanyVanBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.FormUtils
 import forms.benefits.fuel.FuelFormsProvider
-import models.AuthorisationRequest
+import models.UserSessionDataRequest
+import models.benefits.pages.{CarFuelBenefitsAmountPage => PageModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.RedirectService
 import services.benefits.FuelService
-import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.benefits.fuel.CarFuelBenefitsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
+class CarFuelBenefitsAmountController @Inject()(actionsProvider: ActionsProvider,
                                                 pageView: CarFuelBenefitsAmountView,
-                                                inYearAction: InYearUtil,
-                                                employmentSessionService: EmploymentSessionService,
                                                 fuelService: FuelService,
                                                 redirectService: RedirectService,
                                                 errorHandler: ErrorHandler,
@@ -48,55 +47,35 @@ class CarFuelBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
-
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
-
-          val form = fillForm(formsProvider.carFuelAmountForm(request.user.isAgent), cyaAmount)
-          Future.successful(Ok(pageView(taxYear, form, employmentId)))
-        }
-      }
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[CarFuelBenefitsAmountController]
+  ) { implicit request =>
+    val form = formsProvider.carFuelAmountForm(request.user.isAgent)
+    Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
-
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
-          formsProvider.carFuelAmountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => {
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
-            },
-            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
-          )
-        }
-      }
-    }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[CarFuelBenefitsAmountController]
+  ).async { implicit request =>
+    formsProvider.carFuelAmountForm(request.user.isAgent).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      amount => handleSuccessForm(taxYear, employmentId, amount)
+    )
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    fuelService.updateCarFuel(request.user, taxYear, employmentId, employmentUserData, amount).map {
+  private def handleSuccessForm(taxYear: Int, employmentId: String, amount: BigDecimal)
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    fuelService.updateCarFuel(request.user, taxYear, employmentId, request.employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = CompanyVanBenefitsController.show(taxYear, employmentId)
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
-  }
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    val cyaCarFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion))
-
-    redirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(true))
-    )
   }
 }
