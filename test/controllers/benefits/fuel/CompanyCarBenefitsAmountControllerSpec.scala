@@ -16,41 +16,42 @@
 
 package controllers.benefits.fuel
 
-import controllers.benefits.fuel.routes.{CompanyCarBenefitsAmountController, CompanyVanBenefitsController}
-import forms.YesNoForm
+import controllers.benefits.fuel.routes.CompanyCarFuelBenefitsController
+import forms.AmountForm
 import forms.benefits.fuel.FuelFormsProvider
 import models.employment.EmploymentBenefitsType
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK}
 import play.api.mvc.Result
 import play.api.mvc.Results.InternalServerError
-import play.api.test.Helpers.{contentType, status, stubMessagesControllerComponents}
+import play.api.test.Helpers.{contentType, status}
 import sttp.model.Method.POST
 import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
-import views.html.benefits.fuel.CompanyCarBenefitsView
+import views.html.benefits.fuel.CompanyCarBenefitsAmountView
 
-class CompanyCarBenefitsControllerSpec extends ControllerUnitTest
+class CompanyCarBenefitsAmountControllerSpec extends ControllerUnitTest
+  with MockAuthorisedAction
   with MockActionsProvider
   with MockFuelService
   with MockRedirectService
   with MockErrorHandler {
 
   private val employmentId = "employmentId"
-  private lazy val pageView = app.injector.instanceOf[CompanyCarBenefitsView]
+  private val pageView = inject[CompanyCarBenefitsAmountView]
+  private val formsProvider = new FuelFormsProvider()
+  private val clazz = classOf[CompanyCarBenefitsAmountController]
 
-  private lazy val underTest = new CompanyCarBenefitsController(
+  private lazy val underTest = new CompanyCarBenefitsAmountController(
     mockActionsProvider,
     pageView,
     mockFuelService,
     mockRedirectService,
     mockErrorHandler,
-    new FuelFormsProvider
-  )(stubMessagesControllerComponents(), new MockAppConfig().config())
-
-  private val clazz = classOf[CompanyCarBenefitsController]
+    formsProvider
+  )
 
   ".show" should {
     "return successful response" in {
@@ -67,44 +68,32 @@ class CompanyCarBenefitsControllerSpec extends ControllerUnitTest
     "render page with error when validation of form fails" in {
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "")
       val result = underTest.submit(taxYearEOY, employmentId).apply(request)
 
       status(result) shouldBe BAD_REQUEST
       contentType(result) shouldBe Some("text/html")
     }
 
-    "handle internal server error when fuelService.updateCarQuestion(...) fails" in {
+    "handle internal server error when fuelService.updateCar(...) fails" in {
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
-      mockUpdateCarQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Left(()))
+      mockUpdateCar(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Left(()))
       mockInternalServerError(InternalServerError)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
       val result = underTest.submit(taxYearEOY, employmentId)(request)
 
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "save question and return correct result when question value is true" in {
+    "save amount and perform correct redirect" in {
       val result: Result = mock[Result]
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
-      mockUpdateCarQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, CompanyCarBenefitsAmountController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockUpdateCar(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Right(anEmploymentUserData))
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel, CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
-
-      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
-    }
-
-    "save question and return correct result when question value is false" in {
-      val result: Result = mock[Result]
-
-      mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
-      mockUpdateCarQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, CompanyVanBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
-
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
 
       await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe result
     }

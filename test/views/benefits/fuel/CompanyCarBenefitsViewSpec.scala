@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.CompanyCarBenefitsPageBuilder.aCompanyCarBenefitsPage
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 class CompanyCarBenefitsViewSpec extends ViewUnitTest {
@@ -101,7 +102,7 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private def form(isAgent: Boolean): Form[Boolean] = new FuelFormsProvider().companyCarForm(isAgent)
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = new FuelFormsProvider().companyCarForm(isAgent)
 
   private lazy val underTest = inject[CompanyCarBenefitsView]
 
@@ -111,7 +112,8 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent), taxYearEOY, employmentId)
+        val pageModel = aCompanyCarBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -129,7 +131,8 @@ class CompanyCarBenefitsViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY, employmentId)
+        val pageModel = aCompanyCarBenefitsPage.copy(isAgent = userScenario.isAgent, form = yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

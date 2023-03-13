@@ -32,11 +32,6 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
   private val employmentId = anEmploymentSource.employmentId
   private val carFuelAmount: BigDecimal = 200
-  private val benefitsWithNoBenefitsReceived: BenefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-
-  private val benefitsWithFalseCarVanFuelQuestion: BenefitsViewModel = BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(false))),
-    isUsingCustomerData = true)
 
   val benefitsWithFalseCarFuelQuestion: BenefitsViewModel = BenefitsViewModel(isBenefitsReceived = true,
     carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carFuelQuestion = Some(false))),

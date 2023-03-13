@@ -18,7 +18,7 @@ package utils
 
 import controllers.benefits.accommodation._
 import controllers.benefits.assets._
-import controllers.benefits.fuel.{CarFuelBenefitsAmountController, CarVanFuelBenefitsController}
+import controllers.benefits.fuel._
 import support.TaxYearProvider
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.mocks.MockRedirectService
@@ -147,6 +147,22 @@ class RedirectsMapperSpec extends support.UnitTest
       val clazz = classOf[CarFuelBenefitsAmountController]
 
       mockCarFuelBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from carBenefitsRedirects when CompanyCarBenefitsController class is given" in {
+      val clazz = classOf[CompanyCarBenefitsController]
+
+      mockCarBenefitsRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
+
+      underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
+    }
+
+    "return redirects from carBenefitsAmountRedirects when CompanyCarBenefitsAmountController class is given" in {
+      val clazz = classOf[CompanyCarBenefitsAmountController]
+
+      mockCarBenefitsAmountRedirects(anEmploymentCYAModel, taxYear, employmentId, Seq.empty)
 
       underTest.mapToRedirects(clazz, taxYear, employmentId, anEmploymentCYAModel)
     }
