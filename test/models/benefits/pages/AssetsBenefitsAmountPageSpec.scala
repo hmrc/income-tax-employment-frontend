@@ -16,55 +16,56 @@
 
 package models.benefits.pages
 
-import forms.YesNoForm
-import forms.benefits.accommodation.AccommodationFormsProvider
+import forms.AmountForm
+import forms.benefits.assets.AssetsFormsProvider
 import support.UnitTest
 import support.builders.models.UserBuilder.aUser
-import support.builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
+import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 
-class LivingAccommodationBenefitsPageSpec extends UnitTest {
+class AssetsBenefitsAmountPageSpec extends UnitTest {
 
   private val anyTaxYear = 2020
   private val anyEmploymentId = "employmentId"
   private val anyEmploymentUserData = anEmploymentUserData
-  private val questionForm = new AccommodationFormsProvider().livingAccommodationForm(isAgent = aUser.isAgent)
+  private val user = aUser
+  private val form = new AssetsFormsProvider().assetsAmountForm(isAgent = user.isAgent)
 
   ".apply(...)" should {
     "create page model with error form when form has errors" in {
-      val formWithErrors = questionForm.bind(Map(YesNoForm.yesNo -> ""))
+      val formWithErrors = form.bind(Map(AmountForm.amount -> ""))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, formWithErrors, anyEmploymentUserData) shouldBe LivingAccommodationBenefitsPage(
+      AssetsBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, user, formWithErrors, anyEmploymentUserData) shouldBe AssetsBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = aUser.isAgent,
+        isAgent = user.isAgent,
         form = formWithErrors
       )
     }
 
-    "create page model with form populated from the accommodationRelocationModel accommodationQuestion" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
+    "create page model with empty form when assets amount is missing" in {
+      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = None)))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
+      AssetsBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, user, form, employmentUserData) shouldBe AssetsBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = aUser.isAgent,
-        form = questionForm.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
+        isAgent = user.isAgent,
+        form = form
       )
     }
 
-    "create page model with empty form" in {
-      val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+    "create page model with form populated from the accommodationRelocationModel assets value" in {
+      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = Some(123))))
       val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-      LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
+      AssetsBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, user, form, employmentUserData) shouldBe AssetsBenefitsAmountPage(
         taxYear = anyTaxYear,
         employmentId = anyEmploymentId,
-        isAgent = aUser.isAgent,
-        form = questionForm
+        isAgent = user.isAgent,
+        form = form.bind(Map(AmountForm.amount -> "123"))
       )
     }
   }

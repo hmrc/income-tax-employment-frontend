@@ -28,6 +28,39 @@ trait MockAssetsService extends MockFactory {
 
   protected val mockAssetsService: AssetsService = mock[AssetsService]
 
+  def mockUpdateSectionQuestion(user: User,
+                                taxYear: Int,
+                                employmentId: String,
+                                originalEmploymentUserData: EmploymentUserData,
+                                questionValue: Boolean,
+                                result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAssetsService.updateSectionQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateAssetsQuestion(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               questionValue: Boolean,
+                               result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAssetsService.updateAssetsQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateAssets(user: User,
+                       taxYear: Int,
+                       employmentId: String,
+                       originalEmploymentUserData: EmploymentUserData,
+                       amount: BigDecimal,
+                       result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, BigDecimal, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockAssetsService.updateAssets(_: User, _: Int, _: String, _: EmploymentUserData, _: BigDecimal))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, amount)
+      .returns(Future.successful(result))
+  }
+
   def mockUpdateAssetTransferQuestion(user: User,
                                       taxYear: Int,
                                       employmentId: String,

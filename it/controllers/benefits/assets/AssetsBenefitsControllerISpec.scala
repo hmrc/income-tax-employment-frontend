@@ -26,20 +26,28 @@ import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import utils.PageUrls.{assetsForUseBenefitsAmountUrl, assetsForUseBenefitsUrl, assetsToKeepBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl}
+import utils.PageUrls.{assetsBenefitsUrl, assetsForUseBenefitsAmountUrl, assetsForUseBenefitsUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId: String = "employmentId"
 
-  private val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), None, None, None, None)
-
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" should {
-    "render the assets benefits page without pre-filled radio buttons and the user doesn't have prior benefits" which {
-      implicit lazy val result: WSResponse = {
+    "redirect to Overview Page when in year" in {
+      val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(assetsBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+    }
+
+    "render page successfully" in {
+      lazy val result = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
@@ -48,60 +56,26 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"has an OK($OK) status" in {
-        result.status shouldBe OK
-      }
-    }
-
-    "redirect to check your benefits page there is no cya data for found" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to check your benefits page when assetsAndAssetsTransferQuestion is false" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlGet(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the overview page when it's not end of year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
-        urlGet(fullUrl(assetsForUseBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-      }
+      result.status shouldBe OK
     }
   }
 
   ".submit" should {
-    "return an error when a user submits an empty form" which {
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+    "redirect to Overview page when in year" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        urlPost(fullUrl(assetsBenefitsUrl(taxYear, employmentId)),
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map(YesNoForm.yesNo -> YesNoForm.yes))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+    }
+
+    "render page with an error when validation fails" in {
+      val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
@@ -110,18 +84,16 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"has a BAD REQUEST($BAD_REQUEST) status" in {
-        result.status shouldBe BAD_REQUEST
-      }
+      result.status shouldBe BAD_REQUEST
     }
 
-    "update cya with 'yes' when a user chooses yes and doesn't have prior benefits, redirects to assets amount page" which {
+    "persist data and redirect to next page" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(true), None, None, None, None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -135,98 +107,6 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         lazy val model = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(true)
-      }
-    }
-
-    "update cya with 'no' when a user choose no and has prior benefits, redirects to CYA" which {
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData)
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "redirect to the check your benefits page" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      "update assetsQuestion to Some(false) and assets to None" in {
-        lazy val model = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(false)
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe None
-      }
-    }
-
-    "update cya with 'no' when a user choose no and has no prior benefits, redirects to asset transfers question" which {
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-      lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        authoriseAgentOrIndividual(isAgent = false)
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "redirect to the assets transfers page" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      "update assetsQuestion to Some(false) and assets to None" in {
-        lazy val model = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(false)
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe None
-      }
-    }
-
-    "redirect to check your benefits page there is no cya data for found" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to check your benefits page when assetsAndAssetsTransferQuestion is false" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to the overview page when it's not end of year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
-        urlPost(fullUrl(assetsForUseBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
-
-      s"has an SEE OTHER($SEE_OTHER) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
   }

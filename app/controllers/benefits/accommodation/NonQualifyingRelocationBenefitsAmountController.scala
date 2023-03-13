@@ -19,7 +19,6 @@ package controllers.benefits.accommodation
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
-import forms.FormUtils
 import forms.benefits.accommodation.AccommodationFormsProvider
 import models.UserSessionDataRequest
 import models.benefits.pages.{NonQualifyingRelocationBenefitAmountPage => PageModel}
@@ -42,7 +41,7 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(actionsProvider:
                                                                 errorHandler: ErrorHandler,
                                                                 formsProvider: AccommodationFormsProvider)
                                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,

@@ -90,6 +90,33 @@ trait MockRedirectService extends MockFactory {
       .returns(result)
   }
 
+  def mockAssetsRedirects(employmentCYAModel: EmploymentCYAModel,
+                          taxYear: Int,
+                          employmentId: String,
+                          result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.assetsRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
+  def mockCommonAssetsModelRedirects(employmentCYAModel: EmploymentCYAModel,
+                                     taxYear: Int,
+                                     employmentId: String,
+                                     result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.commonAssetsModelRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
+  def mockAssetsAmountRedirects(employmentCYAModel: EmploymentCYAModel,
+                                taxYear: Int,
+                                employmentId: String,
+                                result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+    (mockRedirectService.assetsAmountRedirects(_: EmploymentCYAModel, _: Int, _: String))
+      .expects(employmentCYAModel, taxYear, employmentId)
+      .returns(result)
+  }
+
   def mockAssetTransferRedirects(employmentCYAModel: EmploymentCYAModel,
                                  taxYear: Int,
                                  employmentId: String,
@@ -109,9 +136,9 @@ trait MockRedirectService extends MockFactory {
   }
 
   def mockCommonBenefitsRedirects(employmentCYAModel: EmploymentCYAModel,
-                                         taxYear: Int,
-                                         employmentId: String,
-                                         result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  result: Seq[ConditionalRedirect]): CallHandler3[EmploymentCYAModel, Int, String, Seq[ConditionalRedirect]] = {
     (mockRedirectService.commonBenefitsRedirects(_: EmploymentCYAModel, _: Int, _: String))
       .expects(employmentCYAModel, taxYear, employmentId)
       .returns(result)

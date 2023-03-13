@@ -19,7 +19,6 @@ package controllers.benefits.assets
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.assets.AssetsFormsProvider
 import models.UserSessionDataRequest
 import models.benefits.pages.{AssetTransfersBenefitsAmountPage => PageModel}
@@ -43,7 +42,7 @@ class AssetTransfersBenefitsAmountController @Inject()(actionsProvider: ActionsP
                                                        errorHandler: ErrorHandler,
                                                        formsProvider: AssetsFormsProvider)
                                                       (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
     taxYear = taxYear,

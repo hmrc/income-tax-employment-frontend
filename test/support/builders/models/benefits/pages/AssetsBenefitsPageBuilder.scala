@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package support.builders.models.benefits.pages
 
-import play.api.data.Form
+import forms.benefits.assets.AssetsFormsProvider
+import models.benefits.pages.AssetsBenefitsPage
+import support.TaxYearUtils
 
-// TODO: Delete me
-@deprecated("This operation should be done in the page model")
-trait FormUtils {
-  def fillForm(form: Form[BigDecimal], cya: Option[BigDecimal]): Form[BigDecimal] = {
-    cya.fold(form)(form.fill)
-  }
+object AssetsBenefitsPageBuilder {
+
+  val anAssetsBenefitsPage: AssetsBenefitsPage = AssetsBenefitsPage(
+    taxYear = TaxYearUtils.taxYearEOY,
+    employmentId = "employmentId",
+    isAgent = false,
+    form = new AssetsFormsProvider().assetsForm(isAgent = false)
+  )
 }
