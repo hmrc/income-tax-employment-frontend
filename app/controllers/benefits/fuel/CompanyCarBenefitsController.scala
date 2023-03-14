@@ -16,30 +16,26 @@
 
 package controllers.benefits.fuel
 
-import actions.AuthorisedAction
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyCarBenefitsAmountController, CompanyVanBenefitsController}
 import forms.benefits.fuel.FuelFormsProvider
-import models.AuthorisationRequest
+import models.UserSessionDataRequest
+import models.benefits.pages.{CompanyCarBenefitsPage => PageModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import models.redirects.ConditionalRedirect
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.RedirectService
 import services.benefits.FuelService
-import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-// TODO: This controller does not have enough test coverage in CompanyCarBenefitsControllerISpec
-class CompanyCarBenefitsController @Inject()(authAction: AuthorisedAction,
-                                             inYearAction: InYearUtil,
-                                             companyCarBenefitsView: CompanyCarBenefitsView,
-                                             employmentSessionService: EmploymentSessionService,
+class CompanyCarBenefitsController @Inject()(actionsProvider: ActionsProvider,
+                                             pageView: CompanyCarBenefitsView,
                                              fuelService: FuelService,
                                              redirectService: RedirectService,
                                              errorHandler: ErrorHandler,
@@ -49,42 +45,31 @@ class CompanyCarBenefitsController @Inject()(authAction: AuthorisedAction,
 
   private implicit val ec: ExecutionContext = cc.executionContext
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId)(handleShow(taxYear, employmentId, _))
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[CompanyCarBenefitsController]
+  ) { implicit request =>
+    val form = formsProvider.companyCarForm(request.user.isAgent)
+    Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def handleShow(taxYear: Int, employmentId: String, optCya: Option[EmploymentUserData])
-                (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
-      cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) match {
-        case Some(value) =>
-          Future.successful(Ok(companyCarBenefitsView(formsProvider.companyCarForm(request.user.isAgent).fill(value), taxYear, employmentId)))
-        case None => Future.successful(Ok(companyCarBenefitsView(formsProvider.companyCarForm(request.user.isAgent), taxYear, employmentId)))
-      }
-    }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentBenefitsType,
+    clazz = classOf[CompanyCarBenefitsController]
+  ).async { implicit request =>
+    formsProvider.companyCarForm(request.user.isAgent).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      yesNo => handleSuccessForm(taxYear, employmentId, yesNo)
+    )
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
-
-          formsProvider.companyCarForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(companyCarBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
-          )
-        }
-      }
-    }
-  }
-
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    fuelService.updateCarQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
+  private def handleSuccessForm(taxYear: Int, employmentId: String, questionValue: Boolean)
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    fuelService.updateCarQuestion(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = {
@@ -93,9 +78,5 @@ class CompanyCarBenefitsController @Inject()(authAction: AuthorisedAction,
 
         redirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
-  }
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    redirectService.carBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

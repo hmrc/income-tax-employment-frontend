@@ -18,7 +18,7 @@ package utils
 
 import controllers.benefits.accommodation._
 import controllers.benefits.assets._
-import controllers.benefits.fuel.{CarFuelBenefitsAmountController, CarVanFuelBenefitsController}
+import controllers.benefits.fuel._
 import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
 import services.RedirectService
@@ -66,6 +66,10 @@ class RedirectsMapper @Inject()(redirectService: RedirectService) {
       redirectService.commonBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
     case _ if clazz == classOf[CarFuelBenefitsAmountController] =>
       redirectService.carFuelBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[CompanyCarBenefitsController] =>
+      redirectService.carBenefitsRedirects(employmentCYAModel, taxYear, employmentId)
+    case _ if clazz == classOf[CompanyCarBenefitsAmountController] =>
+      redirectService.carBenefitsAmountRedirects(employmentCYAModel, taxYear, employmentId)
 
     case _ => throw new IllegalArgumentException(s"${clazz.toString} could not be matched with redirects.")
   }

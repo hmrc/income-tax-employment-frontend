@@ -39,6 +39,27 @@ trait MockFuelService extends MockFactory {
       .returns(Future.successful(result))
   }
 
+  def mockUpdateCarQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean,
+                            result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockFuelService.updateCarQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdateCar(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    amount: BigDecimal,
+                    result: Either[Unit, EmploymentUserData]): CallHandler5[User, Int, String, EmploymentUserData, BigDecimal, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockFuelService.updateCar(_: User, _: Int, _: String, _: EmploymentUserData, _: BigDecimal))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, amount)
+      .returning(Future.successful(result))
+  }
 
   def mockUpdateCarFuel(user: User,
                         taxYear: Int,
