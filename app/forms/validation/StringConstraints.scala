@@ -22,12 +22,11 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 object StringConstraints {
 
   val charRegex = """^([ A-Za-z0-9&@£$€¥#.,:;-])*$"""
-  val numericalCharacters = """[0-9.]*"""
 
-  val monetaryRegex = """\d+|\d*\.\d{1,2}"""
-
-  def validateChar(charRegex:String): String => Constraint[String] = msgKey => constraint[String](
-  x => if (x.matches(charRegex)) Valid else Invalid(msgKey)
+  def validateChar(charRegex: String, outputInvalidChars: Boolean = false): String => Constraint[String] = msgKey => constraint[String](
+    x => if (x.matches(charRegex)) Valid else {
+      if (outputInvalidChars) Invalid(msgKey, x.filterNot(c => charRegex.r.pattern.matcher(c.toString).matches()).distinct) else Invalid(msgKey)
+    }
   )
 
   val nonEmpty: String => Constraint[String] = msgKey => constraint[String](

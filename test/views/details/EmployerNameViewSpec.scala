@@ -37,10 +37,6 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val inputSelector: String = "#name"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
-    val paragraphTextSelector: String = "#main-content > div > div > p.govuk-body"
-    val formatListSelector1: String = "#main-content > div > div > ul > li:nth-child(1)"
-    val formatListSelector2: String = "#main-content > div > div > ul > li:nth-child(2)"
-    val formatListSelector3: String = "#main-content > div > div > ul > li:nth-child(3)"
   }
 
   trait SpecificExpectedResults {
@@ -48,17 +44,12 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedH1: String
     val expectedErrorTitle: String
     val expectedErrorNoEntry: String
-    val expectedErrorWrongFormat: String
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: Int => String
     val expectedButtonText: String
     val expectedErrorCharLimit: String
-    val paragraphText: String
-    val formatList1: String
-    val formatList2: String
-    val formatList3: String
+    val expectedErrorWrongFormat: String => String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -66,7 +57,6 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedH1 = "What’s the name of your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your employer"
-    val expectedErrorWrongFormat = "Enter your employer name in the correct format"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -74,7 +64,6 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedH1 = "Beth oedd enw’ch cyflogwr?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch enw’ch cyflogwr"
-    val expectedErrorWrongFormat = "Nodwch enw’ch cyflogwr yn y fformat cywir"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -82,7 +71,6 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedH1 = "What’s the name of your client’s employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your client’s employer"
-    val expectedErrorWrongFormat = "Enter your client’s employer name in the correct format"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -90,27 +78,20 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedH1 = "Beth yw enw cyflogwr eich cleient?"
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch enw cyflogwr eich cleient"
-    val expectedErrorWrongFormat = "Nodwch enw cyflogwr eich cleient yn y fformat cywir"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
-    val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
-    val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
-    val formatList1 = "upper and lower case letters (a to z)"
-    val formatList2 = "numbers"
-    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
+    val expectedErrorCharLimit = "Employer’s name must be 74 characters or fewer"
+    val expectedErrorWrongFormat: String => String = (invalidChars: String) => s"Employer’s name must not include $invalidChars"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val expectedErrorCharLimit = "Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai"
-    val paragraphText = "Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:"
-    val formatList1 = "llythrennau mawr a bach (a i z)"
-    val formatList2 = "rhifau"
-    val formatList3 = "y cymeriadau arbennig: & : ’ \\ , . ( ) -"
+    val expectedErrorCharLimit = "Employer’s name must be 74 characters or fewer"
+    val expectedErrorWrongFormat: String => String = (invalidChars: String) => s"Employer’s name must not include $invalidChars"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -140,15 +121,10 @@ class EmployerNameViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
-        captionCheck(expectedCaption(taxYearEOY))
+        labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
         inputFieldValueCheck(amountInputName, inputSelector, "")
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerNameController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        textOnPageCheck(paragraphText, paragraphTextSelector)
-        textOnPageCheck(formatList1, formatListSelector1)
-        textOnPageCheck(formatList2, formatListSelector2)
-        textOnPageCheck(formatList3, formatListSelector3)
       }
 
       "render the 'name of your employer' page with the correct content and pre-popped input field" which {
@@ -165,15 +141,10 @@ class EmployerNameViewSpec extends ViewUnitTest {
         welshToggleCheck(userScenario.isWelsh)
 
         titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1)
-        captionCheck(expectedCaption(taxYearEOY))
+        labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
         inputFieldValueCheck(amountInputName, inputSelector, employerName)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerNameController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        textOnPageCheck(paragraphText, paragraphTextSelector)
-        textOnPageCheck(formatList1, formatListSelector1)
-        textOnPageCheck(formatList2, formatListSelector2)
-        textOnPageCheck(formatList3, formatListSelector3)
       }
 
       s"render the page with a form error" when {
@@ -191,8 +162,7 @@ class EmployerNameViewSpec extends ViewUnitTest {
           welshToggleCheck(userScenario.isWelsh)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption(taxYearEOY))
+          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(expectedButtonText, continueButtonSelector)
 
@@ -215,13 +185,12 @@ class EmployerNameViewSpec extends ViewUnitTest {
           welshToggleCheck(userScenario.isWelsh)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption(taxYearEOY))
+          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
           inputFieldValueCheck(amountInputName, inputSelector, wrongFormat)
           buttonCheck(expectedButtonText, continueButtonSelector)
 
-          errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorWrongFormat, inputSelector)
-          errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedErrorWrongFormat)
+          errorSummaryCheck(userScenario.commonExpectedResults.expectedErrorWrongFormat("~"), inputSelector)
+          errorAboveElementCheck(userScenario.commonExpectedResults.expectedErrorWrongFormat("~"))
         }
 
         "the submitted data is too long" which {
@@ -240,8 +209,7 @@ class EmployerNameViewSpec extends ViewUnitTest {
           welshToggleCheck(userScenario.isWelsh)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption(taxYearEOY))
+          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
           inputFieldValueCheck(amountInputName, inputSelector, charLimit)
           buttonCheck(expectedButtonText, continueButtonSelector)
 

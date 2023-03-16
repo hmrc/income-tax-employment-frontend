@@ -34,28 +34,17 @@
 
 @pageTitle = @{messages(getAgentDynamicContent("employment.employerName.heading", request.user.isAgent))}
 
-@headingForUse = @{(pageTitle)}
-
 @layout(pageTitle = pageTitle, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
-
-    @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-
-    <p class="govuk-body">@messages("employment.employerName.paragraph")</p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("common.letters.case")</li>
-        <li>@messages("common.numbers")</li>
-        <li>@messages("employment.employerName.bullet.three")</li>
-    </ul>
 
     @formWithCsrf(controllers.details.routes.EmployerNameController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             id = "name",
             name = "name",
-            label = headingForUse,
-            hint = Some(messages("employment.employerName.hint")),
+            label = pageTitle,
+            isPageHeading = true,
             labelHidden = true,
             classes = Some("govuk-input--width-20")
         )
