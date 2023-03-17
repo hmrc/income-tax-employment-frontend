@@ -24,11 +24,16 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.DidYouLeaveEmployerPageBuilder.aDidYouLeaveEmployerPage
+import utils.ViewUtils.{translatedDateFormatter, translatedTaxYearEndDateFormatter}
 import views.html.details.DidYouLeaveEmployerView
+
+import java.time.LocalDate
 
 class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
 
-  private val employerName: String = "HMRC"
+  private val formsProvider = new EmploymentDetailsFormsProvider()
+
   private val employmentId: String = "employmentId"
 
   object Selectors {
@@ -38,163 +43,164 @@ class DidYouLeaveEmployerViewSpec extends ViewUnitTest {
   }
 
   trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedH1: String
-    val expectedErrorTitle: String
-    val expectedError: String
+    def expectedTitle(taxYear: Int, startDate: LocalDate): String
+
+    def expectedH1(taxYear: Int, startDate: LocalDate): String = expectedTitle(taxYear, startDate)
+
+    def expectedErrorTitle(taxYear: Int, startDate: LocalDate): String
+
+    def expectedError(taxYear: Int, startDate: LocalDate): String
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: Int => String
     val expectedButtonText: String
     val yesText: String
     val noText: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you leave this employer in the tax year?"
-    val expectedH1 = "Did you leave HMRC in the tax year?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you left HMRC in the tax year"
+    def expectedTitle(taxYear: Int, startDate: LocalDate): String =
+      s"Did you leave between ${translatedDateFormatter(startDate)(defaultMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(defaultMessages)}?"
+
+    def expectedErrorTitle(taxYear: Int, startDate: LocalDate): String = s"Error: ${expectedTitle(taxYear, startDate)}"
+
+    def expectedError(taxYear: Int, startDate: LocalDate): String =
+      s"Select yes if you left between ${translatedDateFormatter(startDate)(defaultMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(defaultMessages)}"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "A wnaethoch adael y cyflogwr hwn yn y flwyddyn dreth?"
-    val expectedH1 = "A wnaethoch adael HMRC yn y flwyddyn dreth?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os gwnaethoch adael HMRC yn y flwyddyn dreth"
+    def expectedTitle(taxYear: Int, startDate: LocalDate): String =
+      s"Did you leave between ${translatedDateFormatter(startDate)(welshMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(welshMessages)}?"
+
+    def expectedErrorTitle(taxYear: Int, startDate: LocalDate): String = s"Gwall: ${expectedTitle(taxYear, startDate)}"
+
+    def expectedError(taxYear: Int, startDate: LocalDate): String =
+      s"Select yes if you left between ${translatedDateFormatter(startDate)(welshMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(welshMessages)}"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client leave this employer in the tax year?"
-    val expectedH1 = "Did your client leave HMRC in the tax year?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client left HMRC in the tax year"
+    def expectedTitle(taxYear: Int, startDate: LocalDate): String =
+      s"Did your client leave between ${translatedDateFormatter(startDate)(defaultMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(defaultMessages)}?"
+
+    def expectedErrorTitle(taxYear: Int, startDate: LocalDate): String = s"Error: ${expectedTitle(taxYear, startDate)}"
+
+    def expectedError(taxYear: Int, startDate: LocalDate): String =
+      s"Select yes if your client left between ${translatedDateFormatter(startDate)(defaultMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(defaultMessages)}"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "A adawodd eich cleient y cyflogwr hwn yn y flwyddyn dreth?"
-    val expectedH1 = "A adawodd eich cleient HMRC yn y flwyddyn dreth?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedError = "Dewiswch ‘Iawn’ os gadawodd eich cleient HMRC yn y flwyddyn dreth"
+    def expectedTitle(taxYear: Int, startDate: LocalDate): String =
+      s"Did your client leave between ${translatedDateFormatter(startDate)(welshMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(welshMessages)}?"
+
+    def expectedErrorTitle(taxYear: Int, startDate: LocalDate): String = s"Gwall: ${expectedTitle(taxYear, startDate)}"
+
+    def expectedError(taxYear: Int, startDate: LocalDate): String =
+      s"Select yes if your client left between ${translatedDateFormatter(startDate)(welshMessages)} and ${translatedTaxYearEndDateFormatter(taxYear)(welshMessages)}"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val yesText = "Iawn"
     val noText = "Na"
   }
 
-  override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
-
-  private val formProvider = new EmploymentDetailsFormsProvider()
+  override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   private val underTest = inject[DidYouLeaveEmployerView]
 
   userScenarios.foreach { userScenario =>
+    import Selectors._
+    import userScenario.commonExpectedResults._
+    import userScenario.specificExpectedResults._
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the 'did you leave employer' page with the correct content and the radio buttons unselected" which {
+      "render page with empty form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName), taxYearEOY, employmentId, employerName)
+        val pageModel = aDidYouLeaveEmployerPage.copy(isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
-
         welshToggleCheck(userScenario.isWelsh)
-
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        captionCheck(expectedCaption(taxYearEOY))
-        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
+        titleCheck(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), userScenario.isWelsh)
+        h1Check(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), isFieldSetH1 = true)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(DidYouLeaveEmployerController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
-      "render the 'did you leave employer' page with the correct content and 'yes' radio button selected" which {
+      "render page with the 'yes' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(true), taxYearEOY, employmentId, employerName)
+        val pageModel = aDidYouLeaveEmployerPage.copy(isAgent = userScenario.isAgent, form = aDidYouLeaveEmployerPage.form.fill(value = true))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
-
         welshToggleCheck(userScenario.isWelsh)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
+        titleCheck(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), userScenario.isWelsh)
+        h1Check(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), isFieldSetH1 = true)
         radioButtonCheck(yesText, 1, checked = true)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(DidYouLeaveEmployerController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
-      "render the 'did you leave employer' page with the correct content and 'no' radio button selected" which {
+      "render page with the 'no' radio button pre-filled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).fill(false), taxYearEOY, employmentId, employerName)
+        val pageModel = aDidYouLeaveEmployerPage.copy(isAgent = userScenario.isAgent, form = aDidYouLeaveEmployerPage.form.fill(value = false))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
-
         welshToggleCheck(userScenario.isWelsh)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
+        titleCheck(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), userScenario.isWelsh)
+        h1Check(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), isFieldSetH1 = true)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = true)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(DidYouLeaveEmployerController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
-      "render the 'did you leave employer' page with the form error when an empty form is submitted" which {
+      "render page with error when a form is submitted with no entry and start date is before tax year start" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(formProvider.didYouLeaveForm(userScenario.isAgent, employerName).bind(Map("value" -> "")), taxYearEOY, employmentId, employerName)
+        val form = formsProvider.didYouLeaveForm(userScenario.isAgent, taxYearEOY, aDidYouLeaveEmployerPage.titleFirstDate)
+        val pageModel = aDidYouLeaveEmployerPage.copy(isAgent = userScenario.isAgent, form = form.bind(Map("value" -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
-
         welshToggleCheck(userScenario.isWelsh)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
+        titleCheck(get.expectedErrorTitle(taxYearEOY, pageModel.titleFirstDate), userScenario.isWelsh)
+        h1Check(get.expectedTitle(taxYearEOY, pageModel.titleFirstDate), isFieldSetH1 = true)
         radioButtonCheck(yesText, 1, checked = false)
         radioButtonCheck(noText, 2, checked = false)
         buttonCheck(expectedButtonText, continueButtonSelector)
         formPostLinkCheck(DidYouLeaveEmployerController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
 
-        errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-        errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))
+        errorSummaryCheck(get.expectedError(taxYearEOY, pageModel.titleFirstDate), Selectors.yesSelector)
+        errorAboveElementCheck(get.expectedError(taxYearEOY, pageModel.titleFirstDate), Some("value"))
       }
     }
   }

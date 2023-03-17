@@ -20,13 +20,14 @@ import config.AppConfig
 import play.api.http.HeaderNames
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers._
-import support.TaxYearProvider
 import support.mocks.MockAppConfig
+import support.{TaxYearProvider, UnitTest}
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime, Month}
 import scala.concurrent.Future
 
-class InYearUtilSpec extends support.UnitTest with TaxYearProvider {
+class InYearUtilSpec extends UnitTest
+  with TaxYearProvider {
 
   private val currentYear: Int = taxYear
   private val month4: Int = 4
@@ -131,6 +132,16 @@ class InYearUtilSpec extends support.UnitTest with TaxYearProvider {
           status(result) shouldBe OK
         }
       }
+    }
+  }
+
+  "InYearAction.toDateWithinTaxYear" should {
+    "return given date when date is after the beginning of given tax year" in {
+      InYearUtil.toDateWithinTaxYear(currentYear, LocalDate.of(currentYear, Month.MAY, day5)) shouldBe LocalDate.of(currentYear, Month.MAY, day5)
+    }
+
+    "return date at start of taxYear when date is before the beginning of given tax year" in {
+      InYearUtil.toDateWithinTaxYear(currentYear, LocalDate.of(currentYear - 1, Month.APRIL, day5)) shouldBe LocalDate.of(currentYear - 1, Month.APRIL, day6)
     }
   }
 }

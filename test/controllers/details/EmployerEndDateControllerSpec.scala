@@ -16,7 +16,7 @@
 
 package controllers.details
 
-import controllers.details.routes.EmployerPayrollIdController
+import controllers.details.routes.PayeRefController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.{DateForm, EmploymentDetailsFormsProvider}
 import models.employment.EmploymentDetailsType
@@ -102,7 +102,7 @@ class EmployerEndDateControllerSpec extends ControllerUnitTest
         Redirect(CheckEmploymentDetailsController.show(taxYearEOY, employmentId))
     }
 
-    "redirect to EmployerPayrollIdController page on successful end date update when not finished" in {
+    "redirect to PayeRefController page on successful end date update when not finished" in {
       val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
 
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, userData)
@@ -114,8 +114,7 @@ class EmployerEndDateControllerSpec extends ControllerUnitTest
         DateForm.year -> taxYearEOY.toString
       )
 
-      await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe
-        Redirect(EmployerPayrollIdController.show(taxYearEOY, employmentId))
+      await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe Redirect(PayeRefController.show(taxYearEOY, employmentId))
     }
   }
 }

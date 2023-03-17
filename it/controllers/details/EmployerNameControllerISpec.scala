@@ -26,7 +26,7 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employmentStartDateUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -102,9 +102,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-      "redirects to the next question page (PAYE reference)" in {
+      "redirects to the next question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
+        result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -118,9 +118,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the next question page (PAYE reference)" in {
+      "redirects to the next question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
+        result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }

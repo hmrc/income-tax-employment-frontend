@@ -57,6 +57,11 @@ object ViewUtils {
     date.getDayOfMonth + " " + translatedMonth + " " + date.getYear
   }
 
+  def translatedTaxYearEndDateFormatter(taxYear: Int)
+                                       (implicit messages: Messages): String = {
+    translatedDateFormatter(LocalDate.parse(s"$taxYear-04-05"))
+  }
+
   def getAgentDynamicContent(msgKey: String, isAgent: Boolean): String = {
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
   }

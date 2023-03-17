@@ -307,12 +307,10 @@ employment.employmentDates.endDate = End date
 
 #################       Did you leave employer messages        ########################################
 
-employment.didYouLeave.error.agent = Select yes if your client left {0} in the tax year
-employment.didYouLeave.error.individual = Select yes if you left {0} in the tax year
-employment.didYouLeave.heading.agent = Did your client leave {0} in the tax year?
-employment.didYouLeave.heading.individual = Did you leave {0} in the tax year?
-employment.didYouLeave.title.agent = Did your client leave this employer in the tax year?
-employment.didYouLeave.title.individual = Did you leave this employer in the tax year?
+employment.didYouLeave.error.agent = Select yes if your client left between {0} and {1}
+employment.didYouLeave.error.individual = Select yes if you left between {0} and {1}
+employment.didYouLeave.heading.agent = Did your client leave between {0} and {1}?
+employment.didYouLeave.heading.individual = Did you leave between {0} and {1}?
 
 #################       Payroll id messages        ########################################
 
@@ -335,8 +333,6 @@ employerPayAmount.paragraph.agent = If your client was not paid {0}, tell us the
 employerPayAmount.paragraph.individual = If you were not paid {0}, tell us the correct amount.
 employerPayAmount.paragraphNewAccount.agent = Enter the gross amount. This can usually be found on your client’s P60.
 employerPayAmount.paragraphNewAccount.individual = Enter the gross amount. This can usually be found on your P60.
-employerPayAmount.title.agent = How much did your client’s employer pay them?
-employerPayAmount.title.individual = How much did your employer pay you?
 
 #################       Employment tax messages        ########################################
 
@@ -349,8 +345,6 @@ employment.employmentTax.formLabel.individual = You can usually find this amount
 employment.employmentTax.heading.agent = How much UK tax was taken from your client’s {0} earnings?
 employment.employmentTax.heading.individual = How much UK tax was taken from your {0} earnings?
 employment.employmentTax.preFill.amount = If £{0} was not taken in UK tax, tell us the correct amount.
-employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
-employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
 
 #################       Other payments amount messages        ########################################
 

@@ -20,20 +20,15 @@ import config.AppConfig
 import play.api.Logger
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
+import utils.InYearUtil.{taxYearStartDay, taxYearStartHour, taxYearStartMinute, taxYearStartMonth}
 
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{LocalDate, LocalDateTime, Month, ZoneId}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
 class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
-
   lazy val logger: Logger = Logger.apply(this.getClass)
-
-  private val taxYearStartDay = 6
-  private val taxYearStartMonth = 4
-  private val taxYearStartHour = 0
-  private val taxYearStartMinute = 0
 
   def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now): Boolean = {
     def zonedDateTime(time: LocalDateTime): LocalDateTime = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
@@ -58,5 +53,19 @@ class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
+  }
+}
+
+object InYearUtil {
+
+  private val londonZoneId = ZoneId.of("Europe/London")
+  private val taxYearStartDay = 6
+  private val taxYearStartMonth = Month.APRIL
+  private val taxYearStartHour = 0
+  private val taxYearStartMinute = 0
+
+  def toDateWithinTaxYear(taxYear: Int, localDate: LocalDate): LocalDate = {
+    val startOfFinancialYear = LocalDateTime.of(taxYear - 1, taxYearStartMonth, taxYearStartDay, taxYearStartHour, taxYearStartMinute)
+    if (localDate.atStartOfDay(londonZoneId).isBefore(startOfFinancialYear.atZone(londonZoneId))) startOfFinancialYear.toLocalDate else localDate
   }
 }

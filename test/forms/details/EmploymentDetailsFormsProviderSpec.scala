@@ -16,16 +16,14 @@
 
 package forms.details
 
-import forms.{AmountForm, YesNoForm}
+import forms.AmountForm
 import play.api.data.FormError
 import support.UnitTest
 
 class EmploymentDetailsFormsProviderSpec extends UnitTest {
 
   private val anyBoolean = true
-  private val employerName = "some employer name"
   private val amount: String = 123.0.toString
-  private val correctBooleanData = Map(YesNoForm.yesNo -> anyBoolean.toString)
   private val correctAmountData = Map(AmountForm.amount -> amount)
   private val overMaximumAmount: Map[String, String] = Map(AmountForm.amount -> "100,000,000,000")
   private val wrongKeyData = Map("wrongKey" -> amount)
@@ -33,40 +31,6 @@ class EmploymentDetailsFormsProviderSpec extends UnitTest {
   private val emptyData: Map[String, String] = Map.empty
 
   private val underTest = new EmploymentDetailsFormsProvider()
-
-  ".didYouLeaveForm" should {
-    "return a form that maps data when data is correct" in {
-      underTest.didYouLeaveForm(isAgent = anyBoolean, employerName = employerName).bind(correctBooleanData).errors shouldBe Seq.empty
-    }
-
-    "return a form that contains agent error" which {
-      "when isAgent is true and key is wrong" in {
-        underTest.didYouLeaveForm(isAgent = true, employerName).bind(wrongKeyData).errors shouldBe Seq(
-          FormError("value", Seq("employment.didYouLeave.error.agent"), Seq(employerName))
-        )
-      }
-
-      "when isAgent is true and data is empty" in {
-        underTest.didYouLeaveForm(isAgent = true, employerName).bind(wrongKeyData).errors shouldBe Seq(
-          FormError("value", Seq("employment.didYouLeave.error.agent"), Seq(employerName))
-        )
-      }
-    }
-
-    "return a form that contains individual error" which {
-      "when isAgent is false and key is wrong" in {
-        underTest.didYouLeaveForm(isAgent = false, employerName).bind(wrongKeyData).errors shouldBe Seq(
-          FormError("value", Seq("employment.didYouLeave.error.individual"), Seq(employerName))
-        )
-      }
-
-      "when isAgent is false and data is empty" in {
-        underTest.didYouLeaveForm(isAgent = false, employerName).bind(emptyData).errors shouldBe Seq(
-          FormError("value", Seq("employment.didYouLeave.error.individual"), Seq(employerName))
-        )
-      }
-    }
-  }
 
   ".employerPayAmountForm" should {
     "return a form that maps data when data is correct" in {

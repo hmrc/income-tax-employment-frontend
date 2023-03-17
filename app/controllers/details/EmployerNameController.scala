@@ -19,7 +19,7 @@ package controllers.details
 import actions.AuthorisedAction
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
-import controllers.details.routes.PayeRefController
+import controllers.details.routes.EmployerStartDateController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmployerNameForm
 import models.AuthorisationRequest
@@ -106,6 +106,6 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else PayeRefController.show(taxYear, employmentId)
+    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else EmployerStartDateController.show(taxYear, employmentId)
   }
 }
