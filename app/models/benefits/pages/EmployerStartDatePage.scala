@@ -21,23 +21,23 @@ import models.employment.DateFormData
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 
-case class EmployerEndDatePage(taxYear: Int, employmentId: String, employerName: String, isAgent: Boolean, form: Form[DateFormData])
+case class EmployerStartDatePage(taxYear: Int, employmentId: String, employerName: String, isAgent: Boolean, form: Form[DateFormData])
 
-object EmployerEndDatePage {
+object EmployerStartDatePage {
 
   def apply(taxYear: Int,
             employmentId: String,
             user: User,
             form: Form[DateFormData],
-            employmentUserData: EmploymentUserData): EmployerEndDatePage = {
-    val optEndDate = employmentUserData.employment.employmentDetails.cessationDate
+            employmentUserData: EmploymentUserData): EmployerStartDatePage = {
+    val optStartDate = employmentUserData.employment.employmentDetails.startDate
 
-    EmployerEndDatePage(
+    EmployerStartDatePage(
       taxYear = taxYear,
       employmentId = employmentId,
       employerName = employmentUserData.employment.employmentDetails.employerName,
       isAgent = user.isAgent,
-      form = optEndDate.fold(form)(endDate => if (form.hasErrors) form else form.fill(DateFormData(endDate)))
+      form = optStartDate.fold(form)(startDate => if (form.hasErrors) form else form.fill(DateFormData(startDate)))
     )
   }
 }

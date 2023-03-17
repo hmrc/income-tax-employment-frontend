@@ -20,7 +20,6 @@ import controllers.details.routes.EmployerEndDateController
 import forms.details.DateForm._
 import forms.details.{DateForm, EmploymentDetailsFormsProvider}
 import models.AuthorisationRequest
-import models.benefits.pages.EmployerEndDatePage
 import models.employment.DateFormData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,7 +28,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.benefits.pages.EmployerEndDatePageBuilder.anEmployerEndDatePage
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
-import utils.ViewUtils.dateFormatter
+import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
 import views.html.details.EmployerEndDateView
 
 import java.time.LocalDate
@@ -59,7 +58,8 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val invalidDateError: String
     val tooLongAgoDateError: String
     val tooRecentDateError: String
-    val beforeStartDateError: LocalDate => String
+
+    def beforeStartDateError(date: LocalDate): String
   }
 
   trait CommonExpectedResults {
@@ -82,7 +82,8 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val invalidDateError = "The date you left must be a real date"
     val tooLongAgoDateError = s"The date you left must be the same as or after 6 April ${taxYearEOY - 1}"
     val tooRecentDateError = s"The date you left must be the same as or before 5 April $taxYearEOY"
-    val beforeStartDateError: LocalDate => String = (date: LocalDate) => s"The date you left must be after the date you started, ${dateFormatter(date)}"
+
+    def beforeStartDateError(date: LocalDate): String = s"The date you left must be after the date you started, ${dateFormatter(date)}"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -99,7 +100,8 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val invalidDateError = "The date you left must be a real date"
     val tooLongAgoDateError = s"The date you left must be the same as or after 6 April ${taxYearEOY - 1}"
     val tooRecentDateError = s"The date you left must be the same as or before 5 April $taxYearEOY"
-    val beforeStartDateError: LocalDate => String = (date: LocalDate) => s"The date you left must be after the date you started, ${dateFormatter(date)}"
+
+    def beforeStartDateError(date: LocalDate): String = s"The date you left must be after the date you started, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -116,7 +118,8 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val invalidDateError = "The date your client left must be a real date"
     val tooLongAgoDateError = s"The date your client left must be the same as or after 6 April ${taxYearEOY - 1}"
     val tooRecentDateError = s"The date your client left must be the same as or before 5 April $taxYearEOY"
-    val beforeStartDateError: LocalDate => String = (date: LocalDate) => s"The date your client left must be after the date your client started, ${dateFormatter(date)}"
+
+    def beforeStartDateError(date: LocalDate): String = s"The date your client left must be after the date your client started, ${dateFormatter(date)}"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -133,7 +136,8 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val invalidDateError = "The date your client left must be a real date"
     val tooLongAgoDateError = s"The date your client left must be the same as or after 6 April ${taxYearEOY - 1}"
     val tooRecentDateError = s"The date your client left must be the same as or before 5 April $taxYearEOY"
-    val beforeStartDateError: LocalDate => String = (date: LocalDate) => s"The date your client left must be after the date your client started, ${dateFormatter(date)}"
+
+    def beforeStartDateError(date: LocalDate): String = s"The date your client left must be after the date your client started, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -212,7 +216,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "", amountMonth = "1", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -237,7 +241,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -262,7 +266,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "1", amountYear = "")
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -287,7 +291,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "", amountMonth = "", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -312,7 +316,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "", amountMonth = "1", amountYear = "")
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -337,7 +341,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "", amountYear = "")
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -362,7 +366,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "", amountMonth = "", amountYear = "")
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -387,7 +391,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "abc", amountMonth = "1", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -412,7 +416,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "abc", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -437,7 +441,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "1", amountYear = "abc")
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -462,7 +466,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "13", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -487,7 +491,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "1", amountMonth = "1", amountYear = (taxYearEOY - 1).toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -513,7 +517,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           val startDate = LocalDate.of(taxYearEOY, 1, 1)
           val formData = DateFormData(amountDay = "1", amountMonth = "1", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -538,7 +542,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
           val formData = DateFormData(amountDay = "6", amountMonth = "4", amountYear = taxYearEOY.toString)
-          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, EmployerEndDatePage.pageNameKey, startDate))
+          val pageModel = page.copy(form = formsProvider.validatedEndDateForm(dateForm.fill(formData), taxYearEOY, userScenario.isAgent, startDate))
           val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)

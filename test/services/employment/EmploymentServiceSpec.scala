@@ -16,13 +16,13 @@
 
 package services.employment
 
-import models.employment.DateFormData
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import support.mocks.MockEmploymentSessionService
 import support.{TaxYearProvider, UnitTest}
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext
 
 class EmploymentServiceSpec extends UnitTest
@@ -57,7 +57,7 @@ class EmploymentServiceSpec extends UnitTest
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = DateFormData("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startDate = LocalDate.of(taxYearEOY, 1, 2))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -71,7 +71,7 @@ class EmploymentServiceSpec extends UnitTest
 
         mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startedDate = DateFormData("2", "1", s"$taxYearEOY"))) shouldBe
+        await(underTest.updateStartDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, startDate = LocalDate.of(taxYearEOY, 1, 2))) shouldBe
           Right(expectedEmploymentUserData)
       }
     }
@@ -123,7 +123,7 @@ class EmploymentServiceSpec extends UnitTest
 
       mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateEndDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, endDate = s"$taxYearEOY-01-02")) shouldBe
+      await(underTest.updateEndDate(aUser, taxYearEOY, employmentId, givenEmploymentUserData, endDate = LocalDate.of(taxYearEOY, 1, 2))) shouldBe
         Right(expectedEmploymentUserData)
     }
   }

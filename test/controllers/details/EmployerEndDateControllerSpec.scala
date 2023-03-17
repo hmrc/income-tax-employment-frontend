@@ -32,13 +32,15 @@ import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserD
 import support.mocks.{MockActionsProvider, MockEmploymentService, MockErrorHandler}
 import views.html.details.EmployerEndDateView
 
+import java.time.LocalDate
+
 class EmployerEndDateControllerSpec extends ControllerUnitTest
   with MockActionsProvider
   with MockEmploymentService
   with MockErrorHandler {
 
   private val employmentId: String = anEmploymentUserData.employmentId
-  private val startDate = s"$taxYearEOY-01-01"
+  private val startDate = LocalDate.of(taxYearEOY, 1, 1)
   private val pageView = inject[EmployerEndDateView]
 
   private val underTest = new EmployerEndDateController(

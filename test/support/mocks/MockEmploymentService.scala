@@ -22,6 +22,7 @@ import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import services.employment.EmploymentService
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 trait MockEmploymentService extends MockFactory {
@@ -32,10 +33,10 @@ trait MockEmploymentService extends MockFactory {
                         taxYear: Int,
                         employmentId: String,
                         originalEmploymentUserData: EmploymentUserData,
-                        endDate: String,
+                        endDate: LocalDate,
                         result: Either[Unit, EmploymentUserData]
-                       ): CallHandler5[User, Int, String, EmploymentUserData, String, Future[Either[Unit, EmploymentUserData]]] = {
-    (mockEmploymentService.updateEndDate(_: User, _: Int, _: String, _: EmploymentUserData, _: String))
+                       ): CallHandler5[User, Int, String, EmploymentUserData, LocalDate, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockEmploymentService.updateEndDate(_: User, _: Int, _: String, _: EmploymentUserData, _: LocalDate))
       .expects(user, taxYear, employmentId, originalEmploymentUserData, endDate)
       .returns(Future.successful(result))
   }
