@@ -28,19 +28,19 @@ object EmployerNameForm extends InputFilters {
 
   val employerName: String = "name"
   val charLimit: Int = 74
-  val regex: String = "^[0-9a-zA-Z\\\\{À-˿’}\\- _&`():.'^,]{1,74}$"
+  val regex: String = "^[0-9a-zA-Z\\\\{À-˿’}\\- _&`():.',]{1,74}$"
 
-  def notEmpty(isAgent: Boolean): Constraint[String] =
+  private def notEmpty(isAgent: Boolean): Constraint[String] =
     nonEmpty(s"employment.employerName.error.noEntry.${if (isAgent) "agent" else "individual"}")
 
-  val NotCharLimit: Constraint[String] = validateSize(charLimit)("employment.employerName.error.name.limit")
+  private val NotCharLimit: Constraint[String] = validateSize(charLimit)("employment.employerName.error.name.limit")
 
-  def validateFormat(isAgent: Boolean): Constraint[String] =
-    validateChar(regex)(s"employment.employerName.error.name.wrongFormat.${if (isAgent) "agent" else "individual"}")
+  def validateFormat: Constraint[String] =
+    validateChar(regex, outputInvalidChars = true)(s"employment.employerName.error.name.wrongFormat")
 
   def employerNameForm(isAgent: Boolean): Form[String] = Form(
     employerName -> trimmedText.transform[String](filter, identity).verifying(
-      notEmpty(isAgent) andThen NotCharLimit andThen validateFormat(isAgent)
+      notEmpty(isAgent) andThen NotCharLimit andThen validateFormat
     )
   )
 

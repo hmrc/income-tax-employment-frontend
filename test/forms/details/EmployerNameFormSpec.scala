@@ -24,7 +24,7 @@ class EmployerNameFormSpec extends UnitTest {
 
   private def underTest(isAgent: Boolean): Form[String] = EmployerNameForm.employerNameForm(isAgent)
 
-  private lazy val testNameValid = "Google\\- _&`():.'^,"
+  private lazy val testNameValid = "Google\\- _&`():.',"
   private lazy val testNameEmpty = ""
   private lazy val testNameTooBig = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uDjvujYg00ZtHwo3sokyOOCEoAK9vuPiP374QKOelo"
   private lazy val testNameInvalidCharacters = "~~~"
@@ -59,7 +59,7 @@ class EmployerNameFormSpec extends UnitTest {
         val testInput = Map(employerName -> testNameInvalidCharacters)
         val invalidLengthTest = underTest(isAgent = false).bind(testInput)
 
-        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat.individual"))
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat", List("~")))
       }
     }
 
@@ -92,7 +92,7 @@ class EmployerNameFormSpec extends UnitTest {
         val testInput = Map(employerName -> testNameInvalidCharacters)
         val invalidLengthTest = underTest(isAgent = true).bind(testInput)
 
-        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat.agent"))
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat", List("~")))
       }
     }
   }

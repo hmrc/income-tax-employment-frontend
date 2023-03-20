@@ -218,15 +218,12 @@ employment.employmentDetails.totalTaxToDate = Treth y DU a dynnwyd o’r cyflog
 
 #################       Employment name messages        ########################################
 
-employment.employerName.bullet.three = y cymeriadau arbennig: & : ’ \ , . ( ) -
-employment.employerName.error.name.limit = Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai
-employment.employerName.error.name.wrongFormat.individual = Nodwch enw’ch cyflogwr yn y fformat cywir
-employment.employerName.error.name.wrongFormat.agent = Nodwch enw cyflogwr eich cleient yn y fformat cywir
+employment.employerName.error.name.limit = Employer’s name must be 74 characters or fewer
+employment.employerName.error.name.wrongFormat = Employer’s name must not include {0}
 employment.employerName.error.noEntry.agent = Nodwch enw cyflogwr eich cleient
 employment.employerName.error.noEntry.individual = Nodwch enw’ch cyflogwr
 employment.employerName.heading.agent = Beth yw enw cyflogwr eich cleient?
 employment.employerName.heading.individual = Beth oedd enw’ch cyflogwr?
-employment.employerName.hint = Er enghraifft, A1 Plumbing (y DU)
 employment.employerName.paragraph = Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai. Gall gynnwys y canlynol:
 
 #################       Employment ref messages        ########################################
