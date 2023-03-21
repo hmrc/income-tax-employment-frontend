@@ -32,29 +32,21 @@
     messages(s"studentLoans.postgraduateLoanAmount.heading." + agentOrIndividual, employerName)
 }
 
-@contentHtml = {
-    <p class="govuk-body govuk-!-margin-bottom-4">@messages(s"studentLoans.common.checkWith.${if (request.user.isAgent) "agent" else "individual"}")</p>
-<label class="govuk-label govuk-label--m">
-    @{messages("studentLoans.postgraduateLoanAmount.H2")}
-</label>
-}
-
 @layout(pageTitle = messages(s"studentLoans.postgraduateLoanAmount.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
     @heading(headingForUse, Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-    @contentHtml
     
     @formWithCsrf(action = controllers.studentLoans.routes.PglAmountController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             "amount",
             "amount",
-            messages("studentLoans.postgraduateLoanAmount.label"),
+            headingForUse,
             labelHidden = true,
             currency = true,
-            hint = Some(messages("common.currency.hint"))
+            hint = Some(messages("studentLoans.common.checkWith." + agentOrIndividual)),
         )
         @button()
     }

@@ -35,31 +35,19 @@
     messages(s"studentLoans.undergraduateLoanAmount.heading." + agentOrIndividual, employerName)
 }
 
-@contentHtml = {
-    <p class="govuk-body govuk-body govuk-!-margin-bottom-4">
-        @messages(s"studentLoans.common.checkWith.${if(request.user.isAgent) "agent" else "individual"}")
-    </p>
-
-<label class="govuk-label govuk-label--m">
-    @{messages("studentLoans.undergraduateLoanAmount.H2")}
-</label>
-}
-
-
 @layout(pageTitle = messages("studentLoans.undergraduateLoanAmount.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
     @heading(headingForUse, Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-    @contentHtml
-    
+
     @formWithCSRF(controllers.studentLoans.routes.UglAmountController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             "amount",
             "amount",
-            messages("studentLoans.undergraduateLoanAmount.label"),
-            hint = Some(messages("common.currency.hint")),
+            headingForUse,
+            hint = Some(messages("studentLoans.common.checkWith." + agentOrIndividual)),
             labelHidden = true,
             currency = true
         )

@@ -1419,8 +1419,8 @@ studentLoans.p.agent = Your client’s student loan repayment details are based 
 studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
 studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.
 
-studentLoans.common.checkWith.individual = You can check your payslips or P60 for repayments made.
-studentLoans.common.checkWith.agent = You can check your client’s payslips or P60 for repayments made.
+studentLoans.common.checkWith.individual = You can check your payslips or P60 for repayments made. For example, £193.52
+studentLoans.common.checkWith.agent = You can check your client’s payslips or P60 for repayments made. For example, £193.52
 
 #####################    Tailoring messages    #####################
 tailoring.title.individual = Did you get income from PAYE employment?
