@@ -1416,8 +1416,8 @@ studentLoans.p.agent = Mae manylion ad-dalu benthyciad myfyriwr eich cleient yn 
 studentLoans.inset.individual = Ni allwch ddiweddaru’ch manylion benthyciad myfyriwr tan 6 Ebrill {0}.
 studentLoans.inset.agent = Ni allwch ddiweddaru manylion benthyciad myfyriwr eich cleient tan 6 Ebrill {0}.
 
-studentLoans.common.checkWith.individual = Gallwch wirio’ch slipiau cyflog neu’ch P60 ar gyfer ad-daliadau a wnaed.
-studentLoans.common.checkWith.agent = Gallwch wirio slipiau cyflog neu P60 eich cleient ar gyfer ad-daliadau a wnaed.
+studentLoans.common.checkWith.individual = Gallwch wirio’ch slipiau cyflog neu’ch P60 ar gyfer ad-daliadau a wnaed. Er enghraifft, £193.52
+studentLoans.common.checkWith.agent = Gallwch wirio slipiau cyflog neu P60 eich cleient ar gyfer ad-daliadau a wnaed. Er enghraifft, £193.52
 
 #####################    Tailoring messages    #####################
 tailoring.title.individual = A gawsoch incwm o gyflogaeth TWE?
