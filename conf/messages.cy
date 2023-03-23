@@ -228,14 +228,13 @@ employment.employerName.paragraph = Mae’n rhaid i enw’r cyflogwr fod yn 74 o
 
 #################       Employment ref messages        ########################################
 
-payeRef.errors.wrongFormat = Nodwch gyfeirnod TWE yn y fformat cywir
-payeRef.heading = Beth yw cyfeirnod TWE {0}?
-payeRef.hint = Er enghraifft, 123/AB456
+payeRef.errors.wrongFormat = Enter PAYE reference in the correct format
+payeRef.heading = What is {0}‘s employer PAYE reference? (optional)
+payeRef.hint.employmentEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45.
+payeRef.hint.employmentEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45.
+payeRef.hint.employmentNotEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60.
+payeRef.hint.employmentNotEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60.
 payeRef.paragraph = Rhowch wybod i ni beth yw’r cyfeirnod TWE cywir os yw {0} yn anghywir.
-payeRef.paragraphNew.agent = Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’.
-payeRef.paragraphNew.individual = Gallwch ddod o hyd i hwn ar ffurflenni P60 neu ar lythyrau ynghylch TWE. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’.
-payeRef.title.agent = Beth yw cyfeirnod TWE cyflogwr eich cleient?
-payeRef.title.individual = Beth yw cyfeirnod TWE eich cyflogwr?
 
 #################       Employment start date messages        ########################################
 
