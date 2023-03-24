@@ -228,14 +228,13 @@ employment.employerName.paragraph = The employer name must be 74 characters or f
 
 #################       Employment ref messages        ########################################
 
-payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
-payeRef.heading = What’s the PAYE reference of {0}?
-payeRef.hint = For example, 123/AB456
+payeRef.errors.wrongFormat = Enter PAYE reference in the correct format
+payeRef.heading = What is {0}’s employer PAYE reference? (optional)
+payeRef.hint.employmentEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45.
+payeRef.hint.employmentEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45.
+payeRef.hint.employmentNotEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60.
+payeRef.hint.employmentNotEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60.
 payeRef.paragraph = If the PAYE reference is not {0}, tell us the correct reference.
-payeRef.paragraphNew.agent = You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
-payeRef.paragraphNew.individual = You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
-payeRef.title.agent = What’s the PAYE reference of your client’s employer?
-payeRef.title.individual = What’s the PAYE reference of your employer?
 
 #################       Employment start date messages        ########################################
 

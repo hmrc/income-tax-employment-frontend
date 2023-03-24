@@ -49,7 +49,7 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, _) =>
         cya match {
           case Some(cya) =>
             val cyaRef = cya.employment.employmentDetails.employerRef
@@ -58,7 +58,8 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
             val form: Form[String] = cyaRef.fold(unfilledForm)(
               cyaPaye => PayeRefForm.payeRefForm.fill(cyaPaye))
             val employerName = cya.employment.employmentDetails.employerName
-            Future.successful(Ok(pageView(form, taxYear, employerName, employmentId)))
+            val employmentEnded = cya.employment.employmentDetails.cessationDate.isDefined
+            Future.successful(Ok(pageView(form, taxYear, employerName, employmentId, employmentEnded)))
 
           case _ => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -74,7 +75,8 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
         PayeRefForm.payeRefForm.bindFromRequest().fold(
           formWithErrors => {
             val employerName = data.employment.employmentDetails.employerName
-            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, employmentId)))
+            val employmentEnded = data.employment.employmentDetails.cessationDate.isDefined
+            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employerName, employmentId, employmentEnded)))
           },
           payeRef => handleSuccessForm(taxYear, employmentId, data, if (payeRef.trim.isEmpty) None else Some(payeRef))
         )

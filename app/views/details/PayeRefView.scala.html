@@ -29,22 +29,13 @@
     button: Button
 )
 
-@(form: Form[String], taxYear: Int, employerName:String, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], taxYear: Int, employerName:String, employmentId: String, employmentEnded: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages("payeRef.heading", employerName)}
 
-@titleForUse = @{messages(s"payeRef.title.${if(request.user.isAgent) "agent" else "individual"}")}
-
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
-
-    @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-
-
-    <p class="govuk-body">@{messages(s"payeRef.paragraphNew.${if(request.user.isAgent) "agent" else "individual"}")}</p>
-
-
 
     @formWithCsrf(controllers.details.routes.PayeRefController.submit(taxYear, employmentId)) {
         @inputText(
@@ -52,7 +43,8 @@
             id = "payeRef",
             name = "payeRef",
             label = headingForUse,
-            hint = Some(messages("payeRef.hint")),
+            isPageHeading = true,
+            hint = Some(messages(s"payeRef.hint.${if(employmentEnded) "employmentEnded" else "employmentNotEnded"}.${if(request.user.isAgent) "agent" else "individual"}")),
             labelHidden = true,
             classes = Some("govuk-input--width-20")
         )
