@@ -20,13 +20,13 @@ import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.localDateTimeFormat
 
 import java.time.LocalDate
+import scala.util.Try
 
 case class DateFormData(amountDay: String,
                         amountMonth: String,
                         amountYear: String) {
 
-  def toLocalDate: LocalDate = LocalDate.of(amountYear.toInt, amountMonth.toInt, amountDay.toInt)
-
+  lazy val toLocalDate: Option[LocalDate] = Try(LocalDate.of(amountYear.toInt, amountMonth.toInt, amountDay.toInt)).toOption
 }
 
 object DateFormData {
@@ -37,7 +37,3 @@ object DateFormData {
     DateFormData(parsedDate.getDayOfMonth.toString, parsedDate.getMonthValue.toString, parsedDate.getYear.toString)
   }
 }
-
-
-
-

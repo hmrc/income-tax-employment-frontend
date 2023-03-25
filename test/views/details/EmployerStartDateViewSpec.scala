@@ -27,7 +27,9 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.benefits.pages.EmployerStartDatePageBuilder.anEmployerStartDatePage
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
 import views.html.details.EmployerStartDateView
 
 import java.time.LocalDate
@@ -37,10 +39,11 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
   private val nino: String = anEmploymentUserData.nino
   private val mtditid: String = anEmploymentUserData.mtdItId
   private val sessionId: String = anEmploymentUserData.sessionId
-  private val employerName: String = "HMRC"
+  private val employerName: String = anEmploymentUserData.employment.employmentDetails.employerName
   private val employmentStartDay: String = "01"
   private val employmentStartMonth: String = "01"
   private val employmentStartYear: String = s"${taxYearEOY - 1}"
+  private val employmentEndDate = Some(LocalDate.of(taxYearEOY - 2, 1, 1))
   private val employmentId: String = "employmentId"
   private val dayInputName = "amount-day"
   private val monthInputName = "amount-month"
@@ -56,7 +59,6 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
   }
 
   trait SpecificExpectedResults {
-    val expectedTitle: String
     val expectedH1: String
     val expectedErrorTitle: String
     val emptyDayError: String
@@ -69,91 +71,90 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val invalidDateError: String
     val tooLongAgoDateError: String
     val tooRecentDateError: String
-    val futureDateError: String
+
+    def afterEndDateError(date: LocalDate): String
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: Int => String
     val expectedButtonText: String
     val forExample: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "When did you start working for your employer?"
     val expectedH1 = s"When did you start working at $employerName?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val emptyDayError = "The date you started employment must include a day"
-    val emptyMonthError = "The date you started employment must include a month"
-    val emptyYearError = "The date you started employment must include a year"
-    val emptyDayYearError = "The date you started employment must include a day and year"
-    val emptyMonthYearError = "The date you started employment must include a month and year"
-    val emptyDayMonthError = "The date you started employment must include a day and month"
-    val emptyAllError = "Enter the date your employment started"
-    val invalidDateError = "The date you started employment must be a real date"
-    val tooLongAgoDateError = "The date you started your employment must be after 1 January 1900"
-    val tooRecentDateError = s"The date you started employment must be before 6 April $taxYearEOY"
-    val futureDateError = "The date you started employment must be in the past"
+    val expectedErrorTitle = s"Error: $expectedH1"
+    val emptyDayError = s"The date you started working at $employerName must include a day"
+    val emptyMonthError = s"The date you started working at $employerName must include a month"
+    val emptyYearError = s"The date you started working at $employerName must include a year"
+    val emptyDayYearError = s"The date you started working at $employerName must include a day and year"
+    val emptyMonthYearError = s"The date you started working at $employerName must include a month and year"
+    val emptyDayMonthError = s"The date you started working at $employerName must include a day and month"
+    val emptyAllError = s"Enter the date you started working at $employerName"
+    val invalidDateError = s"The date you started working at $employerName must be a real date"
+    val tooLongAgoDateError = s"The date you started working at $employerName must be after 1 January 1900"
+    val tooRecentDateError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
+
+    def afterEndDateError(date: LocalDate): String = s"The date you started working at $employerName must be before the date you left, ${dateFormatter(date)}"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Pryd y gwnaethoch ddechrau gweithio i’ch cyflogwr?"
     val expectedH1 = s"Pryd y gwnaethoch ddechrau gweithio yn $employerName?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val emptyDayError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod"
-    val emptyMonthError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis"
-    val emptyYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn"
-    val emptyDayYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn"
-    val emptyMonthYearError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn"
-    val emptyDayMonthError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis"
-    val emptyAllError = "Nodwch y dyddiad y dechreuodd eich cyflogaeth"
-    val invalidDateError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn"
-    val tooLongAgoDateError = "Mae’n rhaid i ddyddiad y gwnaethoch ddechrau’ch cyflogaeth fod ar ôl 1 Ionawr 1900"
-    val tooRecentDateError = s"Mae’n rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill $taxYearEOY"
-    val futureDateError = "Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol"
+    val expectedErrorTitle = s"Gwall: $expectedH1"
+    val emptyDayError = s"The date you started working at $employerName must include a day"
+    val emptyMonthError = s"The date you started working at $employerName must include a month"
+    val emptyYearError = s"The date you started working at $employerName must include a year"
+    val emptyDayYearError = s"The date you started working at $employerName must include a day and year"
+    val emptyMonthYearError = s"The date you started working at $employerName must include a month and year"
+    val emptyDayMonthError = s"The date you started working at $employerName must include a day and month"
+    val emptyAllError = s"Enter the date you started working at $employerName"
+    val invalidDateError = s"The date you started working at $employerName must be a real date"
+    val tooLongAgoDateError = s"The date you started working at $employerName must be after 1 January 1900"
+    val tooRecentDateError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
+
+    def afterEndDateError(date: LocalDate): String = s"The date you started working at $employerName must be before the date you left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "When did your client start working for their employer?"
     val expectedH1 = s"When did your client start working at $employerName?"
-    val expectedErrorTitle = s"Error: $expectedTitle"
-    val emptyDayError = "The date your client started their employment must include a day"
-    val emptyMonthError = "The date your client started their employment must include a month"
-    val emptyYearError = "The date your client started their employment must include a year"
-    val emptyDayYearError = "The date your client started their employment must include a day and year"
-    val emptyMonthYearError = "The date your client started their employment must include a month and year"
-    val emptyDayMonthError = "The date your client started their employment must include a day and month"
-    val emptyAllError = "Enter the date your client’s employment started"
-    val invalidDateError = "The date your client started their employment must be a real date"
-    val tooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
-    val tooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
-    val futureDateError = "The date your client started their employment must be in the past"
+    val expectedErrorTitle = s"Error: $expectedH1"
+    val emptyDayError = s"The date your client started working at $employerName must include a day"
+    val emptyMonthError = s"The date your client started working at $employerName must include a month"
+    val emptyYearError = s"The date your client started working at $employerName must include a year"
+    val emptyDayYearError = s"The date your client started working at $employerName must include a day and year"
+    val emptyMonthYearError = s"The date your client started working at $employerName must include a month and year"
+    val emptyDayMonthError = s"The date your client started working at $employerName must include a day and month"
+    val emptyAllError = s"Enter the date your client started working at $employerName"
+    val invalidDateError = s"The date your client started working at $employerName must be a real date"
+    val tooLongAgoDateError = s"The date your client started working at $employerName must be after 1 January 1900"
+    val tooRecentDateError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
+
+    def afterEndDateError(date: LocalDate): String = s"The date your client started working at $employerName must be before the date they left, ${dateFormatter(date)}"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Pryd y gwnaeth eich cleient ddechrau gweithio i’w gyflogwr?"
     val expectedH1 = s"Pryd y dechreuodd eich cleient weithio yn $employerName?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val emptyDayError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod"
-    val emptyMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis"
-    val emptyYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys blwyddyn"
-    val emptyDayYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a blwyddyn"
-    val emptyMonthYearError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis a blwyddyn"
-    val emptyDayMonthError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a mis"
-    val emptyAllError = "Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient"
-    val invalidDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn ddyddiad go iawn"
-    val tooLongAgoDateError = "Mae’n rhaid i ddyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod ar ôl 1 Ionawr 1900"
-    val tooRecentDateError = s"Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod cyn 6 Ebrill $taxYearEOY"
-    val futureDateError = "Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn y gorffennol"
+    val expectedErrorTitle = s"Gwall: $expectedH1"
+    val emptyDayError = s"The date your client started working at $employerName must include a day"
+    val emptyMonthError = s"The date your client started working at $employerName must include a month"
+    val emptyYearError = s"The date your client started working at $employerName must include a year"
+    val emptyDayYearError = s"The date your client started working at $employerName must include a day and year"
+    val emptyMonthYearError = s"The date your client started working at $employerName must include a month and year"
+    val emptyDayMonthError = s"The date your client started working at $employerName must include a day and month"
+    val emptyAllError = s"Enter the date your client started working at $employerName"
+    val invalidDateError = s"The date your client started working at $employerName must be a real date"
+    val tooLongAgoDateError = s"The date your client started working at $employerName must be after 1 January 1900"
+    val tooRecentDateError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
+
+    def afterEndDateError(date: LocalDate): String =
+      s"The date your client started working at $employerName must be before the date they left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val forExample = "For example, 12 11 2007"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
     val forExample = "Er enghraifft, 12 11 2007"
   }
@@ -174,7 +175,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     )
   }
 
-  private val form = DateForm
+  private val dateForm = DateForm.dateForm()
   private val underTest = inject[EmployerStartDateView]
 
   userScenarios.foreach { userScenario =>
@@ -182,17 +183,17 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     import userScenario.commonExpectedResults._
 
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+      val page = anEmployerStartDatePage.copy(isAgent = userScenario.isAgent)
       "render the 'start date' page with an empty form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(form.dateForm(), taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+        val htmlFormat = underTest(page)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
+        titleCheck(userScenario.specificExpectedResults.get.expectedH1, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
         inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -205,15 +206,13 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
       "render the 'start date' page with the correct content and the date prefilled" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
-
-        val htmlFormat = underTest(form.dateForm().fill(DateFormData(employmentStartDay, employmentStartMonth, employmentStartYear)),
-          taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+        val pageModel = page.copy(form = dateForm.fill(DateFormData(employmentStartDay, employmentStartMonth, employmentStartYear)))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
+        titleCheck(userScenario.specificExpectedResults.get.expectedH1, userScenario.isWelsh)
         h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(dayInputName, Selectors.daySelector, employmentStartDay)
         inputFieldValueCheck(monthInputName, Selectors.monthSelector, employmentStartMonth)
@@ -228,20 +227,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> employmentStartMonth,
               DateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, employmentStartMonth)
@@ -258,20 +255,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> "",
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, employmentStartDay)
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -288,20 +283,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "",
               DateForm.month -> employmentStartMonth,
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -318,20 +311,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> "",
               DateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -348,20 +339,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "",
               DateForm.month -> employmentStartMonth,
               DateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -378,20 +367,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "",
               DateForm.month -> "",
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -408,20 +395,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "",
               DateForm.month -> "",
               DateForm.day -> ""))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -438,20 +423,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> employmentStartMonth,
               DateForm.day -> "abc"))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "abc")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -468,20 +451,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> "abc",
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "abc")
@@ -498,20 +479,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "abc",
               DateForm.month -> employmentStartMonth,
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -528,20 +507,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> employmentStartYear,
               DateForm.month -> "13",
               DateForm.day -> employmentStartDay))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "13")
@@ -558,20 +535,18 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> "1900",
               DateForm.month -> "1",
               DateForm.day -> "1"))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "1")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
@@ -584,24 +559,22 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           errorAboveElementCheck(userScenario.specificExpectedResults.get.tooLongAgoDateError, Some("amount"))
         }
 
-        "the date is a too recent date i.e. after 5thApril" which {
+        "the date is a too recent date i.e. after 5th April" which {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val filledForm = form.dateForm().bind(
+          val filledForm = dateForm.bind(
             Map(DateForm.year -> taxYearEOY.toString,
               DateForm.month -> "04",
               DateForm.day -> "06"))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, employmentEndDate))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "06")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "04")
@@ -614,35 +587,34 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           errorAboveElementCheck(userScenario.specificExpectedResults.get.tooRecentDateError, Some("amount"))
         }
 
-        "the date is not in the past" which {
+        "the date is not before the end date" which {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val nowDatePlusOne = LocalDate.now().plusDays(1)
-          val filledForm = form.dateForm().bind(
-            Map(DateForm.year -> nowDatePlusOne.getYear.toString,
-              DateForm.month -> nowDatePlusOne.getMonthValue.toString,
-              DateForm.day -> nowDatePlusOne.getDayOfMonth.toString))
-          val validatedForm = filledForm.copy(errors = DateForm.verifyStartDate(
-            filledForm.get, taxYearEOY, userScenario.isAgent, DateForm.startDate))
-
-          val htmlFormat = underTest(validatedForm, taxYear = taxYearEOY, employmentId = employmentId, employerName = employerName)
+          val earlierDate = LocalDate.of(taxYearEOY, 2, 2)
+          val laterDate = earlierDate.plusDays(1)
+          val filledForm = dateForm.bind(
+            Map(DateForm.year -> laterDate.getYear.toString,
+              DateForm.month -> laterDate.getMonthValue.toString,
+              DateForm.day -> laterDate.getDayOfMonth.toString))
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, Some(earlierDate)))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
           h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
-          inputFieldValueCheck(dayInputName, Selectors.daySelector, nowDatePlusOne.getDayOfMonth.toString)
-          inputFieldValueCheck(monthInputName, Selectors.monthSelector, nowDatePlusOne.getMonthValue.toString)
-          inputFieldValueCheck(yearInputName, Selectors.yearSelector, nowDatePlusOne.getYear.toString)
+          inputFieldValueCheck(dayInputName, Selectors.daySelector, laterDate.getDayOfMonth.toString)
+          inputFieldValueCheck(monthInputName, Selectors.monthSelector, laterDate.getMonthValue.toString)
+          inputFieldValueCheck(yearInputName, Selectors.yearSelector, laterDate.getYear.toString)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
           welshToggleCheck(userScenario.isWelsh)
 
-          errorSummaryCheck(userScenario.specificExpectedResults.get.futureDateError, Selectors.daySelector)
-          errorAboveElementCheck(userScenario.specificExpectedResults.get.futureDateError, Some("amount"))
+          errorSummaryCheck(userScenario.specificExpectedResults.get.afterEndDateError(earlierDate), Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.afterEndDateError(earlierDate), Some("amount"))
         }
       }
     }

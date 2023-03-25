@@ -120,7 +120,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
       }
       "redirects to the start date page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
+        result.header("location") shouldBe Some(employmentStartDateUrl(taxYearEOY, employmentId))
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
         cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(false)
@@ -137,7 +137,7 @@ class DidYouLeaveEmployerControllerISpec extends IntegrationTest with ViewHelper
       }
       "redirects to the employments dates page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentDatesUrl(taxYearEOY, employmentId)) shouldBe true
+        result.header("location") shouldBe Some(employmentDatesUrl(taxYearEOY, employmentId))
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe None
         cyaModel.employment.employmentDetails.didYouLeaveQuestion shouldBe Some(true)

@@ -17,7 +17,6 @@
 package services.employment
 
 import models.User
-import models.employment.DateFormData
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
 
@@ -43,11 +42,11 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
                       taxYear: Int,
                       employmentId: String,
                       originalEmploymentUserData: EmploymentUserData,
-                      startedDate: DateFormData): Future[Either[Unit, EmploymentUserData]] = {
+                      startDate: LocalDate): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val leaveDate = cya.employmentDetails.cessationDate
     lazy val leaveDateLocalDate = LocalDate.parse(leaveDate.get)
-    lazy val leaveDateIsEqualOrAfterStartDate = !leaveDateLocalDate.isBefore(startedDate.toLocalDate)
+    lazy val leaveDateIsEqualOrAfterStartDate = !leaveDateLocalDate.isBefore(startDate)
 
     val resetLeaveDateIfNowInvalid = if (leaveDate.isDefined && !leaveDateIsEqualOrAfterStartDate) {
       None
@@ -56,7 +55,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     }
 
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(
-      startDate = Some(startedDate.toLocalDate.toString),
+      startDate = Some(startDate.toString),
       cessationDate = resetLeaveDateIfNowInvalid)
     )
 
@@ -92,9 +91,9 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
                     taxYear: Int,
                     employmentId: String,
                     originalEmploymentUserData: EmploymentUserData,
-                    endDate: String): Future[Either[Unit, EmploymentUserData]] = {
+                    endDate: LocalDate): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(endDate)))
+    val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(endDate.toString)))
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }

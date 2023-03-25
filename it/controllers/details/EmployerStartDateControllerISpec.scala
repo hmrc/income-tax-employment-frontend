@@ -23,8 +23,10 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import utils.PageUrls.{checkYourDetailsUrl, employmentStartDateUrl, fullUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, didYouLeaveUrl, employmentStartDateUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
@@ -334,17 +336,33 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01", DateForm.day -> "01")
     lazy val result: WSResponse = {
       dropEmploymentDB()
+      insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = None))))
+      authoriseAgentOrIndividual(isAgent = false)
+      urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+    }
+
+    "redirects to the 'Did you leave employer?' page" in {
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(didYouLeaveUrl(taxYearEOY, employmentId))
+      lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+      cyaModel.employment.employmentDetails.startDate shouldBe Some(employmentStartDate)
+    }
+  }
+
+  "update an existing cya model with the employer start date" which {
+    lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01", DateForm.day -> "01")
+    lazy val result: WSResponse = {
+      dropEmploymentDB()
       insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName)))
       authoriseAgentOrIndividual(isAgent = false)
       urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
     }
 
-    "redirects to the check your details page" in {
+    "redirects to the 'Check your details' page" in {
       result.status shouldBe SEE_OTHER
-      result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
+      result.header("location") shouldBe Some(checkYourDetailsUrl(taxYearEOY, employmentId))
       lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
       cyaModel.employment.employmentDetails.startDate shouldBe Some(employmentStartDate)
     }
   }
 }
-

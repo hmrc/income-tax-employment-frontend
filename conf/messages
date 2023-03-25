@@ -239,32 +239,30 @@ payeRef.paragraph = If the PAYE reference is not {0}, tell us the correct refere
 #################       Employment start date messages        ########################################
 
 employment.commonEmploymentDate.forExample = For example, 12 11 2007
-employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client’s employment started
-employment.employmentStartDate.error.incompleteAll.individual = Enter the date your employment started
-employment.employmentStartDate.error.incompleteDay.agent = The date your client started their employment must include a day
-employment.employmentStartDate.error.incompleteDay.individual = The date you started employment must include a day
-employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started their employment must include a day and month
-employment.employmentStartDate.error.incompleteDayMonth.individual = The date you started employment must include a day and month
-employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started their employment must include a day and year
-employment.employmentStartDate.error.incompleteDayYear.individual = The date you started employment must include a day and year
-employment.employmentStartDate.error.incompleteMonth.agent = The date your client started their employment must include a month
-employment.employmentStartDate.error.incompleteMonth.individual = The date you started employment must include a month
-employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started their employment must include a month and year
-employment.employmentStartDate.error.incompleteMonthYear.individual = The date you started employment must include a month and year
-employment.employmentStartDate.error.incompleteYear.agent = The date your client started their employment must include a year
-employment.employmentStartDate.error.incompleteYear.individual = The date you started employment must include a year
-employment.employmentStartDate.error.invalidDate.agent = The date your client started their employment must be a real date
-employment.employmentStartDate.error.invalidDate.individual = The date you started employment must be a real date
-employment.employmentStartDate.error.notInPast.agent = The date your client started their employment must be in the past
-employment.employmentStartDate.error.notInPast.individual = The date you started employment must be in the past
-employment.employmentStartDate.error.tooLongAgo.agent = The date your client started their employment must be after 1 January 1900
-employment.employmentStartDate.error.tooLongAgo.individual = The date you started your employment must be after 1 January 1900
-employment.employmentStartDate.error.tooRecent.agent = The date your client started their employment must be before 6 April {0}
-employment.employmentStartDate.error.tooRecent.individual = The date you started employment must be before 6 April {0}
+employment.employmentStartDate.error.afterEndDate.agent = The date your client started working at {0} must be before the date they left, {1}
+employment.employmentStartDate.error.afterEndDate.individual = The date you started working at {0} must be before the date you left, {1}
+employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client started working at {0}
+employment.employmentStartDate.error.incompleteAll.individual = Enter the date you started working at {0}
+employment.employmentStartDate.error.incompleteDay.agent = The date your client started working at {0} must include a day
+employment.employmentStartDate.error.incompleteDay.individual = The date you started working at {0} must include a day
+employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started working at {0} must include a day and month
+employment.employmentStartDate.error.incompleteDayMonth.individual = The date you started working at {0} must include a day and month
+employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started working at {0} must include a day and year
+employment.employmentStartDate.error.incompleteDayYear.individual = The date you started working at {0} must include a day and year
+employment.employmentStartDate.error.incompleteMonth.agent = The date your client started working at {0} must include a month
+employment.employmentStartDate.error.incompleteMonth.individual = The date you started working at {0} must include a month
+employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started working at {0} must include a month and year
+employment.employmentStartDate.error.incompleteMonthYear.individual = The date you started working at {0} must include a month and year
+employment.employmentStartDate.error.incompleteYear.agent = The date your client started working at {0} must include a year
+employment.employmentStartDate.error.incompleteYear.individual = The date you started working at {0} must include a year
+employment.employmentStartDate.error.invalidDate.agent = The date your client started working at {0} must be a real date
+employment.employmentStartDate.error.invalidDate.individual = The date you started working at {0} must be a real date
+employment.employmentStartDate.error.tooLongAgo.agent = The date your client started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.tooLongAgo.individual = The date you started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.tooRecent.agent = The date your client started working at {0} must be before 6 April {1}
+employment.employmentStartDate.error.tooRecent.individual = The date you started working at {0} must be before 6 April {1}
 employment.employmentStartDate.heading.agent = When did your client start working at {0}?
 employment.employmentStartDate.heading.individual = When did you start working at {0}?
-employment.employmentStartDate.title.agent = When did your client start working for their employer?
-employment.employmentStartDate.title.individual = When did you start working for your employer?
 
 #################       Employment end date messages        ########################################
 
@@ -292,37 +290,6 @@ employment.employmentEndDate.error.tooRecent.agent = The date your client left m
 employment.employmentEndDate.error.tooRecent.individual = The date you left must be the same as or before 5 April {0}
 employment.employmentEndDate.heading.agent = When did your client leave {0}?
 employment.employmentEndDate.heading.individual = When did you leave {0}?
-
-#################       Employment end date messages used by old page with start and end dates (/employment-dates)       ########################################
-
-employment.employmentLeaveDate.error.beforeStartDate.agent = The date your client left their employment cannot be before {0}
-employment.employmentLeaveDate.error.beforeStartDate.individual = The date you left your employment cannot be before {0}
-employment.employmentLeaveDate.error.incompleteAll.agent = Enter the date your client left their employment
-employment.employmentLeaveDate.error.incompleteAll.individual = Enter the date you left your employment
-employment.employmentLeaveDate.error.incompleteDay.agent = The date your client left their employment must include a day
-employment.employmentLeaveDate.error.incompleteDay.individual = The date you left your employment must include a day
-employment.employmentLeaveDate.error.incompleteDayMonth.agent = The date your client left their employment must include a day and month
-employment.employmentLeaveDate.error.incompleteDayMonth.individual = The date you left your employment must include a day and month
-employment.employmentLeaveDate.error.incompleteDayYear.agent = The date your client left their employment must include a day and year
-employment.employmentLeaveDate.error.incompleteDayYear.individual = The date you left your employment must include a day and year
-employment.employmentLeaveDate.error.incompleteMonth.agent = The date your client left their employment must include a month
-employment.employmentLeaveDate.error.incompleteMonth.individual = The date you left your employment must include a month
-employment.employmentLeaveDate.error.incompleteMonthYear.agent = The date your client left their employment must include a month and year
-employment.employmentLeaveDate.error.incompleteMonthYear.individual = The date you left your employment must include a month and year
-employment.employmentLeaveDate.error.incompleteYear.agent = The date your client left their employment must include a year
-employment.employmentLeaveDate.error.incompleteYear.individual = The date you left your employment must include a year
-employment.employmentLeaveDate.error.invalidDate.agent = The date your client left their employment must be a real date
-employment.employmentLeaveDate.error.invalidDate.individual = The date you left your employment must be a real date
-employment.employmentLeaveDate.error.notInPast.agent = The date your client left their employment must be in the past
-employment.employmentLeaveDate.error.notInPast.individual = The date you left your employment must be in the past
-employment.employmentLeaveDate.error.tooLongAgo.agent = The date your client left their employment must be after 5 April {0}
-employment.employmentLeaveDate.error.tooLongAgo.individual = The date you left your employment must be after 5 April {0}
-employment.employmentLeaveDate.error.tooRecent.agent = The date your client left their employment must be before 6 April {0}
-employment.employmentLeaveDate.error.tooRecent.individual = The date you left your employment must be before 6 April {0}
-employment.employmentLeaveDate.heading.agent = When did your client leave {0}?
-employment.employmentLeaveDate.heading.individual = When did you leave {0}?
-employment.employmentLeaveDate.title.agent = When did your client leave their employer?
-employment.employmentLeaveDate.title.individual = When did you leave your employer?
 
 #################       Employment dates messages        ########################################
 

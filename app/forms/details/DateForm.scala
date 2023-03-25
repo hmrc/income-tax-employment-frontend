@@ -21,16 +21,20 @@ import forms.validation.mappings.MappingUtil.trimmedText
 import models.employment.DateFormData
 import play.api.data.Forms.mapping
 import play.api.data.{Form, FormError}
-import utils.ViewUtils._
+import play.api.i18n.Messages
+import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
 
 import java.time.LocalDate
+import java.time.Month.APRIL
 import scala.util.Try
 
-//TODO - unit test the form validation and error message keys
+//TODO - unit test the form validation
 object DateForm extends InputFilters {
 
-  val startDate = "employmentStartDate"
-  val leaveDate = "employmentLeaveDate"
+  private val FIVE = 5
+  private val SIX = 6
+
+  private val tooLongAgoDate = LocalDate.parse("1900-01-01")
 
   val day: String = "amount-day"
   val month: String = "amount-month"
@@ -44,107 +48,57 @@ object DateForm extends InputFilters {
     )(DateFormData.apply)(DateFormData.unapply)
   )
 
-  val april = 4
-  val startDay = 6
+  def validateStartDate(formData: DateFormData,
+                        taxYear: Int,
+                        isAgent: Boolean,
+                        employerName: String,
+                        endDate: Option[LocalDate])
+                       (implicit messages: Messages): Seq[FormError] = {
+    lazy val emptyDateFieldsErrors = emptyDateFieldsValidation(formData, datePageName = "employmentStartDate", isAgent, Some(employerName))
+    lazy val invalidDateFormatErrors = invalidDateFormatValidation(formData, datePageName = "employmentStartDate", isAgent, Some(employerName))
+    lazy val startDateSpecificErrors = startDateSpecificValidation(formData.toLocalDate.get, taxYear, isAgent, employerName, endDate)
 
-  def sixthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay)
-
-  def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay - 1)
-
-  object tooLongAgo {
-    val day = 1
-    val month = 1
-    val year = 1900
-  }
-
-  val tooLongAgoDate: LocalDate = LocalDate.of(tooLongAgo.year, tooLongAgo.month, tooLongAgo.day)
-
-  trait DateValidationRequest
-
-  case object StartDateValidationRequest extends DateValidationRequest
-
-  case class EndDateValidationRequest(startDate: LocalDate) extends DateValidationRequest
-
-  case class LeaveDateValidationRequest(startDate: LocalDate) extends DateValidationRequest
-
-  def verifyStartDate(date: DateFormData, taxYear: Int, isAgent: Boolean, key: String): Seq[FormError] = {
-    verifyNewDate(date, taxYear, isAgent, key, StartDateValidationRequest, startDateValidation)
-  }
-
-  def verifyEndDate(date: DateFormData,
-                    taxYear: Int,
-                    isAgent: Boolean,
-                    key: String,
-                    startDate: LocalDate): Seq[FormError] = {
-    verifyNewDate[EndDateValidationRequest](date, taxYear, isAgent, key, EndDateValidationRequest(startDate), endDateValidation)
-  }
-
-  def verifyLeaveDate(date: DateFormData, taxYear: Int, isAgent: Boolean, key: String, startDate: String): Seq[FormError] = {
-    verifyNewDate[LeaveDateValidationRequest](date, taxYear, isAgent, key, LeaveDateValidationRequest(LocalDate.parse(startDate)), leaveDateValidation)
-  }
-
-  private def verifyNewDate[ValidationParameters](date: DateFormData,
-                                                  taxYear: Int,
-                                                  isAgent: Boolean,
-                                                  key: String,
-                                                  extraParameters: ValidationParameters,
-                                                  f: (LocalDate, Int, String, String, ValidationParameters) => Seq[FormError]): Seq[FormError] = {
-    val agentCheck = if (isAgent) "agent" else "individual"
-    val emptyDatesErrors: Seq[FormError] = areDatesEmpty(date, isAgent, key)
-    if (emptyDatesErrors.isEmpty) {
-      val newDate: Either[Throwable, LocalDate] = Try(LocalDate.of(date.amountYear.toInt, date.amountMonth.toInt, date.amountDay.toInt)).toEither
-      newDate match {
-        case Right(date) => f(date, taxYear, agentCheck, key, extraParameters)
-        case Left(_) => Seq(FormError("invalidFormat", s"employment.$key.error.invalidDate.$agentCheck"))
-      }
-    } else {
-      emptyDatesErrors
+    emptyDateFieldsErrors match {
+      case _ :: _ => emptyDateFieldsErrors
+      case _ => if (invalidDateFormatErrors.nonEmpty) invalidDateFormatErrors else startDateSpecificErrors
     }
   }
 
-  private def areDatesEmpty(date: DateFormData, isAgent: Boolean, key: String): Seq[FormError] = {
-    val agentCheck: String = if (isAgent) "agent" else "individual"
-    (date.amountDay.isEmpty, date.amountMonth.isEmpty, date.amountYear.isEmpty) match {
-      case (true, true, true) => Seq(FormError(s"emptyAll", s"employment.$key.error.incompleteAll.$agentCheck"))
-      case (true, true, false) => Seq(FormError("emptyDayMonth", s"employment.$key.error.incompleteDayMonth.$agentCheck"))
-      case (true, false, true) => Seq(FormError("emptyDayYear", s"employment.$key.error.incompleteDayYear.$agentCheck"))
-      case (false, true, true) => Seq(FormError("emptyMonthYear", s"employment.$key.error.incompleteMonthYear.$agentCheck"))
-      case (false, false, true) => Seq(FormError("emptyYear", s"employment.$key.error.incompleteYear.$agentCheck"))
-      case (false, true, false) => Seq(FormError("emptyMonth", s"employment.$key.error.incompleteMonth.$agentCheck"))
-      case (true, false, false) => Seq(FormError("emptyDay", s"employment.$key.error.incompleteDay.$agentCheck"))
-      case (false, false, false) => Seq()
+  def validateEndDate(formData: DateFormData,
+                      taxYear: Int,
+                      isAgent: Boolean,
+                      startDate: LocalDate)
+                     (implicit messages: Messages): Seq[FormError] = {
+    lazy val emptyDateFieldsErrors = emptyDateFieldsValidation(formData, datePageName = "employmentEndDate", isAgent, None)
+    lazy val invalidDateFormatErrors = invalidDateFormatValidation(formData, datePageName = "employmentEndDate", isAgent, None)
+    lazy val endDateSpecificErrors = endDateSpecificValidation(formData.toLocalDate.get, taxYear, isAgent, startDate)
+
+    emptyDateFieldsErrors match {
+      case _ :: _ => emptyDateFieldsErrors
+      case _ => if (invalidDateFormatErrors.nonEmpty) invalidDateFormatErrors else endDateSpecificErrors
     }
   }
 
+  // TODO: delete this once employmentDates page goes away
+  object DeprecatedObjects {
+    trait DateValidationRequest
 
-  private def startDateValidation(date: LocalDate, taxYear: Int, agentCheck: String, pageNameKey: String, s: DateValidationRequest): Seq[FormError] = {
-    (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear)), date.isAfter(tooLongAgoDate)) match {
-      case (true, _, _) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.notInPast.$agentCheck"))
-      case (_, false, _) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
-      case (_, _, false) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.tooLongAgo.$agentCheck"))
-      case _ => Seq()
-    }
+    case class LeaveDateValidationRequest(startDate: LocalDate) extends DateValidationRequest
   }
 
-  private def endDateValidation(date: LocalDate,
-                                taxYear: Int,
-                                agentCheck: String,
-                                pageNameKey: String,
-                                endDateValidation: EndDateValidationRequest): Seq[FormError] = {
-    (date.isBefore(sixthAprilDate(taxYear)), date.isAfter(fifthAprilDate(taxYear - 1)), date.isAfter(endDateValidation.startDate)) match {
-      case (false, _, _) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
-      case (_, false, _) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.tooLongAgo.$agentCheck", Seq((taxYear - 1).toString)))
-      case (_, _, false) =>
-        Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.beforeStartDate.$agentCheck", Seq(dateFormatter(endDateValidation.startDate))))
-      case _ => Seq()
-    }
-  }
-
+  // TODO: delete this once employmentDates page goes away
   def leaveDateValidation(date: LocalDate,
                           taxYear: Int,
                           agentCheck: String,
                           pageNameKey: String,
-                          leaveValidation: LeaveDateValidationRequest): Seq[FormError] = {
+                          leaveValidation: DeprecatedObjects.LeaveDateValidationRequest): Seq[FormError] = {
+    val april = 4
+    val startDay = 6
+
+    def sixthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay)
+
+    def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay - 1)
+
     (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear)),
       date.isAfter(fifthAprilDate(taxYear - 1)), !date.isBefore(leaveValidation.startDate)) match {
       case (true, _, _, _) => Seq(FormError("invalidFormat", s"employment.$pageNameKey.error.notInPast.$agentCheck"))
@@ -155,4 +109,80 @@ object DateForm extends InputFilters {
       case _ => Seq()
     }
   }
+
+  private def startDateSpecificValidation(startDate: LocalDate,
+                                          taxYear: Int,
+                                          isAgent: Boolean,
+                                          employerName: String,
+                                          endDate: Option[LocalDate])
+                                         (implicit messages: Messages): Seq[FormError] = {
+
+    val isBeforeEOY = startDate.isBefore(LocalDate.of(taxYear, APRIL, SIX))
+    val isAfterMinDate = startDate.isAfter(tooLongAgoDate)
+    val isBeforeDate = startDate.isBefore(endDate.getOrElse(startDate.plusDays(1)))
+
+    lazy val mustBeSameAsOrBeforeErrorMessage = s"employment.employmentStartDate.error.tooRecent.${userType(isAgent)}"
+    lazy val tooLongAgoErrorMessage = s"employment.employmentStartDate.error.tooLongAgo.${userType(isAgent)}"
+    lazy val mustBeBeforeErrorMessage = s"employment.employmentStartDate.error.afterEndDate.${userType(isAgent)}"
+
+    (isBeforeEOY, isAfterMinDate, isBeforeDate) match {
+      case (false, _, _) => Seq(FormError("invalidFormat", mustBeSameAsOrBeforeErrorMessage, Seq(employerName, taxYear.toString)))
+      case (_, false, _) => Seq(FormError("invalidFormat", tooLongAgoErrorMessage, Seq(employerName)))
+      case (_, _, false) => Seq(FormError("invalidFormat", mustBeBeforeErrorMessage, Seq(employerName, translatedDateFormatter(endDate.get))))
+      case _ => Seq.empty
+    }
+  }
+
+  private def endDateSpecificValidation(endDate: LocalDate,
+                                        taxYear: Int,
+                                        isAgent: Boolean,
+                                        startDate: LocalDate)
+                                       (implicit messages: Messages): Seq[FormError] = {
+    val isBeforeEOY = endDate.isBefore(LocalDate.of(taxYear, APRIL, SIX))
+    val isAfterStartOfTaxYear = endDate.isAfter(LocalDate.of(taxYear - 1, APRIL, FIVE))
+    val isAfterStartDate = endDate.isAfter(startDate)
+
+    lazy val mustBeEndOfYearErrorMessage = s"employment.employmentEndDate.error.tooRecent.${userType(isAgent)}"
+    lazy val mustBeAfterStartOfTaxYearErrorMessage = s"employment.employmentEndDate.error.tooLongAgo.${userType(isAgent)}"
+    lazy val mustBeAfterStartDateErrorMessage = s"employment.employmentEndDate.error.beforeStartDate.${userType(isAgent)}"
+
+    (isBeforeEOY, isAfterStartOfTaxYear, isAfterStartDate) match {
+      case (false, _, _) => Seq(FormError("invalidFormat", mustBeEndOfYearErrorMessage, Seq(taxYear.toString)))
+      case (_, false, _) => Seq(FormError("invalidFormat", mustBeAfterStartOfTaxYearErrorMessage, Seq((taxYear - 1).toString)))
+      case (_, _, false) => Seq(FormError("invalidFormat", mustBeAfterStartDateErrorMessage, Seq(translatedDateFormatter(startDate))))
+      case _ => Seq.empty
+    }
+  }
+
+  private def emptyDateFieldsValidation(formData: DateFormData,
+                                        datePageName: String,
+                                        isAgent: Boolean,
+                                        employerName: Option[String]): Seq[FormError] = {
+    lazy val userTypeValue = userType(isAgent)
+    val messageParams = employerName.toSeq
+
+    (formData.amountDay.isEmpty, formData.amountMonth.isEmpty, formData.amountYear.isEmpty) match {
+      case (true, true, true) => Seq(FormError(s"emptyAll", s"employment.$datePageName.error.incompleteAll.$userTypeValue", messageParams))
+      case (true, true, false) => Seq(FormError("emptyDayMonth", s"employment.$datePageName.error.incompleteDayMonth.$userTypeValue", messageParams))
+      case (true, false, true) => Seq(FormError("emptyDayYear", s"employment.$datePageName.error.incompleteDayYear.$userTypeValue", messageParams))
+      case (false, true, true) => Seq(FormError("emptyMonthYear", s"employment.$datePageName.error.incompleteMonthYear.$userTypeValue", messageParams))
+      case (false, false, true) => Seq(FormError("emptyYear", s"employment.$datePageName.error.incompleteYear.$userTypeValue", messageParams))
+      case (false, true, false) => Seq(FormError("emptyMonth", s"employment.$datePageName.error.incompleteMonth.$userTypeValue", messageParams))
+      case (true, false, false) => Seq(FormError("emptyDay", s"employment.$datePageName.error.incompleteDay.$userTypeValue", messageParams))
+      case (false, false, false) => Seq()
+    }
+  }
+
+  private def invalidDateFormatValidation(formData: DateFormData,
+                                          datePageName: String,
+                                          isAgent: Boolean,
+                                          employerName: Option[String]): Seq[FormError] = {
+    val messageParams = employerName.toSeq
+    Try(LocalDate.of(formData.amountYear.toInt, formData.amountMonth.toInt, formData.amountDay.toInt)).toOption match {
+      case None => Seq(FormError("invalidFormat", s"employment.$datePageName.error.invalidDate.${userType(isAgent)}", messageParams))
+      case _ => Seq.empty
+    }
+  }
+
+  private def userType(isAgent: Boolean): String = if (isAgent) "agent" else "individual"
 }

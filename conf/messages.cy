@@ -239,32 +239,30 @@ payeRef.paragraph = Rhowch wybod i ni beth yw’r cyfeirnod TWE cywir os yw {0} 
 #################       Employment start date messages        ########################################
 
 employment.commonEmploymentDate.forExample = Er enghraifft, 12 11 2007
-employment.employmentStartDate.error.incompleteAll.agent = Nodwch y dyddiad y dechreuodd gyflogaeth eich cleient
-employment.employmentStartDate.error.incompleteAll.individual = Nodwch y dyddiad y dechreuodd eich cyflogaeth
-employment.employmentStartDate.error.incompleteDay.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod
-employment.employmentStartDate.error.incompleteDay.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod
-employment.employmentStartDate.error.incompleteDayMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a mis
-employment.employmentStartDate.error.incompleteDayMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a mis
-employment.employmentStartDate.error.incompleteDayYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys diwrnod a blwyddyn
-employment.employmentStartDate.error.incompleteDayYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys diwrnod a blwyddyn
-employment.employmentStartDate.error.incompleteMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis
-employment.employmentStartDate.error.incompleteMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis
-employment.employmentStartDate.error.incompleteMonthYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys mis a blwyddyn
-employment.employmentStartDate.error.incompleteMonthYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys mis a blwyddyn
-employment.employmentStartDate.error.incompleteYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth gynnwys blwyddyn
-employment.employmentStartDate.error.incompleteYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth gynnwys blwyddyn
-employment.employmentStartDate.error.invalidDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn ddyddiad go iawn
-employment.employmentStartDate.error.invalidDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn ddyddiad go iawn
-employment.employmentStartDate.error.notInPast.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod yn y gorffennol
-employment.employmentStartDate.error.notInPast.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau cyflogaeth fod yn y gorffennol
-employment.employmentStartDate.error.tooLongAgo.agent = Mae’n rhaid i ddyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod ar ôl 1 Ionawr 1900
-employment.employmentStartDate.error.tooLongAgo.individual = Mae’n rhaid i ddyddiad y gwnaethoch ddechrau’ch cyflogaeth fod ar ôl 1 Ionawr 1900
-employment.employmentStartDate.error.tooRecent.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau ei gyflogaeth fod cyn 6 Ebrill {0}
-employment.employmentStartDate.error.tooRecent.individual = Mae’n rhaid i ddyddiad y gwnaethoch ddechrau cyflogaeth fod cyn 6 Ebrill {0}
+employment.employmentStartDate.error.afterEndDate.agent = The date your client started working at {0} must be before the date they left, {1}
+employment.employmentStartDate.error.afterEndDate.individual = The date you started working at {0} must be before the date you left, {1}
+employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client started working at {0}
+employment.employmentStartDate.error.incompleteAll.individual = Enter the date you started working at {0}
+employment.employmentStartDate.error.incompleteDay.agent = The date your client started working at {0} must include a day
+employment.employmentStartDate.error.incompleteDay.individual = The date you started working at {0} must include a day
+employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started working at {0} must include a day and month
+employment.employmentStartDate.error.incompleteDayMonth.individual = The date you started working at {0} must include a day and month
+employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started working at {0} must include a day and year
+employment.employmentStartDate.error.incompleteDayYear.individual = The date you started working at {0} must include a day and year
+employment.employmentStartDate.error.incompleteMonth.agent = The date your client started working at {0} must include a month
+employment.employmentStartDate.error.incompleteMonth.individual = The date you started working at {0} must include a month
+employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started working at {0} must include a month and year
+employment.employmentStartDate.error.incompleteMonthYear.individual = The date you started working at {0} must include a month and year
+employment.employmentStartDate.error.incompleteYear.agent = The date your client started working at {0} must include a year
+employment.employmentStartDate.error.incompleteYear.individual = The date you started working at {0} must include a year
+employment.employmentStartDate.error.invalidDate.agent = The date your client started working at {0} must be a real date
+employment.employmentStartDate.error.invalidDate.individual = The date you started working at {0} must be a real date
+employment.employmentStartDate.error.tooLongAgo.agent = The date your client started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.tooLongAgo.individual = The date you started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.tooRecent.agent = The date your client started working at {0} must be before 6 April {1}
+employment.employmentStartDate.error.tooRecent.individual = The date you started working at {0} must be before 6 April {1}
 employment.employmentStartDate.heading.agent = Pryd y dechreuodd eich cleient weithio yn {0}?
 employment.employmentStartDate.heading.individual = Pryd y gwnaethoch ddechrau gweithio yn {0}?
-employment.employmentStartDate.title.agent = Pryd y gwnaeth eich cleient ddechrau gweithio i’w gyflogwr?
-employment.employmentStartDate.title.individual = Pryd y gwnaethoch ddechrau gweithio i’ch cyflogwr?
 
 #################       Employment end date messages        ########################################
 
@@ -292,37 +290,6 @@ employment.employmentEndDate.error.tooRecent.agent = The date your client left m
 employment.employmentEndDate.error.tooRecent.individual = The date you left must be the same as or before 5 April {0}
 employment.employmentEndDate.heading.agent = When did your client leave {0}?
 employment.employmentEndDate.heading.individual = When did you leave {0}?
-
-#################       Employment end date messages used by old page with start and end dates (/employment-dates)       ########################################
-
-employment.employmentLeaveDate.error.beforeStartDate.agent = Does dim modd i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn {0}
-employment.employmentLeaveDate.error.beforeStartDate.individual = Does dim modd i’r dyddiad y gwnaethoch adael eich cyflogaeth fod cyn {0}
-employment.employmentLeaveDate.error.incompleteAll.agent = Nodwch y dyddiad y gwnaeth eich cleient adael ei gyflogaeth
-employment.employmentLeaveDate.error.incompleteAll.individual = Nodwch y dyddiad y gwnaethoch chi adael eich cyflogaeth
-employment.employmentLeaveDate.error.incompleteDay.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod
-employment.employmentLeaveDate.error.incompleteDay.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod
-employment.employmentLeaveDate.error.incompleteDayMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod a mis
-employment.employmentLeaveDate.error.incompleteDayMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod a mis
-employment.employmentLeaveDate.error.incompleteDayYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys diwrnod a blwyddyn
-employment.employmentLeaveDate.error.incompleteDayYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys diwrnod a blwyddyn
-employment.employmentLeaveDate.error.incompleteMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys mis
-employment.employmentLeaveDate.error.incompleteMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys mis
-employment.employmentLeaveDate.error.incompleteMonthYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys mis a blwyddyn
-employment.employmentLeaveDate.error.incompleteMonthYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys mis a blwyddyn
-employment.employmentLeaveDate.error.incompleteYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth gynnwys blwyddyn
-employment.employmentLeaveDate.error.incompleteYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth gynnwys blwyddyn
-employment.employmentLeaveDate.error.invalidDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod yn ddyddiad go iawn
-employment.employmentLeaveDate.error.invalidDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth fod yn ddyddiad go iawn
-employment.employmentLeaveDate.error.notInPast.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod yn y gorffennol
-employment.employmentLeaveDate.error.notInPast.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth fod yn y gorffennol
-employment.employmentLeaveDate.error.tooLongAgo.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod ar neu ar ôl 5 Ebrill {0}
-employment.employmentLeaveDate.error.tooLongAgo.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth fod ar ôl 5 Ebrill {0}
-employment.employmentLeaveDate.error.tooRecent.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael ei gyflogaeth fod cyn 6 Ebrill {0}
-employment.employmentLeaveDate.error.tooRecent.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael eich cyflogaeth fod cyn 6 Ebrill {0}
-employment.employmentLeaveDate.heading.agent = Pryd y gwnaeth eich cleient adael {0}?
-employment.employmentLeaveDate.heading.individual = Pryd y gwnaethoch adael {0}?
-employment.employmentLeaveDate.title.agent = Pryd y gwnaeth eich cleient adael ei gyflogwr?
-employment.employmentLeaveDate.title.individual = Pryd y gwnaethoch adael eich cyflogwr?
 
 #################       Employment dates messages        ########################################
 
