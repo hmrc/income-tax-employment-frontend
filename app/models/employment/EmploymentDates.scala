@@ -18,6 +18,7 @@ package models.employment
 
 import java.time.LocalDate
 
+// TODO: Delete when combined start and end date page is removed
 case class EmploymentDates(startDate: Option[DateFormData],
                            endDate: Option[DateFormData]) {
 
@@ -50,7 +51,4 @@ object EmploymentDates {
       form.endDate.map(_.amountYear).getOrElse("")
     )
   )
-
 }
-
-

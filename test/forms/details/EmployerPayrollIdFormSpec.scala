@@ -21,55 +21,35 @@ import support.UnitTest
 
 class EmployerPayrollIdFormSpec extends UnitTest {
 
-  private val anyBoolean = true
+  private val formProvider = new EmploymentDetailsFormsProvider()
 
   ".employerPayrollIdForm" should {
     "allow empty form" in {
       val emptyFormData = Map[String, String]().empty
-      val underTest = EmployerPayrollIdForm.employerPayrollIdForm(anyBoolean)
 
-      underTest.bind(emptyFormData).errors shouldBe Seq.empty
+      formProvider.employerPayrollIdForm().bind(emptyFormData).errors shouldBe Seq.empty
     }
 
     "allow for correct data format" in {
       val formData = Map(EmployerPayrollIdForm.payrollId -> "some-correct-value")
-      val underTest = EmployerPayrollIdForm.employerPayrollIdForm(anyBoolean)
 
-      underTest.bind(formData).errors shouldBe Seq.empty
+      formProvider.employerPayrollIdForm().bind(formData).errors shouldBe Seq.empty
     }
 
-    "contain error when more than 38 characters" when {
+    "contain error when more than 38 characters" in {
       val payrollWithMoreThan38Characters = "a" * 39
       val formData = Map(EmployerPayrollIdForm.payrollId -> payrollWithMoreThan38Characters)
 
-      "for agent" in {
-        val underTest = EmployerPayrollIdForm.employerPayrollIdForm(isAgent = true)
-
-        underTest.bind(formData).errors should contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.tooMany.agent"))
-      }
-
-      "for individual" in {
-        val underTest = EmployerPayrollIdForm.employerPayrollIdForm(isAgent = false)
-
-        underTest.bind(formData).errors should contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.tooMany.individual"))
-      }
+      formProvider.employerPayrollIdForm().bind(formData).errors should
+        contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.tooManyCharacters"))
     }
 
-    "contain error when payroll Id is in the wrong format" when {
+    "contain error when payroll Id is in the wrong format" in {
       val wrongFormat = "payrollId-with-forbidden-character-#"
       val formData = Map(EmployerPayrollIdForm.payrollId -> wrongFormat)
 
-      "for agent" in {
-        val underTest = EmployerPayrollIdForm.employerPayrollIdForm(isAgent = true)
-
-        underTest.bind(formData).errors should contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.incorrect.agent"))
-      }
-
-      "for individual" in {
-        val underTest = EmployerPayrollIdForm.employerPayrollIdForm(isAgent = false)
-
-        underTest.bind(formData).errors should contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.incorrect.individual"))
-      }
+      formProvider.employerPayrollIdForm().bind(formData).errors should
+        contain(FormError(EmployerPayrollIdForm.payrollId, "employment.payrollId.error.invalidCharacters", List("#")))
     }
   }
 }

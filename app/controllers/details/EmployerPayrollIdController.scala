@@ -16,81 +16,61 @@
 
 package controllers.details
 
-import actions.AuthorisedAction
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import controllers.details.routes.EmployerPayAmountController
 import controllers.employment.routes.CheckEmploymentDetailsController
-import forms.details.EmployerPayrollIdForm
-import models.AuthorisationRequest
+import forms.details.EmploymentDetailsFormsProvider
+import models.UserSessionDataRequest
+import models.benefits.pages.{EmployerPayrollIdPage => PageModel}
 import models.details.EmploymentDetails
-import models.mongo.EmploymentUserData
+import models.employment.EmploymentDetailsType
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.EmploymentSessionService
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.details.EmployerPayrollIdView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
+class EmployerPayrollIdController @Inject()(actionsProvider: ActionsProvider,
                                             pageView: EmployerPayrollIdView,
-                                            inYearAction: InYearUtil,
-                                            errorHandler: ErrorHandler,
-                                            employmentSessionService: EmploymentSessionService,
-                                            employmentService: EmploymentService)
+                                            formsProvider: EmploymentDetailsFormsProvider,
+                                            employmentService: EmploymentService,
+                                            errorHandler: ErrorHandler)
                                            (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    val emptyForm = EmployerPayrollIdForm.employerPayrollIdForm(request.user.isAgent)
-
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataOld(taxYear, employmentId).map {
-        case Right(Some(cya)) =>
-          cya.employment.employmentDetails.payrollId match {
-            case Some(payrollId) =>
-              val filledForm = emptyForm.fill(payrollId)
-              Ok(pageView(filledForm, taxYear, employmentId))
-            case None =>
-              Ok(pageView(emptyForm, taxYear, employmentId))
-          }
-        case _ => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
-      }
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ) { implicit request =>
+    val form = formsProvider.employerPayrollIdForm()
+    Ok(pageView(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
-        EmployerPayrollIdForm.employerPayrollIdForm(request.user.isAgent).bindFromRequest().fold(
-          formWithErrors => {
-            Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId)))
-          },
-          payrollId => handleSuccessForm(taxYear, employmentId, data, if (payrollId.trim.isEmpty) None else Some(payrollId))
-        )
-      }
-    }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ).async { implicit request =>
+    formsProvider.employerPayrollIdForm().bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      payrollId => handleSuccessForm(taxYear, employmentId, if (payrollId.trim.isEmpty) None else Some(payrollId))
+    )
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, payrollId: Option[String])
-                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentService.updatePayrollId(request.user, taxYear, employmentId, employmentUserData, payrollId).map {
+  private def handleSuccessForm(taxYear: Int, employmentId: String, payrollId: Option[String])
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    employmentService.updatePayrollId(request.user, taxYear, employmentId, request.employmentUserData, payrollId).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
-  private def getRedirectCall(employmentDetails: EmploymentDetails,
-                              taxYear: Int,
-                              employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
-      CheckEmploymentDetailsController.show(taxYear, employmentId)
-    } else {
-      EmployerPayAmountController.show(taxYear, employmentId)
-    }
-  }
+  private def getRedirectCall(employmentDetails: EmploymentDetails, taxYear: Int, employmentId: String): Call =
+    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else EmployerPayAmountController.show(taxYear, employmentId)
 }

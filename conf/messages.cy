@@ -32,9 +32,7 @@ common.error.invalid_number = Nodwch swm gan ddefnyddio’r rhifau 0 i 9
 common.fullStop = .
 common.help.getHelpWithThisPage = Help gyda’r dudalen hon
 common.important = Pwysig
-common.letters.case = llythrennau mawr a bach (a i z)
 common.no = Na
-common.numbers = rhifau
 common.opensInNewTab = (yn agor tab newydd)
 common.remove = Tynnu
 common.return.overview.buttonText = Yn ôl i’r trosolwg
@@ -309,19 +307,12 @@ employment.didYouLeave.title.individual = A wnaethoch adael y cyflogwr hwn yn y 
 
 #################       Payroll id messages        ########################################
 
-employment.payrollId.bullet3 = y cymeriadau arbennig: .,-()/=!"%&*;<>''+:\?
-employment.payrollId.error.incorrect.agent = Nodwch ID cyflogres eich cleient yn y fformat cywir
-employment.payrollId.error.incorrect.individual = Nodwch eich ID cyflogres yn y fformat cywir
-employment.payrollId.error.tooMany.agent = Mae’n rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai.
-employment.payrollId.error.tooMany.individual = Mae’n rhaid i’ch ID cyflogres fod yn 38 o gymeriadau neu lai
-employment.payrollId.forExample = Er enghraifft, 123456
-employment.payrollId.paragraph1.agent = Mae’n rhaid i ID cyflogres eich cleient fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:
-employment.payrollId.paragraph1.individual = Mae’n rhaid i’ch ID cyflogres fod yn 38 o gymeriadau neu lai. Gall gynnwys y canlynol:
-employment.payrollId.paragraph2.agent = Mae hwn i’w weld ar slip cyflog eich cleient neu ar ei P60. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’.
-employment.payrollId.paragraph2.individual = Mae hwn i’w weld ar eich slip cyflog neu’ch P60. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’.
-employment.payrollId.previous.paragraph = Os nad {0} yw’r ID cyflogres, rhowch wybod i ni beth yw’r ID cywir.
-employment.payrollId.title.agent = Beth yw ID cyflogres eich cleient ar gyfer y gyflogaeth hon?
-employment.payrollId.title.individual = Beth yw’ch ID cyflogres am y gyflogaeth hon?
+employment.payrollId.error.invalidCharacters = Payroll ID must not include {0}
+employment.payrollId.error.tooManyCharacters = Payroll ID must be 38 characters or fewer
+employment.payrollId.hint.agent = You can find this on your client’s payslips or {0}. It’s also known as a ‘payroll number’.
+employment.payrollId.hint.individual = You can find this on your payslips or {0}. It’s also known as a ‘payroll number’.
+employment.payrollId.title.agent = What’s your client’s payroll ID for {0}? (optional)
+employment.payrollId.title.individual = What’s your payroll ID for {0}? (optional)
 
 #################       Employment pay messages        ########################################
 
