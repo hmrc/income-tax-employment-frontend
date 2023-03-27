@@ -23,12 +23,10 @@ object AmountForm {
 
   val amount = "amount"
 
-  def amountForm(
-                  emptyFieldKey: String,
-                  wrongFormatKey: String = "common.error.invalid_currency_format",
-                  exceedsMaxAmountKey: String = "common.error.amountMaxLimit",
-                  emptyFieldArguments: Seq[String] = Seq.empty[String]
-                ): Form[BigDecimal] = Form(
+  def amountForm(emptyFieldKey: String,
+                 wrongFormatKey: String = "common.error.invalid_currency_format",
+                 exceedsMaxAmountKey: String = "common.error.amountMaxLimit",
+                 emptyFieldArguments: Seq[String] = Seq.empty[String]): Form[BigDecimal] = Form(
     amount -> currency(
       requiredKey = emptyFieldKey,
       wrongFormatKey = wrongFormatKey,
@@ -36,5 +34,4 @@ object AmountForm {
       args = emptyFieldArguments
     )
   )
-
 }

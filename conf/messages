@@ -32,9 +32,7 @@ common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.fullStop = .
 common.help.getHelpWithThisPage = Get help with this page
 common.important = Important
-common.letters.case = upper and lower case letters (a to z)
 common.no = No
-common.numbers = numbers
 common.opensInNewTab = (opens in new tab)
 common.remove = Remove
 common.return.overview.buttonText = Return to overview
@@ -309,19 +307,12 @@ employment.didYouLeave.title.individual = Did you leave this employer in the tax
 
 #################       Payroll id messages        ########################################
 
-employment.payrollId.bullet3 = the special characters: .,-()/=!"%&*;<>''+:\?
-employment.payrollId.error.incorrect.agent = Enter your client’s payroll ID in the correct format
-employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
-employment.payrollId.error.tooMany.agent = Your client’s payroll ID must be 38 characters or fewer
-employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
-employment.payrollId.forExample = For example, 123456
-employment.payrollId.paragraph1.agent = Your client’s payroll ID must be 38 characters or fewer. It can include:
-employment.payrollId.paragraph1.individual = Your payroll ID must be 38 characters or fewer. It can include:
-employment.payrollId.paragraph2.agent = You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’.
-employment.payrollId.paragraph2.individual = You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’.
-employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
-employment.payrollId.title.agent = What’s your client’s payroll ID for this employment?
-employment.payrollId.title.individual = What’s your payroll ID for this employment?
+employment.payrollId.error.invalidCharacters = Payroll ID must not include {0}
+employment.payrollId.error.tooManyCharacters = Payroll ID must be 38 characters or fewer
+employment.payrollId.hint.agent = You can find this on your client’s payslips or {0}. It’s also known as a ‘payroll number’.
+employment.payrollId.hint.individual = You can find this on your payslips or {0}. It’s also known as a ‘payroll number’.
+employment.payrollId.title.agent = What’s your client’s payroll ID for {0}? (optional)
+employment.payrollId.title.individual = What’s your payroll ID for {0}? (optional)
 
 #################       Employment pay messages        ########################################
 

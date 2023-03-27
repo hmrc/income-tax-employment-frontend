@@ -21,24 +21,19 @@ import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
-import play.api.data.validation.Constraint
 
 object EmployerPayrollIdForm extends InputFilters {
 
   val payrollId: String = "payrollId"
 
   private val charLimit: Int = 38
-  private val regex: String = "^[A-Za-z0-9.,\\\\\\-()\\/=!\"%&*; <>'’+:\\?]{0,38}$"
+  private val regex: String = "^[A-Za-z0-9.,\\\\\\-()\\/=!\"&*; <>'’+:\\?]{0,38}$"
 
-  def notCharLimit(isAgent: Boolean): Constraint[String] =
-    validateSize(charLimit)(if (isAgent) "employment.payrollId.error.tooMany.agent" else "employment.payrollId.error.tooMany.individual")
-
-  def validateFormat(isAgent: Boolean): Constraint[String] =
-    validateChar(regex)(if (isAgent) "employment.payrollId.error.incorrect.agent" else "employment.payrollId.error.incorrect.individual")
-
-  def employerPayrollIdForm(isAgent: Boolean): Form[String] = Form(
+  def employerPayrollIdForm(invalidCharactersKey: String,
+                            tooManyCharactersKey: String): Form[String] = Form(
     payrollId -> trimmedText.transform[String](filter, identity).verifying(
-      notCharLimit(isAgent) andThen validateFormat(isAgent)
+      validateSize(charLimit)(tooManyCharactersKey)
+        .andThen(validateChar(regex, outputInvalidChars = true)(invalidCharactersKey))
     )
   )
 }

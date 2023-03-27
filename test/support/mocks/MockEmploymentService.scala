@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 trait MockEmploymentService extends MockFactory {
 
-  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  protected val mockEmploymentService: EmploymentService = mock[EmploymentService]
 
   def mockUpdateEndDate(user: User,
                         taxYear: Int,
@@ -38,6 +38,18 @@ trait MockEmploymentService extends MockFactory {
                        ): CallHandler5[User, Int, String, EmploymentUserData, LocalDate, Future[Either[Unit, EmploymentUserData]]] = {
     (mockEmploymentService.updateEndDate(_: User, _: Int, _: String, _: EmploymentUserData, _: LocalDate))
       .expects(user, taxYear, employmentId, originalEmploymentUserData, endDate)
+      .returns(Future.successful(result))
+  }
+
+  def mockUpdatePayrollId(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          payrollId: Option[String],
+                          result: Either[Unit, EmploymentUserData]
+                         ): CallHandler5[User, Int, String, EmploymentUserData, Option[String], Future[Either[Unit, EmploymentUserData]]] = {
+    (mockEmploymentService.updatePayrollId(_: User, _: Int, _: String, _: EmploymentUserData, _: Option[String]))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, payrollId)
       .returns(Future.successful(result))
   }
 }

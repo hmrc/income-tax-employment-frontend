@@ -25,7 +25,7 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import utils.PageUrls.{checkYourDetailsUrl, fullUrl, overviewUrl, payrollIdUrl}
+import utils.PageUrls.{checkYourDetailsUrl, fullUrl, payrollIdUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -44,7 +44,17 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     )
 
   ".show" when {
-    "should render the What's your payrollId? page with no pre-filled form" which {
+    "redirect to Overview Page when in year" in {
+      val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(payrollIdUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+    }
+
+    "should render page successfully" in {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -53,59 +63,22 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "has an OK status" in {
-        getInputFieldValue("#payrollId") shouldBe ""
-        result.status shouldBe OK
-      }
-    }
-
-    "should render the What's your payrollId? page with pre-filled form" which {
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        authoriseAgentOrIndividual(isAgent = false)
-        val employmentDetails: EmploymentDetails = cya().employment.employmentDetails.copy(payrollId = Some("123456789"))
-        insertCyaData(cya().copy(employment = cya().employment.copy(employmentDetails = employmentDetails)))
-
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an OK status" in {
-        getInputFieldValue("#payrollId") shouldBe "123456789"
-        result.status shouldBe OK
-      }
-    }
-
-    "redirect to check employment details page when there is no cya data in session" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "redirect to overview page if the user tries to hit this page with current taxYear" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        insertCyaData(cya())
-        urlGet(fullUrl(payrollIdUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-      }
+      result.status shouldBe OK
     }
   }
 
   ".submit" when {
-    "return a bad request when form validation fails" which {
+    "redirect to Overview page when in year" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(payrollIdUrl(taxYear, employmentId)), Map.empty[String, String], headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+    }
+
+    "render page with an error when validation fails" in {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -115,12 +88,10 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "has a BAD_REQUEST status" in {
-        result.status shouldBe BAD_REQUEST
-      }
+      result.status shouldBe BAD_REQUEST
     }
 
-    "should update the payrollId when a valid payrollId is submitted and redirect to the check your details controller" when {
+    "persist data and redirect to next page" in {
       val payrollId = "123456"
       val body = Map("payrollId" -> payrollId)
 
@@ -129,21 +100,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         val data = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true, anEmploymentCYAModel)
         insertCyaData(data)
-        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body,  headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "status SEE_OTHER" in {
-        result.status shouldBe SEE_OTHER
-      }
-
-      "redirect to the Check Employment Details page" in {
-        result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-
-      s"update the cya models payroll id to be $payrollId" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyaModel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
-      }
+      result.status shouldBe SEE_OTHER
+      result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
+      lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+      cyaModel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
     }
   }
 }

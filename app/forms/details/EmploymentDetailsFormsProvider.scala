@@ -58,4 +58,9 @@ class EmploymentDetailsFormsProvider {
                           (implicit messages: Messages): Form[DateFormData] = {
     dateForm.copy(errors = validateEndDate(dateForm.get, taxYear, isAgent, startDate))
   }
+
+  def employerPayrollIdForm(): Form[String] = EmployerPayrollIdForm.employerPayrollIdForm(
+    invalidCharactersKey = "employment.payrollId.error.invalidCharacters",
+    tooManyCharactersKey = "employment.payrollId.error.tooManyCharacters"
+  )
 }

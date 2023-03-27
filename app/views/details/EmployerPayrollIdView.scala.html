@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import controllers.details.routes.EmployerPayrollIdController
+
+@import models.benefits.pages.EmployerPayrollIdPage
+
 @import views.html.templates.Layout
 @import views.html.templates.helpers.{Button, ErrorSummary, InputText, Heading}
 
@@ -26,33 +30,22 @@
     button: Button
 )
 
-@(form: Form[String], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(pageModel: EmployerPayrollIdPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"employment.payrollId.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"employment.payrollId.title.${if(pageModel.isAgent) "agent" else "individual"}", pageModel.employerName)}
 
-@headingForUse = @{(titleForUse)}
+@layout(pageTitle = titleForUse, taxYear = Some(pageModel.taxYear), hasErrors = pageModel.form.hasErrors) {
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+    @errorSummary(pageModel.form.errors)
 
-    @errorSummary(form.errors)
-
-    @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-
-    <p class="govuk-body">@messages(s"employment.payrollId.paragraph1.${if(request.user.isAgent) "agent" else "individual"}")</p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("common.letters.case")</li>
-        <li>@messages("common.numbers")</li>
-        <li>@messages("employment.payrollId.bullet3")</li>
-    </ul>
-    <p class="govuk-body">@messages(s"employment.payrollId.paragraph2.${if(request.user.isAgent) "agent" else "individual"}")</p>
-
-    @formWithCsrf(controllers.details.routes.EmployerPayrollIdController.submit(taxYear, employmentId)) {
+    @formWithCsrf(EmployerPayrollIdController.submit(pageModel.taxYear, pageModel.employmentId)) {
         @inputText(
-            form,
+            form = pageModel.form,
             id = "payrollId",
             name = "payrollId",
-            label = headingForUse,
-            hint = Some(messages("employment.payrollId.forExample")),
+            label = titleForUse,
+            isPageHeading = true,
+            hint = Some(messages(s"employment.payrollId.hint.${if(pageModel.isAgent) "agent" else "individual"}", if (pageModel.employmentEnded) "P60" else "P45")),
             labelHidden = true,
             classes = Some("govuk-input--width-20")
         )

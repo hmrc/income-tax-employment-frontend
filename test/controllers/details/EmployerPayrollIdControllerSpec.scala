@@ -16,9 +16,9 @@
 
 package controllers.details
 
-import controllers.details.routes.EmployerPayrollIdController
+import controllers.details.routes.EmployerPayAmountController
 import controllers.employment.routes.CheckEmploymentDetailsController
-import forms.details.{DateForm, EmploymentDetailsFormsProvider}
+import forms.details.{EmployerPayrollIdForm, EmploymentDetailsFormsProvider}
 import models.employment.EmploymentDetailsType
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK}
 import play.api.mvc.Results.{InternalServerError, Redirect}
@@ -30,20 +30,18 @@ import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDeta
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks.{MockActionsProvider, MockEmploymentService, MockErrorHandler}
-import views.html.details.EmployerEndDateView
+import views.html.details.EmployerPayrollIdView
 
-import java.time.LocalDate
-
-class EmployerEndDateControllerSpec extends ControllerUnitTest
+class EmployerPayrollIdControllerSpec extends ControllerUnitTest
   with MockActionsProvider
   with MockEmploymentService
   with MockErrorHandler {
 
-  private val employmentId: String = anEmploymentUserData.employmentId
-  private val startDate = LocalDate.of(taxYearEOY, 1, 1)
-  private val pageView = inject[EmployerEndDateView]
+  private val employmentId = "employmentId"
 
-  private val underTest = new EmployerEndDateController(
+  private val pageView = inject[EmployerPayrollIdView]
+
+  private val underTest = new EmployerPayrollIdController(
     mockActionsProvider,
     pageView,
     new EmploymentDetailsFormsProvider(),
@@ -52,7 +50,7 @@ class EmployerEndDateControllerSpec extends ControllerUnitTest
   )
 
   ".show" should {
-    "return a successful response" in {
+    "return successful response" in {
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)
 
       val result = underTest.show(taxYearEOY, employmentId).apply(fakeIndividualRequest)
@@ -66,56 +64,42 @@ class EmployerEndDateControllerSpec extends ControllerUnitTest
     "render page with error when validation of form fails" in {
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(DateForm.day -> "")
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(EmployerPayrollIdForm.payrollId -> "invalid-input-$")
       val result = underTest.submit(taxYearEOY, employmentId).apply(request)
 
       status(result) shouldBe BAD_REQUEST
       contentType(result) shouldBe Some("text/html")
     }
 
-    "handle internal server error when EmploymentService.updateEndDate(...) fails" in {
+    "handle internal server error when employmentService.updatePayrollId(...) fails" in {
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)
-      mockUpdateEndDate(aUser, taxYearEOY, employmentId, anEmploymentUserData, startDate, Left(()))
+      mockUpdatePayrollId(aUser, taxYearEOY, employmentId, anEmploymentUserData, Some("some-payroll-id"), Left(()))
       mockInternalServerError(InternalServerError)
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(
-        DateForm.day -> "1",
-        DateForm.month -> "1",
-        DateForm.year -> taxYearEOY.toString,
-      )
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(EmployerPayrollIdForm.payrollId -> "some-payroll-id")
       val result = underTest.submit(taxYearEOY, employmentId)(request)
 
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
 
-    "redirect to CheckEmploymentDetails page on successful end date update when isFinished" in {
+    "redirect to CheckEmploymentDetails page on successful payrollId update when isFinished" in {
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)
-      mockUpdateEndDate(aUser, taxYearEOY, employmentId, anEmploymentUserData, startDate, Right(anEmploymentUserData))
+      mockUpdatePayrollId(aUser, taxYearEOY, employmentId, anEmploymentUserData, Some("some-payroll-id"), Right(anEmploymentUserData))
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(
-        DateForm.day -> "1",
-        DateForm.month -> "1",
-        DateForm.year -> taxYearEOY.toString,
-      )
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(EmployerPayrollIdForm.payrollId -> "some-payroll-id")
 
-      await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe
-        Redirect(CheckEmploymentDetailsController.show(taxYearEOY, employmentId))
+      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe Redirect(CheckEmploymentDetailsController.show(taxYearEOY, employmentId))
     }
 
-    "redirect to EmployerPayrollIdController page on successful end date update when not finished" in {
+    "redirect to EmployerPayAmountController page on successful end date update when not finished" in {
       val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
 
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, userData)
-      mockUpdateEndDate(aUser, taxYearEOY, employmentId, userData, startDate, Right(userData))
+      mockUpdatePayrollId(aUser, taxYearEOY, employmentId, userData, Some("some-payroll-id"), Right(userData))
 
-      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(
-        DateForm.day -> "1",
-        DateForm.month -> "1",
-        DateForm.year -> taxYearEOY.toString
-      )
+      val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(EmployerPayrollIdForm.payrollId -> "some-payroll-id")
 
-      await(underTest.submit(taxYearEOY, employmentId).apply(request)) shouldBe
-        Redirect(EmployerPayrollIdController.show(taxYearEOY, employmentId))
+      await(underTest.submit(taxYearEOY, employmentId)(request)) shouldBe Redirect(EmployerPayAmountController.show(taxYearEOY, employmentId))
     }
   }
 }
