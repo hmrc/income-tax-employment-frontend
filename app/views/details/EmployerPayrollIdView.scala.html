@@ -45,7 +45,7 @@
             name = "payrollId",
             label = titleForUse,
             isPageHeading = true,
-            hint = Some(messages(s"employment.payrollId.hint.${if(pageModel.isAgent) "agent" else "individual"}", if (pageModel.employmentEnded) "P60" else "P45")),
+            hint = Some(messages(s"employment.payrollId.hint.${if(pageModel.isAgent) "agent" else "individual"}", if (pageModel.employmentEnded) "P45" else "P60")),
             labelHidden = true,
             classes = Some("govuk-input--width-20")
         )
