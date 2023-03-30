@@ -126,7 +126,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         titleCheck(get.expectedTitle, userScenario.isWelsh)
         labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP60, hintTextSelector)
+        textOnPageCheck(get.hintTextP45, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.show(taxYearEOY, employmentId).url, continueButtonFormSelector)
@@ -144,7 +144,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         titleCheck(get.expectedTitle, userScenario.isWelsh)
         labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP45, hintTextSelector)
+        textOnPageCheck(get.hintTextP60, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "123456")
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
@@ -164,7 +164,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
         labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP60, hintTextSelector)
+        textOnPageCheck(get.hintTextP45, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, tooLonPayrollId)
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
@@ -187,7 +187,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
         labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP45, hintTextSelector)
+        textOnPageCheck(get.hintTextP60, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, payrollId)
         buttonCheck(continueButtonText, continueButtonSelector)
         formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
