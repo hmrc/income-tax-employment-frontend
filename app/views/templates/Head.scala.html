@@ -24,7 +24,7 @@
 @(headBlock: Option[Html] = None, timeout: Boolean = true)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @headBlock
 
-@hmrcTrackingConsentSnippet(nonce = CSPNonce.get)
+@hmrcTrackingConsentSnippet()
 
 <!--[if lte IE 8]><script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/html5shiv.min.js")'></script><![endif]-->
 <!--[if lte IE 8]><link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
