@@ -24,6 +24,7 @@ import config.AppConfig
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData
+import models.tailoring.ExcludedJourneysResponseModel
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
@@ -271,6 +272,28 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       responseBody = Json.toJson(userData).toString(),
       sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
       mtdidHeader = "mtditid" -> defaultUser.mtdItId
+    )
+  }
+
+  def excludeStub(userData: ExcludedJourneysResponseModel, nino: String, taxYear: Int): StubMapping = {
+    stubGetWithHeadersCheck(
+      url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/excluded-journeys/$taxYear", status = OK,
+      body = Json.toJson(userData).toString(),
+      sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
+      mtdidHeader = "mtditid" -> defaultUser.mtdItId
+    )
+  }
+
+  def excludeClearStub(nino: String, taxYear: Int): StubMapping = {
+    stubPostWithoutResponseAndRequestBody(
+      url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/clear-excluded-journeys/$taxYear",
+      status = NO_CONTENT,
+    )
+  }
+  def excludePostStub(nino: String, taxYear: Int): StubMapping = {
+    stubPostWithoutResponseAndRequestBody(
+      url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/exclude-journey/$taxYear",
+      status = NO_CONTENT,
     )
   }
 }
