@@ -166,6 +166,15 @@ employment.removeEmployment.studentLoans = student loans
 employment.removeEmployment.anyChanges = any changes made to the information we hold
 employment.removeEmployment.button = Remove employment period
 
+#################       Tailor employment messages        ########################################
+
+employment.tailorEmployment.title = Are you sure you want to change PAYE employment details for the tax year?
+employment.tailorEmployment.p1 = If you change your PAYE employment details, this will:
+employment.tailorEmployment.p2 = You cannot delete information we already hold. We will not use these details to calculate your Income Tax Return for this tax year.
+employment.tailorEmployment.b1 = change details of your Income Tax Return including employment, benefits and student loans
+employment.tailorEmployment.b2 = delete information you have entered about employers and expenses
+employment.tailorEmployment.button = Confirm
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Which period of employment do you want to add?

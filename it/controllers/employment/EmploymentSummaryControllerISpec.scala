@@ -18,6 +18,7 @@ package controllers.employment
 
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
+import models.tailoring.ExcludedJourneysResponseModel
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
@@ -35,6 +36,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     "render page when EOY" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
+        excludeStub(ExcludedJourneysResponseModel(Seq()),nino, taxYearEOY)
         userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq()))), nino, taxYearEOY)
         urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -48,6 +50,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData.copy(employment = Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq()))), nino, taxYear)
+        excludeStub(ExcludedJourneysResponseModel(Seq()),nino, taxYear)
         urlGet(fullUrl(employmentSummaryUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -60,6 +63,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(anEmploymentSource), None))), nino, taxYear)
+        excludeStub(ExcludedJourneysResponseModel(Seq()),nino, taxYear)
         urlGet(fullUrl(employmentSummaryUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -72,6 +76,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(IncomeTaxUserData(), nino, taxYear)
+        excludeStub(ExcludedJourneysResponseModel(Seq()),nino, taxYear)
         urlGet(fullUrl(employmentSummaryUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

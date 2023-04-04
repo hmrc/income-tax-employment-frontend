@@ -25,6 +25,7 @@ import models.employment.AllEmploymentData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.tailoring.TailoringService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmploymentSummaryView
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
                                             employmentSessionService: EmploymentSessionService,
+                                            tailoringService: TailoringService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
                                             actionsProvider: ActionsProvider)
@@ -42,11 +44,11 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear) { implicit request =>
+  def show(taxYear: Int): Action[AnyContent] = actionsProvider.authenticatedPriorDataAction(taxYear).async { implicit request =>
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
     if (!isInYear && !appConfig.employmentEOYEnabled) {
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       val priorData: Option[AllEmploymentData] = request.employmentPriorData
 
@@ -54,7 +56,11 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined
 
-      Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent))
+      tailoringService.getExcludedJourneys(taxYear, request.user.nino, request.user.mtditid).flatMap {
+        case Left(error) => Future.successful(errorHandler.internalServerError())
+        case Right(result) => Future.successful(Ok(pageView(taxYear, employmentData, doExpensesExist, isInYear, request.user.isAgent,
+          Some(!result.journeys.map(_.journey).contains("employment")))))
+      }
     }
   }
 

@@ -17,6 +17,7 @@
 package controllers.tailorings
 
 import forms.YesNoForm
+import models.tailoring.ExcludedJourneysResponseModel
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.json.Json
@@ -39,6 +40,7 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
     "Render the employment gateway page" in {
       lazy val result: WSResponse = {
         authoriseIndividual()
+        excludeStub(ExcludedJourneysResponseModel(Seq()),"1234567890", taxYearEOY)
         urlGet(url, false, false, Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -63,7 +65,8 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        excludeClearStub(nino, taxYearEOY)
+        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe SEE_OTHER
       result.headers("Location").contains(controllers.employment.routes.EmploymentSummaryController.show(taxYearEOY).url) shouldBe true
@@ -73,17 +76,18 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        excludeClearStub(nino, taxYearEOY)
+        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe SEE_OTHER
-      result.headers("Location").contains(appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)) shouldBe true
+      result.headers("Location").contains(controllers.tailorings.routes.RemoveAllEmploymentController.show(taxYearEOY).url) shouldBe true
     }
 
     "Return a bad request when the selection is invalid" in {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
       lazy val result: WSResponse = {
         authoriseIndividual()
-        urlPost(url, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe BAD_REQUEST
     }
@@ -94,6 +98,7 @@ class EmploymentGatewayControllerISpec extends IntegrationTest with ViewHelpers 
         val request = FakeRequest("POST", employmentGatewayUrl(taxYearEOY)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), "Csrf-Token" -> "nocheck")
         lazy val result: Future[Result] = {
           authoriseIndividual(true)
+          excludeClearStub(nino, taxYearEOY)
           route(appWithFeatureSwitchesOff, request, Json.toJson(form)).get
         }
         status(result) shouldBe SEE_OTHER

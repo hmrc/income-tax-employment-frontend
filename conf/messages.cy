@@ -166,6 +166,15 @@ employment.removeEmployment.studentLoans = benthyciadau myfyrwyr
 employment.removeEmployment.anyChanges = unrhyw newidiadau a wnaed i’r wybodaeth sydd gennym
 employment.removeEmployment.button = Dileu’r cyfnod o gyflogaeth
 
+#################       Tailor employment messages        ########################################
+
+employment.tailorEmployment.title = A ydych yn siŵr eich bod am newid manylion cyflogaeth TWE ar gyfer y flwyddyn dreth nesaf?
+employment.tailorEmployment.p1 = Os byddwch yn newid eich manylion cyflogaeth TWE, bydd hyn yn:
+employment.tailorEmployment.p2 = Ni allwch ddileu’r wybodaeth sydd gennym eisoes. Ni fyddwn yn defnyddio’r manylion hyn i gyfrifo eich Ffurflen Dreth Incwm ar gyfer y flwyddyn dreth hon.
+employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gynnwys cyflogaeth, budd-daliadau a benthyciadau myfyriwr
+employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
+employment.tailorEmployment.button = Cadarnhau
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?

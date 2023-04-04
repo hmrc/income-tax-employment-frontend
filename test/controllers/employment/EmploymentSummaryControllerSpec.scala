@@ -20,7 +20,9 @@ import actions.ActionsProvider
 import akka.actor.ActorSystem
 import common.SessionValues
 import config.AppConfig
+import connectors.TailoringDataConnector
 import models.employment._
+import models.tailoring.{ExcludeJourneyModel, ExcludedJourneysResponseModel}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{AnyContentAsEmpty, Result}
@@ -36,8 +38,10 @@ import scala.concurrent.Future
 class EmploymentSummaryControllerSpec extends ControllerUnitTest
   with MockAuthorisedAction
   with MockEmploymentSessionService
+  with MockTailoringService
   with MockActionsProvider
-  with MockRedirectsMapper {
+  with MockRedirectsMapper
+  with MockTailoringConnector {
 
   object FullModel {
 
@@ -140,6 +144,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
   private def controller(isEmploymentEOYEnabled: Boolean = true) = new EmploymentSummaryController(
     employmentSummaryView,
     mockEmploymentSessionService,
+    mockTailoringService,
     new InYearUtil(),
     mockErrorHandler,
     actionsProvider
@@ -221,6 +226,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       s"has an OK($OK) status" in {
         mockAuth(Some(nino))
         mockGetPriorRight(taxYear, Some(FullModel.oneEmploymentSourceData))
+        mockGetExcludedJourneysFromService(ExcludedJourneysResponseModel(Seq.empty[ExcludeJourneyModel]), taxYear, nino)
 
         val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
         result.header.status shouldBe OK
@@ -232,6 +238,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       s"has an OK($OK) status" in {
         mockAuth(Some(nino))
         mockGetPriorRight(taxYear, Some(FullModel.multipleEmploymentSourcesData))
+        mockGetExcludedJourneysFromService(ExcludedJourneysResponseModel(Seq.empty[ExcludeJourneyModel]), taxYear, nino)
 
         val result = await(controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString)))
         result.header.status shouldBe OK
@@ -243,6 +250,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         mockAuth(Some(nino))
         mockGetPriorRight(taxYearEOY, Some(FullModel.multipleEmploymentSourcesData))
+        mockGetExcludedJourneysFromService(ExcludedJourneysResponseModel(Seq.empty[ExcludeJourneyModel]), taxYear, nino)
 
         val result: Future[Result] = controller(isEmploymentEOYEnabled = false).show(taxYearEOY)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYearEOY.toString))
 
@@ -255,7 +263,7 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       s"has the SEE_OTHER($SEE_OTHER) status" in {
         mockAuth(Some(nino))
         mockGetPriorRight(taxYear, None)
-
+        mockGetExcludedJourneysFromService(ExcludedJourneysResponseModel(Seq.empty[ExcludeJourneyModel]), taxYear, nino)
         val result: Future[Result] = controller().show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
         status(result) shouldBe OK

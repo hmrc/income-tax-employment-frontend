@@ -281,6 +281,8 @@ object PageUrls extends IntegrationTest {
   //  *****************     Tailoring pages      ***************************
   def employmentGatewayUrl(taxYear: Int): String = s"$appUrl/$taxYear/income-from-employment"
 
+  def removeAllEmploymentUrl(taxYear: Int): String = s"$appUrl/$taxYear/remove-all-employments"
+
 }
 
 //scalastyle:on number.of.methods

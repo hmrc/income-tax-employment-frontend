@@ -222,7 +222,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = true, isInYear = false, isAgent = userScenario.isAgent)
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = true, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -251,7 +251,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent)
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -278,7 +278,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYear, employments, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent)
+          val htmlFormat = underTest(taxYear, employments, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -304,7 +304,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYear, employments, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent)
+          val htmlFormat = underTest(taxYear, employments, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -327,7 +327,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -346,7 +346,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -362,7 +362,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYearEOY, Seq.empty, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(taxYearEOY, Seq.empty, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
