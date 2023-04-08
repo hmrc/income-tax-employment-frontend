@@ -236,7 +236,7 @@ employment.employerName.paragraph = Mae’n rhaid i enw’r cyflogwr fod yn 74 o
 #################       Employment ref messages        ########################################
 
 payeRef.errors.wrongFormat = Enter PAYE reference in the correct format
-payeRef.heading = What is {0}‘s employer PAYE reference? (optional)
+payeRef.heading = What is {0}’s employer PAYE reference? (optional)
 payeRef.hint.employmentEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45.
 payeRef.hint.employmentEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45.
 payeRef.hint.employmentNotEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60.
@@ -246,8 +246,7 @@ payeRef.paragraph = Rhowch wybod i ni beth yw’r cyfeirnod TWE cywir os yw {0} 
 #################       Employment start date messages        ########################################
 
 employment.commonEmploymentDate.forExample = Er enghraifft, 12 11 2007
-employment.employmentStartDate.error.afterEndDate.agent = The date your client started working at {0} must be before the date they left, {1}
-employment.employmentStartDate.error.afterEndDate.individual = The date you started working at {0} must be before the date you left, {1}
+
 employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client started working at {0}
 employment.employmentStartDate.error.incompleteAll.individual = Enter the date you started working at {0}
 employment.employmentStartDate.error.incompleteDay.agent = The date your client started working at {0} must include a day
@@ -264,37 +263,41 @@ employment.employmentStartDate.error.incompleteYear.agent = The date your client
 employment.employmentStartDate.error.incompleteYear.individual = The date you started working at {0} must include a year
 employment.employmentStartDate.error.invalidDate.agent = The date your client started working at {0} must be a real date
 employment.employmentStartDate.error.invalidDate.individual = The date you started working at {0} must be a real date
-employment.employmentStartDate.error.tooLongAgo.agent = The date your client started working at {0} must be after 1 January 1900
-employment.employmentStartDate.error.tooLongAgo.individual = The date you started working at {0} must be after 1 January 1900
-employment.employmentStartDate.error.tooRecent.agent = The date your client started working at {0} must be before 6 April {1}
-employment.employmentStartDate.error.tooRecent.individual = The date you started working at {0} must be before 6 April {1}
+employment.employmentStartDate.error.mustBeAfter1900.agent = The date your client started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.mustBeAfter1900.individual = The date you started working at {0} must be after 1 January 1900
+employment.employmentStartDate.error.mustBeBeforeEndDate.agent = The date your client started working at {0} must be before the date they left, {1}
+employment.employmentStartDate.error.mustBeBeforeEndDate.individual = The date you started working at {0} must be before the date you left, {1}
+employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.agent = The date your client started working at {0} must be before 6 April {1}
+employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.individual = The date you started working at {0} must be before 6 April {1}
+employment.employmentStartDate.error.mustHave4DigitYear.agent = The year your client started working at {0} must include 4 digits
+employment.employmentStartDate.error.mustHave4DigitYear.individual = The year you started working at {0} must include 4 digits
 employment.employmentStartDate.heading.agent = Pryd y dechreuodd eich cleient weithio yn {0}?
 employment.employmentStartDate.heading.individual = Pryd y gwnaethoch ddechrau gweithio yn {0}?
 
 #################       Employment end date messages        ########################################
 
-employment.employmentEndDate.error.beforeStartDate.agent = The date your client left must be after the date your client started, {0}
-employment.employmentEndDate.error.beforeStartDate.individual = The date you left must be after the date you started, {0}
-employment.employmentEndDate.error.incompleteAll.agent = Enter the date your client’s employment ended
-employment.employmentEndDate.error.incompleteAll.individual = Enter the date your employment ended
-employment.employmentEndDate.error.incompleteDay.agent = The date your client left must include a day
-employment.employmentEndDate.error.incompleteDay.individual = The date you left must include a day
-employment.employmentEndDate.error.incompleteDayMonth.agent = The date your client left must include a day and month
-employment.employmentEndDate.error.incompleteDayMonth.individual = The date you left must include a day and month
-employment.employmentEndDate.error.incompleteDayYear.agent = The date your client left must include a day and year
-employment.employmentEndDate.error.incompleteDayYear.individual = The date you left must include a day and year
-employment.employmentEndDate.error.incompleteMonth.agent = The date your client left must include a month
-employment.employmentEndDate.error.incompleteMonth.individual = The date you left must include a month
-employment.employmentEndDate.error.incompleteMonthYear.agent = The date your client left must include a month and year
-employment.employmentEndDate.error.incompleteMonthYear.individual = The date you left must include a month and year
-employment.employmentEndDate.error.incompleteYear.agent = The date your client left must include a year
-employment.employmentEndDate.error.incompleteYear.individual = The date you left must include a year
-employment.employmentEndDate.error.invalidDate.agent = The date your client left must be a real date
-employment.employmentEndDate.error.invalidDate.individual = The date you left must be a real date
-employment.employmentEndDate.error.tooLongAgo.agent = The date your client left must be the same as or after 6 April {0}
-employment.employmentEndDate.error.tooLongAgo.individual = The date you left must be the same as or after 6 April {0}
-employment.employmentEndDate.error.tooRecent.agent = The date your client left must be the same as or before 5 April {0}
-employment.employmentEndDate.error.tooRecent.individual = The date you left must be the same as or before 5 April {0}
+employment.employmentEndDate.error.incompleteAll.agent = Enter the date your client left {0}
+employment.employmentEndDate.error.incompleteAll.individual = Enter the date you left {0}
+employment.employmentEndDate.error.incompleteDay.agent = The date your client left {0} must include a day
+employment.employmentEndDate.error.incompleteDay.individual = The date you left {0} must include a day
+employment.employmentEndDate.error.incompleteDayMonth.agent = The date your client left {0} must include a day and month
+employment.employmentEndDate.error.incompleteDayMonth.individual = The date you left {0} must include a day and month
+employment.employmentEndDate.error.incompleteDayYear.agent = The date your client left {0} must include a day and year
+employment.employmentEndDate.error.incompleteDayYear.individual = The date you left {0} must include a day and year
+employment.employmentEndDate.error.incompleteMonth.agent = The date your client left {0} must include a month
+employment.employmentEndDate.error.incompleteMonth.individual = The date you left {0} must include a month
+employment.employmentEndDate.error.incompleteMonthYear.agent = The date your client left {0} must include a month and year
+employment.employmentEndDate.error.incompleteMonthYear.individual = The date you left {0} must include a month and year
+employment.employmentEndDate.error.incompleteYear.agent = The date your client left {0} must include a year
+employment.employmentEndDate.error.incompleteYear.individual = The date you left {0} must include a year
+employment.employmentEndDate.error.invalidDate.agent = The date your client left {0} must be a real date
+employment.employmentEndDate.error.invalidDate.individual = The date you left {0} must be a real date
+employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.agent = The date your client left {0} must be the same as or before 5 April {1}
+employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.individual = The date you left {0} must be the same as or before 5 April {1}
+employment.employmentEndDate.error.mustBeBeforeStartDate.agent = The date your client left {0} must be after the date they started, {1}
+employment.employmentEndDate.error.mustBeBeforeStartDate.individual = The date you left {0} must be after the date you started, {1}
+employment.employmentEndDate.error.mustHave4DigitYear.agent = The year your client left {0} must include 4 digits
+employment.employmentEndDate.error.mustHave4DigitYear.individual = The year you left {0} must include 4 digits
 employment.employmentEndDate.heading.agent = When did your client leave {0}?
 employment.employmentEndDate.heading.individual = When did you leave {0}?
 

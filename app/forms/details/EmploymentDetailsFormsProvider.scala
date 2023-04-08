@@ -60,9 +60,10 @@ class EmploymentDetailsFormsProvider {
   def validatedEndDateForm(dateForm: Form[DateFormData],
                            taxYear: Int,
                            isAgent: Boolean,
+                           employerName: String,
                            startDate: LocalDate)
                           (implicit messages: Messages): Form[DateFormData] = {
-    dateForm.copy(errors = validateEndDate(dateForm.get, taxYear, isAgent, startDate))
+    dateForm.copy(errors = validateEndDate(dateForm.get, taxYear, isAgent, employerName, startDate))
   }
 
   def employerPayrollIdForm(): Form[String] = EmployerPayrollIdForm.employerPayrollIdForm(

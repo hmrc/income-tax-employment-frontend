@@ -267,7 +267,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         }
       }
 
-      "the data is too long ago (must be after 1st January 1900)" which {
+      "the date is not after 1st January 1900" which {
         lazy val form: Map[String, String] = Map(DateForm.year -> "1900", DateForm.month -> "1",
           DateForm.day -> "1")
 
@@ -283,7 +283,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         }
       }
 
-      "the date is a too recent date i.e. after 5thApril" which {
+      "the date is after 5th April" which {
         lazy val form: Map[String, String] = Map(DateForm.year -> taxYearEOY.toString, DateForm.month -> "04",
           DateForm.day -> "06")
 

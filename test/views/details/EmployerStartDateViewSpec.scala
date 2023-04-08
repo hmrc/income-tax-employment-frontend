@@ -69,10 +69,10 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val emptyDayMonthError: String
     val emptyAllError: String
     val invalidDateError: String
-    val tooLongAgoDateError: String
-    val tooRecentDateError: String
-
-    def afterEndDateError(date: LocalDate): String
+    val mustBeAfter1900Error: String
+    val mustBeBeforeEndDateError: LocalDate => String
+    val mustBeBeforeEndOfTaxYearError: String
+    val mustHave4DigitYear: String
   }
 
   trait CommonExpectedResults {
@@ -91,10 +91,10 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val emptyDayMonthError = s"The date you started working at $employerName must include a day and month"
     val emptyAllError = s"Enter the date you started working at $employerName"
     val invalidDateError = s"The date you started working at $employerName must be a real date"
-    val tooLongAgoDateError = s"The date you started working at $employerName must be after 1 January 1900"
-    val tooRecentDateError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
-
-    def afterEndDateError(date: LocalDate): String = s"The date you started working at $employerName must be before the date you left, ${dateFormatter(date)}"
+    val mustBeAfter1900Error = s"The date you started working at $employerName must be after 1 January 1900"
+    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) => s"The date you started working at $employerName must be before the date you left, ${dateFormatter(date)}"
+    val mustBeBeforeEndOfTaxYearError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
+    val mustHave4DigitYear = s"The year you started working at $employerName must include 4 digits"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -108,10 +108,11 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val emptyDayMonthError = s"The date you started working at $employerName must include a day and month"
     val emptyAllError = s"Enter the date you started working at $employerName"
     val invalidDateError = s"The date you started working at $employerName must be a real date"
-    val tooLongAgoDateError = s"The date you started working at $employerName must be after 1 January 1900"
-    val tooRecentDateError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
-
-    def afterEndDateError(date: LocalDate): String = s"The date you started working at $employerName must be before the date you left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
+    val mustBeAfter1900Error = s"The date you started working at $employerName must be after 1 January 1900"
+    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) =>
+      s"The date you started working at $employerName must be before the date you left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
+    val mustBeBeforeEndOfTaxYearError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
+    val mustHave4DigitYear = s"The year you started working at $employerName must include 4 digits"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -125,10 +126,10 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val emptyDayMonthError = s"The date your client started working at $employerName must include a day and month"
     val emptyAllError = s"Enter the date your client started working at $employerName"
     val invalidDateError = s"The date your client started working at $employerName must be a real date"
-    val tooLongAgoDateError = s"The date your client started working at $employerName must be after 1 January 1900"
-    val tooRecentDateError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
-
-    def afterEndDateError(date: LocalDate): String = s"The date your client started working at $employerName must be before the date they left, ${dateFormatter(date)}"
+    val mustBeAfter1900Error = s"The date your client started working at $employerName must be after 1 January 1900"
+    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) => s"The date your client started working at $employerName must be before the date they left, ${dateFormatter(date)}"
+    val mustBeBeforeEndOfTaxYearError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
+    val mustHave4DigitYear = s"The year your client started working at $employerName must include 4 digits"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -142,11 +143,11 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val emptyDayMonthError = s"The date your client started working at $employerName must include a day and month"
     val emptyAllError = s"Enter the date your client started working at $employerName"
     val invalidDateError = s"The date your client started working at $employerName must be a real date"
-    val tooLongAgoDateError = s"The date your client started working at $employerName must be after 1 January 1900"
-    val tooRecentDateError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
-
-    def afterEndDateError(date: LocalDate): String =
+    val mustBeAfter1900Error = s"The date your client started working at $employerName must be after 1 January 1900"
+    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) =>
       s"The date your client started working at $employerName must be before the date they left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
+    val mustBeBeforeEndOfTaxYearError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
+    val mustHave4DigitYear = s"The year your client started working at $employerName must include 4 digits"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -531,7 +532,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           errorAboveElementCheck(userScenario.specificExpectedResults.get.invalidDateError, Some("amount"))
         }
 
-        "the data is too long ago (must be after 1st January 1900)" which {
+        "the date is not after 1st January 1900" which {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -555,11 +556,11 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
           welshToggleCheck(userScenario.isWelsh)
 
-          errorSummaryCheck(userScenario.specificExpectedResults.get.tooLongAgoDateError, Selectors.daySelector)
-          errorAboveElementCheck(userScenario.specificExpectedResults.get.tooLongAgoDateError, Some("amount"))
+          errorSummaryCheck(userScenario.specificExpectedResults.get.mustBeAfter1900Error, Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.mustBeAfter1900Error, Some("amount"))
         }
 
-        "the date is a too recent date i.e. after 5th April" which {
+        "the date is after 5th April" which {
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -583,8 +584,8 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
           welshToggleCheck(userScenario.isWelsh)
 
-          errorSummaryCheck(userScenario.specificExpectedResults.get.tooRecentDateError, Selectors.daySelector)
-          errorAboveElementCheck(userScenario.specificExpectedResults.get.tooRecentDateError, Some("amount"))
+          errorSummaryCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndOfTaxYearError, Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndOfTaxYearError, Some("amount"))
         }
 
         "the date is not before the end date" which {
@@ -613,8 +614,68 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
           formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
           welshToggleCheck(userScenario.isWelsh)
 
-          errorSummaryCheck(userScenario.specificExpectedResults.get.afterEndDateError(earlierDate), Selectors.daySelector)
-          errorAboveElementCheck(userScenario.specificExpectedResults.get.afterEndDateError(earlierDate), Some("amount"))
+          errorSummaryCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndDateError(earlierDate), Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndDateError(earlierDate), Some("amount"))
+        }
+
+        "the year has fewer than 4 digits" which {
+          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+          val startDate = LocalDate.of(999, 1, 1)
+          val endDate = startDate.plusDays(1)
+          val filledForm = dateForm.bind(
+            Map(DateForm.year -> endDate.getYear.toString,
+              DateForm.month -> endDate.getMonthValue.toString,
+              DateForm.day -> endDate.getDayOfMonth.toString))
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, Some(startDate)))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
+          h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
+          textOnPageCheck(forExample, forExampleSelector)
+          inputFieldValueCheck(dayInputName, Selectors.daySelector, endDate.getDayOfMonth.toString)
+          inputFieldValueCheck(monthInputName, Selectors.monthSelector, endDate.getMonthValue.toString)
+          inputFieldValueCheck(yearInputName, Selectors.yearSelector, endDate.getYear.toString)
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+          welshToggleCheck(userScenario.isWelsh)
+
+          errorSummaryCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear, Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear, Some("amount"))
+        }
+
+        "the year has more than 4 digits" which {
+          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+
+          val startDate = LocalDate.of(10_000, 1, 1)
+          val endDate = startDate.plusDays(1)
+          val filledForm = dateForm.bind(
+            Map(DateForm.year -> endDate.getYear.toString,
+              DateForm.month -> endDate.getMonthValue.toString,
+              DateForm.day -> endDate.getDayOfMonth.toString))
+          val validatedForm = filledForm.copy(errors = DateForm.validateStartDate(filledForm.get, taxYearEOY, userScenario.isAgent, employerName, Some(startDate)))
+          val pageModel = page.copy(form = validatedForm)
+          val htmlFormat = underTest(pageModel)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
+          h1Check(userScenario.specificExpectedResults.get.expectedH1, isFieldSetH1 = true)
+          textOnPageCheck(forExample, forExampleSelector)
+          inputFieldValueCheck(dayInputName, Selectors.daySelector, endDate.getDayOfMonth.toString)
+          inputFieldValueCheck(monthInputName, Selectors.monthSelector, endDate.getMonthValue.toString)
+          inputFieldValueCheck(yearInputName, Selectors.yearSelector, endDate.getYear.toString)
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(EmployerStartDateController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
+          welshToggleCheck(userScenario.isWelsh)
+
+          errorSummaryCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear, Selectors.daySelector)
+          errorAboveElementCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear, Some("amount"))
         }
       }
     }
