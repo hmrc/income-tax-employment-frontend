@@ -16,6 +16,7 @@
 
 package controllers.details
 
+import controllers.details.routes.EmployerPayrollIdController
 import forms.details.PayeRefForm
 import models.details.EmploymentDetails
 import models.employment.AllEmploymentData
@@ -28,7 +29,8 @@ import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDeta
 import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import support.builders.models.employment.EmploymentFinancialDataBuilder.aHmrcEmploymentFinancialData
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
-import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -139,7 +141,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       }
     }
 
-    "redirect to Overview page when a valid form is submitted" when {
+    "redirect to Overview page when isFinished" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -150,7 +152,24 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
+        result.header(HeaderNames.LOCATION).head shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+      }
+    }
+
+    "redirect to EmployerPayrollId page when is not finished" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+        insertCyaData(employmentUserData)
+        val form = Map(PayeRefForm.payeRef -> payeRef)
+        urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION).head shouldBe EmployerPayrollIdController.show(taxYearEOY, employmentId).url
       }
     }
   }

@@ -72,7 +72,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
-    val expectedTitle: String = s"How much UK tax was taken from your earnings?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of UK tax taken from your earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
@@ -80,7 +80,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
-    val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of UK tax taken from your client’s earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
@@ -88,7 +88,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu o’ch enillion maggie?"
-    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu o’ch enillion?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd o’ch enillion"
     val expectedPTextNoData: String = "Fel arfer, mae’r swm hwn i’w weld yn adran ‘Manylion Cyflog a Threth Incwm’ eich P60."
@@ -96,7 +96,7 @@ class EmploymentTaxViewSpec extends ViewUnitTest {
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = s"Faint o dreth y DU a gafodd ei thynnu o enillion maggie eich cleient?"
-    val expectedTitle: String = s"Faint o dreth y DU a gafodd ei thynnu o enillion eich cleient?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Gwall: $expectedTitle"
     val expectedErrorNoEntry = "Nodwch y swm o dreth y DU a dynnwyd o enillion eich cleient"
     val expectedPTextNoData: String = "Fel arfer, mae’r swm hwn i’w weld yn yr adran ‘Manylion Cyflog a Threth Incwm’ ar P60 eich cleient."

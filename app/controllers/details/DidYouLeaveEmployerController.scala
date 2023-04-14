@@ -16,72 +16,60 @@
 
 package controllers.details
 
-import actions.AuthorisedAction
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.details.routes.{EmployerStartDateController, EmploymentDatesController}
+import controllers.details.routes.{EmployerEndDateController, PayeRefController}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
-import models.AuthorisationRequest
+import models.UserSessionDataRequest
+import models.benefits.pages.DidYouLeaveEmployerPage
 import models.details.EmploymentDetails
-import models.mongo.EmploymentUserData
+import models.employment.EmploymentDetailsType
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.EmploymentSessionService
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{InYearUtil, SessionHelper}
+import utils.SessionHelper
 import views.html.details.DidYouLeaveEmployerView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction,
+class DidYouLeaveEmployerController @Inject()(actionsProvider: ActionsProvider,
                                               pageView: DidYouLeaveEmployerView,
-                                              inYearAction: InYearUtil,
-                                              errorHandler: ErrorHandler,
-                                              employmentSessionService: EmploymentSessionService,
+                                              formsProvider: EmploymentDetailsFormsProvider,
                                               employmentService: EmploymentService,
-                                              formsProvider: EmploymentDetailsFormsProvider)
+                                              errorHandler: ErrorHandler)
                                              (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        val employerName = data.employment.employmentDetails.employerName
-        val form = formsProvider.didYouLeaveForm(request.user.isAgent, employerName)
-        data.employment.employmentDetails.didYouLeaveQuestion match {
-          case Some(didYouLeaveEmployer) =>
-            Future.successful(Ok(pageView(form.fill(didYouLeaveEmployer), taxYear,
-              employmentId, employerName)))
-          case None =>
-            if (data.isPriorSubmission) {
-              val didYouLeaveEmployer = data.employment.employmentDetails.cessationDate.isEmpty
-              Future.successful(Ok(pageView(form.fill(didYouLeaveEmployer), taxYear,
-                employmentId, employerName)))
-            } else {
-              Future.successful(Ok(pageView(form, taxYear, employmentId, employerName)))
-            }
-        }
-      }
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ) { implicit request =>
+    val startDate = LocalDate.parse(request.employmentUserData.employment.employmentDetails.startDate.get)
+    val form = formsProvider.didYouLeaveForm(request.user.isAgent, taxYear, startDate)
+    Ok(pageView(DidYouLeaveEmployerPage(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        val employerName = data.employment.employmentDetails.employerName
-        formsProvider.didYouLeaveForm(request.user.isAgent, employerName).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId, employerName))),
-          yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
-        )
-      }
-    }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ).async { implicit request =>
+    val startDate = LocalDate.parse(request.employmentUserData.employment.employmentDetails.startDate.get)
+    formsProvider.didYouLeaveForm(request.user.isAgent, taxYear, startDate).bindFromRequest().fold(
+      formWithErrors =>
+        Future.successful(BadRequest(pageView(DidYouLeaveEmployerPage(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      yesNo => handleSuccessForm(taxYear, employmentId, yesNo)
+    )
   }
 
-  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentService.updateDidYouLeaveQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
+  private def handleSuccessForm(taxYear: Int, employmentId: String, questionValue: Boolean)
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    employmentService.updateDidYouLeaveQuestion(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
@@ -93,9 +81,9 @@ class DidYouLeaveEmployerController @Inject()(authorisedAction: AuthorisedAction
     if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else if (employmentDetails.didYouLeaveQuestion.contains(true)) {
-      EmploymentDatesController.show(taxYear, employmentId)
+      EmployerEndDateController.show(taxYear, employmentId)
     } else {
-      EmployerStartDateController.show(taxYear, employmentId)
+      PayeRefController.show(taxYear, employmentId)
     }
   }
 }

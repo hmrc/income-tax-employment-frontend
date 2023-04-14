@@ -19,12 +19,16 @@ package utils
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.test.FakeRequest
+import support.{TaxYearProvider, UnitTest}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import utils.ViewUtils.ariaVisuallyHiddenText
 
 import java.time.LocalDate
+import java.time.Month.APRIL
 
-class ViewUtilSpec extends support.UnitTest with GuiceOneAppPerSuite {
+class ViewUtilSpec extends UnitTest
+  with GuiceOneAppPerSuite
+  with TaxYearProvider {
 
   protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
@@ -72,6 +76,13 @@ class ViewUtilSpec extends support.UnitTest with GuiceOneAppPerSuite {
     "return date in Welsh or English" in {
       ViewUtils.translatedDateFormatter(LocalDate.parse("2021-04-01"))(getMessages(isWelsh = true)) shouldBe "1 Ebrill 2021"
       ViewUtils.translatedDateFormatter(LocalDate.parse("2021-04-01"))(getMessages(isWelsh = false)) shouldBe "1 April 2021"
+    }
+  }
+
+  ".translatedTaxYearEndDateFormatter" should {
+    "translate 5 April [taxYear] date" in {
+      ViewUtils.translatedTaxYearEndDateFormatter(taxYearEOY) shouldBe
+        "5" + " " + messages("common." + APRIL.toString.toLowerCase) + " " + taxYearEOY.toString
     }
   }
 }

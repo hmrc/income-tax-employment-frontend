@@ -18,7 +18,7 @@ package controllers.details
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.details.routes.EmployerPayrollIdController
+import controllers.details.routes.PayeRefController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.DateForm.dateForm
 import forms.details.EmploymentDetailsFormsProvider
@@ -73,10 +73,6 @@ class EmployerEndDateController @Inject()(actionsProvider: ActionsProvider,
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
-      CheckEmploymentDetailsController.show(taxYear, employmentId)
-    } else {
-      EmployerPayrollIdController.show(taxYear, employmentId)
-    }
+    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else PayeRefController.show(taxYear, employmentId)
   }
 }

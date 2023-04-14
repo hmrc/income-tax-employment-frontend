@@ -44,29 +44,29 @@ class AssetsOrAssetTransfersBenefitsPageSpec extends UnitTest {
         form = formWithErrors
       )
     }
-  }
 
-  "create page model with form populated from the assetsModel sectionQuestion" in {
-    val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-    val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+    "create page model with form populated from the assetsModel sectionQuestion" in {
+      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-    AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
-      taxYear = anyTaxYear,
-      employmentId = anyEmploymentId,
-      isAgent = user.isAgent,
-      form = questionForm.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
-    )
-  }
+      AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
+        taxYear = anyTaxYear,
+        employmentId = anyEmploymentId,
+        isAgent = user.isAgent,
+        form = questionForm.bind(Map(YesNoForm.yesNo -> YesNoForm.no))
+      )
+    }
 
-  "create page model with empty form" in {
-    val employmentBenefits = aBenefitsViewModel.copy(assetsModel = None)
-    val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+    "create page model with empty form" in {
+      val employmentBenefits = aBenefitsViewModel.copy(assetsModel = None)
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
 
-    AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
-      taxYear = anyTaxYear,
-      employmentId = anyEmploymentId,
-      isAgent = user.isAgent,
-      form = questionForm
-    )
+      AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
+        taxYear = anyTaxYear,
+        employmentId = anyEmploymentId,
+        isAgent = user.isAgent,
+        form = questionForm
+      )
+    }
   }
 }

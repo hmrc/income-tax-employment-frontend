@@ -79,7 +79,7 @@ class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = "How much did maggie pay you?"
-    val expectedTitle: String = "How much did your employer pay you?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
     val emptyErrorText: String = "Enter the amount you were paid"
@@ -87,7 +87,7 @@ class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = "How much did maggie pay your client?"
-    val expectedTitle: String = "How much did your client’s employer pay them?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
     val emptyErrorText: String = "Enter the amount your client was paid"
@@ -95,7 +95,7 @@ class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "Faint y gwnaeth maggie ei dalu i chi?"
-    val expectedTitle: String = "Faint y gwnaeth eich cyflogwr ei dalu i chi?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "Nodwch y swm gros. Mae hwn i’w weld fel arfer ar eich P60."
     val emptyErrorText: String = "Nodwch swm a dalwyd i chi"
@@ -103,7 +103,7 @@ class EmployerPayAmountViewSpec extends ViewUnitTest {
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "Faint y gwnaeth maggie ei dalu i’ch cleient?"
-    val expectedTitle: String = "Faint y gwnaeth cyflogwr eich cleient ei dalu iddo?"
+    val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val expectedContentNewAccount: String = "Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient."
     val emptyErrorText: String = "Nodwch y swm a dalwyd i’ch cleient"

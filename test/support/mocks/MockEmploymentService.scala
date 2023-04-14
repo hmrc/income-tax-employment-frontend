@@ -52,4 +52,16 @@ trait MockEmploymentService extends MockFactory {
       .expects(user, taxYear, employmentId, originalEmploymentUserData, payrollId)
       .returns(Future.successful(result))
   }
+
+  def mockUpdateDidYouLeaveQuestion(user: User,
+                                    taxYear: Int,
+                                    employmentId: String,
+                                    originalEmploymentUserData: EmploymentUserData,
+                                    questionValue: Boolean,
+                                    result: Either[Unit, EmploymentUserData]
+                                   ): CallHandler5[User, Int, String, EmploymentUserData, Boolean, Future[Either[Unit, EmploymentUserData]]] = {
+    (mockEmploymentService.updateDidYouLeaveQuestion(_: User, _: Int, _: String, _: EmploymentUserData, _: Boolean))
+      .expects(user, taxYear, employmentId, originalEmploymentUserData, questionValue)
+      .returning(Future.successful(result))
+  }
 }

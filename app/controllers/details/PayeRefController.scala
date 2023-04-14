@@ -95,10 +95,6 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
-      CheckEmploymentDetailsController.show(taxYear, employmentId)
-    } else {
-      DidYouLeaveEmployerController.show(taxYear, employmentId)
-    }
+    if (employmentDetails.isFinished) CheckEmploymentDetailsController.show(taxYear, employmentId) else EmployerPayrollIdController.show(taxYear, employmentId)
   }
 }

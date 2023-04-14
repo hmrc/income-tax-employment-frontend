@@ -21,13 +21,19 @@ import forms.{AmountForm, YesNoForm}
 import models.employment.DateFormData
 import play.api.data.Form
 import play.api.i18n.Messages
+import utils.InYearUtil.toDateWithinTaxYear
+import utils.ViewUtils.{translatedDateFormatter, translatedTaxYearEndDateFormatter}
 
 import java.time.LocalDate
 
 class EmploymentDetailsFormsProvider {
 
-  def didYouLeaveForm(isAgent: Boolean, employerName: String): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"employment.didYouLeave.error.${if (isAgent) "agent" else "individual"}", Seq(employerName)
+  def didYouLeaveForm(isAgent: Boolean,
+                      taxYear: Int,
+                      employmentStartDate: LocalDate)
+                     (implicit messages: Messages): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"employment.didYouLeave.error.${if (isAgent) "agent" else "individual"}",
+    Seq(translatedDateFormatter(toDateWithinTaxYear(taxYear, employmentStartDate)), translatedTaxYearEndDateFormatter(taxYear))
   )
 
   def employerPayAmountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(

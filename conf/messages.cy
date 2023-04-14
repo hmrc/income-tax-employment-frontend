@@ -307,12 +307,10 @@ employment.employmentDates.endDate = Dyddiad dod i ben
 
 #################       Did you leave employer messages        ########################################
 
-employment.didYouLeave.error.agent = Dewiswch ‘Iawn’ os gadawodd eich cleient {0} yn y flwyddyn dreth
-employment.didYouLeave.error.individual = Dewiswch ‘Iawn’ os gwnaethoch adael {0} yn y flwyddyn dreth
-employment.didYouLeave.heading.agent = A adawodd eich cleient {0} yn y flwyddyn dreth?
-employment.didYouLeave.heading.individual = A wnaethoch adael {0} yn y flwyddyn dreth?
-employment.didYouLeave.title.agent = A adawodd eich cleient y cyflogwr hwn yn y flwyddyn dreth?
-employment.didYouLeave.title.individual = A wnaethoch adael y cyflogwr hwn yn y flwyddyn dreth?
+employment.didYouLeave.error.agent = Select yes if your client left between {0} and {1}
+employment.didYouLeave.error.individual = Select yes if you left between {0} and {1}
+employment.didYouLeave.heading.agent = Did your client leave between {0} and {1}?
+employment.didYouLeave.heading.individual = Did you leave between {0} and {1}?
 
 #################       Payroll id messages        ########################################
 
@@ -335,8 +333,6 @@ employerPayAmount.paragraph.agent = Os na chafodd {0} ei dalu i’ch cleient, rh
 employerPayAmount.paragraph.individual = Os na chafodd {0} ei dalu i chi, rhowch wybod i ni beth yw’r swm cywir.
 employerPayAmount.paragraphNewAccount.agent = Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient.
 employerPayAmount.paragraphNewAccount.individual = Nodwch y swm gros. Mae hwn i’w weld fel arfer ar eich P60.
-employerPayAmount.title.agent = Faint y gwnaeth cyflogwr eich cleient ei dalu iddo?
-employerPayAmount.title.individual = Faint y gwnaeth eich cyflogwr ei dalu i chi?
 
 #################       Employment tax messages        ########################################
 
@@ -349,8 +345,6 @@ employment.employmentTax.formLabel.individual = Fel arfer, mae’r swm hwn i’w
 employment.employmentTax.heading.agent = Faint o dreth y DU a gafodd ei thynnu o enillion {0} eich cleient?
 employment.employmentTax.heading.individual = Faint o dreth y DU a gafodd ei thynnu o’ch enillion {0}?
 employment.employmentTax.preFill.amount = Os na chafodd £{0} ei thynnu fel treth y DU, rhowch wybod i ni beth yw’r swm cywir.
-employment.employmentTax.title.agent = Faint o dreth y DU a gafodd ei thynnu o enillion eich cleient?
-employment.employmentTax.title.individual = Faint o dreth y DU a gafodd ei thynnu o’ch enillion?
 
 #################       Other payments amount messages        ########################################
 
