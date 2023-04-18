@@ -245,7 +245,7 @@ payeRef.paragraph = Rhowch wybod i ni beth yw’r cyfeirnod TWE cywir os yw {0} 
 
 #################       Employment start date messages        ########################################
 
-employment.commonEmploymentDate.forExample = Er enghraifft, 12 11 2007
+employment.commonEmploymentDate.forExample = Er enghraifft, 12 11 {0}
 
 employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client started working at {0}
 employment.employmentStartDate.error.incompleteAll.individual = Enter the date you started working at {0}

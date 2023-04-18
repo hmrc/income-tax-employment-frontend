@@ -57,7 +57,7 @@
             legendAsHeading = true,
             legendHeading = Some(Html(headingForUse)),
             isPageHeading = true,
-            hint = Some(messages("employment.commonEmploymentDate.forExample"))
+            hint = Some(messages("employment.commonEmploymentDate.forExample", pageModel.taxYear.toString))
         )
 
         @button()
