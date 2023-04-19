@@ -63,7 +63,7 @@ class PayeRefViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedH1: String = "What is maggie‘s employer PAYE reference? (optional)"
+    val expectedH1: String = "What is maggie’s employer PAYE reference? (optional)"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val continueButtonText = "Yn eich blaen"

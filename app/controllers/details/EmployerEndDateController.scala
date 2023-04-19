@@ -58,10 +58,11 @@ class EmployerEndDateController @Inject()(actionsProvider: ActionsProvider,
     employmentType = EmploymentDetailsType
   ).async { implicit request =>
     val data = request.employmentUserData
-    val simpleDateForm = dateForm().bindFromRequest()
     val startDate = LocalDate.parse(data.employment.employmentDetails.startDate.get)
+    val employerName = data.employment.employmentDetails.employerName
+    val simpleDateForm = dateForm().bindFromRequest()
 
-    formsProvider.validatedEndDateForm(simpleDateForm, taxYear, request.user.isAgent, startDate).fold(
+    formsProvider.validatedEndDateForm(simpleDateForm, taxYear, request.user.isAgent, employerName, startDate).fold(
       formWithErrors => Future.successful(BadRequest(pageView(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
       submittedDate => employmentService.updateEndDate(request.user, taxYear, employmentId, data, submittedDate.toLocalDate.get).map {
         case Left(_) => errorHandler.internalServerError()
