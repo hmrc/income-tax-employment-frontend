@@ -14,12 +14,7 @@
  * limitations under the License.
  *@
 
-@import controllers.details.routes.EmployerPayAmountController
-@import controllers.details.routes.EmployerPayrollIdController
-@import controllers.details.routes.EmployerStartDateController
-@import controllers.details.routes.EmploymentDatesController
-@import controllers.details.routes.EmploymentTaxController
-@import controllers.details.routes.PayeRefController
+@import controllers.details.routes._
 @import models.employment.EmploymentDetailsViewModel
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
@@ -84,11 +79,11 @@
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
-        val payeRef = EmploymentDataForView(
-            messages(msgKeyGeneric + ".payeRef"),
-            Some(employmentDetails.employerRef.getOrElse(messages("common.notProvided"))),
-            PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(s"$msgKeyGeneric.hiddenText.payeRef")
+        val startDate = EmploymentDataForView(
+            messages(s"$msgKeyGeneric.startDate"),
+            Some(if(employmentDetails.startDate.isEmpty) messages("common.notProvided") else translatedDateFormatter(LocalDate.parse(employmentDetails.startDate.get))),
+            EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+            messages(s"$msgKeyGeneric.hiddenText.startDate")
         )
 
         val didYouLeave = EmploymentDataForView(
@@ -98,28 +93,23 @@
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent))
         )
 
-        val employmentDates = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
-            //TODO: when dates are empty, this page will have issues with date range message messages.
-            val startDate = if(employmentDetails.startDate.isEmpty) ""
-                            else translatedDateFormatter(LocalDate.parse(employmentDetails.startDate.get))
-            val endDate   = if(employmentDetails.cessationDate.isEmpty) ""
-                            else translatedDateFormatter(LocalDate.parse(employmentDetails.cessationDate.get))
-            val dateRangeMessage = messages("common.dateRange", startDate, endDate)
-
+        val endDate = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
             EmploymentDataForView(
-                messages(s"$msgKeyGeneric.employmentDates"),
-                Some(dateRangeMessage),
-                EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
-                messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent))
+                messages(s"$msgKeyGeneric.endDate"),
+                Some(if(employmentDetails.cessationDate.isEmpty) "" else translatedDateFormatter(LocalDate.parse(employmentDetails.cessationDate.get))),
+                EmployerEndDateController.show(taxYear, employmentDetails.employmentId),
+                messages(s"$msgKeyGeneric.hiddenText.endDate")
             )
         } else {
-            EmploymentDataForView(
-                messages(s"$msgKeyGeneric.startDate"),
-                employmentDetails.startDate.flatMap(dateFormatter),
-                EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-                messages(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent)
-            )
+            None
         }
+
+        val payeRef = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payeRef"),
+            Some(employmentDetails.employerRef.getOrElse(messages("common.notProvided"))),
+            PayeRefController.show(taxYear, employmentDetails.employmentId),
+            messages(s"$msgKeyGeneric.hiddenText.payeRef")
+        )
 
         val payrollId = EmploymentDataForView(
             messages(msgKeyGeneric + ".payrollId"),
@@ -144,9 +134,10 @@
 
         val employmentDataFields = Seq(
             employerName,
-            payeRef,
+            startDate,
             didYouLeave,
-            employmentDates,
+            endDate,
+            payeRef,
             payrollId,
             payReceived,
             totalTaxToDate

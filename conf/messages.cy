@@ -195,14 +195,12 @@ employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rôl y cyfa
 employment.employmentDetails.hiddenText.employer = Newid enw’r cyflogwr hwn
 employment.employmentDetails.hiddenText.payeRef = Newid y cyfeirnod TWE
 employment.employmentDetails.hiddenText.startDate = Newid dyddiad dechrau’r gyflogaeth
+employment.employmentDetails.hiddenText.endDate = Change the employment end date
 employment.employmentDetails.hiddenText.payrollId = Newid ID y gyflogres ar gyfer y gyflogaeth hon
 employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwyd
 employment.employmentDetails.hiddenText.totalTaxToDate = Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog
 employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon
 employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon
-
-employment.employmentDetails.hiddenText.employmentDates.agent = Newidiwch ddyddiadau cyflogaeth eich cleient
-employment.employmentDetails.hiddenText.employmentDates.individual = Newidiwch ddyddiadau’ch cyflogaeth chi
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Newidiwch os cafodd eich cleient daliadau sydd ddim ar ei P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Newidiwch os cawsoch daliadau sydd ddim ar eich P60
@@ -218,7 +216,7 @@ employment.employmentDetails.payReceived = Tal a gafwyd
 employment.employmentDetails.payrollId = ID y gyflogres
 employment.employmentDetails.startDate = Dyddiad dechrau’r gyflogaeth
 employment.employmentDetails.didYouLeave = Wedi gadael y cyflogwr
-employment.employmentDetails.employmentDates = Dyddiadau cyflogaeth
+employment.employmentDetails.endDate = Employment end date
 employment.employmentDetails.tipsAndOtherPayments.agent = Swm y taliadau sydd ddim ar P60 eich cleient
 employment.employmentDetails.tipsAndOtherPayments.individual = Swm y taliadau sydd ddim ar eich P60
 employment.employmentDetails.totalTaxToDate = Treth y DU a dynnwyd o’r cyflog
