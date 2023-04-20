@@ -142,13 +142,13 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
-    val forExample = s"For example, 12 11 $taxYearEOY"
+    val forExample = s"For example, 23 11 $taxYearEOY"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
     val expectedButtonText = "Yn eich blaen"
-    val forExample = s"Er enghraifft, 12 11 $taxYearEOY"
+    val forExample = s"Er enghraifft, 23 11 $taxYearEOY"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

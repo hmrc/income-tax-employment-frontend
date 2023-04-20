@@ -152,12 +152,12 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedButtonText = "Continue"
-    val forExample = s"For example, 12 11 $taxYearEOY"
+    val forExample = s"For example, 23 11 $taxYearEOY"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedButtonText = "Yn eich blaen"
-    val forExample = s"Er enghraifft, 12 11 $taxYearEOY"
+    val forExample = s"Er enghraifft, 23 11 $taxYearEOY"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
