@@ -758,10 +758,10 @@ class DefaultRedirectService extends RedirectService {
 
   private def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call = {
     cya match {
-      case EmploymentCYAModel(EmploymentDetails(_, None, _, _, _, _, _, _, _, _, _, _), _, _) => PayeRefController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, None, _, _, _, _, _, _, _, _, _), _, _) => EmployerStartDateController.show(taxYear, employmentId)
       case EmploymentCYAModel(EmploymentDetails(_, _, _, _, None, _, _, _, _, _, _, _), _, _) => DidYouLeaveEmployerController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, Some(true), None, _, _, _, _, _, _), _, _) => EmploymentDatesController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, None, _, Some(false), _, _, _, _, _, _, _), _, _) => EmployerStartDateController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, Some(true), None, _, _, _, _, _, _), _, _) => EmployerEndDateController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, None, _, _, _, _, _, _, _, _, _, _), _, _) => PayeRefController.show(taxYear, employmentId)
       case EmploymentCYAModel(EmploymentDetails(_, _, _, None, _, _, _, _, _, _, _, _), _, _) => EmployerPayrollIdController.show(taxYear, employmentId)
       case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, None, _, _), _, _) => EmployerPayAmountController.show(taxYear, employmentId)
       case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, _, None, _), _, _) => EmploymentTaxController.show(taxYear, employmentId)
