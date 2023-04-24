@@ -1852,7 +1852,8 @@ class DefaultRedirectServiceSpec extends UnitTest
 
   "employmentDetailsRedirect" should {
     "redirect to employer reference page" in {
-      val response = underTest.employmentDetailsRedirect(cyaModel, taxYearEOY, employmentId)
+      val employment = cyaModel.copy(cyaModel.employmentDetails.copy(startDate = Some(s"${taxYearEOY - 1}-11-01"), didYouLeaveQuestion = Some(false)))
+      val response = underTest.employmentDetailsRedirect(employment, taxYearEOY, employmentId)
 
       response.header.status shouldBe SEE_OTHER
       response.header.headers.getOrElse("Location", "/") shouldBe PayeRefController.show(taxYearEOY, employmentId).url
@@ -1866,7 +1867,7 @@ class DefaultRedirectServiceSpec extends UnitTest
       response.header.headers.getOrElse("Location", "/") shouldBe DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url
     }
 
-    "redirect to start date page when did You Leave Question is false" in {
+    "redirect to start date page when the start date is not set" in {
       val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), didYouLeaveQuestion = Some(false)))
       val response = underTest.employmentDetailsRedirect(employment, taxYearEOY, employmentId)
 
@@ -1901,13 +1902,13 @@ class DefaultRedirectServiceSpec extends UnitTest
       response.header.headers.getOrElse("Location", "/") shouldBe EmployerPayrollIdController.show(taxYearEOY, employmentId).url
     }
 
-    "redirect to employment dates page when no cessation date" in {
+    "redirect to end date page when no cessation date" in {
       val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some(s"${taxYearEOY - 1}-11-01"),
         didYouLeaveQuestion = Some(true), taxablePayToDate = Some(1), totalTaxToDate = Some(1), payrollId = Some("id"))
       val response = underTest.employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYearEOY, employmentId)
 
       response.header.status shouldBe SEE_OTHER
-      response.header.headers.getOrElse("Location", "/") shouldBe EmploymentDatesController.show(taxYearEOY, employmentId).url
+      response.header.headers.getOrElse("Location", "/") shouldBe EmployerEndDateController.show(taxYearEOY, employmentId).url
     }
 
     "redirect to check employment details page when no cessation date but the did you leave question is no" in {

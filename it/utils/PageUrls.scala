@@ -85,8 +85,6 @@ object PageUrls extends IntegrationTest {
 
   def howMuchTaxUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/uk-tax?employmentId=$employmentId"
 
-  def employmentDatesUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/details/employment-dates?employmentId=$employmentId"
-
   def summaryAddNewEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment-summary/add-employment"
 
   //  *****************       Employment management pages      ***************************
