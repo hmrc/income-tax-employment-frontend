@@ -25,7 +25,8 @@ import utils.AesGcmAdCrypto
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
-                              studentLoans: Option[StudentLoansCYAModel] = None) {
+                              studentLoans: Option[StudentLoansCYAModel] = None,
+                              additionalInfoViewModel: Option[AdditionalInfoViewModel] = None) {
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = EmploymentDetailsViewModel(
     employmentDetails.employerName,
@@ -42,7 +43,8 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
   def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
     employmentDetails = employmentDetails.encrypted,
     employmentBenefits = employmentBenefits.map(_.encrypted),
-    studentLoansCYAModel = studentLoans.map(_.encrypted)
+    studentLoansCYAModel = studentLoans.map(_.encrypted),
+    additionalInfoViewModel = additionalInfoViewModel.map(_.encrypted)
   )
 }
 
@@ -58,12 +60,14 @@ object EmploymentCYAModel {
 
 case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
-                                       studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None) {
+                                       studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None,
+                                       additionalInfoViewModel: Option[EncryptedAdditionalInfoViewModel] = None) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails.decrypted,
     employmentBenefits = employmentBenefits.map(_.decrypted),
-    studentLoans = studentLoansCYAModel.map(_.decrypted)
+    studentLoans = studentLoansCYAModel.map(_.decrypted),
+    additionalInfoViewModel = additionalInfoViewModel.map(_.decrypted)
   )
 }
 
