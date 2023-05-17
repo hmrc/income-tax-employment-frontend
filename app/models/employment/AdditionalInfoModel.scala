@@ -39,7 +39,7 @@ case class EncryptedAdditionalInfoViewModel(encryptedAdditionalInfoViewModel: Se
 
 object EncryptedAdditionalInfoViewModel{
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
-  implicit val formats: OFormat[EncryptedAdditionalInfoModel] = Json.format[EncryptedAdditionalInfoModel]
+  implicit val formats: OFormat[EncryptedAdditionalInfoViewModel] = Json.format[EncryptedAdditionalInfoViewModel]
 }
 
 

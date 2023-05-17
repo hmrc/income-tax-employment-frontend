@@ -21,8 +21,6 @@ import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment._
 import models.employment.AdditionalInfoViewModel
 import models.employment.EncryptedAdditionalInfoViewModel
-import models.employment.AdditionalInfoModel
-import models.employment.EncryptedAdditionalInfoModel
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import utils.AesGcmAdCrypto
@@ -59,6 +57,7 @@ object EmploymentCYAModel {
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
     employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
     studentLoans = employmentSource.toStudentLoansCYAModel
+    //additionalInfoViewModel = employmentSource
   )
 }
 
@@ -77,6 +76,5 @@ case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDet
 
 object EncryptedEmploymentCYAModel {
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
-
   implicit val format: Format[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]
 }
