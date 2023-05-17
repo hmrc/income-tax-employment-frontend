@@ -1295,6 +1295,13 @@ expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.individual = T
 expenses.professionalFeesAndSubscriptionsAmount.title.agent = How much do you want to claim for professional fees and subscriptions for your client?
 expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do you want to claim for professional fees and subscriptions?
 
+#################       Taxable Lump Sums        ########################################
+
+lumpSum.taxableLumpSums.title = Taxable lump sums
+lumpSum.taxableLumpSums.details.heading = understanding taxable lump sums and certain income
+lumpSum.taxableLumpSums.details.text = blah blah blah
+lumpSum.taxableLumpSums.addLumpSum = Add taxable lump sum
+
 #################       Other equipment messages        ########################################
 
 expenses.otherEquipment.error.agent = Select yes to claim for your client buying other equipment

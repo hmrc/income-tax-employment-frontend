@@ -328,6 +328,11 @@ POST        /:taxYear/student-loans/student-loan-repayment-amount               
 GET         /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.submit(taxYear: Int, employmentId: String)
 
+#############################       Taxable Lump Sums      #############################
+
+GET         /:taxYear/taxable-lump-sum/list                                          controllers.lumpSum.TaxableLumpSumListController.show(taxYear: Int, employmentId: String)
+
+
 #############################       Tailorings      #############################
 
 GET         /:taxYear/income-from-employment                                         controllers.tailorings.EmploymentGatewayController.show(taxYear: Int)
