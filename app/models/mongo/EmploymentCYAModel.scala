@@ -18,7 +18,11 @@ package models.mongo
 
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
-import models.employment.{EmploymentDetailsViewModel, EmploymentSource, EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
+import models.employment._
+import models.employment.AdditionalInfoViewModel
+import models.employment.EncryptedAdditionalInfoViewModel
+import models.employment.AdditionalInfoModel
+import models.employment.EncryptedAdditionalInfoModel
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import utils.AesGcmAdCrypto
