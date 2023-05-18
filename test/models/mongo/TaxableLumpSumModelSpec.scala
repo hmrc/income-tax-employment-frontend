@@ -16,29 +16,27 @@
 
 package models.mongo
 
-import models.employment.{AdditionalInfoViewModel, EncryptedAdditionalInfoViewModel}
+import models.employment.{EncryptedTaxableLumpSumViewModel, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import utils.AesGcmAdCrypto
 
-class ExtraDetailsViewModelSpec extends UnitTest
+class TaxableLumpSumModelSpec extends UnitTest
   with MockFactory {
 
   private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
   private implicit val associatedText: String = "some-associated-text"
 
-  private val extraDetailsView = mock[AdditionalInfoViewModel]
-  private val encryptedAdditionalInfoViewModel = mock[EncryptedAdditionalInfoViewModel]
+  private val extraDetailsView = mock[TaxableLumpSumViewModel]
+  private val encryptedAdditionalInfoViewModel = mock[EncryptedTaxableLumpSumViewModel]
 
   "AdditionalInfoViewModel.encrypted" should {
     "return EncryptedAdditionalInfoViewModel instance" in {
       val underTest = extraDetailsView
 
       (extraDetailsView.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedAdditionalInfoViewModel)
-
       val encryptedResult = underTest.encrypted
-
-      encryptedResult.encryptedAdditionalInfoViewModel shouldBe encryptedAdditionalInfoViewModel
+      encryptedResult.encryptedAdditionalInfoViewModel shouldBe encryptedAdditionalInfoViewModel.encryptedAdditionalInfoViewModel
     }
   }
 
@@ -49,8 +47,21 @@ class ExtraDetailsViewModelSpec extends UnitTest
       (encryptedAdditionalInfoViewModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(extraDetailsView)
 
       val decryptedResult = underTest.decrypted
+      decryptedResult.items shouldBe extraDetailsView.items
+    }
+  }
 
-      decryptedResult.additionalInfoModel shouldBe extraDetailsView
+  "validatePayrollHasPaidNoneSomeAll" should {
+    "return true for a payroll paid type that exist in validPayrollAnswers" in {
+      TaxableLumpSumItemModel(None, None, Some("ALL_PAID")).validatePayrollHasPaidNoneSomeAll shouldBe true
+    }
+
+    "return false for a payroll paid type that doesn't exist in validPayrollAnswers" in {
+      TaxableLumpSumItemModel(None, None, Some("fake-fake")).validatePayrollHasPaidNoneSomeAll shouldBe false
+    }
+
+    "return false for no payroll paid type" in {
+      TaxableLumpSumItemModel(None, None, None).validatePayrollHasPaidNoneSomeAll shouldBe false
     }
   }
 }

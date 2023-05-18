@@ -19,8 +19,8 @@ package models.mongo
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment._
-import models.employment.AdditionalInfoViewModel
-import models.employment.EncryptedAdditionalInfoViewModel
+import models.employment.TaxableLumpSumViewModel
+import models.employment.EncryptedTaxableLumpSumViewModel
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import utils.AesGcmAdCrypto
@@ -28,7 +28,7 @@ import utils.AesGcmAdCrypto
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
                               studentLoans: Option[StudentLoansCYAModel] = None,
-                              additionalInfoViewModel: Option[AdditionalInfoViewModel] = None) {
+                              additionalInfoViewModel: Option[TaxableLumpSumViewModel] = None) {
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = EmploymentDetailsViewModel(
     employmentDetails.employerName,
@@ -57,14 +57,14 @@ object EmploymentCYAModel {
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
     employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
     studentLoans = employmentSource.toStudentLoansCYAModel
-    //additionalInfoViewModel = employmentSource
+    //todo additionalInfoViewModel = employmentSource
   )
 }
 
 case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
                                        studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None,
-                                       additionalInfoViewModel: Option[EncryptedAdditionalInfoViewModel] = None) {
+                                       additionalInfoViewModel: Option[EncryptedTaxableLumpSumViewModel] = None) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails.decrypted,
