@@ -82,7 +82,7 @@
 
     @if(!isInYear && appConfig.tailoringEnabled) {
         @govukSummaryList(SummaryList(Seq(summaryListRow(
-            HtmlContent(messages("PAYE employment")),
+            HtmlContent(messages("employment.employmentSummary.heading")),
             HtmlContent( if(gateway.contains(true)) messages("common.yes") else messages("common.no")),
             actions = Seq((EmploymentGatewayController.show(taxYear: Int), messages("common.change"), Some(messages("common.change")))
         )))))
