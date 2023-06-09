@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package views.details
 
-import controllers.details.routes.EmployerEndDateController
+
 import forms.details.DateForm._
 import forms.details.{DateForm, EmploymentDetailsFormsProvider}
 import models.AuthorisationRequest
@@ -67,7 +83,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val forExample: String
   }
 
-  object ExpectedIndividualEN extends SpecificExpectedResults {
+  object ExpectedIndividual extends SpecificExpectedResults {
     val expectedTitle: String => String = (employerName: String) => s"When did you leave $employerName?"
     val expectedH1: String => String = (employerName: String) => expectedTitle(employerName)
     val expectedErrorTitle: String => String = (employerName: String) => s"Error: ${expectedTitle(employerName)}"
@@ -85,25 +101,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val mustHave4DigitYear: String => String = (employerName: String) => s"The year you left $employerName must include 4 digits"
   }
 
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String => String = (employerName: String) => s"When did you leave $employerName?"
-    val expectedH1: String => String = (employerName: String) => expectedTitle(employerName)
-    val expectedErrorTitle: String => String = (employerName: String) => s"Gwall: ${expectedTitle(employerName)}"
-    val emptyDayError: String => String = (employerName: String) => s"The date you left $employerName must include a day"
-    val emptyMonthError: String => String = (employerName: String) => s"The date you left $employerName must include a month"
-    val emptyYearError: String => String = (employerName: String) => s"The date you left $employerName must include a year"
-    val emptyDayYearError: String => String = (employerName: String) => s"The date you left $employerName must include a day and year"
-    val emptyMonthYearError: String => String = (employerName: String) => s"The date you left $employerName must include a month and year"
-    val emptyDayMonthError: String => String = (employerName: String) => s"The date you left $employerName must include a day and month"
-    val emptyAllError: String => String = (employerName: String) => s"Enter the date you left $employerName"
-    val invalidDateError: String => String = (employerName: String) => s"The date you left $employerName must be a real date"
-    val mustBeAfterStartDateError: (String, LocalDate) => String = (employerName: String, date: LocalDate) =>
-      s"The date you left $employerName must be after the date you started, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
-    val mustBeBeforeEndOfTaxYearError: String => String = (employerName: String) => s"The date you left $employerName must be the same as or before 5 April $taxYearEOY"
-    val mustHave4DigitYear: String => String = (employerName: String) => s"The year you left $employerName must include 4 digits"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
+  object ExpectedAgent extends SpecificExpectedResults {
     val expectedTitle: String => String = (employerName: String) => s"When did your client leave $employerName?"
     val expectedH1: String => String = (employerName: String) => expectedTitle(employerName)
     val expectedErrorTitle: String => String = (employerName: String) => s"Error: ${expectedTitle(employerName)}"
@@ -121,41 +119,15 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
     val mustHave4DigitYear: String => String = (employerName: String) => s"The year your client left $employerName must include 4 digits"
   }
 
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String => String = (employerName: String) => s"When did your client leave $employerName?"
-    val expectedH1: String => String = (employerName: String) => expectedTitle(employerName)
-    val expectedErrorTitle: String => String = (employerName: String) => s"Gwall: ${expectedTitle(employerName)}"
-    val emptyDayError: String => String = (employerName: String) => s"The date your client left $employerName must include a day"
-    val emptyMonthError: String => String = (employerName: String) => s"The date your client left $employerName must include a month"
-    val emptyYearError: String => String = (employerName: String) => s"The date your client left $employerName must include a year"
-    val emptyDayYearError: String => String = (employerName: String) => s"The date your client left $employerName must include a day and year"
-    val emptyMonthYearError: String => String = (employerName: String) => s"The date your client left $employerName must include a month and year"
-    val emptyDayMonthError: String => String = (employerName: String) => s"The date your client left $employerName must include a day and month"
-    val emptyAllError: String => String = (employerName: String) => s"Enter the date your client left $employerName"
-    val invalidDateError: String => String = (employerName: String) => s"The date your client left $employerName must be a real date"
-    val mustBeAfterStartDateError: (String, LocalDate) => String = (employerName: String, date: LocalDate) =>
-      s"The date your client left $employerName must be after the date they started, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
-    val mustBeBeforeEndOfTaxYearError: String => String = (employerName: String) => s"The date your client left $employerName must be the same as or before 5 April $taxYearEOY"
-    val mustHave4DigitYear: String => String = (employerName: String) => s"The year your client left $employerName must include 4 digits"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val forExample = s"For example, 23 11 $taxYearEOY"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedButtonText = "Yn eich blaen"
-    val forExample = s"Er enghraifft, 23 11 $taxYearEOY"
-  }
-
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+    UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent))
   )
 
   private val formsProvider = new EmploymentDetailsFormsProvider()
@@ -164,9 +136,7 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
   private val underTest = inject[EmployerEndDateView]
 
   userScenarios.foreach { userScenario =>
-    import Selectors._
-    import userScenario.commonExpectedResults._
-    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+    s"Request is from an ${agentTest(userScenario.isAgent)}" should {
       val page = anEmployerEndDatePage.copy(isAgent = userScenario.isAgent)
       "render page with an empty form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
@@ -176,16 +146,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle(page.employerName), userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1(page.employerName), isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(day, Selectors.daySelector, "")
         inputFieldValueCheck(month, Selectors.monthSelector, "")
         inputFieldValueCheck(year, Selectors.yearSelector, "")
-        buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, page.employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
       }
 
       "render page with prefilled data" which {
@@ -197,16 +160,10 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle(page.employerName), userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedH1(page.employerName), isFieldSetH1 = true)
-        captionCheck(expectedCaption(taxYearEOY))
-        textOnPageCheck(forExample, forExampleSelector)
         inputFieldValueCheck(day, Selectors.daySelector, "1")
         inputFieldValueCheck(month, Selectors.monthSelector, "1")
         inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-        buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, page.employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
+
       }
 
       "render the 'start date' page with an error" which {
@@ -220,16 +177,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyDayError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyDayError(pageModel.employerName), Some("amount"))
@@ -245,16 +195,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyMonthError(pageModel.employerName), Selectors.monthSelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyMonthError(pageModel.employerName), Some("amount"))
@@ -270,16 +213,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyYearError(pageModel.employerName), Selectors.yearSelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyYearError(pageModel.employerName), Some("amount"))
@@ -295,16 +231,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "")
           inputFieldValueCheck(month, Selectors.monthSelector, "")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyDayMonthError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyDayMonthError(pageModel.employerName), Some("amount"))
@@ -320,16 +249,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyDayYearError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyDayYearError(pageModel.employerName), Some("amount"))
@@ -345,16 +267,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "")
           inputFieldValueCheck(year, Selectors.yearSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyMonthYearError(pageModel.employerName), Selectors.monthSelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyMonthYearError(pageModel.employerName), Some("amount"))
@@ -370,16 +285,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "")
           inputFieldValueCheck(month, Selectors.monthSelector, "")
           inputFieldValueCheck(year, Selectors.yearSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.emptyAllError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.emptyAllError(pageModel.employerName), Some("amount"))
@@ -395,16 +303,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "abc")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Some("amount"))
@@ -420,16 +321,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "abc")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Some("amount"))
@@ -445,16 +339,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, "abc")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Some("amount"))
@@ -470,16 +357,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "13")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.invalidDateError(pageModel.employerName), Some("amount"))
@@ -496,16 +376,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "1")
           inputFieldValueCheck(month, Selectors.monthSelector, "1")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.mustBeAfterStartDateError(pageModel.employerName, startDate), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.mustBeAfterStartDateError(pageModel.employerName, startDate), Some("amount"))
@@ -521,16 +394,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          captionCheck(expectedCaption(taxYearEOY))
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, "6")
           inputFieldValueCheck(month, Selectors.monthSelector, "4")
           inputFieldValueCheck(year, Selectors.yearSelector, taxYearEOY.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndOfTaxYearError(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.mustBeBeforeEndOfTaxYearError(pageModel.employerName), Some("amount"))
@@ -552,15 +418,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, endDate.getDayOfMonth.toString)
           inputFieldValueCheck(month, Selectors.monthSelector, endDate.getMonthValue.toString)
           inputFieldValueCheck(year, Selectors.yearSelector, endDate.getYear.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear(pageModel.employerName), Some("amount"))
@@ -582,15 +442,9 @@ class EmployerEndDateViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle(pageModel.employerName), userScenario.isWelsh)
-          h1Check(userScenario.specificExpectedResults.get.expectedH1(pageModel.employerName), isFieldSetH1 = true)
-          textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(day, Selectors.daySelector, endDate.getDayOfMonth.toString)
           inputFieldValueCheck(month, Selectors.monthSelector, endDate.getMonthValue.toString)
           inputFieldValueCheck(year, Selectors.yearSelector, endDate.getYear.toString)
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(EmployerEndDateController.submit(taxYearEOY, pageModel.employmentId).url, continueButtonFormSelector)
-          welshToggleCheck(userScenario.isWelsh)
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear(pageModel.employerName), Selectors.daySelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.mustHave4DigitYear(pageModel.employerName), Some("amount"))
