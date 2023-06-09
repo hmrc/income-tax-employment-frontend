@@ -54,7 +54,7 @@ class PayeRefViewSpec extends ViewUnitTest {
     val wrongFormatErrorText: String
   }
 
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val expectedH1: String = "What is maggie’s employer PAYE reference? (optional)"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle: String = s"Error: $expectedH1"
@@ -62,47 +62,19 @@ class PayeRefViewSpec extends ViewUnitTest {
     val wrongFormatErrorText: String = "Enter PAYE reference in the correct format"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedH1: String = "What is maggie’s employer PAYE reference? (optional)"
-    val expectedTitle: String = expectedH1
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val continueButtonText = "Yn eich blaen"
-    val wrongFormatErrorText: String = "Enter PAYE reference in the correct format"
+  object ExpectedIndividual extends SpecificExpectedResults {
+    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45."
+    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60."
   }
 
-  object ExpectedIndividualEN extends SpecificExpectedResults {
-    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45."
-    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60."
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
-    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45."
-    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45."
-    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45."
-    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. " +
-      "It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60."
+  object ExpectedAgent extends SpecificExpectedResults {
+    val hintEmploymentEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45."
+    val hintEmploymentNotEndedText: String = "This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60."
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent)))
   }
 
   private val form = PayeRefForm.payeRefForm
@@ -113,7 +85,7 @@ class PayeRefViewSpec extends ViewUnitTest {
     import user.commonExpectedResults._
     import user.specificExpectedResults._
 
-    s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+    s"Request is from an ${agentTest(user.isAgent)}" should {
       "render What's the PAYE reference of xxx? page with a pre-filled form when there is a previous PAYE Ref defined" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
