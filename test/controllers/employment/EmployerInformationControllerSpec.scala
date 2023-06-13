@@ -61,13 +61,11 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
     "render Employment And Benefits page when GetEmploymentDataModel is in mongo" which {
       s"has an OK($OK) status" in {
         mockAuth(Some(nino))
-        val name: String = anEmploymentSource.employerName
+        val employerName: String = anEmploymentSource.employerName
         val employmentId: String = anEmploymentSource.employmentId
-        val benefitsIsDefined: Boolean = anEmploymentSource.employmentBenefits.isDefined
-        val studentLoansIsDefined: Boolean = anEmploymentSource.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).isDefined
 
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear = true, showNotification = false)))
+          mockFind(taxYear, Ok(view(employerName, employmentId, Seq(), taxYear, isInYear = true, showNotification = false)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
