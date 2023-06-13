@@ -338,9 +338,13 @@ GET         /:taxYear/lump-sums/taxable-lump-sums/list-of-taxable-lump-sums     
 GET         /:taxYear/income-from-employment                                         controllers.tailorings.EmploymentGatewayController.show(taxYear: Int)
 POST        /:taxYear/income-from-employment                                         controllers.tailorings.EmploymentGatewayController.submit(taxYear: Int)
 
-GET         /:taxYear/remove-all-employments                                        controllers.tailorings.RemoveAllEmploymentController.show(taxYear: Int)
-POST        /:taxYear/remove-all-employments                                        controllers.tailorings.RemoveAllEmploymentController.submit(taxYear: Int)
+GET         /:taxYear/remove-all-employments                                         controllers.tailorings.RemoveAllEmploymentController.show(taxYear: Int)
+POST        /:taxYear/remove-all-employments                                         controllers.tailorings.RemoveAllEmploymentController.submit(taxYear: Int)
 
+#############################       Taxable Lump Sums      #############################
+
+GET         /:taxYear/taxable-lump-sums/better-segment-here-please                   controllers.taxableLumpSums.TaxableLumpSumsController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/taxable-lump-sums/better-segment-here-please                   controllers.taxableLumpSums.TaxableLumpSumsController.submit(taxYear: Int, employmentId: String)
 
 ###########################     Error pages     ####################################
 

@@ -44,8 +44,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   def incomeTaxSubmissionOverviewUrl(taxYear: Int): String = incomeTaxSubmissionBaseUrl + "/" + taxYear +
     servicesConfig.getString("microservice.services.income-tax-submission-frontend.overview")
+
   def incomeTaxSubmissionStartUrl(taxYear: Int): String = incomeTaxSubmissionBaseUrl + "/" + taxYear +
     "/start"
+
   def incomeTaxSubmissionIvRedirect: String = incomeTaxSubmissionBaseUrl +
     servicesConfig.getString("microservice.services.income-tax-submission-frontend.iv-redirect")
 
@@ -54,6 +56,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val incomeTaxExpensesBEUrl: String = s"${servicesConfig.getString(ConfigKeys.incomeTaxExpensesUrl)}/income-tax-expenses"
 
   private lazy val vcBaseUrl: String = servicesConfig.getString(ConfigKeys.viewAndChangeUrl)
+
   def viewAndChangeEnterUtrUrl: String = s"$vcBaseUrl/report-quarterly/income-and-expenses/view/agents/client-utr"
 
   lazy private val appUrl: String = servicesConfig.getString("microservice.url")
@@ -61,7 +64,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   lazy private val contactFormServiceIndividual = "update-and-submit-income-tax-return"
   lazy private val contactFormServiceAgent = "update-and-submit-income-tax-return-agent"
-  def contactFormServiceIdentifier(implicit isAgent: Boolean): String = if(isAgent) contactFormServiceAgent else contactFormServiceIndividual
+
+  def contactFormServiceIdentifier(implicit isAgent: Boolean): String = if (isAgent) contactFormServiceAgent else contactFormServiceIndividual
 
   private def requestUri(implicit request: RequestHeader): String = SafeRedirectUrl(appUrl + request.uri).encodedUrl
 
@@ -103,6 +107,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val nrsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.nrsEnabled")
 
   lazy val studentLoansEnabled: Boolean = servicesConfig.getBoolean("feature-switch.studentLoans")
+
+  lazy val taxableLumpSumsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.taxableLumpSums")
 
   lazy val employmentEOYEnabled: Boolean = servicesConfig.getBoolean("feature-switch.employmentEOYEnabled")
 
