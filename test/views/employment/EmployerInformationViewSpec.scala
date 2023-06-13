@@ -17,6 +17,7 @@
 package views.employment
 
 import config.AppConfig
+import controllers.employment.{CannotUpdate, EmployerInformationRow, EmploymentBenefits, EmploymentDetails, LabelMessageKey, NotStarted, StudentLoans, TaxableLumpSums, ToDo, Updated}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmploymentSummaryController}
 import controllers.studentLoans.routes.StudentLoansCYAController
 import models.AuthorisationRequest
@@ -149,7 +150,13 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = false, studentLoansDefined = false, taxYear = taxYear, isInYear = true, showNotification = false)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, false),
+          EmployerInformationRow(StudentLoans, CannotUpdate, None, false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -182,7 +189,13 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = true, studentLoansDefined = true, taxYear = taxYear, isInYear = true, showNotification = false)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), false),
+          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYear, employmentId)), false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -216,7 +229,13 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = false, studentLoansDefined = false, taxYear = taxYearEOY, isInYear = false, showNotification = false)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, NotStarted, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(StudentLoans, NotStarted, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -249,7 +268,13 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = true, studentLoansDefined = true, taxYear = taxYearEOY, isInYear = false, showNotification = false)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -283,8 +308,12 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val appConfig: AppConfig = new MockAppConfig().config(slEnabled = false)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = true, studentLoansDefined = true,
-          taxYear = taxYear, isInYear = true, showNotification = false)(authRequest, messages, appConfig)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), false),
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)(authRequest, messages, appConfig)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -318,8 +347,12 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val appConfig: AppConfig = new MockAppConfig().config(slEnabled = false)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = true, studentLoansDefined = true,
-          taxYear = taxYearEOY, isInYear = false, showNotification = false)(authRequest, messages, appConfig)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)(authRequest, messages, appConfig)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -351,7 +384,13 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(user.isAgent)
         implicit val messages: Messages = getMessages(user.isWelsh)
 
-        val htmlFormat = underTest(employerName, employmentId, benefitsDefined = true, studentLoansDefined = true, taxYear = taxYearEOY, isInYear = false, showNotification = true)
+        val rows = Seq(
+          EmployerInformationRow(EmploymentDetails, ToDo, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
+          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, false),
+          EmployerInformationRow(StudentLoans, CannotUpdate, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+        )
+
+        val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = true)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
