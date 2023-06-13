@@ -41,14 +41,16 @@ case class EncryptedTaxableLumpSumViewModel(encryptedAdditionalInfoViewModel: Se
 object EncryptedTaxableLumpSumViewModel{
   implicit val formatEnc: OFormat[EncryptedValue] = Json.format[EncryptedValue]
   implicit val formatSeq: OFormat[EncryptedTaxableLumpSumItemModel] = Json.format[EncryptedTaxableLumpSumItemModel]
-  implicit val format: OFormat[EncryptedTaxableLumpSumViewModel] = Json.format[EncryptedTaxableLumpSumViewModel]}
+  implicit val format: OFormat[EncryptedTaxableLumpSumViewModel] = Json.format[EncryptedTaxableLumpSumViewModel]
+  implicit val formatPayrollType: Format[EncryptedPayrollPaymentType] = Json.format[EncryptedPayrollPaymentType]
+}
 
 
 
 case class TaxableLumpSumItemModel(
                                lumpSumAmount: Option[BigDecimal] = None,
                                payrollAmount: Option[BigDecimal] = None,
-                               payrollHasPaidNoneSomeAll: Option[String] = None
+                               payrollHasPaidNoneSomeAll: Option[PayrollPaymentType] = None
                                ) {
 
   def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedTaxableLumpSumItemModel =
@@ -67,30 +69,46 @@ object TaxableLumpSumItemModel {
   implicit val format: OFormat[TaxableLumpSumItemModel] = Json.format[TaxableLumpSumItemModel]
 }
 
-sealed abstract class PayrollPaymentType(val name: String)
+case class PayrollPaymentType(name: String) {
+  def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedPayrollPaymentType =
+    EncryptedPayrollPaymentType(encryptedName =  Some(name.encrypted))
+}
+
+case class EncryptedPayrollPaymentType(encryptedName: Option[EncryptedValue] = None) {
+  def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): PayrollPaymentType = {
+    PayrollPaymentType(name = encryptedName.map(_.decrypted[String]).getOrElse("ERROR"))
+  }
+
+  implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
+  implicit val format: Format[EncryptedPayrollPaymentType] = Json.format[EncryptedPayrollPaymentType]
+
+}
 
 object PayrollPaymentType {
-  case object allPaid extends PayrollPaymentType("ALL_PAID")
-  case object somePaid extends PayrollPaymentType("SOME_PAID")
-  case object nonePaid extends PayrollPaymentType("NONE_PAID")
-  val validPaymentTypes: Seq[String] = Seq(allPaid.name, somePaid.name, nonePaid.name)
+  val AllPaid: PayrollPaymentType = PayrollPaymentType("ALL_PAID")
+  val SomePaid: PayrollPaymentType = PayrollPaymentType("SOME_PAID")
+  val NonePaid: PayrollPaymentType = PayrollPaymentType("NONE_PAID")
+  val Error: PayrollPaymentType = PayrollPaymentType("ERROR")
+  val validPaymentTypes: Seq[PayrollPaymentType] = Seq(SomePaid, NonePaid, AllPaid)
+  implicit val format: OFormat[PayrollPaymentType] = Json.format[PayrollPaymentType]
 }
 
 
 case class EncryptedTaxableLumpSumItemModel(
                                              encryptedLumpSumAmount: Option[EncryptedValue] = None,
                                              encryptedPayrollAmount: Option[EncryptedValue] = None,
-                                             encryptedPayrollHasPaidNoneSomeAll: Option[EncryptedValue] = None
+                                             encryptedPayrollHasPaidNoneSomeAll: Option[EncryptedPayrollPaymentType] = None
                                            ) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): TaxableLumpSumItemModel = TaxableLumpSumItemModel(
     lumpSumAmount = encryptedLumpSumAmount.map(_.decrypted[BigDecimal]),
     payrollAmount = encryptedPayrollAmount.map(_.decrypted[BigDecimal]),
-    payrollHasPaidNoneSomeAll = encryptedPayrollHasPaidNoneSomeAll.map(_.decrypted[String])
+    payrollHasPaidNoneSomeAll = encryptedPayrollHasPaidNoneSomeAll.map(_.decrypted)
   )
 }
 
 object EncryptedTaxableLumpSumItemModel {
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
   implicit val format: Format[EncryptedTaxableLumpSumItemModel] = Json.format[EncryptedTaxableLumpSumItemModel]
+  implicit val formatPayrollType: Format[EncryptedPayrollPaymentType] = Json.format[EncryptedPayrollPaymentType]
 }

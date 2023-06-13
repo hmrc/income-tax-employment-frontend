@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import models.employment.{EncryptedTaxableLumpSumViewModel, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
+import models.employment.{EncryptedTaxableLumpSumViewModel, PayrollPaymentType, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import utils.AesGcmAdCrypto
@@ -53,11 +53,11 @@ class TaxableLumpSumModelSpec extends UnitTest
 
   "validatePayrollHasPaidNoneSomeAll" should {
     "return true for a payroll paid type that exist in validPayrollAnswers" in {
-      TaxableLumpSumItemModel(None, None, Some("ALL_PAID")).validatePayrollHasPaidNoneSomeAll shouldBe true
+      TaxableLumpSumItemModel(None, None, Some(PayrollPaymentType.SomePaid)).validatePayrollHasPaidNoneSomeAll shouldBe true
     }
 
     "return false for a payroll paid type that doesn't exist in validPayrollAnswers" in {
-      TaxableLumpSumItemModel(None, None, Some("fake-fake")).validatePayrollHasPaidNoneSomeAll shouldBe false
+      TaxableLumpSumItemModel(None, None, Some(PayrollPaymentType.Error)).validatePayrollHasPaidNoneSomeAll shouldBe false
     }
 
     "return false for no payroll paid type" in {
