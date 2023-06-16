@@ -92,4 +92,3 @@ class OtherEquipmentController @Inject()(authAction: AuthorisedAction,
     otherAllowancesRedirects(cya, taxYear)
   }
 }
-
