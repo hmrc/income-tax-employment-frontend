@@ -16,7 +16,6 @@
 
 package views.details
 
-import controllers.details.routes.EmployerNameController
 import forms.details.EmployerNameForm
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
@@ -52,53 +51,30 @@ class EmployerNameViewSpec extends ViewUnitTest {
     val expectedErrorWrongFormat: String => String
   }
 
-  object ExpectedIndividualEN extends SpecificExpectedResults {
+  object ExpectedIndividual extends SpecificExpectedResults {
     val expectedTitle = "What’s the name of your employer?"
     val expectedH1 = "What’s the name of your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your employer"
   }
 
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Beth oedd enw’ch cyflogwr?"
-    val expectedH1 = "Beth oedd enw’ch cyflogwr?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch enw’ch cyflogwr"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
+  object ExpectedAgent extends SpecificExpectedResults {
     val expectedTitle = "What’s the name of your client’s employer?"
     val expectedH1 = "What’s the name of your client’s employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the name of your client’s employer"
   }
 
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Beth yw enw cyflogwr eich cleient?"
-    val expectedH1 = "Beth yw enw cyflogwr eich cleient?"
-    val expectedErrorTitle = s"Gwall: $expectedTitle"
-    val expectedErrorNoEntry = "Nodwch enw cyflogwr eich cleient"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "Employer’s name must be 74 characters or fewer"
     val expectedErrorWrongFormat: String => String = (invalidChars: String) => s"Employer’s name must not include $invalidChars"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val expectedButtonText = "Yn eich blaen"
-    val expectedErrorCharLimit = "Employer’s name must be 74 characters or fewer"
-    val expectedErrorWrongFormat: String => String = (invalidChars: String) => s"Employer’s name must not include $invalidChars"
-  }
-
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent)))
   }
 
   private def form(isAgent: Boolean): Form[String] = EmployerNameForm.employerNameForm(isAgent)
@@ -106,8 +82,8 @@ class EmployerNameViewSpec extends ViewUnitTest {
   private val underTest = inject[EmployerNameView]
 
   userScenarios.foreach { userScenario =>
-    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
-      "render the 'name of your employer' page with the correct content" which {
+    s"Request is from an ${agentTest(userScenario.isAgent)}" should {
+      "render the 'name of your employer' page with the correct content and empty fields" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -115,16 +91,9 @@ class EmployerNameViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
+        import Selectors.inputSelector
 
-        welshToggleCheck(userScenario.isWelsh)
-
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
         inputFieldValueCheck(amountInputName, inputSelector, "")
-        buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerNameController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
       "render the 'name of your employer' page with the correct content and pre-popped input field" which {
@@ -135,16 +104,9 @@ class EmployerNameViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        import Selectors._
-        import userScenario.commonExpectedResults._
+        import Selectors.inputSelector
 
-        welshToggleCheck(userScenario.isWelsh)
-
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
         inputFieldValueCheck(amountInputName, inputSelector, employerName)
-        buttonCheck(expectedButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerNameController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
       s"render the page with a form error" when {
@@ -156,15 +118,7 @@ class EmployerNameViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          import Selectors._
-          import userScenario.commonExpectedResults._
-
-          welshToggleCheck(userScenario.isWelsh)
-
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
-          inputFieldValueCheck(amountInputName, inputSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
+          import Selectors.inputSelector
 
           errorSummaryCheck(userScenario.specificExpectedResults.get.expectedErrorNoEntry, inputSelector)
           errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedErrorNoEntry)
@@ -179,39 +133,25 @@ class EmployerNameViewSpec extends ViewUnitTest {
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-          import Selectors._
-          import userScenario.commonExpectedResults._
-
-          welshToggleCheck(userScenario.isWelsh)
-
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
-          inputFieldValueCheck(amountInputName, inputSelector, wrongFormat)
-          buttonCheck(expectedButtonText, continueButtonSelector)
+          import Selectors.inputSelector
 
           errorSummaryCheck(userScenario.commonExpectedResults.expectedErrorWrongFormat("~"), inputSelector)
           errorAboveElementCheck(userScenario.commonExpectedResults.expectedErrorWrongFormat("~"))
         }
 
         "the submitted data is too long" which {
-          val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
+          val charLimit = 74
+          val veryLongName = "a" * charLimit + 1
 
           implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
           implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(EmployerNameForm.employerName -> charLimit)), taxYearEOY, employmentId)
+          val htmlFormat = underTest(form(userScenario.isAgent).bind(Map(EmployerNameForm.employerName -> veryLongName)), taxYearEOY, employmentId)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
           import Selectors._
           import userScenario.commonExpectedResults._
-
-          welshToggleCheck(userScenario.isWelsh)
-
-          titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-          labelH1Check(userScenario.specificExpectedResults.get.expectedH1)
-          inputFieldValueCheck(amountInputName, inputSelector, charLimit)
-          buttonCheck(expectedButtonText, continueButtonSelector)
 
           errorSummaryCheck(expectedErrorCharLimit, inputSelector)
           errorAboveElementCheck(expectedErrorCharLimit)

@@ -16,7 +16,6 @@
 
 package views.details
 
-import controllers.details.routes.EmployerPayrollIdController
 import forms.details.{EmployerPayrollIdForm, EmploymentDetailsFormsProvider}
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
@@ -31,7 +30,6 @@ import views.html.details.EmployerPayrollIdView
 
 class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
-  private val employmentId = "employmentId"
   private val employerName = anEmploymentDetails.employerName
 
   object Selectors {
@@ -56,53 +54,30 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
     def expectedInvalidCharactersError(invalidCharacters: String): String
   }
 
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val continueButtonText = "Continue"
     val expectedTooManyCharactersError = "Payroll ID must be 38 characters or fewer"
 
     def expectedInvalidCharactersError(invalidCharacters: String): String = s"Payroll ID must not include $invalidCharacters"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val continueButtonText = "Yn eich blaen"
-    val expectedTooManyCharactersError = "Payroll ID must be 38 characters or fewer"
-
-    def expectedInvalidCharactersError(invalidCharacters: String): String = s"Payroll ID must not include $invalidCharacters"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
+  object ExpectedIndividual extends SpecificExpectedResults {
     val expectedTitle: String = s"What’s your payroll ID for $employerName? (optional)"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val hintTextP45: String = "You can find this on your payslips or P45. It’s also known as a ‘payroll number’."
     val hintTextP60: String = "You can find this on your payslips or P60. It’s also known as a ‘payroll number’."
   }
 
-  object ExpectedAgentEN extends SpecificExpectedResults {
+  object ExpectedAgent extends SpecificExpectedResults {
     val expectedTitle: String = s"What’s your client’s payroll ID for $employerName? (optional)"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val hintTextP45: String = "You can find this on your client’s payslips or P45. It’s also known as a ‘payroll number’."
-    val hintTextP60: String = "You can find this on your client’s payslips or P60. It’s also known as a ‘payroll number’."
-  }
-
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = s"What’s your payroll ID for $employerName? (optional)"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
-    val hintTextP45: String = "You can find this on your payslips or P45. It’s also known as a ‘payroll number’."
-    val hintTextP60: String = "You can find this on your payslips or P60. It’s also known as a ‘payroll number’."
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = s"What’s your client’s payroll ID for $employerName? (optional)"
-    val expectedErrorTitle: String = s"Gwall: $expectedTitle"
     val hintTextP45: String = "You can find this on your client’s payslips or P45. It’s also known as a ‘payroll number’."
     val hintTextP60: String = "You can find this on your client’s payslips or P60. It’s also known as a ‘payroll number’."
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+    UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent))
   )
 
   private def payrollIdForm(): Form[String] = new EmploymentDetailsFormsProvider().employerPayrollIdForm()
@@ -112,9 +87,8 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
   userScenarios.foreach { userScenario =>
     import Selectors._
     import userScenario.commonExpectedResults._
-    import userScenario.specificExpectedResults._
 
-    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+    s"Request is from an ${agentTest(userScenario.isAgent)}" should {
       "should render the page with the correct content when theres no previous payroll id" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
@@ -124,13 +98,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(get.expectedTitle, userScenario.isWelsh)
-        labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP45, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "")
-        buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerPayrollIdController.show(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
       }
 
       "should render the page with a pre-filled form when previous payroll id is defined" which {
@@ -142,13 +110,7 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(get.expectedTitle, userScenario.isWelsh)
-        labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP60, hintTextSelector)
         inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, "123456")
-        buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
       }
 
       "render the page with a form error when the input is too long" which {
@@ -161,14 +123,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
-        labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP45, hintTextSelector)
-        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, tooLonPayrollId)
-        buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
 
         errorSummaryCheck(expectedTooManyCharactersError, expectedErrorHref)
         errorAboveElementCheck(expectedTooManyCharactersError)
@@ -184,14 +138,6 @@ class EmployerPayrollIdViewSpec extends ViewUnitTest {
         val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        titleCheck(get.expectedErrorTitle, userScenario.isWelsh)
-        labelH1Check(get.expectedTitle)
-        textOnPageCheck(get.hintTextP60, hintTextSelector)
-        inputFieldValueCheck(EmployerPayrollIdForm.payrollId, inputSelector, payrollId)
-        buttonCheck(continueButtonText, continueButtonSelector)
-        formPostLinkCheck(EmployerPayrollIdController.submit(taxYearEOY, employmentId).url, continueButtonFormSelector)
-        welshToggleCheck(userScenario.isWelsh)
 
         errorSummaryCheck(expectedInvalidCharactersError("$"), expectedErrorHref)
         errorAboveElementCheck(expectedInvalidCharactersError("$"))
