@@ -41,8 +41,9 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(employmentData) =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(Some(employmentData)) =>
           employmentData.employment.studentLoans
             .fold(
               Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
@@ -64,15 +65,17 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {
       StudentLoanQuestionForm.studentLoanForm(request.user.isAgent).bindFromRequest().fold(
         formWithErrors => {
-          employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-            case Some(employmentData) =>
+          employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+            case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+            case Right(Some(employmentData)) =>
               Future.successful(BadRequest(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName, formWithErrors)))
             case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
         },
         result => {
-          employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-            case Some(data: EmploymentUserData) =>
+          employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+            case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+            case Right(Some(data: EmploymentUserData)) =>
               val cya = data.employment
 
               val newStudentLoans: StudentLoansCYAModel = result.toStudentLoansCyaModel(cya.studentLoans)
@@ -81,7 +84,7 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
               employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,
                 data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError())(
                 studentLoansRedirect(newStudentLoans, taxYear, employmentId))
-            case None =>
+            case Right(None) =>
               Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
         }
@@ -98,6 +101,4 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
       case _ => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
     }
   }
-
-
 }

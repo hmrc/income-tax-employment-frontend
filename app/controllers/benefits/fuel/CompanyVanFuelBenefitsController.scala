@@ -48,17 +48,19 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(redirectService.vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
-          val vanFuelBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
-          val isAgent = request.user.isAgent
-          vanFuelBenefitQuestion match {
-            case Some(questionResult) =>
-              Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent), taxYear, employmentId)))
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+            EmploymentBenefitsType)(redirectService.vanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+            val vanFuelBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
+            val isAgent = request.user.isAgent
+            vanFuelBenefitQuestion match {
+              case Some(questionResult) =>
+                Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent).fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(companyVanFuelBenefitsView(formsProvider.companyVanFuelForm(isAgent), taxYear, employmentId)))
+            }
           }
-        }
       }
     }
   }
@@ -96,6 +98,3 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
     }
   }
 }
-
-
-

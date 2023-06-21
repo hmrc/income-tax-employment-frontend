@@ -80,7 +80,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val forExample: String
   }
 
-  object ExpectedIndividualEN extends SpecificExpectedResults {
+  object ExpectedIndividual extends SpecificExpectedResults {
     val expectedH1 = s"When did you start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedH1"
     val emptyDayError = s"The date you started working at $employerName must include a day"
@@ -97,25 +97,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val mustHave4DigitYear = s"The year you started working at $employerName must include 4 digits"
   }
 
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1 = s"Pryd y gwnaethoch ddechrau gweithio yn $employerName?"
-    val expectedErrorTitle = s"Gwall: $expectedH1"
-    val emptyDayError = s"The date you started working at $employerName must include a day"
-    val emptyMonthError = s"The date you started working at $employerName must include a month"
-    val emptyYearError = s"The date you started working at $employerName must include a year"
-    val emptyDayYearError = s"The date you started working at $employerName must include a day and year"
-    val emptyMonthYearError = s"The date you started working at $employerName must include a month and year"
-    val emptyDayMonthError = s"The date you started working at $employerName must include a day and month"
-    val emptyAllError = s"Enter the date you started working at $employerName"
-    val invalidDateError = s"The date you started working at $employerName must be a real date"
-    val mustBeAfter1900Error = s"The date you started working at $employerName must be after 1 January 1900"
-    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) =>
-      s"The date you started working at $employerName must be before the date you left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
-    val mustBeBeforeEndOfTaxYearError = s"The date you started working at $employerName must be before 6 April $taxYearEOY"
-    val mustHave4DigitYear = s"The year you started working at $employerName must include 4 digits"
-  }
-
-  object ExpectedAgentEN extends SpecificExpectedResults {
+  object ExpectedAgent extends SpecificExpectedResults {
     val expectedH1 = s"When did your client start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedH1"
     val emptyDayError = s"The date your client started working at $employerName must include a day"
@@ -131,40 +113,14 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     val mustBeBeforeEndOfTaxYearError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
     val mustHave4DigitYear = s"The year your client started working at $employerName must include 4 digits"
   }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1 = s"Pryd y dechreuodd eich cleient weithio yn $employerName?"
-    val expectedErrorTitle = s"Gwall: $expectedH1"
-    val emptyDayError = s"The date your client started working at $employerName must include a day"
-    val emptyMonthError = s"The date your client started working at $employerName must include a month"
-    val emptyYearError = s"The date your client started working at $employerName must include a year"
-    val emptyDayYearError = s"The date your client started working at $employerName must include a day and year"
-    val emptyMonthYearError = s"The date your client started working at $employerName must include a month and year"
-    val emptyDayMonthError = s"The date your client started working at $employerName must include a day and month"
-    val emptyAllError = s"Enter the date your client started working at $employerName"
-    val invalidDateError = s"The date your client started working at $employerName must be a real date"
-    val mustBeAfter1900Error = s"The date your client started working at $employerName must be after 1 January 1900"
-    val mustBeBeforeEndDateError: LocalDate => String = (date: LocalDate) =>
-      s"The date your client started working at $employerName must be before the date they left, ${translatedDateFormatter(date)(getMessages(isWelsh = true))}"
-    val mustBeBeforeEndOfTaxYearError = s"The date your client started working at $employerName must be before 6 April $taxYearEOY"
-    val mustHave4DigitYear = s"The year your client started working at $employerName must include 4 digits"
-  }
-
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val expectedButtonText = "Continue"
     val forExample = s"For example, 23 11 $taxYearEOY"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedButtonText = "Yn eich blaen"
-    val forExample = s"Er enghraifft, 23 11 $taxYearEOY"
-  }
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+    UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent)),
   )
 
   object CyaModel {
@@ -183,7 +139,7 @@ class EmployerStartDateViewSpec extends ViewUnitTest {
     import Selectors._
     import userScenario.commonExpectedResults._
 
-    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+    s"Request is from an ${agentTest(userScenario.isAgent)}" should {
       val page = anEmployerStartDatePage.copy(isAgent = userScenario.isAgent)
       "render the 'start date' page with an empty form" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)

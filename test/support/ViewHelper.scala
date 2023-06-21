@@ -17,6 +17,7 @@
 package support
 
 import org.jsoup.nodes.{Document, Element}
+import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -266,6 +267,14 @@ trait ViewHelper {
         val selector = if (id.isDefined) s"#${id.get}-error" else ".govuk-error-message"
         document.select(selector).text() shouldBe s"Error: $text"
       }
+    }
+  }
+
+  def rowCheck(selector: String, value: String, href: String, extraText: String)(implicit document: Document): Unit = {
+    textOnPageCheck(value, selector + " dt")(document)
+
+    s"has the href '$href' $extraText" in {
+      document.select(selector + " dd > a").attr("href") shouldBe href
     }
   }
 

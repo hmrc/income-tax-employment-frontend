@@ -62,16 +62,18 @@ class MedicalOrDentalBenefitsAmountController @Inject()(authAction: AuthorisedAc
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(cya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          formsProvider.medicalOrAmountForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => {
-              Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
-            },
-            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
-          )
-        }
+            formsProvider.medicalOrAmountForm(request.user.isAgent).bindFromRequest().fold(
+              formWithErrors => {
+                Future.successful(BadRequest(pageView(taxYear, formWithErrors, employmentId)))
+              },
+              amount => handleSuccessForm(taxYear, employmentId, cya, amount)
+            )
+          }
       }
     }
   }

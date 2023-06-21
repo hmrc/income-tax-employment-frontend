@@ -43,7 +43,6 @@ trait ViewUnitTest extends UnitTest
 
   protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest)
   protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
-
   protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 
   protected def getAuthRequest(isAgent: Boolean): AuthorisationRequest[AnyContent] =

@@ -25,58 +25,83 @@
 
 
 @this(
+    layout: Layout,
     caption: Caption,
     heading: Heading,
     button: GovukButton,
-    link: Link,
     details: Details
 )
 
-@(view: TaxableLumpSumListPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(view: TaxableLumpSumListPage)(implicit request: UserSessionDataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"lumpSum.taxableLumpSums.title")}
 
 @headingForUse = @{messages(s"lumpSum.taxableLumpSums.title")}
 
 @detailsHtml = {
-<ul class="govuk-list govuk-list--bullet">
-    <li>@messages(s"lumpSum.taxableLumpSums.details.heading")</li>
-    <li>@messages(s"lumpSum.taxableLumpSums.details.text")</li>
-</ul>
+    <p>@messages(s"lumpSum.taxableLumpSums.details.text")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet1")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet2")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet3")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet4")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet5")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet6")</li>
+    </ul>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(view.taxYear), isAgent = request.user.isAgent) {
 
-    @heading(headingForUse, Some(messages("payeEmployment.caption", (view.taxYear - 1).toString, view.taxYear.toString)), "govuk-!-margin-bottom-2")
-
-    @detailsHtml
-
-    <div class="govuk-form-group" id="reliefSchemeSummaryList">
-        <dl class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-            @for((row, index) <- view.rows.zipWithIndex) {
-            <div class="hmrc-add-to-a-list__contents">
-                <dt class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light govuk-!-width-one-half">
-                    @row.amount
-                </dt>
-                <dd class="hmrc-add-to-a-list__change">
-                    <a class="govuk-link" href=@row.call.url>
-                        <span aria-hidden="true">@messages("common.view")</span>
-                        <span class="govuk-visually-hidden">@{s"${messages("common.view")}"}</span>
-                    </a>
-                </dd>
-            </div>
-            }
-        </dl>
-    </div>
-
-    <p class="govuk-body">@link(EmploymentSummaryController.show(view.taxYear).url, "lumpSum.taxableLumpSums.addLumpSum.addReliefLink", Some("add-lump-sum-link"), fullStop = false)</p>
+    @heading(headingForUse, None, "govuk-!-margin-bottom-4")
+    @details("lumpSum.taxableLumpSums.details.heading", detailsHtml)
 
     @if(view.rows.nonEmpty){
+        <div class="govuk-form-group" id="taxableLumpSumList">
+            <dl class="govuk-summary-list govuk-!-width-one-half">
+                @for((row, index) <- view.rows.zipWithIndex) {
+                <div class="hmrc-add-to-a-list__contents">
+                    <dt class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light govuk-!-width-three-quarters">
+                        @row.amount
+                    </dt>
+                    <dd class="hmrc-add-to-a-list__change">
+                        <a class="govuk-link" href=@row.call.url>
+                            <span aria-hidden="true">@messages("common.view")</span>
+                            <span class="govuk-visually-hidden">@{s"${messages("common.view")}"}</span>
+                        </a>
+                    </dd>
+                </div>
+                }
+            </dl>
+        </div>
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+        <br>
         @button(Button(
         attributes = Map("id" -> "continue"),
         preventDoubleClick = Some(true),
         content = Text(messages("common.continue")),
         classes = "govuk-button govuk-!-margin-top-2",
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+    } else {
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+        <br>
+        @button(Button(
+        attributes = Map("id" -> "continue"),
+        preventDoubleClick = Some(true),
+        content = Text(messages("common.continue")),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
         href = Some(EmploymentSummaryController.show(view.taxYear).url)
         ))
     }

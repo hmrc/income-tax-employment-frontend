@@ -18,7 +18,7 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
-import common.{EmploymentSection, SessionValues}
+import common.{EmploymentDetailsSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.details.routes.EmployerNameController
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
@@ -97,7 +97,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
 
-          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_DETAILS) match {
+          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentDetailsSection) match {
             case Left(NothingToUpdate) =>
               logger.info("[CheckEmploymentDetailsController][submit] Nothing to update for employment details. Returning to employer information.")
               Future.successful(Redirect(EmployerInformationController.show(taxYear, employmentId)))

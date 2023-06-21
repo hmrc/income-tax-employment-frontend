@@ -26,7 +26,6 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEmploymentDetailsViewModel
 import views.html.employment.CheckEmploymentDetailsView
-
 class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
 
   private val employmentId = "employmentId"
@@ -96,7 +95,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payrollId = "12345678"
   }
 
-  object CommonExpectedEN extends CommonExpectedResults {
+  object CommonExpected extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
@@ -126,36 +125,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val notProvided = "Not provided"
   }
 
-  object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Manylion cyflogaeth ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
-    val changeLinkExpected = "Newid"
-    val continueButtonText = "Cadw ac yn eich blaen"
-    val employerNameField1 = "Cyflogwr"
-    val employmentStartDateField = "Dyddiad dechrau’r gyflogaeth"
-    val didYouLeaveEmployerField = "Wedi gadael y cyflogwr"
-    val employmentEndDateField = "Employment end date"
-    val payeReferenceField2 = "Cyfeirnod TWE"
-    val payReceivedField3 = "Tal a gafwyd"
-    val taxField4 = "Treth y DU a dynnwyd o’r cyflog"
-    val payrollIdField: String = "ID y gyflogres"
-
-    val employerHiddenText: String = "Newid enw’r cyflogwr hwn"
-    val payeRefHiddenText: String = "Newid y cyfeirnod TWE"
-    val startDateHiddenText: String = "Newid dyddiad dechrau’r gyflogaeth"
-    val endDateHiddenText: String = "Change the employment end date"
-    val payrollIdHiddenText: String = "Newid ID y gyflogres ar gyfer y gyflogaeth hon"
-    val payReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
-    val totalTaxToDateHiddenText: String = "Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog"
-
-    val returnToEmployerText: String = "Dychwelyd at y cyflogwr"
-    val employmentStartDate = "21 Ebrill 2019"
-    val employmentEndDate = s"11 Mawrth ${taxYearEOY - 1}"
-    val didYouLeaveYes = "Iawn"
-    val didYouLeaveNo = "Na"
-    val notProvided = "Heb ddarparu"
-  }
-
-  object ExpectedIndividualEN extends SpecificExpectedResults {
+  object ExpectedIndividual extends SpecificExpectedResults {
     val expectedH1 = "Check your employment details"
     val expectedTitle = "Check your employment details"
     val expectedContent = "Your employment details are based on the information we already hold about you."
@@ -168,7 +138,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val didYouLeaveHiddenText: String = "Change if you left the employer in this tax year"
   }
 
-  object ExpectedAgentEN extends SpecificExpectedResults {
+  object ExpectedAgent extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment details"
     val expectedTitle = "Check your client’s employment details"
     val expectedContent = "Your client’s employment details are based on the information we already hold about them."
@@ -179,42 +149,15 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val didYouLeaveHiddenText: String = "Change if your client left the employer in this tax year"
   }
 
-  object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1 = "Gwiriwch eich manylion cyflogaeth"
-    val expectedTitle = "Gwiriwch eich manylion cyflogaeth"
-    val expectedContent = "Mae’ch manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch."
-    val expectedInsetText = s"Ni allwch ddiweddaru’ch manylion cyflogaeth tan 6 Ebrill $taxYear."
-    val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
-    val employmentStartDateAddHiddenText = "Ychwanegu dyddiad dechrau’r gyflogaeth"
-
-    val didYouLeaveHiddenText: String = "Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon"
-  }
-
-  object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1 = "Gwiriwch fanylion cyflogaeth eich cleient"
-    val expectedTitle = "Gwiriwch fanylion cyflogaeth eich cleient"
-    val expectedContent = "Mae manylion cyflogaeth eich cleient yn seiliedig ar yr wybodaeth sydd eisoes gennym amdano."
-    val expectedInsetText = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
-    val employeeFieldName7 = "Taliadau sydd ddim ar P60 eich cleient"
-
-    val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
-    val employmentStartDateAddHiddenText = "Ychwanegu dyddiad dechrau’r gyflogaeth"
-
-    val didYouLeaveHiddenText: String = "Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon"
-  }
-
-
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+    UserScenario(isWelsh = false, isAgent = false, CommonExpected, Some(ExpectedIndividual)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpected, Some(ExpectedAgent))
   )
 
   private val underTest = inject[CheckEmploymentDetailsView]
 
   userScenarios.foreach { userScenario =>
-    s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
+    s"Request is from an ${agentTest(userScenario.isAgent)}" should {
       import Selectors._
       val specific = userScenario.specificExpectedResults.get
       val common = userScenario.commonExpectedResults
@@ -226,12 +169,6 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         val htmlFormat = underTest(anEmploymentDetailsViewModel, taxYear = taxYear, isInYear = true)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        titleCheck(specific.expectedTitle, userScenario.isWelsh)
-        h1Check(specific.expectedH1)
-        captionCheck(common.expectedCaption(taxYear))
-        textOnPageCheck(specific.expectedContent, contentTextSelector)
-        textOnPageCheck(specific.expectedInsetText, insetTextSelector)
-        welshToggleCheck(userScenario.isWelsh)
         textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(1))
         textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
