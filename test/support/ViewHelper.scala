@@ -17,6 +17,7 @@
 package support
 
 import org.jsoup.nodes.{Document, Element}
+import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -267,6 +268,11 @@ trait ViewHelper {
         document.select(selector).text() shouldBe s"Error: $text"
       }
     }
+  }
+
+  def rowCheck(selector: String, value: String, href: String)(implicit document: Document): Assertion = {
+    textOnPageCheck(value, selector)(document)
+    document.select(selector).attr("href") shouldBe href
   }
 
   def welshToggleCheck(isWelsh: Boolean)(implicit document: Document): Unit = {

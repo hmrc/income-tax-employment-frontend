@@ -1299,7 +1299,14 @@ expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do y
 
 lumpSum.taxableLumpSums.title = Taxable lump sums
 lumpSum.taxableLumpSums.details.heading = understanding taxable lump sums and certain income
-lumpSum.taxableLumpSums.details.text = blah blah blah
+lumpSum.taxableLumpSums.details.text = These are large payments (usually in cash and excluding pensions) or benefits from your current or former employer. They include:
+lumpSum.taxableLumpSums.details.bullet1 = salary
+lumpSum.taxableLumpSums.details.bullet2 = holiday pay
+lumpSum.taxableLumpSums.details.bullet3 = bonuses
+lumpSum.taxableLumpSums.details.bullet4 = payments in lieu of notice (PILON)
+lumpSum.taxableLumpSums.details.bullet5 = compensation for changes in your employment terms
+lumpSum.taxableLumpSums.details.bullet6 = payments made to guarantee your future conduct (’restrictive covenants’), for example, agreeing not to compete with your former employer
+
 lumpSum.taxableLumpSums.addLumpSum = Add taxable lump sum
 
 #################       Other equipment messages        ########################################

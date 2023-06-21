@@ -25,6 +25,7 @@
 
 
 @this(
+    layout: Layout,
     caption: Caption,
     heading: Heading,
     button: GovukButton,
@@ -32,26 +33,31 @@
     details: Details
 )
 
-@(view: TaxableLumpSumListPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(view: TaxableLumpSumListPage)(implicit request: UserSessionDataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"lumpSum.taxableLumpSums.title")}
 
 @headingForUse = @{messages(s"lumpSum.taxableLumpSums.title")}
 
 @detailsHtml = {
-<ul class="govuk-list govuk-list--bullet">
-    <li>@messages(s"lumpSum.taxableLumpSums.details.heading")</li>
-    <li>@messages(s"lumpSum.taxableLumpSums.details.text")</li>
-</ul>
+    <p>@messages(s"lumpSum.taxableLumpSums.details.text")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet1")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet2")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet3")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet4")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet5")</li>
+        <li>@messages(s"lumpSum.taxableLumpSums.details.bullet6")</li>
+    </ul>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(view.taxYear), isAgent = request.user.isAgent) {
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (view.taxYear - 1).toString, view.taxYear.toString)), "govuk-!-margin-bottom-2")
 
-    @detailsHtml
+    @details("lumpSum.taxableLumpSums.details.heading", detailsHtml)
 
-    <div class="govuk-form-group" id="reliefSchemeSummaryList">
+    <div class="govuk-form-group" id="taxableLumpSumList">
         <dl class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
             @for((row, index) <- view.rows.zipWithIndex) {
             <div class="hmrc-add-to-a-list__contents">

@@ -251,6 +251,9 @@ object PageUrls extends IntegrationTest {
 
   def startEmploymentExpensesUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment/expenses/start-employment-expenses"
 
+  //  ***************************     Taxable lump sum pages    ************************************
+ def taxableLumpSumListUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/taxable-lump-sum/list?employmentId=$employmentId"
+
   //  ***************************     Error pages     ************************************
   def youNeedToSignUpUrl: String = s"$appUrl/error/you-need-to-sign-up"
 

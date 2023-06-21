@@ -16,9 +16,10 @@
 
 package controllers.lumpSum
 
-import actions.{ActionsProvider, AuthorisedAction}
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import models.benefits.pages.{ListRows, TaxableLumpSumListPage}
+import models.AuthorisationRequest
+import models.benefits.pages.TaxableLumpSumListPage
 import models.employment.{EmploymentDetailsType, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,9 +43,8 @@ class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
     employmentId = employmentId,
     employmentType = EmploymentDetailsType
   ) { implicit request =>
-    Ok(view(TaxableLumpSumListPage.apply(
+    Ok(view(TaxableLumpSumListPage(
       request.employmentUserData.employment.additionalInfoViewModel.getOrElse(TaxableLumpSumViewModel(Seq.empty[TaxableLumpSumItemModel])),
       request.employmentUserData.taxYear)))
   }
-
 }
