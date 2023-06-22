@@ -44,7 +44,7 @@ class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
     employmentType = EmploymentDetailsType
   ) { implicit request =>
     Ok(view(TaxableLumpSumListPage(
-      request.employmentUserData.employment.additionalInfoViewModel.getOrElse(TaxableLumpSumViewModel(Seq.empty[TaxableLumpSumItemModel])),
+      request.employmentUserData.employment.additionalInfoViewModel.getOrElse(TaxableLumpSumViewModel(Seq(TaxableLumpSumItemModel(Some(100)), TaxableLumpSumItemModel(Some(99))))),
       request.employmentUserData.taxYear)))
   }
 }

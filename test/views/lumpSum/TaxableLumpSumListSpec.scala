@@ -31,9 +31,7 @@ class TaxableLumpSumListSpec extends ViewUnitTest {
       rowCheck("#taxableLumpSumList > dl > div:nth-child(2) >", "£99",  routes.EmploymentSummaryController.show(taxYear).url, "b")
       rowCheck("#taxableLumpSumList > dl > div:nth-child(3) >", "£98",  routes.EmploymentSummaryController.show(taxYear).url, "c")
 
-      //table.html().length shouldBe 3
     }
-
     "show no table when user has no lump sums" which {
       implicit val request: UserSessionDataRequest[AnyContent] = aUserSessionDataRequest
       implicit val messages: Messages = getMessages(false)

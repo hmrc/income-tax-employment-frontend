@@ -274,7 +274,7 @@ trait ViewHelper {
     textOnPageCheck(value, selector + " dt")(document)
 
     s"has the href '$href' $extraText" in {
-      document.select(selector + " dd").attr("href") shouldBe href
+      document.select(selector + " dd > a").attr("href") shouldBe href
     }
   }
 
