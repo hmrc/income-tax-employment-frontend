@@ -52,31 +52,27 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(view.taxYear), isAgent = request.user.isAgent) {
 
-    @heading(headingForUse, None, "govuk-!-margin-bottom-2")
-    <br>
+    @heading(headingForUse, None, "govuk-!-margin-bottom-4")
     @details("lumpSum.taxableLumpSums.details.heading", detailsHtml)
 
-    <div class="govuk-form-group" id="taxableLumpSumList">
-        <dl class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-            @for((row, index) <- view.rows.zipWithIndex) {
-            <div class="hmrc-add-to-a-list__contents">
-                <dt class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light govuk-!-width-one-half">
-                    @row.amount
-                </dt>
-                <dd class="hmrc-add-to-a-list__change">
-                    <a class="govuk-link" href=@row.call.url>
-                        <span aria-hidden="true">@messages("common.view")</span>
-                        <span class="govuk-visually-hidden">@{s"${messages("common.view")}"}</span>
-                    </a>
-                </dd>
-            </div>
-            }
-        </dl>
-    </div>
-
-
-
     @if(view.rows.nonEmpty){
+        <div class="govuk-form-group" id="taxableLumpSumList">
+            <dl class="govuk-summary-list govuk-!-width-one-half">
+                @for((row, index) <- view.rows.zipWithIndex) {
+                <div class="hmrc-add-to-a-list__contents">
+                    <dt class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light govuk-!-width-three-quarters">
+                        @row.amount
+                    </dt>
+                    <dd class="hmrc-add-to-a-list__change">
+                        <a class="govuk-link" href=@row.call.url>
+                            <span aria-hidden="true">@messages("common.view")</span>
+                            <span class="govuk-visually-hidden">@{s"${messages("common.view")}"}</span>
+                        </a>
+                    </dd>
+                </div>
+                }
+            </dl>
+        </div>
         @button(Button(
         attributes = Map("id" -> "AddALumpSum"),
         preventDoubleClick = Some(true),
@@ -84,7 +80,7 @@
         content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
         href = Some(EmploymentSummaryController.show(view.taxYear).url)
         ))
-
+        <br>
         @button(Button(
         attributes = Map("id" -> "continue"),
         preventDoubleClick = Some(true),
@@ -98,6 +94,14 @@
         preventDoubleClick = Some(true),
         classes = "govuk-button govuk-!-margin-top-2",
         content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+        <br>
+        @button(Button(
+        attributes = Map("id" -> "continue"),
+        preventDoubleClick = Some(true),
+        content = Text(messages("common.continue")),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
         href = Some(EmploymentSummaryController.show(view.taxYear).url)
         ))
     }
