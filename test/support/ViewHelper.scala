@@ -270,9 +270,12 @@ trait ViewHelper {
     }
   }
 
-  def rowCheck(selector: String, value: String, href: String)(implicit document: Document): Assertion = {
-    textOnPageCheck(value, selector)(document)
-    document.select(selector).attr("href") shouldBe href
+  def rowCheck(selector: String, value: String, href: String, extraText: String)(implicit document: Document): Unit = {
+    textOnPageCheck(value, selector + " dt")(document)
+
+    s"has the href '$href' $extraText" in {
+      document.select(selector + " dd").attr("href") shouldBe href
+    }
   }
 
   def welshToggleCheck(isWelsh: Boolean)(implicit document: Document): Unit = {

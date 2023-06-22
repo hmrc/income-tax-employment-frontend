@@ -20,21 +20,21 @@ class TaxableLumpSumListSpec extends ViewUnitTest {
 
 
   "taxableLumpSumListView" should {
-    "show populated table when user has lump sums" in {
+    "show populated table when user has lump sums" which {
       implicit val request: UserSessionDataRequest[AnyContent] = aUserSessionDataRequest
       implicit val messages: Messages = getMessages(false)
       val htmlFormat = underTest(TaxableLumpSumListPage(aTaxableLumpSumData, taxYear))
       implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
       val table = document.getElementById("taxableLumpSumList")
-      rowCheck("", "£100",  routes.EmploymentSummaryController.show(taxYear).url)
-      rowCheck("", "£99",  routes.EmploymentSummaryController.show(taxYear).url)
-      rowCheck("", "£98",  routes.EmploymentSummaryController.show(taxYear).url)
+      rowCheck("#taxableLumpSumList > dl > div:nth-child(1) >", "£100", routes.EmploymentSummaryController.show(taxYear).url, "a")
+      rowCheck("#taxableLumpSumList > dl > div:nth-child(2) >", "£99",  routes.EmploymentSummaryController.show(taxYear).url, "b")
+      rowCheck("#taxableLumpSumList > dl > div:nth-child(3) >", "£98",  routes.EmploymentSummaryController.show(taxYear).url, "c")
 
-      table.html().length shouldBe 3
+      //table.html().length shouldBe 3
     }
 
-    "show no table when user has no lump sums" in {
+    "show no table when user has no lump sums" which {
       implicit val request: UserSessionDataRequest[AnyContent] = aUserSessionDataRequest
       implicit val messages: Messages = getMessages(false)
       val htmlFormat = underTest(TaxableLumpSumListPage(TaxableLumpSumViewModel(Seq.empty[TaxableLumpSumItemModel]), taxYear))

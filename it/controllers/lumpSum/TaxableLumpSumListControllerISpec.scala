@@ -1,9 +1,6 @@
 
 package controllers.lumpSum
 
-import models.employment.TaxableLumpSumViewModel
-import org.jsoup.nodes.Document
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
@@ -23,7 +20,7 @@ class TaxableLumpSumListControllerISpec extends IntegrationTest with ViewHelpers
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData)
-        urlGet(fullUrl(taxableLumpSumListUrl(taxYear, "employmentId")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(taxableLumpSumListUrl(taxYearEOY, "employmentId")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an OK status" in {
@@ -35,10 +32,10 @@ class TaxableLumpSumListControllerISpec extends IntegrationTest with ViewHelpers
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(additionalInfoViewModel = None)))
 
-        urlGet(fullUrl(taxableLumpSumListUrl(taxYear, "employmentId")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(taxableLumpSumListUrl(taxYearEOY, "employmentId")), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an OK status" in {
