@@ -29,7 +29,6 @@
     caption: Caption,
     heading: Heading,
     button: GovukButton,
-    link: Link,
     details: Details
 )
 
@@ -53,8 +52,8 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(view.taxYear), isAgent = request.user.isAgent) {
 
-    @heading(headingForUse, Some(messages("payeEmployment.caption", (view.taxYear - 1).toString, view.taxYear.toString)), "govuk-!-margin-bottom-2")
-
+    @heading(headingForUse, None, "govuk-!-margin-bottom-2")
+    <br>
     @details("lumpSum.taxableLumpSums.details.heading", detailsHtml)
 
     <div class="govuk-form-group" id="taxableLumpSumList">
@@ -75,14 +74,30 @@
         </dl>
     </div>
 
-    <p class="govuk-body">@link(EmploymentSummaryController.show(view.taxYear).url, "lumpSum.taxableLumpSums.addLumpSum.addReliefLink", Some("add-lump-sum-link"), fullStop = false)</p>
+
 
     @if(view.rows.nonEmpty){
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+
         @button(Button(
         attributes = Map("id" -> "continue"),
         preventDoubleClick = Some(true),
         content = Text(messages("common.continue")),
         classes = "govuk-button govuk-!-margin-top-2",
+        href = Some(EmploymentSummaryController.show(view.taxYear).url)
+        ))
+    } else {
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
         href = Some(EmploymentSummaryController.show(view.taxYear).url)
         ))
     }

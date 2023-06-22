@@ -10,7 +10,7 @@ import play.api.libs.ws.WSResponse
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, taxableLumpSumListUrl}
+import utils.PageUrls.{fullUrl, taxableLumpSumListUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TaxableLumpSumListControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
