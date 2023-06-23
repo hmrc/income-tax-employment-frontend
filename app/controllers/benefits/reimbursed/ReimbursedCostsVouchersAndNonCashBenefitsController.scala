@@ -50,16 +50,18 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          val isAgent = request.user.isAgent
-          cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) match {
-            case Some(questionResult) =>
-              Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent), taxYear, employmentId)))
+            val isAgent = request.user.isAgent
+            cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) match {
+              case Some(questionResult) =>
+                Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent).fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(pageView(formsProvider.vouchersAndNonCashForm(isAgent), taxYear, employmentId)))
+            }
           }
-        }
       }
     }
   }
@@ -67,14 +69,16 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(authAction: 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          formsProvider.vouchersAndNonCashForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
-            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
-          )
-        }
+            formsProvider.vouchersAndNonCashForm(request.user.isAgent).bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
+              yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
+            )
+          }
       }
     }
   }

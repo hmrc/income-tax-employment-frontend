@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import common.{EmploymentSection, SessionValues}
+import common.{EmploymentBenefitsSection, EmploymentSection, SessionValues}
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -159,7 +159,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Left(NothingToUpdate))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Left(NothingToUpdate))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -174,7 +174,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Left(NothingToUpdate))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Left(NothingToUpdate))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
         }
@@ -189,7 +189,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Left(NothingToUpdate))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Left(NothingToUpdate))
 
           controller(slEnabled = false).submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
         }
@@ -205,7 +205,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorBenefits = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
@@ -219,7 +219,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorBenefits = false))))
           mockCreateOrUpdateSessionData(Redirect(StudentLoansCYAController.show(taxYear, employmentId).url))
           (mockErrorHandler.internalServerError()(_: Request[_])).expects(*).returns(InternalServerError)
@@ -238,7 +238,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorBenefits = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
@@ -252,7 +252,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorBenefits = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
@@ -269,7 +269,7 @@ class CheckYourBenefitsControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.EMPLOYMENT_BENEFITS, Left(JourneyNotFinished))
+          mockCreateModelOrReturnError(EmploymentBenefitsSection, Left(JourneyNotFinished))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }

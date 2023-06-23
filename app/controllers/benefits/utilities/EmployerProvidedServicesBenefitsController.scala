@@ -49,17 +49,19 @@ class EmployerProvidedServicesBenefitsController @Inject()(authAction: Authorise
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) match {
-            case Some(questionResult) =>
-              Future.successful(Ok(employerProvidedServicesView(formsProvider.employerProvidedServicesBenefitsForm(
-                request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(employerProvidedServicesView(formsProvider.employerProvidedServicesBenefitsForm(
-              request.user.isAgent), taxYear, employmentId)))
+            cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) match {
+              case Some(questionResult) =>
+                Future.successful(Ok(employerProvidedServicesView(formsProvider.employerProvidedServicesBenefitsForm(
+                  request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(employerProvidedServicesView(formsProvider.employerProvidedServicesBenefitsForm(
+                request.user.isAgent), taxYear, employmentId)))
+            }
           }
-        }
       }
     }
   }
@@ -67,14 +69,16 @@ class EmployerProvidedServicesBenefitsController @Inject()(authAction: Authorise
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          formsProvider.employerProvidedServicesBenefitsForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(employerProvidedServicesView(formWithErrors, taxYear, employmentId))),
-            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
-          )
-        }
+            formsProvider.employerProvidedServicesBenefitsForm(request.user.isAgent).bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(employerProvidedServicesView(formWithErrors, taxYear, employmentId))),
+              yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
+            )
+          }
       }
     }
   }

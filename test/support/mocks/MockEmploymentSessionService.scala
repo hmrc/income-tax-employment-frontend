@@ -93,14 +93,6 @@ trait MockEmploymentSessionService extends MockFactory {
       .returns(Future.successful(result))
   }
 
-  def mockGetSessionDataResult(taxYear: Int,
-                               employmentId: String,
-                               result: Result): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
-    (mockEmploymentSessionService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: AuthorisationRequest[_]))
-      .expects(taxYear, employmentId, *, *)
-      .returns(Future.successful(result))
-  }
-
   def mockGetSessionDataAndReturnResult(taxYear: Int,
                                         employmentId: String,
                                         result: Result): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], AuthorisationRequest[_], Future[Result]] = {
@@ -134,9 +126,9 @@ trait MockEmploymentSessionService extends MockFactory {
       .once()
   }
 
-  def mockCreateModelOrReturnError(section: EmploymentSection.Value, result: Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]): CallHandler4[User,
-    EmploymentUserData, Option[AllEmploymentData], EmploymentSection.Value, Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]] = {
-    (mockEmploymentSessionService.createModelOrReturnError(_: User, _: EmploymentUserData, _: Option[AllEmploymentData], _: EmploymentSection.Value))
+  def mockCreateModelOrReturnError(section: EmploymentSection, result: Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]): CallHandler4[User,
+    EmploymentUserData, Option[AllEmploymentData], EmploymentSection, Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest]] = {
+    (mockEmploymentSessionService.createModelOrReturnError(_: User, _: EmploymentUserData, _: Option[AllEmploymentData], _: EmploymentSection))
       .expects(*, *, *, section)
       .returns(result)
       .once()

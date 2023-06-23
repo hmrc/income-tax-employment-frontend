@@ -16,8 +16,10 @@
 
 package common
 
-object EmploymentSection extends Enumeration {
-  val EMPLOYMENT_DETAILS: EmploymentSection.Value = Value
-  val EMPLOYMENT_BENEFITS: EmploymentSection.Value = Value
-  val STUDENT_LOANS: EmploymentSection.Value = Value
-}
+sealed trait EmploymentSection
+
+case object EmploymentDetailsSection extends EmploymentSection
+
+case object EmploymentBenefitsSection extends EmploymentSection
+
+case object StudentLoansSection extends EmploymentSection

@@ -49,33 +49,36 @@ class ProfessionalSubscriptionsBenefitsController @Inject()(authAction: Authoris
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) match {
-            case Some(questionResult) =>
-              Future.successful(Ok(professionalSubscriptionsBenefitsView(formsProvider.professionalSubscriptionsBenefitsForm(
-                request.user.isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(professionalSubscriptionsBenefitsView(formsProvider.professionalSubscriptionsBenefitsForm(
-              request.user.isAgent), taxYear, employmentId)))
+            cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) match {
+              case Some(questionResult) =>
+                Future.successful(Ok(professionalSubscriptionsBenefitsView(formsProvider.professionalSubscriptionsBenefitsForm(
+                  request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(professionalSubscriptionsBenefitsView(formsProvider.professionalSubscriptionsBenefitsForm(
+                request.user.isAgent), taxYear, employmentId)))
+            }
           }
-        }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          formsProvider.professionalSubscriptionsBenefitsForm(request.user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(professionalSubscriptionsBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
-          )
-        }
+            formsProvider.professionalSubscriptionsBenefitsForm(request.user.isAgent).bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(professionalSubscriptionsBenefitsView(formWithErrors, taxYear, employmentId))),
+              yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
+            )
+          }
       }
     }
   }

@@ -16,7 +16,7 @@
 
 package controllers.studentLoans
 
-import common.{EmploymentSection, SessionValues}
+import common.{EmploymentSection, SessionValues, StudentLoansSection}
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -134,7 +134,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Left(NothingToUpdate))
+          mockCreateModelOrReturnError(StudentLoansSection, Left(NothingToUpdate))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -149,7 +149,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorBenefits = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Left(NothingToUpdate))
+          mockCreateModelOrReturnError(StudentLoansSection, Left(NothingToUpdate))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
         }
@@ -163,7 +163,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
           mockGetPriorRight(taxYear, Some(anAllEmploymentData))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(StudentLoansSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
@@ -178,7 +178,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
           mockGetPriorRight(taxYear, None)
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(StudentLoansSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
           mockCreateOrUpdateSessionData(Redirect(StudentLoansCYAController.show(taxYear, employmentId).url))
 
@@ -196,7 +196,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(StudentLoansSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((Some("id"), anEmploymentUserData.copy(hasPriorStudentLoans = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString, SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
@@ -210,7 +210,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(StudentLoansSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
@@ -227,7 +227,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Left(JourneyNotFinished))
+          mockCreateModelOrReturnError(StudentLoansSection, Left(JourneyNotFinished))
 
           controller().submit(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
@@ -266,7 +266,7 @@ class StudentLoansCYAControllerSpec extends ControllerUnitTest
         val result: Future[Result] = {
 
           mockGetOptionalCYAAndPriorForEndOfYear(taxYear, Right(OptionalCyaAndPrior(Some(anEmploymentUserData.copy(hasPriorStudentLoans = false)), Some(anAllEmploymentData))))
-          mockCreateModelOrReturnError(EmploymentSection.STUDENT_LOANS, Right(createUpdateEmploymentRequest))
+          mockCreateModelOrReturnError(StudentLoansSection, Right(createUpdateEmploymentRequest))
           mockSubmitAndClear(taxYear, employmentId, createUpdateEmploymentRequest, Right((None, anEmploymentUserData.copy(hasPriorStudentLoans = false))))
           mockGetPriorLeft(taxYear)
           mockHandleError(INTERNAL_SERVER_ERROR, InternalServerError)

@@ -92,4 +92,3 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(authAction: A
     professionalSubscriptionsRedirects(cya, taxYear)
   }
 }
-

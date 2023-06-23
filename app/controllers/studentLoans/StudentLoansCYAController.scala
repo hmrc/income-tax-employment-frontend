@@ -17,7 +17,7 @@
 package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
-import common.{EmploymentSection, SessionValues}
+import common.{SessionValues, StudentLoansSection}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmployerInformationController
 import controllers.expenses.routes._
@@ -33,8 +33,8 @@ import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansCYAView
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
@@ -106,7 +106,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
       employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
-          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.STUDENT_LOANS) match {
+          employmentSessionService.createModelOrReturnError(request.user, cya, prior, StudentLoansSection) match {
             case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNrs)).flatMap {
               case Left(result) => Future.successful(result)
               case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, cya)

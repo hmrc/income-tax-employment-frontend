@@ -16,7 +16,7 @@
 
 package services
 
-import common.{EmploymentSection, SessionValues}
+import common.{EmploymentBenefitsSection, EmploymentDetailsSection, EmploymentSection, SessionValues, StudentLoansSection}
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.details.EmploymentDetails
@@ -491,7 +491,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
   "createModelOrReturnError" should {
     "return JourneyNotFinished redirect from an exception when an update is being made to student loans but no prior" in {
-      lazy val response = underTest.createModelOrReturnError(authorisationRequest.user, employmentDataFull, None, EmploymentSection.STUDENT_LOANS)
+      lazy val response = underTest.createModelOrReturnError(authorisationRequest.user, employmentDataFull, None, StudentLoansSection)
 
       response.left.toOption.get shouldBe JourneyNotFinished
     }
@@ -517,7 +517,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None, Seq(), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.left.toOption.get shouldBe JourneyNotFinished
@@ -549,7 +549,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
             None
           )), None
         )), None, Seq(), None)
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -582,7 +582,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
             None
           )), None
         )), None, Seq(), None)
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -628,7 +628,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None, Seq(), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -667,7 +667,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -709,7 +709,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -762,7 +762,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -799,7 +799,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.STUDENT_LOANS
+        ), StudentLoansSection
       )
 
       response.left.toOption.get shouldBe JourneyNotFinished
@@ -808,7 +808,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     "return JourneyNotFinished redirect from an exception when an update is being made to benefits but no prior" in {
 
       lazy val response = underTest.createModelOrReturnError(
-        authorisationRequest.user, employmentDataFull, None, EmploymentSection.EMPLOYMENT_BENEFITS
+        authorisationRequest.user, employmentDataFull, None, EmploymentBenefitsSection
       )
 
       response.left.toOption.get shouldBe JourneyNotFinished
@@ -836,7 +836,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None, Seq(), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.left.toOption.get shouldBe JourneyNotFinished
@@ -873,7 +873,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None, Seq(), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -912,7 +912,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -956,7 +956,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1008,7 +1008,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1044,7 +1044,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_BENEFITS
+        ), EmploymentBenefitsSection
       )
 
       response.left.toOption.get shouldBe JourneyNotFinished
@@ -1083,7 +1083,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None, Seq(), None
           )
-        ), EmploymentSection.EMPLOYMENT_DETAILS
+        ), EmploymentDetailsSection
       )
 
       response.left.toOption.get shouldBe NothingToUpdate
@@ -1092,7 +1092,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     "create the model to send and return the correct result" in {
 
       val response = underTest.createModelOrReturnError(
-        authorisationRequest.user, employmentDataFull, Some(allEmploymentData), EmploymentSection.EMPLOYMENT_DETAILS
+        authorisationRequest.user, employmentDataFull, Some(allEmploymentData), EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1106,7 +1106,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(_.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = None, employmentBenefits = Some(EmploymentBenefits(
             s"${taxYearEOY - 1}-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
-          )))))), EmploymentSection.EMPLOYMENT_DETAILS
+          )))))), EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1121,7 +1121,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(x => x.copy(employmentId = "employmentId", hmrcEmploymentFinancialData = Some(EmploymentFinancialData(employmentData = x.hmrcEmploymentFinancialData.get.employmentData, employmentBenefits = Some(EmploymentBenefits(
             s"${taxYearEOY - 1}-04-04T01:01:01Z", Some(Benefits(Some(100.00)))))
-          )))))), EmploymentSection.EMPLOYMENT_DETAILS
+          )))))), EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1135,7 +1135,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       val response = underTest.createModelOrReturnError(
         authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.toEmploymentSource).map(_.copy(employmentId = "employmentId")))),
 
-        EmploymentSection.EMPLOYMENT_DETAILS
+        EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1175,7 +1175,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_DETAILS
+        ), EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1215,7 +1215,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )
             ), None
           )
-        ), EmploymentSection.EMPLOYMENT_DETAILS
+        ), EmploymentDetailsSection
       )
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
@@ -1235,7 +1235,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               startDate = None
             )
           )
-        ), Some(allEmploymentData), EmploymentSection.EMPLOYMENT_DETAILS
+        ), Some(allEmploymentData), EmploymentDetailsSection
       )
 
 
@@ -1516,16 +1516,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     }
   }
 
-  ".getSessionDataOld" should {
-    "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Left(DataNotFoundError))
-
-      val response = await(underTest.getSessionDataOld(taxYear, "some-employment-id"))
-
-      status(Future.successful(response.left.toOption.get)) shouldBe INTERNAL_SERVER_ERROR
-    }
-  }
-
   ".getExpensesSessionDataResult" should {
     "return the Internal server error result when DatabaseError" in {
       mockFind(taxYear, authorisationRequest.user, Left(DataNotUpdatedError))
@@ -1571,28 +1561,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       mockFind(taxYear, authorisationRequest.user, Right(None))
 
       val response = underTest.getExpensesSessionDataResult(taxYear) {
-        _ => Future.successful(anyResult)
-      }
-
-      status(response) shouldBe anyResult.header.status
-    }
-  }
-
-  ".getSessionDataResult" should {
-    "return the Internal server error result when DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Left(DataNotUpdatedError))
-
-      val response = underTest.getSessionDataResult(taxYear, "some-employment-id") {
-        _ => Future.successful(anyResult)
-      }
-
-      status(response) shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return the given result when no DatabaseError" in {
-      mockFind(taxYear, "some-employment-id", Right(None))
-
-      val response = underTest.getSessionDataResult(taxYear, "some-employment-id") {
         _ => Future.successful(anyResult)
       }
 

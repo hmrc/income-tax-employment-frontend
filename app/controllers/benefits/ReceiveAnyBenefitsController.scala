@@ -47,27 +47,29 @@ class ReceiveAnyBenefitsController @Inject()(authAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(cya: EmploymentUserData) => cya.employment.employmentBenefits match {
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(Some(cya: EmploymentUserData)) => cya.employment.employmentBenefits match {
           case Some(model) =>
             Future.successful(Ok(receiveAnyBenefitsView(benefitsFormsProvider.receiveAnyBenefitsForm(
               request.user.isAgent).fill(model.isBenefitsReceived), taxYear, employmentId)))
           case None => Future.successful(Ok(receiveAnyBenefitsView(benefitsFormsProvider.receiveAnyBenefitsForm(request.user.isAgent), taxYear, employmentId)))
         }
-        case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case Right(None) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(cya) =>
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(Some(cya)) =>
           benefitsFormsProvider.receiveAnyBenefitsForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
-        case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case Right(None) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
