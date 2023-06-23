@@ -16,7 +16,7 @@
 
 package services
 
-import common.EmploymentSection
+import common.{EmploymentDetailsSection, EmploymentSection}
 import config.{AppConfig, ErrorHandler}
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
@@ -68,16 +68,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     incomeTaxUserDataConnector.get(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
-  @deprecated("Use getSessionData(...) instead")
-  def getSessionDataResult(taxYear: Int, employmentId: String)
-                          (result: Option[EmploymentUserData] => Future[Result])
-                          (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentUserDataRepository.find(taxYear, employmentId, request.user).flatMap {
-      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
-      case Right(value) => result(value)
-    }
-  }
-
   def findEmploymentUserData(taxYear: Int, employmentId: String, user: User): Future[Either[Unit, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId, user).map {
       case Left(_) => Left(())
@@ -89,15 +79,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                      employmentId: String,
                      user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId, user)
-  }
-
-  @deprecated("use taxYear: Int, employmentId: String, user: User instead")
-  def getSessionDataOld(taxYear: Int, employmentId: String)
-                       (implicit request: AuthorisationRequest[_]): Future[Either[Result, Option[EmploymentUserData]]] = {
-    employmentUserDataRepository.find(taxYear, employmentId, request.user).map {
-      case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
-      case Right(value) => Right(value)
-    }
   }
 
   def getExpensesSessionDataResult(taxYear: Int)(result: Option[ExpensesUserData] => Future[Result])
@@ -219,7 +200,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def createModelOrReturnError(user: User,
                                cya: EmploymentUserData,
                                prior: Option[AllEmploymentData],
-                               section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
+                               section: EmploymentSection): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
     cyaAndPriorToCreateUpdateEmploymentRequest(user, cya, prior, section) match {
       case Left(NothingToUpdate) =>
@@ -233,12 +214,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   private def cyaAndPriorToCreateUpdateEmploymentRequest(user: User,
                                                          cya: EmploymentUserData,
                                                          prior: Option[AllEmploymentData],
-                                                         section: EmploymentSection.Value): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
+                                                         section: EmploymentSection): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
 
     val hmrcEmploymentId: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
     val customerEmploymentId: Option[String] = {
 
-      if (appConfig.mimicEmploymentAPICalls && section != EmploymentSection.EMPLOYMENT_DETAILS) {
+      if (appConfig.mimicEmploymentAPICalls && section != EmploymentDetailsSection) {
         Some(cya.employmentId)
       } else {
         prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
@@ -289,7 +270,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   private def formCreateUpdateEmployment(cya: EmploymentUserData,
                                          prior: Option[AllEmploymentData],
-                                         section: EmploymentSection.Value): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment] = {
+                                         section: EmploymentSection): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment] = {
     val priorEmployment = prior.flatMap(_.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource))
 
     lazy val cyaCreateUpdateEmployment = {
@@ -303,7 +284,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
 
     lazy val newCreateUpdateEmployment = {
-      if (section == EmploymentSection.EMPLOYMENT_DETAILS) {
+      if (section == EmploymentDetailsSection) {
         cyaCreateUpdateEmployment
       } else {
         if (appConfig.mimicEmploymentAPICalls) {
@@ -333,7 +314,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  private def formCreateUpdateEmploymentData(cya: EmploymentUserData, prior: Option[AllEmploymentData], section: EmploymentSection.Value): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData] = {
+  private def formCreateUpdateEmploymentData(cya: EmploymentUserData, prior: Option[AllEmploymentData], section: EmploymentSection): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData] = {
 
     val priorEmployment: Option[EmploymentSource] = prior.flatMap(_.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource))
 
@@ -357,10 +338,10 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     lazy val createUpdateEmploymentData = {
       section match {
-        case common.EmploymentSection.EMPLOYMENT_DETAILS =>
+        case common.EmploymentDetailsSection =>
           CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans)
 
-        case common.EmploymentSection.EMPLOYMENT_BENEFITS =>
+        case common.EmploymentBenefitsSection =>
 
           if (appConfig.mimicEmploymentAPICalls) {
             CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
@@ -368,7 +349,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
             CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans)
           }
 
-        case common.EmploymentSection.STUDENT_LOANS =>
+        case common.StudentLoansSection =>
 
           if (appConfig.mimicEmploymentAPICalls) {
             CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
@@ -382,9 +363,9 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     def dataHasNotChanged(prior: EmploymentSource): Boolean = {
       section match {
-        case common.EmploymentSection.EMPLOYMENT_DETAILS => prior.employmentData.exists(_.payDataHasNotChanged(createUpdateEmploymentData.pay))
-        case common.EmploymentSection.EMPLOYMENT_BENEFITS => prior.employmentBenefits.exists(_.benefitsDataHasNotChanged(createUpdateEmploymentData.benefitsInKind))
-        case common.EmploymentSection.STUDENT_LOANS => prior.employmentData.exists(_.studentLoansDataHasNotChanged(createUpdateEmploymentData.deductions))
+        case common.EmploymentDetailsSection => prior.employmentData.exists(_.payDataHasNotChanged(createUpdateEmploymentData.pay))
+        case common.EmploymentBenefitsSection => prior.employmentBenefits.exists(_.benefitsDataHasNotChanged(createUpdateEmploymentData.benefitsInKind))
+        case common.StudentLoansSection => prior.employmentData.exists(_.studentLoansDataHasNotChanged(createUpdateEmploymentData.deductions))
       }
     }
 
@@ -410,7 +391,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                   (block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
                   (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
-      optionalCya <- getSessionDataOld(taxYear, employmentId)
+      optionalCya <- getSessionData(taxYear, employmentId, request.user)
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
@@ -436,7 +417,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
 
     val result = for {
-      optionalCya <- getSessionDataOld(taxYear, employmentId)
+      optionalCya <- getSessionData(taxYear, employmentId, request.user)
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
       if (optionalCya.isRight) {
