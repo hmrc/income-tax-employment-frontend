@@ -17,14 +17,22 @@
 package controllers.employment
 
 import common.SessionValues
+import controllers.employment.routes._
+import controllers.studentLoans.routes.StudentLoansCYAController
+import controllers.taxableLumpSums.routes.TaxableLumpSumsController
 import models.AuthorisationRequest
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.mockito.ArgumentMatchers.any
 import play.api.http.Status._
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
+import play.api.test.Helpers.contentAsString
 import support.ControllerUnitTest
+import support.ViewHelper
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService}
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -65,14 +73,51 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
         val employmentId: String = anEmploymentSource.employmentId
 
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(employerName, employmentId, Seq(), taxYear, isInYear = true, showNotification = false)))
+          mockFind(taxYear, Ok(view(employerName, employmentId, any, taxYear, isInYear = true, showNotification = true)))
           controller().show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
         }
 
         status(result) shouldBe OK
+        val contents = contentAsString(result)
       }
+    }
+
+    "render Employment And Benefits page with correct rows" in {
+      mockAuth(Some(nino))
+      val employerName: String = anEmploymentSource.employerName
+      val employmentId: String = anEmploymentSource.employmentId
+
+      val rows = Seq(
+        EmployerInformationRow(EmploymentDetails, ToDo, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), updateAvailable = true),
+        EmployerInformationRow(EmploymentBenefits, CannotUpdate, Some(CheckYourBenefitsController.show(taxYear, employmentId)), updateAvailable = true),
+        EmployerInformationRow(StudentLoans, CannotUpdate, Some(StudentLoansCYAController.show(taxYear, employmentId)), updateAvailable = true),
+        EmployerInformationRow(TaxableLumpSums, CannotUpdate, Some(TaxableLumpSumsController.show(taxYear, employmentId)), updateAvailable = true),
+      )
+
+      val result: Future[Result] = {
+        mockFind(taxYear, Ok(view(employerName, employmentId, rows, taxYear, isInYear = true, showNotification = true)))
+        controller().show(taxYear, employmentId)(fakeRequest.withSession(
+          SessionValues.TAX_YEAR -> taxYear.toString
+        ))
+      }
+
+      status(result) shouldBe OK
+      val contents = contentAsString(result)
+
+      implicit val document: Document = Jsoup.parse(contents)
+
+      def employerInformationRowCheck(item: String, value: String, href: String, section: Int, row: Int)(implicit document: Document): Unit = {
+        document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dt").text() shouldBe messages(item)
+        document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value").text() shouldBe messages(value)
+        document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd > a").attr("href") shouldBe href
+      }
+
+      employerInformationRowCheck(EmploymentDetails.toString, ToDo.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 1)
+      employerInformationRowCheck(EmploymentBenefits.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 2)
+      employerInformationRowCheck(StudentLoans.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 3)
+      employerInformationRowCheck(TaxableLumpSums.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 4)
     }
 
     "redirect the User to the Overview page when GetEmploymentDataModel is in mongo but " which {
