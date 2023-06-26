@@ -63,7 +63,8 @@ class MessagesSpec extends UnitTest with ViewHelper with GuiceOneAppPerSuite {
     "benefits.incomeTax.error.individual",
     "employment.removeEmployment.started.date",
     "employment.employmentDetails.content.agent",
-    "employment.employmentDetails.content.individual"
+    "employment.employmentDetails.content.individual",
+    "lumpSum.taxableLumpSums.details.text"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
