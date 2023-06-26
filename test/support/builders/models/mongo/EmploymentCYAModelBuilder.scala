@@ -16,18 +16,18 @@
 
 package support.builders.models.mongo
 
+import models.employment.TaxableLumpSumViewModel
 import models.mongo.EmploymentCYAModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
-import support.builders.models.employment.TaxableLumpSumDataBuilder.aTaxableLumpSumData
 
 object EmploymentCYAModelBuilder {
 
-  val anEmploymentCYAModel: EmploymentCYAModel = EmploymentCYAModel(
+  def anEmploymentCYAModel(additionalInfoViewModel: Option[TaxableLumpSumViewModel] = None): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = anEmploymentDetails,
     employmentBenefits = Some(aBenefitsViewModel),
     studentLoans = Some(aStudentLoans.toStudentLoansCYAModel),
-    additionalInfoViewModel = Some(aTaxableLumpSumData)
+    additionalInfoViewModel = additionalInfoViewModel
   )
 }

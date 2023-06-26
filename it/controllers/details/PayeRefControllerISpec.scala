@@ -161,7 +161,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         val employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)
-        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
         insertCyaData(employmentUserData)
         val form = Map(PayeRefForm.payeRef -> payeRef)
         urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)

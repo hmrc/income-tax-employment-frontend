@@ -130,7 +130,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(employerName = employerName))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel().copy(employmentDetails = anEmploymentDetails.copy(employerName = employerName))))
         urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "redirects to employment details CYA page" in {

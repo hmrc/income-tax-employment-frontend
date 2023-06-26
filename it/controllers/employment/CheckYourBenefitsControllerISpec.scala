@@ -222,7 +222,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     }
 
     "return internal server error page whilst not implemented" in {
-      val employmentData = anEmploymentCYAModel.copy(employmentBenefits = None)
+      val employmentData = anEmploymentCYAModel().copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -266,7 +266,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
             )
           )
         )
@@ -302,7 +302,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
             )
           )
         )
@@ -341,7 +341,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -376,7 +376,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -415,7 +415,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 34786788.77, 35553311.89
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = Some(anEmploymentCYAModel.employmentBenefits.get.asBenefits)
+              benefitsInKind = Some(anEmploymentCYAModel().employmentBenefits.get.asBenefits)
             )
           )
         )
@@ -441,7 +441,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           )))))
 
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(
           BenefitsViewModel(
             isUsingCustomerData = true, isBenefitsReceived = true
           )

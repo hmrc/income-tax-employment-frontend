@@ -42,7 +42,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = isPriorSubmission,
       hasPriorStudentLoans = isPriorSubmission,
-      employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false))
+      employment = anEmploymentCYAModel().copy(anEmploymentDetails.copy("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false))
     )
 
   val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(

@@ -47,7 +47,7 @@ class AssetsOrAssetTransfersBenefitsPageSpec extends UnitTest {
 
     "create page model with form populated from the assetsModel sectionQuestion" in {
       val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
         taxYear = anyTaxYear,
@@ -59,7 +59,7 @@ class AssetsOrAssetTransfersBenefitsPageSpec extends UnitTest {
 
     "create page model with empty form" in {
       val employmentBenefits = aBenefitsViewModel.copy(assetsModel = None)
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       AssetsOrAssetTransfersBenefitsPage.apply(anyTaxYear, anyEmploymentId, user, questionForm, employmentUserData) shouldBe AssetsOrAssetTransfersBenefitsPage(
         taxYear = anyTaxYear,

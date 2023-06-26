@@ -34,7 +34,7 @@ class EmployerEndDatePageSpec extends UnitTest
   ".apply(...)" should {
     "return page with empty form when end date is not preset" in {
       val employmentDetails = anEmploymentDetails.copy(cessationDate = None)
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       EmployerEndDatePage.apply(taxYearEOY, employmentId, aUser, dateForm, userData) shouldBe EmployerEndDatePage(
         taxYear = taxYearEOY,
@@ -47,7 +47,7 @@ class EmployerEndDatePageSpec extends UnitTest
 
     "return page with pre-filled form when end date is preset" in {
       val employmentDetails = anEmploymentDetails.copy(cessationDate = Some(s"$taxYearEOY-01-01"))
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       EmployerEndDatePage.apply(taxYearEOY, employmentId, aUser, dateForm, userData) shouldBe EmployerEndDatePage(
         taxYear = taxYearEOY,
