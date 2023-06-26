@@ -32,7 +32,7 @@ object TaxableLumpSumListPage {
     TaxableLumpSumListPage(taxableLumpSumViewModel.items.map{ item =>
       ListRows(
         displayedValueForOptionalAmount(item.lumpSumAmount),
-        routes.EmploymentSummaryController.show(taxYear)
+        routes.EmploymentSummaryController.show(taxYear) //todo redirect to appropriate page
       )}, taxYear
     )
   }
