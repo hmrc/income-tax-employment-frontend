@@ -20,6 +20,7 @@ import controllers.employment.routes
 import models.employment.TaxableLumpSumViewModel
 import play.api.i18n.Messages
 import play.api.mvc.Call
+
 import java.text.NumberFormat
 import java.util.Locale
 

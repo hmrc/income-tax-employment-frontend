@@ -16,12 +16,10 @@
 
 package utils
 
-import play.api.i18n.Lang
-import play.api.i18n.Messages
-import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.Language
+import play.api.i18n.{Lang, Messages}
+import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, Language}
 
 import java.util.Locale
-import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
 
 object LanguageUtil {
   def checkLanguage(implicit messages: Messages): Language ={

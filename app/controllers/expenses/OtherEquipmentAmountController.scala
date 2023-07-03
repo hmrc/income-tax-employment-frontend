@@ -19,8 +19,8 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import forms.expenses.ExpensesFormsProvider
 import forms.FormUtils
+import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect

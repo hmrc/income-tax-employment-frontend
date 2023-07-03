@@ -16,7 +16,6 @@
 
 package audit
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -25,6 +24,7 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.play.bootstrap.config.AppName
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

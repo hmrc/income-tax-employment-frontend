@@ -17,7 +17,6 @@
 package utils
 
 import java.net.URI
-
 import scala.util.Try
 
 object RedirectUtils {

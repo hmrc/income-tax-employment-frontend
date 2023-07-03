@@ -18,7 +18,6 @@ package controllers.lumpSum
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import models.AuthorisationRequest
 import models.benefits.pages.TaxableLumpSumListPage
 import models.employment.{EmploymentDetailsType, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
 import play.api.i18n.I18nSupport

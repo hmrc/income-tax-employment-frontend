@@ -20,8 +20,8 @@ import controllers.benefits.accommodation.routes._
 import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
 import uk.gov.hmrc.crypto.EncryptedValue
-import utils.CypherSyntax._
 import utils.AesGcmAdCrypto
+import utils.CypherSyntax._
 
 case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
                                         accommodationQuestion: Option[Boolean] = None,
