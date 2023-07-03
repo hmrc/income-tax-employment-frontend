@@ -55,7 +55,7 @@ class TaxableLumpSumListControllerSpec extends ControllerUnitTest
 
   ".show" when {
     "return a fully populated page when all user has lump sums" in {
-      mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData.copy(employment = anEmploymentCYAModel(Some(aTaxableLumpSumData))))
+      mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData.copy(employment = anEmploymentCYAModel(additionalInfoViewModel = Some(aTaxableLumpSumData))))
 
       val result: Future[Result] = {
         underTest().show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
