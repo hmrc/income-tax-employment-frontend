@@ -20,6 +20,7 @@ import config.ErrorHandler
 import connectors.CreateOrAmendExpensesConnector
 import connectors.parsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
 import controllers.employment.routes.EmploymentSummaryController
+import javax.inject.Inject
 import models.employment.{AllEmploymentData, EmploymentExpenses}
 import models.expenses.{Expenses, ExpensesDataRemainsUnchanged}
 import models.mongo.ExpensesUserData
@@ -30,7 +31,6 @@ import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: CreateOrAmendExpensesConnector,

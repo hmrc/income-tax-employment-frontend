@@ -18,13 +18,12 @@ package controllers
 
 import common.SessionValues
 import config.AppConfig
+import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.templates.TimeoutPage
-
-import javax.inject.Inject
 
 
 
