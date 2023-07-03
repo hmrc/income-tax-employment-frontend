@@ -132,7 +132,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel()))
         urlPost(fullUrl(taxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 

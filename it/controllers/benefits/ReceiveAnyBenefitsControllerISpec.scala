@@ -35,7 +35,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment =anEmploymentCYAModel()().copy(employmentBenefits = None)))
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment =anEmploymentCYAModel().copy(employmentBenefits = None)))
         urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

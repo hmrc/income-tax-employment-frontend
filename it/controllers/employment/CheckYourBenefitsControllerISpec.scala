@@ -254,7 +254,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel()).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
@@ -290,7 +290,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel()).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
@@ -329,7 +329,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel()).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
@@ -364,7 +364,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val hmrcEmploymentData = Seq(aHmrcEmploymentSource.copy(hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData.copy(employmentBenefits = None))))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel()).copy(employmentId = employmentId))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
@@ -404,7 +404,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           )))))
 
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel, hasPriorBenefits = true))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel(), hasPriorBenefits = true))
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),

@@ -156,7 +156,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel()))
         urlPost(fullUrl(vouchersOrCreditCardsBenefitsAmountUrl(taxYearEOY, employmentId)),
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
