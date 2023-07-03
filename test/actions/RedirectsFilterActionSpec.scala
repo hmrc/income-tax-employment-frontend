@@ -49,7 +49,7 @@ class RedirectsFilterActionSpec extends UnitTest
       val redirectCall = CarVanFuelBenefitsController.show(anyTaxYear, anyEmploymentId)
       val resultRedirects: Seq[ConditionalRedirect] = Seq(ConditionalRedirect(condition = true, redirect = redirectCall, hasPrior = None))
 
-      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel(), resultRedirects)
 
       val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
@@ -60,7 +60,7 @@ class RedirectsFilterActionSpec extends UnitTest
       val redirectCall = CarVanFuelBenefitsController.show(anyTaxYear, anyEmploymentId)
       val resultRedirects: Seq[ConditionalRedirect] = Seq(ConditionalRedirect(condition = true, redirect = redirectCall, hasPrior = Some(true)))
 
-      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel(), resultRedirects)
 
       val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 
@@ -68,7 +68,7 @@ class RedirectsFilterActionSpec extends UnitTest
     }
 
     "None when no conditional redirects" in {
-      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel, Seq.empty)
+      mockMatchToRedirects(clazz = someClass, anyTaxYear, anyEmploymentId, anEmploymentCYAModel(), Seq.empty)
 
       val underTest = RedirectsFilterAction(mockRedirectsMapper, clazz = someClass, anyTaxYear, anyEmploymentId)(executionContext)
 

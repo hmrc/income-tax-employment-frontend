@@ -1301,13 +1301,13 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
         "employmentId",
         isPriorSubmission = true,
         hasPriorBenefits = true, hasPriorStudentLoans = true,
-        employment = anEmploymentCYAModel,
+        employment = anEmploymentCYAModel(),
         testClock.now()
       )
 
       mockCreateOrUpdate(expected, Right(()))
 
-      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel)
+      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel())
 
       await(response) shouldBe Right(expected)
     }
@@ -1322,13 +1322,13 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
         isPriorSubmission = true,
         hasPriorBenefits = false,
         hasPriorStudentLoans = false,
-        employment = anEmploymentCYAModel,
+        employment = anEmploymentCYAModel(),
         testClock.now()
       )
 
       mockCreateOrUpdate(expected, Left(DataNotUpdatedError))
 
-      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel)
+      val response = underTest.createOrUpdateEmploymentUserData(authorisationRequest.user, taxYear, "employmentId", expected, anEmploymentCYAModel())
 
       await(response) shouldBe Left(())
     }

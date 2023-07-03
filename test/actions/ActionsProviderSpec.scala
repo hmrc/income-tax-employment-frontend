@@ -106,7 +106,7 @@ class ActionsProviderSpec extends ControllerUnitTest
 
       mockAuthAsIndividual(Some(aUser.nino))
       mockGetSessionData(taxYearEOY, employmentId, aUser, result = Right(Some(anEmploymentUserData)))
-      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel, resultRedirects)
+      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel(), resultRedirects)
 
       val underTest = actionsProvider.endOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
@@ -116,7 +116,7 @@ class ActionsProviderSpec extends ControllerUnitTest
     "return successful response" in {
       mockAuthAsIndividual(Some(aUser.nino))
       mockGetSessionData(taxYearEOY, employmentId, aUser, result = Right(Some(anEmploymentUserData)))
-      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel, Seq.empty)
+      mockMatchToRedirects(clazz = someClass, taxYearEOY, employmentId, anEmploymentCYAModel(), Seq.empty)
 
       val underTest = actionsProvider.endOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentDetailsType, clazz = someClass)(anyBlock)
 
