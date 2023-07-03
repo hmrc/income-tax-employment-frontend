@@ -147,6 +147,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
       Seq(),
       None,
       Seq(anEmploymentSource),
+      None,
       None
     )))
 

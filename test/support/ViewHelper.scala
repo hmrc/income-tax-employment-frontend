@@ -17,7 +17,6 @@
 package support
 
 import org.jsoup.nodes.{Document, Element}
-import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

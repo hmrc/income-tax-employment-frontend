@@ -44,7 +44,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.benefits.pages.EmployerEndDatePageBuilder.anEmployerEndDatePage
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
-import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
+import utils.ViewUtils.dateFormatter
 import views.html.details.EmployerEndDateView
 
 import java.time.LocalDate

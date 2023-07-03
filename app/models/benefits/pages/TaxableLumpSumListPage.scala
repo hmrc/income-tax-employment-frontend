@@ -17,7 +17,7 @@
 package models.benefits.pages
 
 import controllers.employment.routes
-import models.employment.TaxableLumpSumViewModel
+import models.otheremployment.session.OtherEmploymentIncomeCYAModel
 import play.api.i18n.Messages
 import play.api.mvc.Call
 
@@ -29,10 +29,10 @@ case class ListRows(amount: String, call: Call)
 case class TaxableLumpSumListPage(rows: Seq[ListRows], taxYear: Int)
 
 object TaxableLumpSumListPage {
-  def apply(taxableLumpSumViewModel: TaxableLumpSumViewModel, taxYear: Int)(implicit messages: Messages) : TaxableLumpSumListPage = {
-    TaxableLumpSumListPage(taxableLumpSumViewModel.items.map{ item =>
+  def apply(otherEmploymentIncomeCYAModel: OtherEmploymentIncomeCYAModel, taxYear: Int)(implicit messages: Messages) : TaxableLumpSumListPage = {
+    TaxableLumpSumListPage(otherEmploymentIncomeCYAModel.taxableLumpSums.map{ item =>
       ListRows(
-        displayedValueForOptionalAmount(item.lumpSumAmount),
+        displayedValue(item.amount),
         routes.EmploymentSummaryController.show(taxYear) //todo redirect to appropriate page
       )}, taxYear
     )

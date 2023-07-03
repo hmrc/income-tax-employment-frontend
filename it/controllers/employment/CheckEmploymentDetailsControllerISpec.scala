@@ -88,7 +88,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       ),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
-      customerExpenses = None
+      customerExpenses = None,
+      otherEmploymentIncome = None
     )
   }
 
@@ -122,7 +123,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           None
         )
       ),
-      customerExpenses = None
+      customerExpenses = None,
+      otherEmploymentIncome = None
     )
   }
 
@@ -163,7 +165,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       ),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
-      customerExpenses = None
+      customerExpenses = None,
+      otherEmploymentIncome = None
     )
   }
 

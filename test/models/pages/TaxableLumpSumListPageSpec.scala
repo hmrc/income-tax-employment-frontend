@@ -18,10 +18,10 @@ package models.pages
 
 import controllers.employment.routes
 import models.benefits.pages.TaxableLumpSumListPage
-import models.employment.{TaxableLumpSumItemModel, TaxableLumpSumViewModel}
+import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.i18n.Messages
 import support.ViewUnitTest
-import support.builders.models.employment.TaxableLumpSumDataBuilder.aTaxableLumpSumData
+import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 
 class TaxableLumpSumListPageSpec extends ViewUnitTest {
   override protected val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
@@ -31,7 +31,7 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
     "transform taxableLumpSumViewModel into the correct number of rows, with the correct content " in {
       implicit val messages: Messages = getMessages(false)
 
-      val table  = TaxableLumpSumListPage(aTaxableLumpSumData, taxYearEOY)
+      val table  = TaxableLumpSumListPage(anOtherEmploymentIncomeCYAModel, taxYearEOY)
       table.rows.length shouldBe 3
       table.rows.head.amount shouldBe "£100"
       table.rows.head.call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
@@ -44,7 +44,7 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
     "show no table when user has no lump sums" in {
       implicit val messages: Messages = getMessages(false)
 
-      val table = TaxableLumpSumListPage(TaxableLumpSumViewModel(Seq.empty[TaxableLumpSumItemModel]), taxYearEOY)
+      val table = TaxableLumpSumListPage(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum]), taxYearEOY)
       table.rows.length shouldBe 0
     }
   }

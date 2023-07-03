@@ -41,7 +41,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
       EmploymentSource(employmentId = "004", employerName = "microsoft", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "005", employerName = "name", None, None, None, None, None, None, None, None)
     ),
-    customerExpenses = None
+    customerExpenses = None,
+    otherEmploymentIncome = None
   )
 
   ".show" should {

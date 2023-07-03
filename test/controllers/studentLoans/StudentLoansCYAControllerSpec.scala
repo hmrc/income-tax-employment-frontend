@@ -16,7 +16,7 @@
 
 package controllers.studentLoans
 
-import common.{EmploymentSection, SessionValues, StudentLoansSection}
+import common.{SessionValues, StudentLoansSection}
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._
@@ -24,8 +24,8 @@ import models.benefits.Benefits
 import models.employment.createUpdate._
 import models.employment.{Deductions, OptionalCyaAndPrior, StudentLoans}
 import play.api.http.Status._
-import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
 import support.ControllerUnitTest

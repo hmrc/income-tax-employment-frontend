@@ -18,7 +18,7 @@ package utils
 
 import uk.gov.hmrc.crypto.EncryptedValue
 
-import java.time.Month
+import java.time.{Instant, Month}
 
 trait Cypher[A] {
   self =>
@@ -49,6 +49,8 @@ object Cypher {
   implicit val booleanCypher: Cypher[Boolean] = stringCypher.imap(_.toBoolean, _.toString)
 
   implicit val bigDecimalCypher: Cypher[BigDecimal] = stringCypher.imap(BigDecimal(_), _.toString)
+
+  implicit val instantCypher: Cypher[Instant] = stringCypher.imap(Instant.parse, _.toString)
 
   implicit val monthCypher: Cypher[Month] = stringCypher.imap(Month.valueOf, _.toString)
 }

@@ -18,21 +18,22 @@ package support.builders.models.mongo
 
 import models.benefits.BenefitsViewModel
 import models.details.EmploymentDetails
-import models.employment.{StudentLoansCYAModel, TaxableLumpSumViewModel}
+import models.employment.StudentLoansCYAModel
 import models.mongo.EmploymentCYAModel
+import models.otheremployment.session.OtherEmploymentIncomeCYAModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 
 object EmploymentCYAModelBuilder {
 
-  def anEmploymentCYAModel( employmentDetails: EmploymentDetails = anEmploymentDetails,
-                            employmentBenefits: Option[BenefitsViewModel] = Some(aBenefitsViewModel),
-                            studentLoans: Option[StudentLoansCYAModel] = Some(aStudentLoans.toStudentLoansCYAModel),
-                            additionalInfoViewModel: Option[TaxableLumpSumViewModel] = None): EmploymentCYAModel = EmploymentCYAModel(
+  def anEmploymentCYAModel(employmentDetails: EmploymentDetails = anEmploymentDetails,
+                           employmentBenefits: Option[BenefitsViewModel] = Some(aBenefitsViewModel),
+                           studentLoans: Option[StudentLoansCYAModel] = Some(aStudentLoans.toStudentLoansCYAModel),
+                           otherEmploymentIncome: Option[OtherEmploymentIncomeCYAModel] = None): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails,
     employmentBenefits = employmentBenefits,
     studentLoans = studentLoans,
-    additionalInfoViewModel = additionalInfoViewModel
+    otherEmploymentIncome = otherEmploymentIncome
   )
 }

@@ -19,7 +19,8 @@ package controllers.lumpSum
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
 import models.benefits.pages.TaxableLumpSumListPage
-import models.employment.{EmploymentDetailsType, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
+import models.employment.EmploymentDetailsType
+import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -43,7 +44,7 @@ class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
     employmentType = EmploymentDetailsType
   ) { implicit request =>
     Ok(view(TaxableLumpSumListPage(
-      request.employmentUserData.employment.additionalInfoViewModel.getOrElse(TaxableLumpSumViewModel(Seq.empty[TaxableLumpSumItemModel])),
+      request.employmentUserData.employment.otherEmploymentIncome.getOrElse(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum])),
       request.employmentUserData.taxYear)))
   }
 }
