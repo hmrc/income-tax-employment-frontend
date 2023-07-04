@@ -90,14 +90,16 @@ class TailoringServiceSpec extends UnitTest
     hmrcEmploymentData = Seq(employmentSource1),
     hmrcExpenses = None,
     customerEmploymentData = Seq(employmentSource2),
-    customerExpenses = Some(customerExpenses)
+    customerExpenses = Some(customerExpenses),
+    None
   )
 
   def data(hmrcExpenses: Option[EmploymentExpenses], customerExpenses: Option[EmploymentExpenses]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = Seq(),
-    customerExpenses = customerExpenses
+    customerExpenses = customerExpenses,
+    None
   )
 
   ".deleteOrIgnoreAllEmployment" should {

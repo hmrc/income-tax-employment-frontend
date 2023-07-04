@@ -99,7 +99,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                 }
               case (None, _) => prior.get.eoyEmploymentSourceWith(employmentId) match {
                 case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
-                  employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData),
+                  employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData, prior.get.otherEmploymentIncome),
                     isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans)(errorHandler.internalServerError())({
                     val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
                     benefits match {

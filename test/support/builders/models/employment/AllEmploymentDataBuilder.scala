@@ -19,6 +19,7 @@ package support.builders.models.employment
 import models.employment.AllEmploymentData
 import support.builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import support.builders.models.employment.HmrcEmploymentSourceBuilder.aHmrcEmploymentSource
+import support.builders.models.otheremployment.OtherEmploymentIncomeDataBuilder.anOtherEmploymentIncome
 
 object AllEmploymentDataBuilder {
 
@@ -26,6 +27,7 @@ object AllEmploymentDataBuilder {
     hmrcEmploymentData = Seq(aHmrcEmploymentSource),
     hmrcExpenses = Some(anEmploymentExpenses),
     customerEmploymentData = Seq(),
-    customerExpenses = None
+    customerExpenses = None,
+    otherEmploymentIncome = Some(anOtherEmploymentIncome)
   )
 }

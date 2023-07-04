@@ -170,7 +170,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
         request.user,
         taxYear,
         employmentId,
-        EmploymentCYAModel.apply(source, isUsingCustomerData),
+        EmploymentCYAModel.apply(source, isUsingCustomerData, employmentData.otherEmploymentIncome),
         isPriorSubmission = true,
         source.hasPriorBenefits,
         source.hasPriorStudentLoans

@@ -20,7 +20,6 @@ import actions.ActionsProvider
 import akka.actor.ActorSystem
 import common.SessionValues
 import config.AppConfig
-import connectors.TailoringDataConnector
 import models.employment._
 import models.tailoring.{ExcludeJourneyModel, ExcludedJourneysResponseModel}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
@@ -111,14 +110,16 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
       hmrcEmploymentData = Seq(employmentSource1),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
-      customerExpenses = None
+      customerExpenses = None,
+      otherEmploymentIncome = None
     )
 
     val multipleEmploymentSourcesData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(employmentSource1, employmentSource2),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
-      customerExpenses = None
+      customerExpenses = None,
+      otherEmploymentIncome = None,
     )
   }
 

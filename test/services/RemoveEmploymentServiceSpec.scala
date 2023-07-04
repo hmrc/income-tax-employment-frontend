@@ -70,7 +70,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
     hmrcEmploymentData = Seq(empSource),
     hmrcExpenses = None,
     customerEmploymentData = Seq(empSource.toEmploymentSource.copy(employmentId = "002")),
-    customerExpenses = None
+    customerExpenses = None,
+    otherEmploymentIncome = None
   )
 
   private val customerExpenses =
@@ -85,7 +86,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
     hmrcEmploymentData = Seq(empSource),
     hmrcExpenses = None,
     customerEmploymentData = Seq(empSource.toEmploymentSource.copy(employmentId = "001")),
-    customerExpenses = Some(customerExpenses)
+    customerExpenses = Some(customerExpenses),
+    otherEmploymentIncome = None
   )
 
   ".deleteOrIgnoreEmployment" should {
@@ -156,7 +158,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val customerDataSource = data.customerEmploymentData.find(_.employmentId.equals("002")).get
         val employmentDetailsViewModel: EmploymentDetailsViewModel = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true)
         val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
-        val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None)
+        val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
         verifySubmitEvent(DecodedDeleteEmploymentPayload(

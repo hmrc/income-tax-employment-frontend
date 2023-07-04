@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package support.builders.models.employment
+package models.otheremployment.api
 
-import models.employment.{PayrollPaymentType, TaxableLumpSumItemModel, TaxableLumpSumViewModel}
+import play.api.libs.json.{Json, OFormat}
 
-object TaxableLumpSumDataBuilder {
-val aTaxableLumpSumData: TaxableLumpSumViewModel = TaxableLumpSumViewModel(Seq(
-  TaxableLumpSumItemModel(Some(100), Some(100), Some(PayrollPaymentType.AllPaid)),
-  TaxableLumpSumItemModel(Some(99), Some(1), Some(PayrollPaymentType.SomePaid)),
-  TaxableLumpSumItemModel(Some(98), None, Some(PayrollPaymentType.NonePaid)),
-))
+case class RedundancyCompensationPaymentsOverExemption(amount: BigDecimal,
+                                                       taxPaid: Option[BigDecimal] = None,
+                                                       taxTakenOffInEmployment: Option[Boolean] = None)
+
+object RedundancyCompensationPaymentsOverExemption {
+  implicit val format: OFormat[RedundancyCompensationPaymentsOverExemption] = Json.format[RedundancyCompensationPaymentsOverExemption]
 }

@@ -173,7 +173,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               val hmrcEmploymentFinancialData = aHmrcEmploymentFinancialData.copy(employmentData = Some(anEmploymentData.copy(deductions = None)))
               userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
                 Seq(aHmrcEmploymentSource.copy(employmentId = employmentId, employerName = "Whiterun Guards", hmrcEmploymentFinancialData = Some(hmrcEmploymentFinancialData))), None,
-                Seq(), None
+                Seq(), None, None
               ))), nino, taxYearInUse)
 
               urlGet(
@@ -210,7 +210,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             ))
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
               Seq(aHmrcEmploymentSource.copy(employmentId = employmentId, employerName = "Whiterun Guards")), None,
-              Seq(), None
+              Seq(), None, None
             ))), nino, taxYearInUse)
 
             urlGet(
@@ -274,7 +274,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
           )), None
         )),
-        None
+        None, None
       )))
 
       val hmrcData = HmrcEmploymentSource(

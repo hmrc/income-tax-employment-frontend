@@ -24,7 +24,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Result
 import play.api.test.Helpers.stubMessagesControllerComponents
 import support.ControllerUnitTest
-import support.builders.models.employment.TaxableLumpSumDataBuilder.aTaxableLumpSumData
+import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.mocks._
@@ -55,7 +55,11 @@ class TaxableLumpSumListControllerSpec extends ControllerUnitTest
 
   ".show" when {
     "return a fully populated page when all user has lump sums" in {
-      mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData.copy(employment = anEmploymentCYAModel(additionalInfoViewModel = Some(aTaxableLumpSumData))))
+      mockEndOfYearSessionData(taxYearEOY,
+        employmentId,
+        EmploymentDetailsType,
+        anEmploymentUserData.copy(employment = anEmploymentCYAModel(otherEmploymentIncome = Some(anOtherEmploymentIncomeCYAModel)))
+      )
 
       val result: Future[Result] = {
         underTest().show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(

@@ -29,7 +29,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.benefits.pages.EmployerStartDatePageBuilder.anEmployerStartDatePage
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import utils.ViewUtils.{dateFormatter, translatedDateFormatter}
+import utils.ViewUtils.dateFormatter
 import views.html.details.EmployerStartDateView
 
 import java.time.LocalDate

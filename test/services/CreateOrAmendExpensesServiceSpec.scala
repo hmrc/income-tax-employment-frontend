@@ -91,6 +91,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       Seq.empty,
       Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
       Seq(),
+      None,
       None
     )
 
@@ -99,7 +100,8 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       Seq.empty,
       Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
       Seq(),
-      Some(customerExpenses)
+      Some(customerExpenses),
+      None
     )
 
   val AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses: AllEmploymentData =
@@ -107,7 +109,8 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       Seq.empty,
       Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
       Seq(),
-      Some(customerExpenses)
+      Some(customerExpenses),
+      None
     )
 
   private def expensesUserData(expensesCyaModel: ExpensesCYAModel = expensesCyaData) =
@@ -170,7 +173,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       lazy val response = underTest.createExpensesModelAndReturnResult(
         authorisationRequest.user,
         expensesUserData(),
-        Some(AllEmploymentData(Seq.empty, None, Seq(), None)),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None, None)),
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
@@ -181,7 +184,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       lazy val response = underTest.createExpensesModelAndReturnResult(
         authorisationRequest.user,
         expensesUserData().copy(expensesCya = expensesCyaDataWithNoExpenses),
-        Some(AllEmploymentData(Seq.empty, None, Seq(), None)),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None, None)),
         taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
@@ -193,7 +196,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
         lazy val response = underTest.createExpensesModelAndReturnResult(
           authorisationRequest.user,
           expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None, None)),
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
@@ -206,7 +209,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
         lazy val response = underTest.createExpensesModelAndReturnResult(
           authorisationRequest.user,
           expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None, None)),
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
@@ -220,7 +223,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
         lazy val response = underTest.createExpensesModelAndReturnResult(
           authorisationRequest.user,
           expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some(s"$taxYearEOY-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None, None)),
           taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
@@ -305,7 +308,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       val result = underTest.cyaAndPriorToCreateUpdateExpensesRequest(
         authorisationRequest.user,
         expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-        Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None))
+        Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None, None))
       )
 
       result.isRight shouldBe true
@@ -315,7 +318,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       val result = underTest.cyaAndPriorToCreateUpdateExpensesRequest(
         authorisationRequest.user,
         expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-        Some(AllEmploymentData(Seq.empty, None, Seq(), Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses)))))
+        Some(AllEmploymentData(Seq.empty, None, Seq(), Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), None))
       )
 
       result.isRight shouldBe true
@@ -325,7 +328,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
       val result = underTest.cyaAndPriorToCreateUpdateExpensesRequest(
         authorisationRequest.user,
         expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
-        Some(AllEmploymentData(Seq.empty, None, Seq(), None))
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None, None))
       )
 
       result.isRight shouldBe true

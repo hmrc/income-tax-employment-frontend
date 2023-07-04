@@ -16,7 +16,7 @@
 
 package services
 
-import common.{EmploymentBenefitsSection, EmploymentDetailsSection, EmploymentSection, SessionValues, StudentLoansSection}
+import common.{EmploymentBenefitsSection, EmploymentDetailsSection, SessionValues, StudentLoansSection}
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.details.EmploymentDetails
@@ -161,7 +161,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
           )
         )
       )
-    )
+    ), otherEmploymentIncome = None
   )
 
   private val employmentCYA: EmploymentCYAModel = {
@@ -515,7 +515,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 None,
                 None
               )
-            ), None, Seq(), None
+            ), None, Seq(), None, None
           )
         ), StudentLoansSection
       )
@@ -548,7 +548,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
             )),
             None
           )), None
-        )), None, Seq(), None)
+        )), None, Seq(), None, None)
         ), StudentLoansSection
       )
 
@@ -581,7 +581,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
             )),
             None
           )), None
-        )), None, Seq(), None)
+        )), None, Seq(), None, None)
         ), StudentLoansSection
       )
 
@@ -626,7 +626,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None, Seq(), None
+            ), None, Seq(), None, None
           )
         ), StudentLoansSection
       )
@@ -665,7 +665,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), StudentLoansSection
       )
@@ -707,7 +707,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                   )
                 )
               )
-            ), None
+            ), None, None
           )
         ), StudentLoansSection
       )
@@ -760,7 +760,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                   )
                 )
               )
-            ), None
+            ), None, None
           )
         ), StudentLoansSection
       )
@@ -797,7 +797,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), StudentLoansSection
       )
@@ -834,7 +834,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 None,
                 None
               )
-            ), None, Seq(), None
+            ), None, Seq(), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -871,7 +871,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                   None
                 )), None
               )
-            ), None, Seq(), None
+            ), None, Seq(), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -910,7 +910,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -954,7 +954,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -1006,7 +1006,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -1042,7 +1042,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 )),
                 None
               )
-            ), None
+            ), None, None
           )
         ), EmploymentBenefitsSection
       )
@@ -1081,7 +1081,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
                 )), None
               )
-            ), None, Seq(), None
+            ), None, Seq(), None, None
           )
         ), EmploymentDetailsSection
       )
@@ -1173,7 +1173,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
                   Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
-            ), None
+            ), None, None
           )
         ), EmploymentDetailsSection
       )
@@ -1213,7 +1213,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
                   Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
-            ), None
+            ), None, None
           )
         ), EmploymentDetailsSection
       )

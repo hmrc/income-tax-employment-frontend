@@ -140,7 +140,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        otherEmploymentIncome = None
       )
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
@@ -215,7 +216,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        otherEmploymentIncome = None
       )
 
       mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
@@ -339,7 +341,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        otherEmploymentIncome = None
       )
 
       verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
@@ -413,7 +416,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        None
       )
 
       verifySubmitEvent(DecodedAmendEmploymentDetailsPayload(DecodedEmploymentData(

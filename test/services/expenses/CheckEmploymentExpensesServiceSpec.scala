@@ -205,6 +205,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
         hmrcExpenses = Some(priorCustomerEmploymentExpenses),
         customerEmploymentData = Seq(),
         customerExpenses = None,
+        None
       )
 
       verifySubmitEvent(
