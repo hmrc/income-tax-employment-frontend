@@ -19,8 +19,8 @@ package connectors
 import config.AppConfig
 import connectors.parsers.UnignoreEmploymentHttpParser._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UnignoreEmploymentConnector @Inject()(val http: HttpClient,

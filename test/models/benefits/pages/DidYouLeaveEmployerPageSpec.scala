@@ -37,7 +37,7 @@ class DidYouLeaveEmployerPageSpec extends UnitTest {
     "return page with first date set to start of tax year when start date is before start of year" in {
       val employmentStartDate = LocalDate.parse(s"${taxYearEOY - 1}-01-01")
       val employmentDetails = anEmploymentDetails.copy(startDate = Some(employmentStartDate.toString))
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       DidYouLeaveEmployerPage.apply(taxYearEOY, anyEmploymentId, aUser, questionForm, userData) shouldBe DidYouLeaveEmployerPage(
         taxYear = taxYearEOY,
@@ -51,7 +51,7 @@ class DidYouLeaveEmployerPageSpec extends UnitTest {
     "return page with first date set to start date when start date is NOT before start of year" in {
       val startDate = LocalDate.of(taxYearEOY, Month.JUNE, 1)
       val employmentDetails = anEmploymentDetails.copy(startDate = Some(startDate.toString))
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       DidYouLeaveEmployerPage.apply(taxYearEOY, anyEmploymentId, aUser, questionForm, userData) shouldBe DidYouLeaveEmployerPage(
         taxYear = taxYearEOY,
@@ -76,7 +76,7 @@ class DidYouLeaveEmployerPageSpec extends UnitTest {
 
     "create page model with form populated from the employmentDetails didYouLeaveQuestion" in {
       val employmentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = Some(false))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       DidYouLeaveEmployerPage.apply(taxYearEOY, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe DidYouLeaveEmployerPage(
         taxYear = taxYearEOY,
@@ -89,7 +89,7 @@ class DidYouLeaveEmployerPageSpec extends UnitTest {
 
     "create page model with empty form" in {
       val employmentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = None)
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       DidYouLeaveEmployerPage.apply(taxYearEOY, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe DidYouLeaveEmployerPage(
         taxYear = taxYearEOY,

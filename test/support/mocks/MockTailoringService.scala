@@ -16,12 +16,9 @@
 
 package support.mocks
 
-import connectors.TailoringDataConnector
-import connectors.parsers.ClearExcludedJourneysHttpParser.ClearExcludedJourneysResponse
 import connectors.parsers.GetExcludedJourneysHttpParser.ExcludedJourneysResponse
-import connectors.parsers.PostExcludedJourneyHttpParser.PostExcludedJourneyResponse
 import models.tailoring.ExcludedJourneysResponseModel
-import org.scalamock.handlers.{CallHandler3, CallHandler4}
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import services.tailoring.TailoringService
 import uk.gov.hmrc.http.HeaderCarrier

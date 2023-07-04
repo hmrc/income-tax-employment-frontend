@@ -105,6 +105,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
               isUsingCustomerData = false
             ), taxYear, isInYear = true
           )))
+
           controller().show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

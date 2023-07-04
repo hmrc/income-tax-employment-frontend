@@ -16,6 +16,9 @@
 
 package support.builders.models.mongo
 
+import models.benefits.BenefitsViewModel
+import models.details.EmploymentDetails
+import models.employment.{StudentLoansCYAModel, TaxableLumpSumViewModel}
 import models.mongo.EmploymentCYAModel
 import support.builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
@@ -23,9 +26,13 @@ import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 
 object EmploymentCYAModelBuilder {
 
-  val anEmploymentCYAModel: EmploymentCYAModel = EmploymentCYAModel(
-    employmentDetails = anEmploymentDetails,
-    employmentBenefits = Some(aBenefitsViewModel),
-    studentLoans = Some(aStudentLoans.toStudentLoansCYAModel)
+  def anEmploymentCYAModel( employmentDetails: EmploymentDetails = anEmploymentDetails,
+                            employmentBenefits: Option[BenefitsViewModel] = Some(aBenefitsViewModel),
+                            studentLoans: Option[StudentLoansCYAModel] = Some(aStudentLoans.toStudentLoansCYAModel),
+                            additionalInfoViewModel: Option[TaxableLumpSumViewModel] = None): EmploymentCYAModel = EmploymentCYAModel(
+    employmentDetails = employmentDetails,
+    employmentBenefits = employmentBenefits,
+    studentLoans = studentLoans,
+    additionalInfoViewModel = additionalInfoViewModel
   )
 }

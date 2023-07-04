@@ -84,7 +84,7 @@ class EmployerEndDateControllerISpec extends IntegrationTest
     }
 
     "persist end date and return next page" in {
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(cessationDate = None)))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = anEmploymentDetails.copy(cessationDate = None)))
       val formData = Map(s"$day" -> "1", s"$month" -> "1", s"$year" -> taxYearEOY.toString)
       val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)

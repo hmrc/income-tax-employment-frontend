@@ -46,7 +46,7 @@ class LivingAccommodationBenefitsPageSpec extends UnitTest {
 
     "create page model with form populated from the accommodationRelocationModel accommodationQuestion" in {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
         taxYear = anyTaxYear,
@@ -58,7 +58,7 @@ class LivingAccommodationBenefitsPageSpec extends UnitTest {
 
     "create page model with empty form" in {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       LivingAccommodationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe LivingAccommodationBenefitsPage(
         taxYear = anyTaxYear,

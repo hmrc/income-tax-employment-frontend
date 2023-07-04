@@ -32,7 +32,7 @@ class EmployerPayrollIdPageSpec extends ControllerUnitTest
   ".apply(...)" should {
     "return page with empty form when payrollId is not preset" in {
       val employmentDetails = anEmploymentDetails.copy(payrollId = None)
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       EmployerPayrollIdPage.apply(taxYearEOY, employmentId, aUser, payrollIdForm, userData) shouldBe EmployerPayrollIdPage(
         taxYear = taxYearEOY,
@@ -46,7 +46,7 @@ class EmployerPayrollIdPageSpec extends ControllerUnitTest
 
     "return page with pre-filled form when payrollId is preset" in {
       val employmentDetails = anEmploymentDetails.copy(payrollId = Some("some-payroll-id"))
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       EmployerPayrollIdPage.apply(taxYearEOY, employmentId, aUser, payrollIdForm, userData) shouldBe EmployerPayrollIdPage(
         taxYear = taxYearEOY,
@@ -60,7 +60,7 @@ class EmployerPayrollIdPageSpec extends ControllerUnitTest
 
     "return page with pre-filled error form when form has errors" in {
       val employmentDetails = anEmploymentDetails.copy(payrollId = Some("invalid-input-$"))
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
 
       EmployerPayrollIdPage.apply(taxYearEOY, employmentId, aUser, payrollIdForm, userData) shouldBe EmployerPayrollIdPage(
         taxYear = taxYearEOY,

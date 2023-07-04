@@ -19,8 +19,6 @@ package models.mongo
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment._
-import models.employment.TaxableLumpSumViewModel
-import models.employment.EncryptedTaxableLumpSumViewModel
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import utils.AesGcmAdCrypto

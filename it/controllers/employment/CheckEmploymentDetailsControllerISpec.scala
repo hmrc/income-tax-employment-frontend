@@ -206,7 +206,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         val employmentDetails = anEmploymentDetails.copy(employerRef = None, startDate = None, payrollId = None, didYouLeaveQuestion = Some(false), taxablePayToDate = None, totalTaxToDate = None)
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails)))
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -405,7 +405,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     }
 
     "create the model to update the data and return the correct redirect when there is a hmrc employment to ignore" which {
-      val employmentData: EmploymentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = None)
+      val employmentData: EmploymentCYAModel = anEmploymentCYAModel().copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -420,7 +420,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               employmentData.employmentDetails.employerRef,
               employmentData.employmentDetails.employerName,
               employmentData.employmentDetails.startDate.get,
-              payrollId = anEmploymentCYAModel.employmentDetails.payrollId
+              payrollId = anEmploymentCYAModel().employmentDetails.payrollId
             )
           ),
           Some(
@@ -448,7 +448,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
     }
     "create the model to update the data and return the correct redirect and return to employer information page" which {
-      val employmentData: EmploymentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = None)
+      val employmentData: EmploymentCYAModel = anEmploymentCYAModel().copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -463,7 +463,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               employmentData.employmentDetails.employerRef,
               employmentData.employmentDetails.employerName,
               employmentData.employmentDetails.startDate.get,
-              payrollId = anEmploymentCYAModel.employmentDetails.payrollId
+              payrollId = anEmploymentCYAModel().employmentDetails.payrollId
             )
           ),
           Some(
@@ -501,15 +501,15 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         val model = CreateUpdateEmploymentRequest(
           None,
           Some(CreateUpdateEmployment(
-            anEmploymentCYAModel.employmentDetails.employerRef,
-            anEmploymentCYAModel.employmentDetails.employerName,
-            anEmploymentCYAModel.employmentDetails.startDate.get,
-            payrollId = anEmploymentCYAModel.employmentDetails.payrollId
+            anEmploymentCYAModel().employmentDetails.employerRef,
+            anEmploymentCYAModel().employmentDetails.employerName,
+            anEmploymentCYAModel().employmentDetails.startDate.get,
+            payrollId = anEmploymentCYAModel().employmentDetails.payrollId
           )),
           Some(CreateUpdateEmploymentData(
             pay = CreateUpdatePay(
-              anEmploymentCYAModel.employmentDetails.taxablePayToDate.get,
-              anEmploymentCYAModel.employmentDetails.totalTaxToDate.get,
+              anEmploymentCYAModel().employmentDetails.taxablePayToDate.get,
+              anEmploymentCYAModel().employmentDetails.totalTaxToDate.get,
             )
           ))
         )

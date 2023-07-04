@@ -16,8 +16,9 @@
 
 package services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AuthService @Inject()(val authConnector: AuthConnector) extends AuthorisedFunctions

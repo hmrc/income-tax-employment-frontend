@@ -34,7 +34,7 @@ object EmploymentUserDataBuilder {
     isPriorSubmission = true,
     hasPriorBenefits = true,
     hasPriorStudentLoans = true,
-    employment = anEmploymentCYAModel
+    employment = anEmploymentCYAModel()
   )
 
   // TODO: This should be deleted and the default one used
@@ -44,7 +44,7 @@ object EmploymentUserDataBuilder {
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
-      employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefits))
+      employment = anEmploymentCYAModel().copy(employmentBenefits = Some(benefits))
     )
   }
 
@@ -55,7 +55,7 @@ object EmploymentUserDataBuilder {
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
-      employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)
+      employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails)
     )
   }
 }

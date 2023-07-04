@@ -20,8 +20,8 @@ import connectors.TailoringDataConnector
 import connectors.parsers.ClearExcludedJourneysHttpParser.ClearExcludedJourneysResponse
 import connectors.parsers.GetExcludedJourneysHttpParser.ExcludedJourneysResponse
 import connectors.parsers.PostExcludedJourneyHttpParser.PostExcludedJourneyResponse
-import models.{APIErrorBodyModel, APIErrorModel, User}
 import models.employment.AllEmploymentData
+import models.{APIErrorBodyModel, APIErrorModel, User}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import services.DeleteOrIgnoreExpensesService
 import services.employment.RemoveEmploymentService

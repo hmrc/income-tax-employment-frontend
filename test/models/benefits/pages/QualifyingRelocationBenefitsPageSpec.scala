@@ -45,7 +45,7 @@ class QualifyingRelocationBenefitsPageSpec extends UnitTest {
 
     "create page model with form populated from the accommodationRelocationModel qualifyingRelocationExpensesQuestion" in {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(false))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       QualifyingRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe QualifyingRelocationBenefitsPage(
         taxYear = anyTaxYear,
@@ -57,7 +57,7 @@ class QualifyingRelocationBenefitsPageSpec extends UnitTest {
 
     "create page model with empty form" in {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       QualifyingRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe QualifyingRelocationBenefitsPage(
         taxYear = anyTaxYear,
