@@ -112,7 +112,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value").text() shouldBe messages(value)
         // bottom one is failing because it's not there at the path
         println("********** " + document)
-        document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row)").toString should  contain(href)
+        document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row)").toString should  include(href)
       }
 
       employerInformationRowCheck(EmploymentDetails.toString, ToDo.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 1)
