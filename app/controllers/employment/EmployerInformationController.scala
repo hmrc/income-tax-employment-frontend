@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.AppConfig
 import controllers.employment.routes._
 import controllers.studentLoans.routes._
-import controllers.taxableLumpSums.routes._
+import controllers.lumpSum.routes._
 import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -152,7 +152,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
         summaryEmployerInformationRowFor(StudentLoans, studentLoansDefined, maybeAction, isInYear, showNotification)
       } ++
       when(appConfig.taxableLumpSumsEnabled) {
-        val maybeAction = unless(isInYear && !taxableLumpSumsDefined)(TaxableLumpSumsController.show(taxYear, employmentId))
+        val maybeAction = unless(isInYear && !taxableLumpSumsDefined)(TaxableLumpSumListController.show(taxYear, employmentId))
         summaryEmployerInformationRowFor(TaxableLumpSums, taxableLumpSumsDefined, maybeAction, isInYear, showNotification)
       }
   }
