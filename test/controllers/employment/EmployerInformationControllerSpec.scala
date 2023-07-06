@@ -19,11 +19,10 @@ package controllers.employment
 import common.SessionValues
 import controllers.employment.routes._
 import controllers.studentLoans.routes.StudentLoansCYAController
-import controllers.taxableLumpSums.routes.TaxableLumpSumsController
+import controllers.lumpSum.routes.TaxableLumpSumListController
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.ArgumentMatchers.any
 import play.api.http.Status._
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.{Ok, Redirect}
@@ -32,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
 import play.api.test.Helpers.contentAsString
 import support.ControllerUnitTest
-import support.ViewHelper
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService}
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -92,7 +90,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
         EmployerInformationRow(EmploymentDetails, ToDo, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), updateAvailable = true),
         EmployerInformationRow(EmploymentBenefits, CannotUpdate, Some(CheckYourBenefitsController.show(taxYear, employmentId)), updateAvailable = true),
         EmployerInformationRow(StudentLoans, CannotUpdate, Some(StudentLoansCYAController.show(taxYear, employmentId)), updateAvailable = true),
-        EmployerInformationRow(TaxableLumpSums, CannotUpdate, Some(TaxableLumpSumsController.show(taxYear, employmentId)), updateAvailable = true),
+        EmployerInformationRow(TaxableLumpSums, CannotUpdate, Some(TaxableLumpSumListController.show(taxYear, employmentId)), updateAvailable = true),
       )
 
       val result: Future[Result] = {
@@ -110,15 +108,13 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
       def employerInformationRowCheck(item: String, value: String, href: String, section: Int, row: Int)(implicit document: Document): Unit = {
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dt").text() shouldBe messages(item)
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value").text() shouldBe messages(value)
-        // bottom one is failing because it's not there at the path
-        println("********** " + document)
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row)").toString should  include(href)
       }
 
       employerInformationRowCheck(EmploymentDetails.toString, ToDo.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 1)
-//      employerInformationRowCheck(EmploymentBenefits.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 2)
-//      employerInformationRowCheck(StudentLoans.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 3)
-//      employerInformationRowCheck(TaxableLumpSums.toString, CannotUpdate.toString, CheckEmploymentDetailsController.show(taxYear, employmentId).url, 1, 4)
+      employerInformationRowCheck(EmploymentBenefits.toString, CannotUpdate.toString, CheckYourBenefitsController.show(taxYear, employmentId).url, 1, 2)
+      employerInformationRowCheck(StudentLoans.toString, CannotUpdate.toString, StudentLoansCYAController.show(taxYear, employmentId).url, 1, 3)
+      employerInformationRowCheck(TaxableLumpSums.toString, CannotUpdate.toString, TaxableLumpSumListController.show(taxYear, employmentId).url, 1, 4)
     }
 
     "redirect the User to the Overview page when GetEmploymentDataModel is in mongo but " which {
