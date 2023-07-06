@@ -38,7 +38,8 @@ class RemoveExpensesControllerISpec extends IntegrationTest with ViewHelpers wit
       EmploymentSource(employmentId = "004", employerName = "microsoft", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "005", employerName = "name", None, None, None, None, None, None, None, None)
     ),
-    customerExpenses = Some(anEmploymentExpenses)
+    customerExpenses = Some(anEmploymentExpenses),
+    otherEmploymentIncome = None
   )
 
   private val modelToDelete: AllEmploymentData = model.copy(

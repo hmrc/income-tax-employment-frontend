@@ -21,13 +21,13 @@ import audit.{AuditService, DeleteEmploymentAudit}
 import common.EmploymentToRemove._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreEmploymentConnector, IncomeSourceConnector}
-import javax.inject.Inject
 import models.employment.{AllEmploymentData, DecodedDeleteEmploymentPayload, EmploymentSource}
 import models.{APIErrorModel, User}
 import play.api.Logging
 import services.{DeleteOrIgnoreExpensesService, NrsService}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,

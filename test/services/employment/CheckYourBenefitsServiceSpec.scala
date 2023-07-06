@@ -202,7 +202,8 @@ class CheckYourBenefitsServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        None
       )
 
       verifySubmitEvent(DecodedAmendBenefitsPayload(

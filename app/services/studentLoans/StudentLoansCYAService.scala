@@ -72,7 +72,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
         case (_, Some(allEmploymentData), isCustomerHeld)
           if allEmploymentData.eoyEmploymentSourceWith(employmentId).exists(!_.employmentSource.employmentDetailsSubmittable) =>
           val cya = extractEmploymentInformation(allEmploymentData, employmentId, isCustomerHeld)
-            .map(source => EmploymentCYAModel(source, isCustomerHeld))
+            .map(source => EmploymentCYAModel(source, isCustomerHeld, allEmploymentData.otherEmploymentIncome))
           Future.successful(block(cya.flatMap(_.studentLoans)
             .getOrElse(StudentLoansCYAModel(uglDeduction = false, pglDeduction = false)), isCustomerHeld, true))
         case (Some(cya), _, isCustomerHeld) =>
@@ -85,7 +85,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
         case (_, Some(alLEmploymentData), isCustomerHeld) =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA data. Constructing CYA from prior data.")
           extractEmploymentInformation(alLEmploymentData, employmentId, isCustomerHeld)
-            .map(source => (EmploymentCYAModel(source, isCustomerHeld), source.hasPriorBenefits, source.hasPriorStudentLoans)) match {
+            .map(source => (EmploymentCYAModel(source, isCustomerHeld, alLEmploymentData.otherEmploymentIncome), source.hasPriorBenefits, source.hasPriorStudentLoans)) match {
 
             case None =>
               logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No employment CYA data extracted from prior data. " +

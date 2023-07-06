@@ -16,13 +16,15 @@
 
 package models.employment
 
+import models.otheremployment.api.OtherEmploymentIncome
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
                              hmrcExpenses: Option[EmploymentExpenses],
                              customerEmploymentData: Seq[EmploymentSource],
-                             customerExpenses: Option[EmploymentExpenses]) extends Logging {
+                             customerExpenses: Option[EmploymentExpenses],
+                             otherEmploymentIncome: Option[OtherEmploymentIncome]) extends Logging {
 
   def notIgnoredHmrcExpenses: Option[EmploymentExpenses] = hmrcExpenses.filter(_.dateIgnored.isEmpty)
 

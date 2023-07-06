@@ -17,9 +17,9 @@
 package utils
 
 import common.SessionValues
+import play.api.mvc.Request
 
 import java.time.LocalDate
-import play.api.mvc.Request
 
 @deprecated("Use TextYearProvider instead")
 trait TaxYearHelper extends SessionHelper {

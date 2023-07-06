@@ -53,12 +53,13 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   private def handleSuccessfulGet(taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-      case Some(data) =>
+    employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(Some(data)) =>
         val employerName = data.employment.employmentDetails.employerName
         val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent).fill(employerName)
         Future.successful(Ok(pageView(prefilledForm, taxYear, employmentId)))
-      case None =>
+      case Right(None) =>
         val form: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent)
         Future.successful(Ok(pageView(form, taxYear, employmentId)))
     }
@@ -76,8 +77,9 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employerName: String)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-      case Some(data: EmploymentUserData) =>
+    employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(Some(data: EmploymentUserData)) =>
         val cya = data.employment
         val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = employerName))
         employmentSessionService.createOrUpdateSessionData(
@@ -89,7 +91,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
           hasPriorBenefits = data.hasPriorBenefits,
           hasPriorStudentLoans = data.hasPriorStudentLoans
         )(errorHandler.internalServerError())(Redirect(getRedirectCall(cya.employmentDetails, taxYear, employmentId)))
-      case None =>
+      case Right(None) =>
         val newCya = EmploymentCYAModel(EmploymentDetails(employerName = employerName, currentDataIsHmrcHeld = false))
         employmentSessionService.createOrUpdateSessionData(
           user = request.user,

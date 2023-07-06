@@ -45,7 +45,7 @@ class CarVanFuelBenefitsPageSpec extends UnitTest {
 
     "create page model with form populated from the carVanFuelModel sectionQuestion" in {
       val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(sectionQuestion = Some(false))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       CarVanFuelBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe CarVanFuelBenefitsPage(
         taxYear = anyTaxYear,
@@ -57,7 +57,7 @@ class CarVanFuelBenefitsPageSpec extends UnitTest {
 
     "create page model with empty form" in {
       val employmentBenefits = aBenefitsViewModel.copy(carVanFuelModel = None)
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       CarVanFuelBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, questionForm, employmentUserData) shouldBe CarVanFuelBenefitsPage(
         taxYear = anyTaxYear,

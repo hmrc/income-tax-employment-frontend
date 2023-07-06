@@ -210,6 +210,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
         )), None
       )),
+      None,
       None
     )))
 

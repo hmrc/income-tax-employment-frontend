@@ -98,7 +98,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
         dropEmploymentDB()
-        val data = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true, anEmploymentCYAModel)
+        val data = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true,anEmploymentCYAModel())
         insertCyaData(data)
         urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

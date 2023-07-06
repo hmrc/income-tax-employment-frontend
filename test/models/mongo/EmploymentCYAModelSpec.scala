@@ -18,7 +18,9 @@ package models.mongo
 
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
-import models.employment.{EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
+import models.employment.{EmploymentSource, EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
+import models.otheremployment.api.{LumpSum, OtherEmploymentIncome, TaxableLumpSumsAndCertainIncome}
+import models.otheremployment.session.{EncryptedOtherEmploymentIncomeCYAModel, OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import utils.AesGcmAdCrypto
@@ -32,28 +34,75 @@ class EmploymentCYAModelSpec extends UnitTest
   private val employmentDetails = mock[EmploymentDetails]
   private val employmentBenefits = mock[BenefitsViewModel]
   private val studentLoans = mock[StudentLoansCYAModel]
+  private val otherEmploymentIncome = mock[OtherEmploymentIncomeCYAModel]
 
   private val encryptedEmploymentDetails = mock[EncryptedEmploymentDetails]
   private val encryptedBenefitsViewModel = mock[EncryptedBenefitsViewModel]
   private val encryptedStudentLoansCYAModel = mock[EncryptedStudentLoansCYAModel]
+  private val encryptedOtherEmploymentIncome = mock[EncryptedOtherEmploymentIncomeCYAModel]
+
+  "EmploymentCYAModel.apply" should {
+    "return an EmploymentCYAModel with the lump sums that are related to the same employerRef" in {
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
+      val otherEmploymentIncome = OtherEmploymentIncome(lumpSums = Some(Set(LumpSum(
+        employerName = employmentSource.employerName,
+        employerRef = employmentSource.employerRef.get,
+        taxableLumpSumsAndCertainIncome = Some(TaxableLumpSumsAndCertainIncome(100)),
+        benefitFromEmployerFinancedRetirementScheme = None,
+        redundancyCompensationPaymentsOverExemption = None,
+        redundancyCompensationPaymentsUnderExemption = None
+      ))))
+
+      val result = EmploymentCYAModel(employmentSource, true, Some(otherEmploymentIncome))
+
+      result.otherEmploymentIncome shouldBe Some(OtherEmploymentIncomeCYAModel(Seq(TaxableLumpSum(100))))
+    }
+
+    "return an EmploymentCYAModel with no lump sums if there is not one with same employerRef" in {
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
+      val otherEmploymentIncome = OtherEmploymentIncome(lumpSums = Some(Set(LumpSum(
+        employerName = "differentName",
+        employerRef = "differentRef",
+        taxableLumpSumsAndCertainIncome = Some(TaxableLumpSumsAndCertainIncome(100)),
+        benefitFromEmployerFinancedRetirementScheme = None,
+        redundancyCompensationPaymentsOverExemption = None,
+        redundancyCompensationPaymentsUnderExemption = None
+      ))))
+
+      val result = EmploymentCYAModel(employmentSource, true, Some(otherEmploymentIncome))
+
+      result.otherEmploymentIncome shouldBe Some(OtherEmploymentIncomeCYAModel(Seq()))
+    }
+
+    "return an EmploymentCYAModel with no OtherEmploymentIncome if there is None" in {
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
+
+      val result = EmploymentCYAModel(employmentSource, true, None)
+
+      result.otherEmploymentIncome shouldBe None
+    }
+  }
 
   "EmploymentCYAModel.encrypted" should {
     "return EncryptedEmploymentCYAModel instance" in {
       val underTest = EmploymentCYAModel(
         employmentDetails = employmentDetails,
         employmentBenefits = Some(employmentBenefits),
-        studentLoans = Some(studentLoans)
+        studentLoans = Some(studentLoans),
+        otherEmploymentIncome = Some(otherEmploymentIncome)
       )
 
       (employmentDetails.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedEmploymentDetails)
       (employmentBenefits.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedBenefitsViewModel)
       (studentLoans.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedStudentLoansCYAModel)
+      (otherEmploymentIncome.encrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(encryptedOtherEmploymentIncome)
 
       val encryptedResult = underTest.encrypted
 
       encryptedResult.employmentDetails shouldBe encryptedEmploymentDetails
       encryptedResult.employmentBenefits shouldBe Some(encryptedBenefitsViewModel)
       encryptedResult.studentLoansCYAModel shouldBe Some(encryptedStudentLoansCYAModel)
+      encryptedResult.otherEmploymentIncome shouldBe Some(encryptedOtherEmploymentIncome)
     }
   }
 
@@ -62,18 +111,21 @@ class EmploymentCYAModelSpec extends UnitTest
       val underTest = EncryptedEmploymentCYAModel(
         employmentDetails = encryptedEmploymentDetails,
         employmentBenefits = Some(encryptedBenefitsViewModel),
-        studentLoansCYAModel = Some(encryptedStudentLoansCYAModel)
+        studentLoansCYAModel = Some(encryptedStudentLoansCYAModel),
+        otherEmploymentIncome = Some(encryptedOtherEmploymentIncome)
       )
 
       (encryptedEmploymentDetails.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(employmentDetails)
       (encryptedBenefitsViewModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(employmentBenefits)
       (encryptedStudentLoansCYAModel.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(studentLoans)
+      (encryptedOtherEmploymentIncome.decrypted(_: AesGcmAdCrypto, _: String)).expects(*, *).returning(otherEmploymentIncome)
 
       val decryptedResult = underTest.decrypted
 
       decryptedResult.employmentDetails shouldBe employmentDetails
       decryptedResult.employmentBenefits shouldBe Some(employmentBenefits)
       decryptedResult.studentLoans shouldBe Some(studentLoans)
+      decryptedResult.otherEmploymentIncome shouldBe Some(otherEmploymentIncome)
     }
   }
 }

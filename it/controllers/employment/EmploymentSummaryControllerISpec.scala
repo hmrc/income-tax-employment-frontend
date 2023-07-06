@@ -62,7 +62,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     "render page when there is employment data returned but no hmrc employment data" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
-        userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(anEmploymentSource), None))), nino, taxYear)
+        userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(anEmploymentSource), None, None))), nino, taxYear)
         excludeStub(ExcludedJourneysResponseModel(Seq()),nino, taxYear)
         urlGet(fullUrl(employmentSummaryUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }

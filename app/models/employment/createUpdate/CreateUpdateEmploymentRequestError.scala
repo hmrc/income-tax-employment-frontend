@@ -16,7 +16,8 @@
 
 package models.employment.createUpdate
 
-trait CreateUpdateEmploymentRequestError
+sealed trait CreateUpdateEmploymentRequestError
 
 case object NothingToUpdate extends CreateUpdateEmploymentRequestError
+
 case object JourneyNotFinished extends CreateUpdateEmploymentRequestError

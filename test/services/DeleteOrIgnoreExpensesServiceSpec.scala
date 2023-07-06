@@ -104,14 +104,16 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     hmrcEmploymentData = Seq(employmentSource1),
     hmrcExpenses = None,
     customerEmploymentData = Seq(),
-    customerExpenses = Some(customerExpenses)
+    customerExpenses = Some(customerExpenses),
+    otherEmploymentIncome = None
   )
 
   def data(hmrcExpenses: Option[EmploymentExpenses], customerExpenses: Option[EmploymentExpenses]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = Seq(),
-    customerExpenses = customerExpenses
+    customerExpenses = customerExpenses,
+    otherEmploymentIncome = None
   )
 
   ".deleteOrIgnoreExpenses" should {

@@ -91,7 +91,7 @@ class AssetsBenefitsControllerSpec extends ControllerUnitTest
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateAssetsQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = true, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, AssetsBenefitsAmountController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel(), AssetsBenefitsAmountController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
 
@@ -103,7 +103,7 @@ class AssetsBenefitsControllerSpec extends ControllerUnitTest
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateAssetsQuestion(aUser, taxYearEOY, employmentId, anEmploymentUserData, questionValue = false, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, AssetTransfersBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel(), AssetTransfersBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
 

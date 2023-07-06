@@ -53,7 +53,7 @@ class StudentLoansCYAServiceSpec extends UnitTest
   )
 
   private lazy val allEmploymentData: AllEmploymentData = AllEmploymentData(
-    Seq(hmrcSource), None, Seq(customerSource), None
+    Seq(hmrcSource), None, Seq(customerSource), None, None
   )
 
   private lazy val studentLoans: StudentLoans = StudentLoans(
@@ -217,7 +217,8 @@ class StudentLoansCYAServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        None
       )
 
       mockAuditSendEvent(AmendStudentLoansDeductionsUpdateAudit(
@@ -354,7 +355,8 @@ class StudentLoansCYAServiceSpec extends UnitTest
         hmrcEmploymentData = Seq(employmentSource1),
         hmrcExpenses = None,
         customerEmploymentData = Seq(),
-        customerExpenses = None
+        customerExpenses = None,
+        None
       )
 
       verifySubmitEvent(DecodedAmendStudentLoansPayload(

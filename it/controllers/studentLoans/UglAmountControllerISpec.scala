@@ -70,7 +70,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             studentLoans = Some(StudentLoansCYAModel(
               uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
           )))
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(studentLoans = Some(aStudentLoans.toStudentLoansCYAModel))))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(studentLoans = Some(aStudentLoans.toStudentLoansCYAModel))))
         urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
       result.status shouldBe OK
@@ -147,6 +147,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
       Seq(),
       None,
       Seq(anEmploymentSource),
+      None,
       None
     )))
 

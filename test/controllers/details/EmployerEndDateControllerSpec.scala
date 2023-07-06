@@ -103,7 +103,7 @@ class EmployerEndDateControllerSpec extends ControllerUnitTest
     }
 
     "redirect to PayeRefController page on successful end date update when not finished" in {
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
 
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, userData)
       mockUpdateEndDate(aUser, taxYearEOY, employmentId, userData, startDate, Right(userData))

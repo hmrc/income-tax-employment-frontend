@@ -336,7 +336,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     lazy val form: Map[String, String] = Map(DateForm.year -> s"${taxYearEOY - 1}", DateForm.month -> "01", DateForm.day -> "01")
     lazy val result: WSResponse = {
       dropEmploymentDB()
-      insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = None))))
+      insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = anEmploymentDetails.copy(didYouLeaveQuestion = None))))
       authoriseAgentOrIndividual(isAgent = false)
       urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
     }

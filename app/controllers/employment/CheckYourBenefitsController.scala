@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import audit.{AuditService, ViewEmploymentBenefitsAudit}
-import common.{EmploymentSection, SessionValues}
+import common.{EmploymentBenefitsSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
@@ -99,7 +99,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                 }
               case (None, _) => prior.get.eoyEmploymentSourceWith(employmentId) match {
                 case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
-                  employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData),
+                  employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData, prior.get.otherEmploymentIncome),
                     isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans)(errorHandler.internalServerError())({
                     val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
                     benefits match {
@@ -125,7 +125,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
       employmentSessionService.getOptionalCYAAndPriorForEndOfYear(taxYear, employmentId).flatMap {
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
-          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentSection.EMPLOYMENT_BENEFITS) match {
+          employmentSessionService.createModelOrReturnError(request.user, cya, prior, EmploymentBenefitsSection) match {
             case Left(NothingToUpdate) =>
               getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
                 case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>

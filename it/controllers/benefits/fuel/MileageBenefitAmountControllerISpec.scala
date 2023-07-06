@@ -169,7 +169,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYear)
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(fullUrl(mileageBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
         }
@@ -202,7 +202,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -234,7 +234,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       "it isn't end of year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(mileageBenefitsAmountUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }

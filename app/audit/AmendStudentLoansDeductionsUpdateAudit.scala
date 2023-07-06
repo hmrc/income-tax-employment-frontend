@@ -17,7 +17,7 @@
 package audit
 
 import models.employment.Deductions
-import play.api.libs.json.{JsNull, JsNumber, JsValue, Json, OWrites}
+import play.api.libs.json._
 import utils.JsonUtils.jsonObjNoNulls
 
 case class AmendStudentLoansDeductionsUpdateAudit(taxYear: Int,

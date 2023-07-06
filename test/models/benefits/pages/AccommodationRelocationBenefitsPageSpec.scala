@@ -46,7 +46,7 @@ class AccommodationRelocationBenefitsPageSpec extends UnitTest {
 
     "create page model with form populated from the accommodationRelocationModel sectionQuestion" in {
       val employmentBenefits = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(sectionQuestion = Some(false))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       AccommodationRelocationBenefitsPage.apply(anyTaxYear, anyEmploymentId, aUser, form, employmentUserData) shouldBe AccommodationRelocationBenefitsPage(
         taxYear = anyTaxYear,

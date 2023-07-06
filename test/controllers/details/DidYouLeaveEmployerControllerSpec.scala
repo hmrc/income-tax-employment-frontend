@@ -95,7 +95,7 @@ class DidYouLeaveEmployerControllerSpec extends ControllerUnitTest
     "save question and return correct result when employmentDetails is not finished" when {
       "and question value is true and endDate is missing" in {
         val employmentDetails = anEmploymentDetails.copy(taxablePayToDate = None, didYouLeaveQuestion = Some(true))
-        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
         val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "true")
 
         mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)
@@ -106,7 +106,7 @@ class DidYouLeaveEmployerControllerSpec extends ControllerUnitTest
 
       "and question value is false" in {
         val employmentDetails = anEmploymentDetails.copy(taxablePayToDate = None, didYouLeaveQuestion = Some(false))
-        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = employmentDetails))
         val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(YesNoForm.yesNo -> "false")
 
         mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData)

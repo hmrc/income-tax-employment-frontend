@@ -91,7 +91,7 @@ class AssetTransfersBenefitsAmountControllerSpec extends ControllerUnitTest
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateAssetTransfer(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, CheckYourBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel(), CheckYourBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
 

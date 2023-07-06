@@ -19,8 +19,8 @@ package models.mongo
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
 import models.details.{EmploymentDetails, EncryptedEmploymentDetails}
 import models.employment._
-import models.employment.TaxableLumpSumViewModel
-import models.employment.EncryptedTaxableLumpSumViewModel
+import models.otheremployment.api.OtherEmploymentIncome
+import models.otheremployment.session.{EncryptedOtherEmploymentIncomeCYAModel, OtherEmploymentIncomeCYAModel}
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
 import utils.AesGcmAdCrypto
@@ -28,7 +28,7 @@ import utils.AesGcmAdCrypto
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
                               studentLoans: Option[StudentLoansCYAModel] = None,
-                              additionalInfoViewModel: Option[TaxableLumpSumViewModel] = None) {
+                              otherEmploymentIncome: Option[OtherEmploymentIncomeCYAModel] = None) {
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = EmploymentDetailsViewModel(
     employmentDetails.employerName,
@@ -46,31 +46,41 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     employmentDetails = employmentDetails.encrypted,
     employmentBenefits = employmentBenefits.map(_.encrypted),
     studentLoansCYAModel = studentLoans.map(_.encrypted),
-    additionalInfoViewModel = additionalInfoViewModel.map(_.encrypted)
+    otherEmploymentIncome = otherEmploymentIncome.map(_.encrypted)
   )
 }
 
 object EmploymentCYAModel {
   implicit val format: OFormat[EmploymentCYAModel] = Json.format[EmploymentCYAModel]
 
-  def apply(employmentSource: EmploymentSource, isUsingCustomerData: Boolean): EmploymentCYAModel = EmploymentCYAModel(
-    employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
-    employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
-    studentLoans = employmentSource.toStudentLoansCYAModel
-    //todo additionalInfoViewModel = employmentSource
-  )
+  def apply(employmentSource: EmploymentSource,
+            isUsingCustomerData: Boolean,
+            otherEmploymentIncome: Option[OtherEmploymentIncome]): EmploymentCYAModel = {
+    val employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData)
+    val otherEmploymentCYAModel = for {
+      otherEmploymentIncome <- otherEmploymentIncome
+      employerRef <- employmentDetails.employerRef
+    } yield OtherEmploymentIncomeCYAModel(otherEmploymentIncome, employerRef)
+
+    EmploymentCYAModel(
+      employmentDetails = employmentDetails,
+      employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
+      studentLoans = employmentSource.toStudentLoansCYAModel,
+      otherEmploymentIncome = otherEmploymentCYAModel
+    )
+  }
 }
 
 case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
                                        employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
                                        studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel] = None,
-                                       additionalInfoViewModel: Option[EncryptedTaxableLumpSumViewModel] = None) {
+                                       otherEmploymentIncome: Option[EncryptedOtherEmploymentIncomeCYAModel] = None) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentDetails.decrypted,
     employmentBenefits = employmentBenefits.map(_.decrypted),
     studentLoans = studentLoansCYAModel.map(_.decrypted),
-    additionalInfoViewModel = additionalInfoViewModel.map(_.decrypted)
+    otherEmploymentIncome = otherEmploymentIncome.map(_.decrypted)
   )
 }
 

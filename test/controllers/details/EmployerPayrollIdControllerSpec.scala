@@ -92,7 +92,7 @@ class EmployerPayrollIdControllerSpec extends ControllerUnitTest
     }
 
     "redirect to EmployerPayAmountController page on successful end date update when not finished" in {
-      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
+      val userData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentDetails = anEmploymentDetails.copy(totalTaxToDate = None)))
 
       mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, userData)
       mockUpdatePayrollId(aUser, taxYearEOY, employmentId, userData, Some("some-payroll-id"), Right(userData))

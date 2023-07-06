@@ -47,7 +47,7 @@ class AssetsBenefitsAmountPageSpec extends UnitTest {
 
     "create page model with empty form when assets amount is missing" in {
       val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = None)))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       AssetsBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, user, form, employmentUserData) shouldBe AssetsBenefitsAmountPage(
         taxYear = anyTaxYear,
@@ -59,7 +59,7 @@ class AssetsBenefitsAmountPageSpec extends UnitTest {
 
     "create page model with form populated from the accommodationRelocationModel assets value" in {
       val employmentBenefits = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = Some(123))))
-      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(employmentBenefits)))
+      val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = Some(employmentBenefits)))
 
       AssetsBenefitsAmountPage.apply(anyTaxYear, anyEmploymentId, user, form, employmentUserData) shouldBe AssetsBenefitsAmountPage(
         taxYear = anyTaxYear,

@@ -50,18 +50,19 @@ class ReceiveOwnCarMileageBenefitController @Inject()(authAction: AuthorisedActi
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-
-        redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(redirectService.mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
-          val mileageBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
-          val isAgent = request.user.isAgent
-          mileageBenefitQuestion match {
-            case Some(questionResult) =>
-              successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent).fill(questionResult), taxYear, employmentId)))
-            case None => successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent), taxYear, employmentId)))
+      employmentSessionService.getSessionData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optCya) =>
+          redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
+            EmploymentBenefitsType)(redirectService.mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+            val mileageBenefitQuestion = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+            val isAgent = request.user.isAgent
+            mileageBenefitQuestion match {
+              case Some(questionResult) =>
+                successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent).fill(questionResult), taxYear, employmentId)))
+              case None => successful(Ok(receiveOwnCarMileageBenefitView(formsProvider.receiveOwnCarMileageForm(isAgent), taxYear, employmentId)))
+            }
           }
-        }
       }
     }
   }

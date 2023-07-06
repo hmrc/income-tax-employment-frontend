@@ -196,7 +196,7 @@ employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rôl y cyfa
 employment.employmentDetails.hiddenText.employer = Newid enw’r cyflogwr hwn
 employment.employmentDetails.hiddenText.payeRef = Newid y cyfeirnod TWE
 employment.employmentDetails.hiddenText.startDate = Newid dyddiad dechrau’r gyflogaeth
-employment.employmentDetails.hiddenText.endDate = Change the employment end date
+employment.employmentDetails.hiddenText.endDate = Newid dyddiad dod i ben y gyflogaeth
 employment.employmentDetails.hiddenText.payrollId = Newid ID y gyflogres ar gyfer y gyflogaeth hon
 employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwyd
 employment.employmentDetails.hiddenText.totalTaxToDate = Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog
@@ -217,15 +217,15 @@ employment.employmentDetails.payReceived = Tal a gafwyd
 employment.employmentDetails.payrollId = ID y gyflogres
 employment.employmentDetails.startDate = Dyddiad dechrau’r gyflogaeth
 employment.employmentDetails.didYouLeave = Wedi gadael y cyflogwr
-employment.employmentDetails.endDate = Employment end date
+employment.employmentDetails.endDate = Dyddiad dod i ben y gyflogaeth
 employment.employmentDetails.tipsAndOtherPayments.agent = Swm y taliadau sydd ddim ar P60 eich cleient
 employment.employmentDetails.tipsAndOtherPayments.individual = Swm y taliadau sydd ddim ar eich P60
 employment.employmentDetails.totalTaxToDate = Treth y DU a dynnwyd o’r cyflog
 
 #################       Employment name messages        ########################################
 
-employment.employerName.error.name.limit = Employer’s name must be 74 characters or fewer
-employment.employerName.error.name.wrongFormat = Employer’s name must not include {0}
+employment.employerName.error.name.limit = Mae’n rhaid i enw’r cyflogwr fod yn 74 o gymeriadau neu lai
+employment.employerName.error.name.wrongFormat = Mae’n rhaid i enw’r cyflogwr beidio â chynnwys {0}
 employment.employerName.error.noEntry.agent = Nodwch enw cyflogwr eich cleient
 employment.employerName.error.noEntry.individual = Nodwch enw’ch cyflogwr
 employment.employerName.heading.agent = Beth yw enw cyflogwr eich cleient?
@@ -234,71 +234,71 @@ employment.employerName.paragraph = Mae’n rhaid i enw’r cyflogwr fod yn 74 o
 
 #################       Employment ref messages        ########################################
 
-payeRef.errors.wrongFormat = Enter PAYE reference in the correct format
-payeRef.heading = What is {0}’s employer PAYE reference? (optional)
-payeRef.hint.employmentEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P45.
-payeRef.hint.employmentEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P45.
-payeRef.hint.employmentNotEnded.agent = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your client‘s P60.
-payeRef.hint.employmentNotEnded.individual = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB45678. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’. It will be on your P60.
+payeRef.errors.wrongFormat = Nodwch gyfeirnod TWE yn y fformat cywir
+payeRef.heading = Beth yw cyfeirnod TWE y cyflogwr ar gyfer {0}? (dewisol)
+payeRef.hint.employmentEnded.agent = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB45678. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’. Bydd hwn ar P45 eich cleient.
+payeRef.hint.employmentEnded.individual = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB45678. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’. Bydd hwn ar eich P45.
+payeRef.hint.employmentNotEnded.agent = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB45678. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’. Bydd hwn ar P60 eich cleient.
+payeRef.hint.employmentNotEnded.individual = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB45678. Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’. Bydd hwn ar eich P60.
 payeRef.paragraph = Rhowch wybod i ni beth yw’r cyfeirnod TWE cywir os yw {0} yn anghywir.
 
 #################       Employment start date messages        ########################################
 
 employment.commonEmploymentDate.forExample = Er enghraifft, 23 11 {0}
 
-employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client started working at {0}
-employment.employmentStartDate.error.incompleteAll.individual = Enter the date you started working at {0}
-employment.employmentStartDate.error.incompleteDay.agent = The date your client started working at {0} must include a day
-employment.employmentStartDate.error.incompleteDay.individual = The date you started working at {0} must include a day
-employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started working at {0} must include a day and month
-employment.employmentStartDate.error.incompleteDayMonth.individual = The date you started working at {0} must include a day and month
-employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started working at {0} must include a day and year
-employment.employmentStartDate.error.incompleteDayYear.individual = The date you started working at {0} must include a day and year
-employment.employmentStartDate.error.incompleteMonth.agent = The date your client started working at {0} must include a month
-employment.employmentStartDate.error.incompleteMonth.individual = The date you started working at {0} must include a month
-employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started working at {0} must include a month and year
-employment.employmentStartDate.error.incompleteMonthYear.individual = The date you started working at {0} must include a month and year
-employment.employmentStartDate.error.incompleteYear.agent = The date your client started working at {0} must include a year
-employment.employmentStartDate.error.incompleteYear.individual = The date you started working at {0} must include a year
-employment.employmentStartDate.error.invalidDate.agent = The date your client started working at {0} must be a real date
-employment.employmentStartDate.error.invalidDate.individual = The date you started working at {0} must be a real date
-employment.employmentStartDate.error.mustBeAfter1900.agent = The date your client started working at {0} must be after 1 January 1900
-employment.employmentStartDate.error.mustBeAfter1900.individual = The date you started working at {0} must be after 1 January 1900
-employment.employmentStartDate.error.mustBeBeforeEndDate.agent = The date your client started working at {0} must be before the date they left, {1}
-employment.employmentStartDate.error.mustBeBeforeEndDate.individual = The date you started working at {0} must be before the date you left, {1}
-employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.agent = The date your client started working at {0} must be before 6 April {1}
-employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.individual = The date you started working at {0} must be before 6 April {1}
-employment.employmentStartDate.error.mustHave4DigitYear.agent = The year your client started working at {0} must include 4 digits
-employment.employmentStartDate.error.mustHave4DigitYear.individual = The year you started working at {0} must include 4 digits
+employment.employmentStartDate.error.incompleteAll.agent = Nodwch y dyddiad y gwnaeth eich cleient ddechrau gweithio i {0}
+employment.employmentStartDate.error.incompleteAll.individual = Nodwch y dyddiad y gwnaethoch ddechrau gweithio i {0}
+employment.employmentStartDate.error.incompleteDay.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys diwrnod
+employment.employmentStartDate.error.incompleteDay.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys diwrnod
+employment.employmentStartDate.error.incompleteDayMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys diwrnod a mis
+employment.employmentStartDate.error.incompleteDayMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys diwrnod a mis
+employment.employmentStartDate.error.incompleteDayYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys diwrnod a blwyddyn
+employment.employmentStartDate.error.incompleteDayYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys diwrnod a blwyddyn
+employment.employmentStartDate.error.incompleteMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys mis
+employment.employmentStartDate.error.incompleteMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys mis
+employment.employmentStartDate.error.incompleteMonthYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys mis a blwyddyn
+employment.employmentStartDate.error.incompleteMonthYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys mis a blwyddyn
+employment.employmentStartDate.error.incompleteYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys blwyddyn
+employment.employmentStartDate.error.incompleteYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} gynnwys blwyddyn
+employment.employmentStartDate.error.invalidDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} fod yn ddyddiad go iawn
+employment.employmentStartDate.error.invalidDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} fod yn ddyddiad go iawn
+employment.employmentStartDate.error.mustBeAfter1900.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} fod ar ôl 1 Ionawr 1900
+employment.employmentStartDate.error.mustBeAfter1900.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} fod ar ôl 1 Ionawr 1900
+employment.employmentStartDate.error.mustBeBeforeEndDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} fod cyn iddo ddod i ben, sef {1}
+employment.employmentStartDate.error.mustBeBeforeEndDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} fod cyn y dyddiad y gwnaethoch adael, {1}
+employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient ddechrau gweithio i {0} fod cyn 6 Ebrill {1}
+employment.employmentStartDate.error.mustBeBeforeEndOfTaxYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch ddechrau gweithio i {0} fod cyn 6 Ebrill {1}
+employment.employmentStartDate.error.mustHave4DigitYear.agent = Mae’n rhaid i’r flwyddyn y gwnaeth eich cleient ddechrau gweithio i {0} gynnwys 4 digid
+employment.employmentStartDate.error.mustHave4DigitYear.individual = Mae’n rhaid i’r flwyddyn y gwnaethoch ddechrau gweithio i {0} gynnwys 4 digid
 employment.employmentStartDate.heading.agent = Pryd y dechreuodd eich cleient weithio yn {0}?
 employment.employmentStartDate.heading.individual = Pryd y gwnaethoch ddechrau gweithio yn {0}?
 
 #################       Employment end date messages        ########################################
 
-employment.employmentEndDate.error.incompleteAll.agent = Enter the date your client left {0}
-employment.employmentEndDate.error.incompleteAll.individual = Enter the date you left {0}
-employment.employmentEndDate.error.incompleteDay.agent = The date your client left {0} must include a day
-employment.employmentEndDate.error.incompleteDay.individual = The date you left {0} must include a day
-employment.employmentEndDate.error.incompleteDayMonth.agent = The date your client left {0} must include a day and month
-employment.employmentEndDate.error.incompleteDayMonth.individual = The date you left {0} must include a day and month
-employment.employmentEndDate.error.incompleteDayYear.agent = The date your client left {0} must include a day and year
-employment.employmentEndDate.error.incompleteDayYear.individual = The date you left {0} must include a day and year
-employment.employmentEndDate.error.incompleteMonth.agent = The date your client left {0} must include a month
-employment.employmentEndDate.error.incompleteMonth.individual = The date you left {0} must include a month
-employment.employmentEndDate.error.incompleteMonthYear.agent = The date your client left {0} must include a month and year
-employment.employmentEndDate.error.incompleteMonthYear.individual = The date you left {0} must include a month and year
-employment.employmentEndDate.error.incompleteYear.agent = The date your client left {0} must include a year
-employment.employmentEndDate.error.incompleteYear.individual = The date you left {0} must include a year
-employment.employmentEndDate.error.invalidDate.agent = The date your client left {0} must be a real date
-employment.employmentEndDate.error.invalidDate.individual = The date you left {0} must be a real date
-employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.agent = The date your client left {0} must be the same as or before 5 April {1}
-employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.individual = The date you left {0} must be the same as or before 5 April {1}
-employment.employmentEndDate.error.mustBeBeforeStartDate.agent = The date your client left {0} must be after the date they started, {1}
-employment.employmentEndDate.error.mustBeBeforeStartDate.individual = The date you left {0} must be after the date you started, {1}
-employment.employmentEndDate.error.mustHave4DigitYear.agent = The year your client left {0} must include 4 digits
-employment.employmentEndDate.error.mustHave4DigitYear.individual = The year you left {0} must include 4 digits
-employment.employmentEndDate.heading.agent = When did your client leave {0}?
-employment.employmentEndDate.heading.individual = When did you leave {0}?
+employment.employmentEndDate.error.incompleteAll.agent = Nodwch y dyddiad y gwnaeth eich cleient adael {0}
+employment.employmentEndDate.error.incompleteAll.individual = Nodwch y dyddiad y gwnaethoch adael {0}
+employment.employmentEndDate.error.incompleteDay.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys diwrnod
+employment.employmentEndDate.error.incompleteDay.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} gynnwys diwrnod
+employment.employmentEndDate.error.incompleteDayMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys diwrnod a mis
+employment.employmentEndDate.error.incompleteDayMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} diwrnod a mis
+employment.employmentEndDate.error.incompleteDayYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys diwrnod a blwyddyn
+employment.employmentEndDate.error.incompleteDayYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} gynnwys diwrnod a blwyddyn
+employment.employmentEndDate.error.incompleteMonth.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys mis
+employment.employmentEndDate.error.incompleteMonth.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} gynnwys mis
+employment.employmentEndDate.error.incompleteMonthYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys mis a blwyddyn
+employment.employmentEndDate.error.incompleteMonthYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} gynnwys mis a blwyddyn
+employment.employmentEndDate.error.incompleteYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} gynnwys blwyddyn
+employment.employmentEndDate.error.incompleteYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} gynnwys blwyddyn
+employment.employmentEndDate.error.invalidDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} fod yn ddyddiad go iawn
+employment.employmentEndDate.error.invalidDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} fod yn ddyddiad go iawn
+employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} fod yr un peth, neu cyn 5 Ebrill {1}
+employment.employmentEndDate.error.mustBeBeforeEndOfTaxYear.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} fod yr un peth, neu cyn 5 Ebrill {1}
+employment.employmentEndDate.error.mustBeBeforeStartDate.agent = Mae’n rhaid i’r dyddiad y gwnaeth eich cleient adael {0} fod ar ôl y dyddiad y dechreuodd, {1}
+employment.employmentEndDate.error.mustBeBeforeStartDate.individual = Mae’n rhaid i’r dyddiad y gwnaethoch adael {0} fod ar ôl y dyddiad gwnaethoch ddechrau, {1}
+employment.employmentEndDate.error.mustHave4DigitYear.agent = Mae’n rhaid i’r flwyddyn gwnaeth eich cleient adael {0} gynnwys 4 digid
+employment.employmentEndDate.error.mustHave4DigitYear.individual = Mae’n rhaid i’r flwyddyn gwnaethoch adael {0} gynnwys 4 digid
+employment.employmentEndDate.heading.agent = Pryd y gwnaeth eich cleient adael {0}?
+employment.employmentEndDate.heading.individual = Pryd y gwnaethoch adael {0}?
 
 #################       Employment dates messages        ########################################
 
@@ -309,19 +309,19 @@ employment.employmentDates.endDate = Dyddiad dod i ben
 
 #################       Did you leave employer messages        ########################################
 
-employment.didYouLeave.error.agent = Select yes if your client left between {0} and {1}
-employment.didYouLeave.error.individual = Select yes if you left between {0} and {1}
-employment.didYouLeave.heading.agent = Did your client leave between {0} and {1}?
-employment.didYouLeave.heading.individual = Did you leave between {0} and {1}?
+employment.didYouLeave.error.agent = Dewiswch ‘Iawn’ os gwnaeth eich cleient adael rhwng {0} a {1}
+employment.didYouLeave.error.individual = Dewiswch ‘Iawn’ os gwnaethoch adael rhwng {0} a {1}
+employment.didYouLeave.heading.agent = A wnaeth eich cleient adael rhwng {0} a {1}?
+employment.didYouLeave.heading.individual = A wnaethoch adael rhwng {0} a {1}?
 
 #################       Payroll id messages        ########################################
 
-employment.payrollId.error.invalidCharacters = Payroll ID must not include {0}
-employment.payrollId.error.tooManyCharacters = Payroll ID must be 38 characters or fewer
-employment.payrollId.hint.agent = You can find this on your client’s payslips or {0}. It’s also known as a ‘payroll number’.
-employment.payrollId.hint.individual = You can find this on your payslips or {0}. It’s also known as a ‘payroll number’.
-employment.payrollId.title.agent = What’s your client’s payroll ID for {0}? (optional)
-employment.payrollId.title.individual = What’s your payroll ID for {0}? (optional)
+employment.payrollId.error.invalidCharacters = Mae’n rhaid i’r ID y gyflogres beidio â chynnwys {0}
+employment.payrollId.error.tooManyCharacters = Mae’n rhaid i’r ID y gyflogres fod yn 38 o gymeriadau neu lai
+employment.payrollId.hint.agent = Gallwch ddod o hyd i hwn ar slip cyflog neu {0} eich cleient. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’.
+employment.payrollId.hint.individual = Gallwch ddod o hyd i hwn ar eich slip cyflog neu ar {0}. Mae hefyd yn cael ei alw’n ‘rhif cyflogres’.
+employment.payrollId.title.agent = Beth yw ID y gyflogres eich cleient ar gyfer {0}? (dewisol)
+employment.payrollId.title.individual = Beth yw’ch ID y gyflogres ar gyfer {0}? (dewisol)
 
 #################       Employment pay messages        ########################################
 

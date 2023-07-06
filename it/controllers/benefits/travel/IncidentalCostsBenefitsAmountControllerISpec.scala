@@ -46,7 +46,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -76,7 +76,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(aBenefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
@@ -92,7 +92,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
@@ -108,7 +108,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
@@ -124,7 +124,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
@@ -142,7 +142,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+          insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(aBenefitsViewModel))))
           urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "",
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -161,7 +161,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val model = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(model))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(model))))
         urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -185,7 +185,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         val benefitsViewModel = aBenefitsViewModel
           .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
           .copy(utilitiesAndServicesModel = None)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -204,7 +204,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(aBenefitsViewModel))))
         urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
@@ -220,7 +220,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "",
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -237,7 +237,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -253,7 +253,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel().copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

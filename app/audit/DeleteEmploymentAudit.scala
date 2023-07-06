@@ -18,8 +18,7 @@ package audit
 
 import models.benefits.Benefits
 import models.employment.{Deductions, EmploymentDetailsViewModel}
-import play.api.libs.json.{JsNull, JsNumber, JsValue, Json, Writes}
-
+import play.api.libs.json._
 import utils.JsonUtils.jsonObjNoNulls
 
 case class DeleteEmploymentAudit(taxYear: Int,

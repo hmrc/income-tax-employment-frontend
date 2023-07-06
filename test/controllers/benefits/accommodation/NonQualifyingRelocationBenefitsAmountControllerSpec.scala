@@ -91,7 +91,7 @@ class NonQualifyingRelocationBenefitsAmountControllerSpec extends ControllerUnit
 
       mockEndOfYearSessionDataWithRedirects(taxYearEOY, employmentId, EmploymentBenefitsType, clazz = clazz, anEmploymentUserData)
       mockUpdateNonQualifyingExpenses(aUser, taxYearEOY, employmentId, anEmploymentUserData, amount = 123, Right(anEmploymentUserData))
-      mockBenefitsSubmitRedirect(anEmploymentCYAModel, TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
+      mockBenefitsSubmitRedirect(anEmploymentCYAModel(), TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId), taxYearEOY, employmentId, result)
 
       val request = fakeIndividualRequest.withMethod(POST.method).withFormUrlEncodedBody(AmountForm.amount -> "123")
 

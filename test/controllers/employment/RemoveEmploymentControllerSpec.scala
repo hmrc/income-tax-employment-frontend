@@ -99,7 +99,8 @@ class RemoveEmploymentControllerSpec extends ControllerUnitTest
         benefits = Some(allBenefits)
       ))
     )),
-    customerExpenses = None
+    customerExpenses = None,
+    otherEmploymentIncome = None
   )
   lazy val allBenefits: Benefits = Benefits(
     car = Some(1.23),

@@ -50,7 +50,7 @@ class BenefitsServiceSpec extends UnitTest
       }
 
       "and no previous benefits exist" in {
-        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = None))
         val expectedBenefits = BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)
         val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
@@ -75,7 +75,7 @@ class BenefitsServiceSpec extends UnitTest
       }
 
       "and no previous benefits exist" in {
-        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel().copy(employmentBenefits = None))
         val expectedBenefits = BenefitsViewModel.clear(isUsingCustomerData = true)
         val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 

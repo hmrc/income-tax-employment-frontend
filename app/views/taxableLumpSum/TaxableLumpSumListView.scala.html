@@ -1,0 +1,110 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.Link
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Details
+@import models.benefits.pages.TaxableLumpSumListPage
+@import views.html.templates.helpers.Caption
+@import views.html.templates.helpers.Heading
+@import controllers.employment.routes.EmploymentSummaryController
+
+
+@this(
+    layout: Layout,
+    caption: Caption,
+    heading: Heading,
+    button: GovukButton,
+    details: Details
+)
+
+@(view: TaxableLumpSumListPage)(implicit request: UserSessionDataRequest[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages("lumpSum.taxableLumpSums.title")}
+
+@headingForUse = @{messages("lumpSum.taxableLumpSums.title")}
+
+@detailsHtml = {
+    <p>@messages(s"lumpSum.taxableLumpSums.details.text")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet1")</li>
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet2")</li>
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet3")</li>
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet4")</li>
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet5")</li>
+        <li>@messages("lumpSum.taxableLumpSums.details.bullet6")</li>
+    </ul>
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(view.taxYear), isAgent = request.user.isAgent) {
+
+    @heading(headingForUse, None, "govuk-!-margin-bottom-4")
+    @details("lumpSum.taxableLumpSums.details.heading", detailsHtml)
+
+    @if(view.rows.nonEmpty){
+        <div class="govuk-form-group" id="taxableLumpSumList">
+            <dl class="govuk-summary-list govuk-!-width-one-half">
+                @for((row, index) <- view.rows.zipWithIndex) {
+                <div class="hmrc-add-to-a-list__contents">
+                    <dt class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light govuk-!-width-three-quarters">
+                        @row.amount
+                    </dt>
+                    <dd class="hmrc-add-to-a-list__change">
+                        <a class="govuk-link" href=@row.call.url>
+                            <span aria-hidden="true">@messages("common.view")</span>
+                            <span class="govuk-visually-hidden">@messages("common.view")</span>
+                        </a>
+                    </dd>
+                </div>
+                }
+            </dl>
+        </div>
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url) //todo redirect to appropriate page
+        ))
+        <br>
+        @button(Button(
+        attributes = Map("id" -> "continue"),
+        preventDoubleClick = Some(true),
+        content = Text(messages("common.continue")),
+        classes = "govuk-button govuk-!-margin-top-2",
+        href = Some(EmploymentSummaryController.show(view.taxYear).url) //todo redirect to appropriate page
+        ))
+    } else {
+        @button(Button(
+        attributes = Map("id" -> "AddALumpSum"),
+        preventDoubleClick = Some(true),
+        classes = "govuk-button govuk-!-margin-top-2",
+        content = Text(messages("lumpSum.taxableLumpSums.addLumpSum")),
+        href = Some(EmploymentSummaryController.show(view.taxYear).url) //todo redirect to appropriate page
+        ))
+        <br>
+        @button(Button(
+        attributes = Map("id" -> "continue"),
+        preventDoubleClick = Some(true),
+        content = Text(messages("common.continue")),
+        classes = "govuk-button govuk-button--secondary govuk-!-margin-top-2",
+        href = Some(EmploymentSummaryController.show(view.taxYear).url) //todo redirect to appropriate page
+        ))
+    }
+}
+
+
