@@ -35,6 +35,7 @@ import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSo
 import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.InYearUtil
+import viewmodels.employment._
 import views.html.employment.EmployerInformationView
 
 import scala.concurrent.Future
@@ -53,8 +54,6 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
   )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   private val nino = "AA123456A"
-  private val employmentId: String = "223/AB12399"
-
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
     .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
@@ -103,9 +102,9 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
       status(result) shouldBe OK
       val contents = contentAsString(result)
 
-      implicit val document: Document = Jsoup.parse(contents)
+      val document: Document = Jsoup.parse(contents)
 
-      def employerInformationRowCheck(item: String, value: String, href: String, section: Int, row: Int)(implicit document: Document): Unit = {
+      def employerInformationRowCheck(item: String, value: String, href: String, section: Int, row: Int): Unit = {
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dt").text() shouldBe messages(item)
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row) > dd.govuk-summary-list__value").text() shouldBe messages(value)
         document.select(s"#main-content > div > div > dl:nth-of-type($section) > div:nth-child($row)").toString should  include(href)
@@ -133,7 +132,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
         mockAuth(Some(nino))
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-          controller().show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+          controller().show(taxYear, "223/AB12399")(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
 
         status(result) shouldBe SEE_OTHER

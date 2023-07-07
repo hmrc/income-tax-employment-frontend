@@ -43,7 +43,7 @@ class TaxableLumpSumListControllerSpec extends ControllerUnitTest
   private lazy val view = app.injector.instanceOf[TaxableLumpSumListView]
 
   private def underTest(mimic: Boolean = false, isEmploymentEOYEnabled: Boolean = true) = new TaxableLumpSumListController(
-    stubMessagesControllerComponents,
+    stubMessagesControllerComponents(),
     mockActionsProvider,
     view,
     new InYearUtil,

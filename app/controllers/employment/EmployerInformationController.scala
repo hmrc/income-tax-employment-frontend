@@ -28,54 +28,13 @@ import play.mvc.Call
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
+import viewmodels.employment._
 import views.html.employment.EmployerInformationView
 
 import javax.inject.Inject
 import scala.Option.{unless, when}
 import scala.concurrent.Future
 
-case class EmployerInformationRow(
-                                   labelMessageKey: LabelMessageKey,
-                                   status: Status,
-                                   maybeAction: Option[Call],
-                                   updateAvailable: Boolean
-                                 )
-
-sealed trait Status
-
-case object CannotUpdate extends Status {
-  override def toString: String = "common.status.cannotUpdate"
-}
-
-case object NotStarted extends Status {
-  override def toString: String = "common.status.notStarted"
-}
-
-case object Updated extends Status {
-  override def toString: String = "common.status.updated"
-}
-
-case object ToDo extends Status {
-  override def toString: String = "common.status.toDo"
-}
-
-sealed trait LabelMessageKey
-
-case object EmploymentDetails extends LabelMessageKey {
-  override def toString: String = "common.employmentDetails"
-}
-
-case object EmploymentBenefits extends LabelMessageKey {
-  override def toString: String = "common.employmentBenefits"
-}
-
-case object StudentLoans extends LabelMessageKey {
-  override def toString: String = "common.studentLoans"
-}
-
-case object TaxableLumpSums extends LabelMessageKey {
-  override def toString: String = "common.taxableLumpSums"
-}
 
 class EmployerInformationController @Inject()(authAction: AuthorisedAction,
                                               pageView: EmployerInformationView,
