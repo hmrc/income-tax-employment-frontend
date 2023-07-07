@@ -17,7 +17,6 @@
 package views.employment
 
 import config.AppConfig
-import controllers.employment.{CannotUpdate, EmployerInformationRow, EmploymentBenefits, EmploymentDetails, LabelMessageKey, NotStarted, StudentLoans, TaxableLumpSums, ToDo, Updated}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmploymentSummaryController}
 import controllers.studentLoans.routes.StudentLoansCYAController
 import models.AuthorisationRequest
@@ -28,6 +27,7 @@ import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.mocks.MockAppConfig
 import views.html.employment.EmployerInformationView
+import viewmodels.employment._
 
 class EmployerInformationViewSpec extends ViewUnitTest {
 
@@ -85,7 +85,7 @@ class EmployerInformationViewSpec extends ViewUnitTest {
 
     val bannerParagraph: String = "You must add missing employment details."
     val bannerLinkText: String = "add missing employment details."
-    val fieldNames = Seq("Employment details", "Employment benefits", "Student loans")
+    val fieldNames: Seq[String] = Seq("Employment details", "Employment benefits", "Student loans")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
     val toDo: String = "To do"
@@ -98,7 +98,7 @@ class EmployerInformationViewSpec extends ViewUnitTest {
 
     val bannerParagraph: String = "Mae’n rhaid ychwanegu manylion cyflogaeth sydd ar goll."
     val bannerLinkText: String = "ychwanegu manylion cyflogaeth sydd ar goll."
-    val fieldNames = Seq("Manylion cyflogaeth", "Buddiannau cyflogaeth", "Benthyciadau myfyrwyr")
+    val fieldNames: Seq[String] = Seq("Manylion cyflogaeth", "Buddiannau cyflogaeth", "Benthyciadau myfyrwyr")
     val buttonText = "Yn ôl i ‘Cyflogaeth TWE’"
     val updated = "Wedi diweddaru"
     val toDo: String = "I’w gwneud"
@@ -143,6 +143,8 @@ class EmployerInformationViewSpec extends ViewUnitTest {
 
   private val underTest = inject[EmployerInformationView]
 
+  val updateNotAvailable = false
+
   userScenarios.foreach { user =>
     import Selectors._
     s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -151,9 +153,9 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, false),
-          EmployerInformationRow(StudentLoans, CannotUpdate, None, false)
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, updateNotAvailable),
+          EmployerInformationRow(StudentLoans, CannotUpdate, None, updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)
@@ -190,9 +192,9 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), false),
-          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYear, employmentId)), false)
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), updateNotAvailable),
+          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYear, employmentId)), updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)
@@ -230,9 +232,9 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, NotStarted, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(StudentLoans, NotStarted, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, NotStarted, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(StudentLoans, NotStarted, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)
@@ -269,9 +271,9 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(StudentLoans, Updated, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)
@@ -309,8 +311,8 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), false),
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYear, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYear, employmentId)), updateNotAvailable),
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYear, isInYear = true, showNotification = false)(authRequest, messages, appConfig)
@@ -348,8 +350,8 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), false)
+          EmployerInformationRow(EmploymentDetails, Updated, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, Updated, Some(CheckYourBenefitsController.show(taxYearEOY, employmentId)), updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = false)(authRequest, messages, appConfig)
@@ -385,16 +387,14 @@ class EmployerInformationViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(user.isWelsh)
 
         val rows = Seq(
-          EmployerInformationRow(EmploymentDetails, ToDo, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), false),
-          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, false),
-          EmployerInformationRow(StudentLoans, CannotUpdate, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), false)
+          EmployerInformationRow(EmploymentDetails, ToDo, Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId)), updateNotAvailable),
+          EmployerInformationRow(EmploymentBenefits, CannotUpdate, None, updateNotAvailable),
+          EmployerInformationRow(StudentLoans, CannotUpdate, Some(StudentLoansCYAController.show(taxYearEOY, employmentId)), updateNotAvailable)
         )
 
         val htmlFormat = underTest(employerName, employmentId, rows, taxYear = taxYearEOY, isInYear = false, showNotification = true)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        welshToggleCheck(user.isWelsh)
 
         "has a Notification banner" which {
           textOnPageCheck(user.commonExpectedResults.bannerParagraph, bannerParagraphSelector)
