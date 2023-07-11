@@ -26,11 +26,13 @@ object AmountForm {
   def amountForm(emptyFieldKey: String,
                  wrongFormatKey: String = "common.error.invalid_currency_format",
                  exceedsMaxAmountKey: String = "common.error.amountMaxLimit",
+                 underMinAmountKey: Option[String] = None,
                  emptyFieldArguments: Seq[String] = Seq.empty[String]): Form[BigDecimal] = Form(
     amount -> currency(
       requiredKey = emptyFieldKey,
       wrongFormatKey = wrongFormatKey,
       maxAmountKey = exceedsMaxAmountKey,
+      minAmountKey = underMinAmountKey,
       args = emptyFieldArguments
     )
   )

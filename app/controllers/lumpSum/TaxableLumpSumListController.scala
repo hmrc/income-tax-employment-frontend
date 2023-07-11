@@ -18,8 +18,8 @@ package controllers.lumpSum
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import models.benefits.pages.TaxableLumpSumListPage
 import models.employment.EmploymentDetailsType
+import models.otheremployment.pages.TaxableLumpSumListPage
 import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -43,8 +43,13 @@ class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
     employmentId = employmentId,
     employmentType = EmploymentDetailsType
   ) { implicit request =>
-    Ok(view(TaxableLumpSumListPage(
-      request.employmentUserData.employment.otherEmploymentIncome.getOrElse(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum])),
-      request.employmentUserData.taxYear)))
+    if (!appConfig.taxableLumpSumsEnabled) {
+      Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
+    } else {
+      Ok(view(TaxableLumpSumListPage(
+        request.employmentUserData.employment.otherEmploymentIncome.getOrElse(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum])),
+        request.employmentUserData.taxYear,
+        request.employmentUserData.employmentId)))
+    }
   }
 }

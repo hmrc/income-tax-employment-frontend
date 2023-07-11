@@ -1299,7 +1299,7 @@ expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do y
 #################       Taxable Lump Sums        ########################################
 
 lumpSum.taxableLumpSums.title = Taxable lump sums
-lumpSum.taxableLumpSums.details.heading = understanding taxable lump sums and certain income
+lumpSum.taxableLumpSums.details.heading = Understanding taxable lump sums and certain income
 lumpSum.taxableLumpSums.details.text = These are large payments (usually in cash and excluding pensions) or benefits from your current or former employer. They include:
 lumpSum.taxableLumpSums.details.bullet1 = salary
 lumpSum.taxableLumpSums.details.bullet2 = holiday pay
@@ -1309,6 +1309,24 @@ lumpSum.taxableLumpSums.details.bullet5 = compensation for changes in your emplo
 lumpSum.taxableLumpSums.details.bullet6 = payments made to guarantee your future conduct (’restrictive covenants’), for example, agreeing not to compete with your former employer
 
 lumpSum.taxableLumpSums.addLumpSum = Add taxable lump sum
+
+#################       Taxable Lump Sums Amount      ########################################
+
+lumpSum.taxableLumpSums.amount.title.agent = How much did your client get in their taxable lump sum from {0}?
+lumpSum.taxableLumpSums.amount.title.individual = How much did you get in your taxable lump sum from {0}?
+lumpSum.taxableLumpSums.amount.text.agent = This amount will be on a letter {0} sent your client. Enter the amount before tax.
+lumpSum.taxableLumpSums.amount.text.individual = This amount will be on a letter {0} sent you. Enter the amount before tax.
+
+lumpSum.taxableLumpSums.amount.error.noInput.individual = Enter the amount your client got in their taxable lump sum from {0}
+lumpSum.taxableLumpSums.amount.error.overMax.individual = The amount you got in your taxable lump sum must be less than £100,000,000,000
+lumpSum.taxableLumpSums.amount.error.underMin.individual = The amount you got in your taxable lump sum must be more than £0
+lumpSum.taxableLumpSums.amount.error.invalidFormat.individual = The amount you got in your taxable lump sum must be a number
+
+lumpSum.taxableLumpSums.amount.error.noInput.agent = Enter the amount your client got in their taxable lump sum from {0}
+lumpSum.taxableLumpSums.amount.error.overMax.agent = The amount your client got in their taxable lump sum must be less than £100,000,000,000
+lumpSum.taxableLumpSums.amount.error.underMin.agent = The amount your client got in their taxable lump sum must be more than £0
+lumpSum.taxableLumpSums.amount.error.invalidFormat.agent = The amount your client got in their taxable lump sum must be a number
+
 
 #################       Other equipment messages        ########################################
 
