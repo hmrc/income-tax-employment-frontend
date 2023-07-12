@@ -32,6 +32,8 @@ object AppDependencies {
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapFrontendPlay28Version  % Test,
     "org.scalatest"           %% "scalatest"                % "3.2.15"                        % Test,
+    "org.scalatestplus"       %% "mockito-3-4"              % "3.2.10.0"                      % Test,
+    "org.mockito"             %% "mockito-scala"            % "1.16.42"                       % Test,
     "org.jsoup"               % "jsoup"                     % "1.15.4"                        % Test,
     "com.typesafe.play"       %% "play-test"                % current                         % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                         % "test, it",

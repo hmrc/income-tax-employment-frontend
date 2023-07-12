@@ -17,9 +17,11 @@
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.NotificationBanner
+@import utils.InYearUtil
 @import utils.ViewUtils.summaryListRow
 @import controllers.employment.routes._
 @import controllers.studentLoans.routes._
+@import viewmodels.employment._
 
 @this(
         layout: Layout,
@@ -32,13 +34,13 @@
         govukTag: GovukTag
 )
 
-@(employerNameData: String, empId: String, benefitsDefined: Boolean, studentLoansDefined: Boolean, taxYear: Int, isInYear: Boolean, showNotification: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(employerName: String, employmentId: String, rows: Seq[EmployerInformationRow], taxYear: Int, isInYear: Boolean, showNotification: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages("employment.employerInformation.title")}
 
 @bannerHtml = {
     <p class="govuk-notification-banner__heading">@messages("employment.employmentInfo.you.must")
-        <a class="govuk-notification-banner__link" href="@CheckEmploymentDetailsController.show(taxYear, empId).url">@messages("common.add.missing.employment.details")</a>
+        <a class="govuk-notification-banner__link" href="@CheckEmploymentDetailsController.show(taxYear, employmentId).url">@messages("common.add.missing.employment.details")</a>
     </p>
 }
     
@@ -48,7 +50,7 @@
         @notificationBanner(bannerHtml)
     }
 
-    @heading(employerNameData, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+    @heading(employerName, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
     @if(isInYear) {
         @govukInsetText(InsetText(
@@ -57,21 +59,19 @@
     }
 
     @{
-        def toSummaryListRow(
-            labelText: String,
-            valueText: String,
-            link: Option[Call],
-            updateAvailable: Boolean
-        ): SummaryListRow = {
+        def toSummaryListRow(row: EmployerInformationRow)(implicit messages: Messages): SummaryListRow = {
+            val labelText = messages(row.labelMessageKey.toString)
+            val valueText = messages(row.status.toString)
             summaryListRow(
-                if(link.isDefined){
-                    HtmlContent(s"""<a class="govuk-link" id="${labelText.toLowerCase.replace(' ', '-')}_link" href="${link.get}">$labelText</a>""")
-                } else {
-                    HtmlContent(labelText)
+                row.maybeAction match {
+                    case Some(action) =>
+                        HtmlContent(s"""<a class="govuk-link" id="${labelText.toLowerCase.replace(' ', '-')}_link" href="$action">$labelText</a>""")
+                    case None =>
+                        HtmlContent(labelText)
                 },
                 HtmlContent(govukTag(Tag(
                     content = Text(valueText),
-                    classes = if(!updateAvailable) "govuk-tag--grey" else ""
+                    classes = if (!row.updateAvailable) "govuk-tag--grey" else ""
                 ))),
                 keyClasses = "govuk-!-width-two-thirds",
                 valueClasses = "govuk-!-width-one-third right-align",
@@ -79,32 +79,7 @@
             )
         }
 
-        def summaryListRowFor(labelKey: String, isDefined: Boolean, optAction: Option[Call]): SummaryListRow = {
-            val value = if (showNotification) messages("common.status.cannotUpdate")
-                else if (isDefined) messages("common.status.updated")
-                else if (isInYear) messages("common.status.cannotUpdate")
-                else messages("common.status.notStarted")
-            val updateAvailable = if (showNotification) false else isDefined
-
-            toSummaryListRow(labelText = messages(labelKey), valueText = value, link = optAction, updateAvailable = updateAvailable)
-        }
-
-        val rows: Seq[SummaryListRow] = Seq(
-            toSummaryListRow(
-                labelText = messages("common.employmentDetails"),
-                valueText = if(showNotification) messages("common.status.toDo") else messages("common.status.updated"),
-                link = Some(CheckEmploymentDetailsController.show(taxYear, empId)),
-                updateAvailable = if (showNotification) false else true),
-            summaryListRowFor("common.employmentBenefits", benefitsDefined, if (isInYear && !benefitsDefined) None else Some(CheckYourBenefitsController.show(taxYear, empId)))
-        ) ++ {
-            if(appConfig.studentLoansEnabled) {
-                Seq(summaryListRowFor("common.studentLoans", studentLoansDefined, if (isInYear && !studentLoansDefined) None else Some(StudentLoansCYAController.show(taxYear, empId))))
-            } else {
-                Seq()
-            }
-        }
-
-        govukSummaryList(SummaryList(rows))
+        govukSummaryList(SummaryList(rows.map(toSummaryListRow(_))))
     }
 
     @formWithCSRF(action = EmploymentSummaryController.show(taxYear)) {
@@ -115,8 +90,4 @@
             classes = "govuk-button  govuk-!-margin-top-5"
         ))
     }
-}
-
-@{
-// $COVERAGE-OFF$
 }
