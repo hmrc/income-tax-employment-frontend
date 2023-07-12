@@ -70,7 +70,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
     }
   }
 
-  def summaryEmployerInformationRowFor(labelKey: LabelMessageKey, isDefined: Boolean, maybeAction: Option[Call],
+  private def summaryEmployerInformationRowFor(labelKey: LabelMessageKey, isDefined: Boolean, maybeAction: Option[Call],
                                        isInYear: Boolean, showNotification: Boolean): EmployerInformationRow = {
     val status =
       if (showNotification) {
@@ -90,7 +90,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
     EmployerInformationRow(labelKey, status, maybeAction, updateAvailable)
   }
 
-  def makeRows(taxYear: Int, employmentId: String, showNotification: Boolean,
+  private def makeRows(taxYear: Int, employmentId: String, showNotification: Boolean,
                benefitsDefined: Boolean, studentLoansDefined: Boolean, taxableLumpSumsDefined: Boolean
               ): Seq[EmployerInformationRow] = {
     val isInYear = inYearAction.inYear(taxYear)
