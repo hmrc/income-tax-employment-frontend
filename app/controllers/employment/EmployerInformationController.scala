@@ -111,7 +111,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
         summaryEmployerInformationRowFor(StudentLoans, studentLoansDefined, maybeAction, isInYear, showNotification)
       } ++
       when(appConfig.taxableLumpSumsEnabled) {
-        val maybeAction = unless(isInYear && !taxableLumpSumsDefined)(TaxableLumpSumListController.show(taxYear, employmentId))
+        val maybeAction = unless(isInYear)(TaxableLumpSumListController.show(taxYear, employmentId))
         summaryEmployerInformationRowFor(TaxableLumpSums, taxableLumpSumsDefined, maybeAction, isInYear, showNotification)
       }
   }
