@@ -59,9 +59,8 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
 
             val benefitsDefined = source.employmentBenefits.isDefined
             val studentLoansDefined = uglExists || pglExists
-            val taxableLumpSumsDefined = true // TODO: don't hard-code this
 
-            val rows = makeRows(taxYear, employmentId, showNotification, benefitsDefined, studentLoansDefined, taxableLumpSumsDefined)
+            val rows = makeRows(taxYear, employmentId, showNotification, benefitsDefined, studentLoansDefined)
 
             Ok(pageView(source.employerName, employmentId, rows, taxYear, isInYear, showNotification))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
@@ -91,8 +90,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
   }
 
   private def makeRows(taxYear: Int, employmentId: String, showNotification: Boolean,
-               benefitsDefined: Boolean, studentLoansDefined: Boolean, taxableLumpSumsDefined: Boolean
-              ): Seq[EmployerInformationRow] = {
+               benefitsDefined: Boolean, studentLoansDefined: Boolean): Seq[EmployerInformationRow] = {
     val isInYear = inYearAction.inYear(taxYear)
     Seq(
       EmployerInformationRow(
