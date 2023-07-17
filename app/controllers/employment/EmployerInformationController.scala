@@ -56,12 +56,12 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
             val uglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.uglDeductionAmount).isDefined
             val pglExists = source.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).flatMap(_.pglDeductionAmount).isDefined
             val showNotification = !isInYear && !source.employmentDetailsSubmittable
+            val lumpSumsDefined = allEmploymentData.otherEmploymentIncome.flatMap(_.lumpSums).isDefined
 
             val benefitsDefined = source.employmentBenefits.isDefined
             val studentLoansDefined = uglExists || pglExists
-            val taxableLumpSumsDefined = true // TODO: don't hard-code this
 
-            val rows = makeRows(taxYear, employmentId, showNotification, benefitsDefined, studentLoansDefined, taxableLumpSumsDefined)
+            val rows = makeRows(taxYear, employmentId, showNotification, benefitsDefined, studentLoansDefined, lumpSumsDefined)
 
             Ok(pageView(source.employerName, employmentId, rows, taxYear, isInYear, showNotification))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
@@ -91,8 +91,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
   }
 
   private def makeRows(taxYear: Int, employmentId: String, showNotification: Boolean,
-               benefitsDefined: Boolean, studentLoansDefined: Boolean, taxableLumpSumsDefined: Boolean
-              ): Seq[EmployerInformationRow] = {
+               benefitsDefined: Boolean, studentLoansDefined: Boolean, lumpSumsDefined: Boolean): Seq[EmployerInformationRow] = {
     val isInYear = inYearAction.inYear(taxYear)
     Seq(
       EmployerInformationRow(
@@ -111,8 +110,8 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
         summaryEmployerInformationRowFor(StudentLoans, studentLoansDefined, maybeAction, isInYear, showNotification)
       } ++
       when(appConfig.taxableLumpSumsEnabled) {
-        val maybeAction = unless(isInYear && !taxableLumpSumsDefined)(TaxableLumpSumListController.show(taxYear, employmentId))
-        summaryEmployerInformationRowFor(TaxableLumpSums, taxableLumpSumsDefined, maybeAction, isInYear, showNotification)
+        val maybeAction = unless(isInYear)(TaxableLumpSumListController.show(taxYear, employmentId))
+        summaryEmployerInformationRowFor(TaxableLumpSums, lumpSumsDefined, maybeAction, isInYear, showNotification)
       }
   }
 }
