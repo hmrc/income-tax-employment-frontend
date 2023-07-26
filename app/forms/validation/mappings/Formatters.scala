@@ -67,8 +67,8 @@ trait Formatters {
                 .left.map(_ => Seq(FormError(key, invalidNumericKey, args)))
           }
           .flatMap { bigDecimal =>
-            if (bigDecimal > BigDecimal("90999999999")) Left(Seq(FormError(key, maxAmountKey, args)))
-            if (minAmountKey.isDefined && bigDecimal < BigDecimal(0)) {Left(Seq(FormError(key, minAmountKey.get, args)))}  else {Right(bigDecimal)}
+            if (bigDecimal > BigDecimal("90999999999")) {Left(Seq(FormError(key, maxAmountKey, args)))}
+            else if (minAmountKey.isDefined && bigDecimal <= BigDecimal(0)) {Left(Seq(FormError(key, minAmountKey.get, args)))} else {Right(bigDecimal)}
           }
       }
 

@@ -46,7 +46,7 @@ object TaxableLumpSumAmountPage {
       index.flatMap(i =>
         request.employmentUserData.employment.otherEmploymentIncome.flatMap(oEI =>
           oEI.taxableLumpSums.lift(i).map(tLS =>
-            tLS.amount))),
+            tLS.amount)))
     )
   }
 }

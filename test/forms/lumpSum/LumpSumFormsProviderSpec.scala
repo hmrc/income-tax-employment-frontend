@@ -24,8 +24,8 @@ import support.UnitTest
 class LumpSumFormsProviderSpec extends UnitTest {
   private val amount: String = 123.0.toString
   private val correctAmountData = Map(AmountForm.amount -> amount)
-  private val overMaximumAmount: Map[String, String] = Map(AmountForm.amount -> "100,000,000,001")
-  private val underMinimum: Map[String, String] = Map(AmountForm.amount -> "-1")
+  private val overMaximumAmount: Map[String, String] = Map(AmountForm.amount -> "100,000,000,000")
+  private val underMinimum: Map[String, String] = Map(AmountForm.amount -> "0")
   private val wrongKeyData = Map("wrongKey" -> amount)
   private val wrongAmountFormat: Map[String, String] = Map(AmountForm.amount -> "123.45.6")
   private val emptyData: Map[String, String] = Map.empty
@@ -60,13 +60,13 @@ class LumpSumFormsProviderSpec extends UnitTest {
 
       "when isAgent is true and data is overMaximum" in {
         underTest.taxableLumpSumAmountForm(isAgent = true, employerName).bind(overMaximumAmount).errors shouldBe Seq(
-          FormError(AmountForm.amount, Seq("lumpSum.taxableLumpSums.amount.error.overMax.agent"), Seq())
+          FormError(AmountForm.amount, Seq("lumpSum.taxableLumpSums.amount.error.overMax.agent"), Seq(employerName))
         )
       }
 
       "when isAgent is true and data is underMinimum" in {
         underTest.taxableLumpSumAmountForm(isAgent = true, employerName).bind(underMinimum).errors shouldBe Seq(
-          FormError(AmountForm.amount, Seq("lumpSum.taxableLumpSums.amount.error.underMin.agent"), Seq())
+          FormError(AmountForm.amount, Seq("lumpSum.taxableLumpSums.amount.error.underMin.agent"), Seq(employerName))
         )
       }
     }

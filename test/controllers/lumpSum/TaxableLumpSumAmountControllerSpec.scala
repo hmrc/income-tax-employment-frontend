@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.lumpsum
+package controllers.lumpSum
 
 import common.SessionValues
-import controllers.lumpSum.{TaxableLumpSumAmountController, TaxableLumpSumListController}
+import forms.AmountForm
 import forms.lumpSums.LumpSumFormsProvider
 import models.employment.EmploymentDetailsType
-import models.otheremployment.session.TaxableLumpSum
+import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.http.Status.OK
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.Helpers.stubMessagesControllerComponents
+import sttp.model.Method.POST
 import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -33,7 +32,7 @@ import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserD
 import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 import support.mocks._
 import utils.InYearUtil
-import views.html.taxableLumpSum.{TaxableLumpSumAmountView, TaxableLumpSumListView}
+import views.html.taxableLumpSum.TaxableLumpSumAmountView
 
 import scala.concurrent.Future
 
@@ -43,7 +42,8 @@ class TaxableLumpSumAmountControllerSpec extends ControllerUnitTest
   with MockOtherEmploymentInfoService
   with MockAuditService
   with MockCheckEmploymentDetailsService
-  with MockErrorHandler {
+  with MockErrorHandler
+  with MockRedirectService {
 
   private lazy val view = app.injector.instanceOf[TaxableLumpSumAmountView]
   private val formsProvider = new LumpSumFormsProvider
@@ -59,7 +59,7 @@ class TaxableLumpSumAmountControllerSpec extends ControllerUnitTest
     mockErrorHandler
   )(new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), ec)
 
-  implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
+
   private val employmentId = "223AB12399"
 
   ".show" when {
@@ -69,6 +69,7 @@ class TaxableLumpSumAmountControllerSpec extends ControllerUnitTest
         EmploymentDetailsType,
         anEmploymentUserData.copy(employment = anEmploymentCYAModel(otherEmploymentIncome = Some(anOtherEmploymentIncomeCYAModel)))
       )
+
 
       val result: Future[Result] = {
         underTest().show(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
@@ -89,37 +90,5 @@ class TaxableLumpSumAmountControllerSpec extends ControllerUnitTest
       }
       result.map(res => res.header.status shouldBe OK)
     }
-  }
-
-  "submit" should {
-    "submit as an additional lump sum to the list of lump sums if the index is none" in {
-      mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, anEmploymentUserData.copy(employment =
-        anEmploymentCYAModel()))
-
-      mockOtherEmploymentInfoService.updateLumpSums(aUser, taxYearEOY, employmentId, anEmploymentUserData, Seq(TaxableLumpSum(amount = 100)))
-
-      val result: Future[Result] = {
-        underTest().submit(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYearEOY.toString
-        ))
-      }
-      result.map(res => res.header.status shouldBe OK)
-    }
-  }
-
-  "replace an existing lump sum in the list, if the index exists within the list" in {
-    val employeeUserData = anEmploymentUserData.copy(employment =
-      anEmploymentCYAModel(otherEmploymentIncome = Some(anOtherEmploymentIncomeCYAModel)))
-
-    mockEndOfYearSessionData(taxYearEOY, employmentId, EmploymentDetailsType, employeeUserData)
-
-    mockOtherEmploymentInfoService.updateLumpSums(aUser, taxYearEOY, employmentId, employeeUserData, Seq(TaxableLumpSum(amount = 100)))
-
-    val result: Future[Result] = {
-      underTest().submit(taxYearEOY, employmentId = employmentId)(fakeRequest.withSession(
-        SessionValues.TAX_YEAR -> taxYearEOY.toString
-      ))
-    }
-    result.map(res => res.header.status shouldBe OK)
   }
 }

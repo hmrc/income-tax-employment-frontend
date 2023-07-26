@@ -54,6 +54,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val welshToggleEnabled: Boolean = true
 
+    override lazy val taxableLumpSumsEnabled: Boolean = true
+
     override lazy val tailoringEnabled: Boolean = false
 
     override lazy val nrsEnabled: Boolean = true

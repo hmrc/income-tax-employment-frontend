@@ -16,18 +16,22 @@
 
 package services.employment
 
+import models.otheremployment.session.TaxableLumpSum
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 import support.{TaxYearProvider, UnitTest}
-import support.mocks.MockEmploymentSessionService
+import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService, MockOtherEmploymentInfoService}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class OtherEmploymentInfoServiceSpec extends UnitTest
   with TaxYearProvider
-  with MockEmploymentSessionService {
+  with MockEmploymentSessionService
+  with MockNrsService
+  with MockAuditService
+  with MockOtherEmploymentInfoService {
 
   private implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -40,10 +44,9 @@ class OtherEmploymentInfoServiceSpec extends UnitTest
       val givenEmploymentUserData = anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false)
       val givenEmploymentUserDataWithLumpSum = givenEmploymentUserData.copy(employment = anEmploymentCYAModel(otherEmploymentIncome = Some(anOtherEmploymentIncomeCYAModel)))
 
-      mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, givenEmploymentUserData.employment, Right(givenEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYearEOY, employmentId, givenEmploymentUserDataWithLumpSum.employment, Right(givenEmploymentUserDataWithLumpSum))
 
-      await(underTest.updateLumpSums(aUser, taxYearEOY, employmentId, givenEmploymentUserData, anOtherEmploymentIncomeCYAModel.taxableLumpSums)) shouldBe
-      Right(givenEmploymentUserDataWithLumpSum)
+      await(underTest.updateLumpSums(aUser, taxYearEOY, employmentId, givenEmploymentUserData, anOtherEmploymentIncomeCYAModel.taxableLumpSums))shouldBe Right(givenEmploymentUserDataWithLumpSum)
     }
   }
 }

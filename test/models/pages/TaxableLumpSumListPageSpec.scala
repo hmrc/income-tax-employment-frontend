@@ -16,7 +16,7 @@
 
 package models.pages
 
-import controllers.employment.routes
+import controllers.lumpSum.routes
 import models.otheremployment.pages.TaxableLumpSumListPage
 import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.i18n.Messages
@@ -34,11 +34,11 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
       val table  = TaxableLumpSumListPage(anOtherEmploymentIncomeCYAModel, taxYearEOY, "employmentID")
       table.rows.length shouldBe 3
       table.rows.head.amount shouldBe "£100"
-      table.rows.head.call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows.head.call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(0))
       table.rows(1).amount shouldBe "£99"
-      table.rows(1).call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows(1).call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(1))
       table.rows(2).amount shouldBe "£98"
-      table.rows(2).call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows(2).call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(2))
     }
 
     "show no table when user has no lump sums" in {
