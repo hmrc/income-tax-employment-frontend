@@ -52,10 +52,10 @@ class TaxableLumpSumAmountController @Inject()( mcc: MessagesControllerComponent
       Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
     } else {
       val page = TaxableLumpSumAmountPage(request, index)
-      val form = formProvider.TaxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName)
+      val form = formProvider.taxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName)
       Ok(view(page,
         page.amount.fold(form)(amount =>
-          formProvider.TaxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName).fill(amount))
+          formProvider.taxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName).fill(amount))
       ))
     }
   }
@@ -65,7 +65,7 @@ class TaxableLumpSumAmountController @Inject()( mcc: MessagesControllerComponent
     employmentId = employmentId,
     employmentType = EmploymentDetailsType
   ).async { implicit request =>
-    formProvider.TaxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName).bindFromRequest().fold(
+    formProvider.taxableLumpSumAmountForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName).bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(view(TaxableLumpSumAmountPage(request, index), formWithErrors))),
       amount => onSuccess(index, amount, taxYear)(request))
   }
@@ -82,7 +82,7 @@ class TaxableLumpSumAmountController @Inject()( mcc: MessagesControllerComponent
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         Ok(view(TaxableLumpSumAmountPage(request, index),
-          formProvider.TaxableLumpSumAmountForm(request.user.isAgent,
+          formProvider.taxableLumpSumAmountForm(request.user.isAgent,
             request.employmentUserData.employment.employmentDetails.employerName)))
     }
 

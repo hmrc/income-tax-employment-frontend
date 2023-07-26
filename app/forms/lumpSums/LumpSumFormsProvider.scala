@@ -20,7 +20,7 @@ import forms.AmountForm
 import play.api.data.Form
 
 class LumpSumFormsProvider {
-  def TaxableLumpSumAmountForm(isAgent: Boolean, employerName: String): Form[BigDecimal] = AmountForm.amountForm(
+  def taxableLumpSumAmountForm(isAgent: Boolean, employerName: String): Form[BigDecimal] = AmountForm.amountForm(
     emptyFieldKey = s"lumpSum.taxableLumpSums.amount.error.noInput.${if (isAgent) "agent" else "individual"}",
     wrongFormatKey = s"lumpSum.taxableLumpSums.amount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
     exceedsMaxAmountKey = s"lumpSum.taxableLumpSums.amount.error.overMax.${if (isAgent) "agent" else "individual"}",
