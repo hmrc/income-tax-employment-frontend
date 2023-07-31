@@ -16,8 +16,8 @@
 
 package models.pages
 
-import controllers.employment.routes
-import models.benefits.pages.TaxableLumpSumListPage
+import controllers.lumpSum.routes
+import models.otheremployment.pages.TaxableLumpSumListPage
 import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.i18n.Messages
 import support.ViewUnitTest
@@ -31,20 +31,20 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
     "transform taxableLumpSumViewModel into the correct number of rows, with the correct content " in {
       implicit val messages: Messages = getMessages(false)
 
-      val table  = TaxableLumpSumListPage(anOtherEmploymentIncomeCYAModel, taxYearEOY)
+      val table  = TaxableLumpSumListPage(anOtherEmploymentIncomeCYAModel, taxYearEOY, "employmentID")
       table.rows.length shouldBe 3
       table.rows.head.amount shouldBe "£100"
-      table.rows.head.call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows.head.call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(0))
       table.rows(1).amount shouldBe "£99"
-      table.rows(1).call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows(1).call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(1))
       table.rows(2).amount shouldBe "£98"
-      table.rows(2).call shouldBe routes.EmploymentSummaryController.show(taxYearEOY) //todo redirect to appropriate page
+      table.rows(2).call shouldBe routes.TaxableLumpSumAmountController.show(taxYearEOY, "employmentID", Some(2))
     }
 
     "show no table when user has no lump sums" in {
       implicit val messages: Messages = getMessages(false)
 
-      val table = TaxableLumpSumListPage(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum]), taxYearEOY)
+      val table = TaxableLumpSumListPage(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum]), taxYearEOY, "employmentID")
       table.rows.length shouldBe 0
     }
   }

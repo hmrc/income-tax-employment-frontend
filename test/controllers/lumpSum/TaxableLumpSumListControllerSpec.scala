@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.lumpsum
+package controllers.lumpSum
 
 import common.SessionValues
 import controllers.lumpSum.TaxableLumpSumListController

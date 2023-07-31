@@ -19,6 +19,7 @@ package forms.validation.mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
+import scala.util
 import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
@@ -40,6 +41,7 @@ trait Formatters {
   private[mappings] def currencyFormatter(requiredKey: String,
                                           invalidNumericKey: String,
                                           maxAmountKey: String,
+                                          minAmountKey: Option[String] = None,
                                           args: Seq[String] = Seq.empty[String]
                                           ): Formatter[BigDecimal] =
     new Formatter[BigDecimal] {
@@ -65,7 +67,8 @@ trait Formatters {
                 .left.map(_ => Seq(FormError(key, invalidNumericKey, args)))
           }
           .flatMap { bigDecimal =>
-            if (bigDecimal < BigDecimal("100000000000")) Right(bigDecimal) else Left(Seq(FormError(key, maxAmountKey, args)))
+            if (bigDecimal > BigDecimal("90999999999")) {Left(Seq(FormError(key, maxAmountKey, args)))}
+            else if (minAmountKey.isDefined && bigDecimal <= BigDecimal(0)) {Left(Seq(FormError(key, minAmountKey.get, args)))} else {Right(bigDecimal)}
           }
       }
 

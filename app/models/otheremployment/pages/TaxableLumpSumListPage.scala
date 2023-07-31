@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package models.benefits.pages
+package models.otheremployment.pages
 
-import controllers.employment.routes
+import controllers.lumpSum.routes
 import models.otheremployment.session.OtherEmploymentIncomeCYAModel
 import play.api.i18n.Messages
 import play.api.mvc.Call
@@ -26,21 +26,23 @@ import java.util.Locale
 
 case class ListRows(amount: String, call: Call)
 
-case class TaxableLumpSumListPage(rows: Seq[ListRows], taxYear: Int)
+case class TaxableLumpSumListPage(rows: Seq[ListRows], taxYear: Int, employmentId: String)
 
 object TaxableLumpSumListPage {
-  def apply(otherEmploymentIncomeCYAModel: OtherEmploymentIncomeCYAModel, taxYear: Int)(implicit messages: Messages) : TaxableLumpSumListPage = {
-    TaxableLumpSumListPage(otherEmploymentIncomeCYAModel.taxableLumpSums.map{ item =>
+  def apply(otherEmploymentIncomeCYAModel: OtherEmploymentIncomeCYAModel, taxYear: Int, employmentId: String)(implicit messages: Messages):
+  TaxableLumpSumListPage = {
+    TaxableLumpSumListPage(otherEmploymentIncomeCYAModel.taxableLumpSums.zipWithIndex.map { item =>
       ListRows(
-        displayedValue(item.amount),
-        routes.EmploymentSummaryController.show(taxYear) //todo redirect to appropriate page
-      )}, taxYear
+        displayedValue(item._1.amount),
+        routes.TaxableLumpSumAmountController.show(taxYear, employmentId, Some(item._2))
+      )
+    }, taxYear, employmentId
     )
   }
 
   def displayedValueForOptionalAmount(valueOpt: Option[BigDecimal]): String = valueOpt.map(displayedValue).getOrElse("")
 
-  def displayedValue(value: BigDecimal): String =  formatNoZeros(value)
+  def displayedValue(value: BigDecimal): String = formatNoZeros(value)
 
   def formatNoZeros(amount: BigDecimal): String = {
     NumberFormat.getCurrencyInstance(Locale.UK).format(amount)

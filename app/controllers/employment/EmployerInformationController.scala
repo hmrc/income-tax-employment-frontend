@@ -71,7 +71,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
   }
 
   private def summaryEmployerInformationRowFor(labelKey: LabelMessageKey, isDefined: Boolean, maybeAction: Option[Call],
-                                       isInYear: Boolean, showNotification: Boolean): EmployerInformationRow = {
+                                               isInYear: Boolean, showNotification: Boolean): EmployerInformationRow = {
     val status =
       if (showNotification) {
         CannotUpdate
@@ -91,7 +91,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
   }
 
   private def makeRows(taxYear: Int, employmentId: String, showNotification: Boolean,
-               benefitsDefined: Boolean, studentLoansDefined: Boolean, lumpSumsDefined: Boolean): Seq[EmployerInformationRow] = {
+                       benefitsDefined: Boolean, studentLoansDefined: Boolean, lumpSumsDefined: Boolean): Seq[EmployerInformationRow] = {
     val isInYear = inYearAction.inYear(taxYear)
     Seq(
       EmployerInformationRow(
@@ -110,7 +110,7 @@ class EmployerInformationController @Inject()(authAction: AuthorisedAction,
         summaryEmployerInformationRowFor(StudentLoans, studentLoansDefined, maybeAction, isInYear, showNotification)
       } ++
       when(appConfig.taxableLumpSumsEnabled) {
-        val maybeAction = unless(isInYear)(TaxableLumpSumListController.show(taxYear, employmentId))
+        val maybeAction = Some(TaxableLumpSumListController.show(taxYear, employmentId))
         summaryEmployerInformationRowFor(TaxableLumpSums, lumpSumsDefined, maybeAction, isInYear, showNotification)
       }
   }
