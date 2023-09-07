@@ -269,7 +269,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           employmentId,
           "Whiterun Guard",
           None, None, Some(startDate), None, None, None, Some(EmploymentData(
-            startDate, None, None, None, None, None,
+            startDate, None, None, None, None, None, None,
             Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(submittedOnDate), Some(3), Some(3))),
             Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
           )), None
@@ -281,7 +281,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         employmentId,
         "Whiterun Guard",
         None, None, Some(startDate), None, None, None, Some(EmploymentFinancialData(Some(EmploymentData(
-          startDate, None, None, None, None, None,
+          startDate, None, None, None, None, None, None,
           Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(submittedOnDate), Some(3), Some(3))),
           Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
         )), None)), None

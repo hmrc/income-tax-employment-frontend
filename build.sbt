@@ -15,7 +15,6 @@
  */
 
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "income-tax-employment-frontend"
 
@@ -77,7 +76,6 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:src=routes/.*:s"
   )
   .settings(Test / fork := false)
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest extend Test)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
