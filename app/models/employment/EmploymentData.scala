@@ -25,6 +25,7 @@ case class EmploymentData(submittedOn: String,
                           closeCompany: Option[Boolean],
                           directorshipCeasedDate: Option[String],
                           disguisedRemuneration: Option[Boolean],
+                          offPayrollWorker: Option[Boolean],
                           pay: Option[Pay],
                           deductions: Option[Deductions]
                          ){

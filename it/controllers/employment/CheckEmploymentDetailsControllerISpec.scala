@@ -72,6 +72,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 closeCompany = None,
                 directorshipCeasedDate = None,
                 disguisedRemuneration = None,
+                offPayrollWorker = None,
                 pay = Some(aPay),
                 Some(Deductions(
                   studentLoans = Some(StudentLoans(
@@ -112,6 +113,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             closeCompany = None,
             directorshipCeasedDate = None,
             disguisedRemuneration = None,
+            offPayrollWorker = None,
             pay = Some(Pay(Some(34234.50), Some(6782.90), None, None, None, None)),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
@@ -149,6 +151,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 closeCompany = Some(true),
                 directorshipCeasedDate = Some("14/07/1990"),
                 disguisedRemuneration = None,
+                offPayrollWorker = None,
                 pay = Some(Pay(Some(100), Some(200), None, None, None, None)),
                 Some(Deductions(
                   studentLoans = Some(StudentLoans(
