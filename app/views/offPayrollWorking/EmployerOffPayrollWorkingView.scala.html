@@ -19,7 +19,7 @@
 @import views.html.templates.helpers.Caption
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.InputRadio
-@import controllers.employerOffPayrollWorking.routes.EmployerOffPayrollWorkingController
+@import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
 
 @this(
     layout: Layout,
@@ -40,7 +40,7 @@
 
     @caption(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString))
 
-    @formWithCsrf(action = EmploymentGatewayController.submit(taxYear)) {
+    @formWithCsrf(action = EmployerOffPayrollWorkingController.submit(taxYear)) {
         @inputRadio(
             form = form,
             legendAsHeading = true,

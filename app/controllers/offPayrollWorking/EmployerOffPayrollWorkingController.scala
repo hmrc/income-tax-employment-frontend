@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.tailorings
+package controllers.offPayrollWorking
 
 import actions.{ActionsProvider, AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
@@ -26,7 +26,7 @@ import services.EmploymentSessionService
 import services.tailoring.TailoringService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.tailorings.EmploymentGatewayView
+import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
