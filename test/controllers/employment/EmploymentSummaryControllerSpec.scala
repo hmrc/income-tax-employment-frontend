@@ -73,7 +73,8 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
           )),
           None
         )
-      ), None
+      ), None,
+      offPayrollWorkingStatus = Some(false)
     )
 
     val employmentSource2: HmrcEmploymentSource = HmrcEmploymentSource(
@@ -103,8 +104,8 @@ class EmploymentSummaryControllerSpec extends ControllerUnitTest
           ))
         )),
         None
-      )), None
-
+      )), None,
+      offPayrollWorkingStatus = Some(false)
     )
 
     val oneEmploymentSourceData:

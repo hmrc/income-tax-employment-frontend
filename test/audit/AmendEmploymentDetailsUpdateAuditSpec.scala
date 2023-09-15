@@ -73,7 +73,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvide
             ))
           ))
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       model.toAmendAuditModel(aUser, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(

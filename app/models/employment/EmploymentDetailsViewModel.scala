@@ -27,7 +27,8 @@ case class EmploymentDetailsViewModel(employerName: String,
                                       cessationDate: Option[String],
                                       taxablePayToDate: Option[BigDecimal],
                                       totalTaxToDate: Option[BigDecimal],
-                                      isUsingCustomerData: Boolean)
+                                      isUsingCustomerData: Boolean,
+                                      offPayrollWorkingStatus : Option[Boolean])
 
 object EmploymentDetailsViewModel {
   implicit val format: OFormat[EmploymentDetailsViewModel] = Json.format[EmploymentDetailsViewModel]

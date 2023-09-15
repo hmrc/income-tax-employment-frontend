@@ -84,7 +84,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               None
             )
           ),
-          None
+          None,
+          offPayrollWorkingStatus = None
         )
       ),
       hmrcExpenses = None,
@@ -122,7 +123,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               ))
             ))
           )),
-          None
+          None,
+          offPayrollWorkingStatus = None
         )
       ),
       customerExpenses = None,
@@ -163,7 +165,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               None
             )
           ),
-          None
+          None, offPayrollWorkingStatus = Some(false)
+
         )
       ),
       hmrcExpenses = None,

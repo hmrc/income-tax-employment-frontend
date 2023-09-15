@@ -38,7 +38,8 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest with TaxYearProvider {
              |      "cessationDate": "${taxYearEOY - 1}-06-01",
              |      "taxablePayToDate": 100,
              |      "totalTaxToDate": 100,
-             |      "isUsingCustomerData": true
+             |      "isUsingCustomerData": true,
+             |      "offPayrollWorkingStatus": false
              |    },
              |    "benefits": {
              |      "accommodation": 100,
@@ -96,7 +97,8 @@ class DecodedDeleteEmploymentPayloadSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-06-01"),
             taxablePayToDate = Some(100),
             totalTaxToDate = Some(100),
-            isUsingCustomerData = true
+            isUsingCustomerData = true,
+            offPayrollWorkingStatus = Some(false)
           ),
           benefits = Some(Benefits(
             accommodation = Some(100),

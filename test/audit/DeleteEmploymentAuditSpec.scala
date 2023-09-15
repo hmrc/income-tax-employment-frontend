@@ -42,7 +42,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -93,7 +94,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -146,7 +148,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |  "employmentData": {
              |    "employerName": "Dave",
              |    "employmentId": "id",
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -197,7 +200,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = None,
             taxablePayToDate = None,
             totalTaxToDate = None,
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -257,7 +261,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "deductions": {
              |    "studentLoans": {
@@ -278,7 +283,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           None,
           deductions = Some(Deductions(
@@ -309,7 +315,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "deductions": {
              |    "studentLoans": {
@@ -330,7 +337,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits()),
           deductions = Some(Deductions(
@@ -357,7 +365,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -394,7 +403,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -441,7 +451,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -492,7 +503,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -552,7 +564,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -603,7 +616,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -659,7 +673,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -710,7 +725,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -766,7 +782,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -817,7 +834,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -879,7 +897,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -924,7 +943,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -979,7 +999,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -1024,7 +1045,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -1081,7 +1103,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -1126,7 +1149,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -1183,7 +1207,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -1233,7 +1258,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),
@@ -1290,7 +1316,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
              |    "cessationDate": "${taxYearEOY - 1}-02-12",
              |    "taxablePayToDate": 34234.15,
              |    "totalTaxToDate": 6782.92,
-             |    "isUsingCustomerData": false
+             |    "isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |  },
              |  "benefits": {
              |    "accommodation": 100,
@@ -1340,7 +1367,8 @@ class DeleteEmploymentAuditSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ),
           Some(Benefits(
             accommodation = Some(100),

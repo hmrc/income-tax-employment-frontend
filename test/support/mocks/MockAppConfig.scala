@@ -62,6 +62,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val studentLoansEnabled: Boolean = slEnabled
 
+    override lazy val offPayrollWorking: Boolean = true
+
     override lazy val employmentEOYEnabled: Boolean = isEmploymentEOYEnabled
 
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"

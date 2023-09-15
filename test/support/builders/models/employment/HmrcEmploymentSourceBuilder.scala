@@ -33,7 +33,9 @@ object HmrcEmploymentSourceBuilder {
     dateIgnored = None,
     submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
     hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData),
-    None
+    None,
+    offPayrollWorkingStatus = Some(false)
+
   )
 
   val aHmrcEmploymentSourceWithCustomerAndHmrcFinancials: HmrcEmploymentSource = HmrcEmploymentSource(
@@ -46,6 +48,7 @@ object HmrcEmploymentSourceBuilder {
     dateIgnored = None,
     submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
     hmrcEmploymentFinancialData = Some(aHmrcEmploymentFinancialData),
-    customerEmploymentFinancialData = Some(aCustomerEmploymentFinancialData)
+    customerEmploymentFinancialData = Some(aCustomerEmploymentFinancialData),
+    offPayrollWorkingStatus = Some(false)
   )
 }

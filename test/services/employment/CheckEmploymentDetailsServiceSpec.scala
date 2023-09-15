@@ -134,7 +134,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
             ))
           )),
           None
-        )), None
+        )), None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -211,7 +212,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -337,7 +339,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -413,7 +416,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val prior: AllEmploymentData = AllEmploymentData(

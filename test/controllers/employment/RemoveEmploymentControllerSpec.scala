@@ -98,7 +98,8 @@ class RemoveEmploymentControllerSpec extends ControllerUnitTest
       Some(EmploymentBenefits(
         submittedOn = s"${taxYearEOY - 1}-02-12",
         benefits = Some(allBenefits)
-      ))
+      )),
+      offPayrollWorkingStatus = Some(false)
     )),
     customerExpenses = None,
     otherEmploymentIncome = None

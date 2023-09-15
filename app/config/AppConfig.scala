@@ -117,4 +117,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
 
   lazy val mimicEmploymentAPICalls: Boolean = servicesConfig.getBoolean("mimicEmploymentAPICalls")
+
+  lazy val offPayrollWorking: Boolean = servicesConfig.getBoolean("feature-switch.offPayrollWorking")
+
 }

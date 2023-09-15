@@ -59,9 +59,7 @@
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
-    @if(!employmentDetails.isUsingCustomerData){
-        <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(request.user.isAgent) "agent" else "individual"}")</p>
-    }
+    <h2 class="govuk-heading-m">@messages(s"common.employmentDetails")</h2>
 
     @if(isInYear){
         @govukInsetText(InsetText(
@@ -79,6 +77,13 @@
             messages(s"$msgKeyGeneric.hiddenText.employer")
         )
 
+        val payeRef = EmploymentDataForView(
+                messages(msgKeyGeneric + ".payeRef"),
+                Some(employmentDetails.employerRef.getOrElse(messages("common.notProvided"))),
+                PayeRefController.show(taxYear, employmentDetails.employmentId),
+                messages(s"$msgKeyGeneric.hiddenText.payeRef")
+            )
+
         val startDate = EmploymentDataForView(
             messages(s"$msgKeyGeneric.startDate"),
             Some(if(employmentDetails.startDate.isEmpty) messages("common.notProvided") else translatedDateFormatter(LocalDate.parse(employmentDetails.startDate.get))),
@@ -86,37 +91,6 @@
             messages(s"$msgKeyGeneric.hiddenText.startDate")
         )
 
-        val didYouLeave = EmploymentDataForView(
-            messages(s"$msgKeyGeneric.didYouLeave"),
-            Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-            controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.didYouLeave", request.user.isAgent))
-        )
-
-        val endDate = if(!employmentDetails.didYouLeaveQuestion.contains(false)) {
-            EmploymentDataForView(
-                messages(s"$msgKeyGeneric.endDate"),
-                Some(if(employmentDetails.cessationDate.isEmpty) "" else translatedDateFormatter(LocalDate.parse(employmentDetails.cessationDate.get))),
-                EmployerEndDateController.show(taxYear, employmentDetails.employmentId),
-                messages(s"$msgKeyGeneric.hiddenText.endDate")
-            )
-        } else {
-            None
-        }
-
-        val payeRef = EmploymentDataForView(
-            messages(msgKeyGeneric + ".payeRef"),
-            Some(employmentDetails.employerRef.getOrElse(messages("common.notProvided"))),
-            PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(s"$msgKeyGeneric.hiddenText.payeRef")
-        )
-
-        val payrollId = EmploymentDataForView(
-            messages(msgKeyGeneric + ".payrollId"),
-            Some(employmentDetails.payrollId.getOrElse(messages("common.notProvided"))),
-            EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
-            messages(s"$msgKeyGeneric.hiddenText.payrollId")
-        )
 
         val payReceived = EmploymentDataForView(
             messages(msgKeyGeneric + ".payReceived"),
@@ -134,14 +108,10 @@
 
         val employmentDataFields = Seq(
             employerName,
-            startDate,
-            didYouLeave,
-            endDate,
             payeRef,
-            payrollId,
+            startDate,
             payReceived,
-            totalTaxToDate
-        )
+            totalTaxToDate)
 
         govukSummaryList(
             SummaryList(
@@ -160,6 +130,64 @@
             )
         )
     }
+
+
+    @if(appConfig.offPayrollWorking){
+
+    <h3 class="govuk-heading-m">@messages(s"employment.employerOpw.title")</h3>
+
+    <p class="govuk-body-m">@messages(s"employment.employmentDetails.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+
+
+    @{
+        val offPayrollWorkingStatus = EmploymentDataForView(
+                messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
+                Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+                controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear),
+                messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
+            )
+
+
+           govukSummaryList(
+            SummaryList(
+                        Seq{summaryListRow(
+                            key = HtmlContent(messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}")),
+                            value = Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                            keyClasses = "govuk-!-width-two-thirds",
+                            actionClasses = "",
+                            actions = if(!isInYear) {
+                                Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
+                            } else Seq.empty
+                        )}
+            )
+        )
+    }
+    }
+    <h4 class="govuk-heading-m">@messages(s"employment.employmentDetails.subHeading.endOfEmploymentDetails")</h4>
+
+      @{
+            val leftEmployer = EmploymentDataForView(
+                    messages(s"employment.employmentDetails.didYouLeave"),
+                    Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+                    controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
+                    messages(s"employment.employmentDetails.hiddenText.didYouLeave")
+                )
+
+
+               govukSummaryList(
+                SummaryList(
+                            Seq{summaryListRow(
+                                key = HtmlContent(messages(s"employment.employmentDetails.didYouLeave")),
+                                value = Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                                keyClasses = "govuk-!-width-two-thirds",
+                                actionClasses = "",
+                                actions = if(!isInYear) {
+                                    Seq((controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.didYouLeave"))))
+                                } else Seq.empty
+                            )}
+                )
+            )
+        }
 
     @if(!isInYear){
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {

@@ -18,6 +18,7 @@ package views.employment
 
 import controllers.details.routes._
 import controllers.employment.routes._
+import controllers.offPayrollWorking.routes._
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -31,59 +32,61 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
   private val employmentId = "employmentId"
 
   object Selectors {
-    val contentTextSelector = "#main-content > div > div > p"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
     val returnToEmployerSelector = "#returnToEmployerBtn"
+    val subHeading1 = "#main-content > div > div > h2"
+    val subHeading2 = "#main-content > div > div > h3"
+    val subHeading3 = "#main-content > div > div > h4"
+    val content = "#main-content > div > div > p"
 
-    def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
+    def summaryListRowFieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
-    def summaryListRowFieldValueSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
+    def summaryListRowFieldValueSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
 
-    def cyaChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a"
+    def cyaChangeLink(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__actions > a"
 
-    def cyaHiddenChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a > span.govuk-visually-hidden"
+    def cyaHiddenChangeLink(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__actions > a " +
+      s"> span.govuk-visually-hidden"
   }
 
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
     val expectedContent: String
-    val expectedInsetText: String
-    val didYouLeaveHiddenText: String
-
-    val changePayReceivedHiddenText: String
-    val employmentStartDateAddHiddenText: String
+    val offPayrollWorkingStatusField: String
   }
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
+    val expectedCaptionEOY: Int => String
     val changeLinkExpected: String
     val continueButtonText: String
-    val employerNameField1: String
+
+    val employerNameField: String
+    val payeReferenceField: String
     val employmentStartDateField: String
-    val didYouLeaveEmployerField: String
-    val employmentEndDateField: String
-    val payeReferenceField2: String
-    val payReceivedField3: String
-    val taxField4: String
-    val payrollIdField: String
+    val payReceivedField: String
+    val taxTakenField: String
+
+    val leftEmployerField: String
+
+    val subHeading1: String
+    val subHeading2: String
+    val subHeading3: String
 
     val employerHiddenText: String
     val payeRefHiddenText: String
     val startDateHiddenText: String
-    val endDateHiddenText: String
-    val payrollIdHiddenText: String
     val payReceivedHiddenText: String
     val totalTaxToDateHiddenText: String
+    val offPayrollWorkingStatusHiddenText: String
+    val leftEmployerHiddenText: String
 
-    val returnToEmployerText: String
     val employmentStartDate: String
     val employmentEndDate: String
-    val didYouLeaveNo: String
-    val didYouLeaveYes: String
     val notProvided: String
   }
 
@@ -92,61 +95,52 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val payeRef = "223/AB12399"
     val payReceived = "£100"
     val taxTakenFromPay = "£200"
-    val payrollId = "12345678"
+    val yes = "Yes"
+    val no = "No"
   }
 
   object CommonExpected extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYearEOY} to 5 April $taxYear"
+    val expectedCaptionEOY: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYearEndOfYearMinusOne} to 5 April $taxYearEOY"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val employerNameField1 = "Employer"
+    val employerNameField = "Employer"
+    val payeReferenceField = "PAYE reference"
     val employmentStartDateField = "Employment start date"
-    val didYouLeaveEmployerField = "Left employer"
-    val employmentEndDateField = "Employment end date"
-    val payeReferenceField2 = "PAYE reference"
-    val payReceivedField3 = "Pay received"
-    val taxField4 = "UK tax taken from pay"
-    val payrollIdField: String = "Payroll ID"
+    val payReceivedField = "Pay received"
+    val taxTakenField = "UK tax taken from pay"
+    val leftEmployerField = "Left employer"
 
-    val employerHiddenText: String = "Change the name of this employer"
-    val payeRefHiddenText: String = "Change the PAYE reference number"
-    val startDateHiddenText: String = "Change the employment start date"
-    val endDateHiddenText: String = "Change the employment end date"
-    val payrollIdHiddenText: String = "Change the payroll ID for this employment"
-    val payReceivedHiddenText: String = "Change the amount of pay received"
-    val totalTaxToDateHiddenText: String = "Change the amount of UK tax taken from pay"
+    val subHeading1 = "Employment details"
+    val subHeading2 = "Off-payroll working (IR35)"
+    val subHeading3 = "End of employment details"
 
+    val employerHiddenText: String = "Change employment details"
+    val payeRefHiddenText: String = "Change PAYE reference"
+    val startDateHiddenText: String = "Change employment start date"
+    val payReceivedHiddenText: String = "Change pay received"
+    val totalTaxToDateHiddenText: String = "Change UK tax taken from pay"
+    val offPayrollWorkingStatusHiddenText: String = "Change off-payroll working (IR35) status"
+    val leftEmployerHiddenText: String = "Change left employer"
 
-    val returnToEmployerText: String = "Return to employer"
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = s"11 March ${taxYearEOY - 1}"
-    val didYouLeaveYes = "Yes"
-    val didYouLeaveNo = "No"
     val notProvided = "Not provided"
   }
 
   object ExpectedIndividual extends SpecificExpectedResults {
     val expectedH1 = "Check your employment details"
     val expectedTitle = "Check your employment details"
-    val expectedContent = "Your employment details are based on the information we already hold about you."
-    val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
-    val employeeFieldName7 = "Payments not on your P60"
-    val employeeFieldName8 = "Amount of payments not on your P60"
-    val changePayReceivedHiddenText: String = "Change the amount of pay received"
-    val employmentStartDateAddHiddenText = "Add employment start date"
+    val expectedContent = "ABC Digital Ltd treated you as an employee for tax purposes and deducted Income Tax and National Insurance contributions from your fees"
+    val offPayrollWorkingStatusField: String = "Do you agree?"
 
-    val didYouLeaveHiddenText: String = "Change if you left the employer in this tax year"
   }
 
   object ExpectedAgent extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment details"
     val expectedTitle = "Check your client’s employment details"
-    val expectedContent = "Your client’s employment details are based on the information we already hold about them."
-    val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
-    val changePayReceivedHiddenText: String = "Change the amount of pay received"
-    val employmentStartDateAddHiddenText = "Add employment start date"
-
-    val didYouLeaveHiddenText: String = "Change if your client left the employer in this tax year"
+    val expectedContent = "ABC Digital Ltd treated your client as an employee for tax purposes and deducted Income Tax and National Insurance contributions from their fees"
+    val offPayrollWorkingStatusField: String = "Does your client agree?"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -162,154 +156,193 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
       val specific = userScenario.specificExpectedResults.get
       val common = userScenario.commonExpectedResults
 
-      "for in year return a fully populated page when all the fields are populated" which {
+      "for in year return a fully populated page when all the fields in employment details are populated" which {
+
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
-
         val htmlFormat = underTest(anEmploymentDetailsViewModel, taxYear = taxYear, isInYear = true)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
-        textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(1))
-        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(common.employmentStartDate, summaryListRowFieldValueSelector(2))
-        textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldValueSelector(3))
-        textOnPageCheck(common.employmentEndDateField, summaryListRowFieldNameSelector(4))
-        textOnPageCheck(common.employmentEndDate, summaryListRowFieldValueSelector(4))
-        textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(5))
-        textOnPageCheck(ContentValues.payeRef, summaryListRowFieldValueSelector(5))
-        textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(6))
-        textOnPageCheck(ContentValues.payrollId, summaryListRowFieldValueSelector(6))
-        textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(7))
-        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(7))
-        textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(8))
-        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(8))
-        buttonCheck(userScenario.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
+        // in year (2024) cannot fill in employment until april (notification banner) but existing data still displays so displays text but no change links
+
+        titleCheck(specific.expectedTitle, userScenario.isWelsh)
+        h1Check(specific.expectedH1)
+        captionCheck(common.expectedCaption(taxYear))
+        textOnPageCheck(common.subHeading1, subHeading1)
+        textOnPageCheck(common.subHeading2, subHeading2)
+        textOnPageCheck(common.subHeading3, subHeading3)
+        textOnPageCheck(specific.expectedContent, content)
+        welshToggleCheck(userScenario.isWelsh)
+
+        textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(5, 1))
+        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(5, 1))
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(5, 2))
+        textOnPageCheck(ContentValues.payeRef, summaryListRowFieldValueSelector(5, 2))
+        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(5, 3))
+        textOnPageCheck(common.employmentStartDate, summaryListRowFieldValueSelector(5, 3))
+        textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(5, 4))
+        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(5, 4))
+        textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(5, 5))
+        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(5, 5))
+        textOnPageCheck(specific.offPayrollWorkingStatusField, summaryListRowFieldNameSelector(8, 1))
+        textOnPageCheck(ContentValues.no, summaryListRowFieldValueSelector(8, 1), "for off-payroll working status")
+        textOnPageCheck(common.leftEmployerField, summaryListRowFieldNameSelector(10, 1))
+        textOnPageCheck(ContentValues.yes, summaryListRowFieldValueSelector(10, 1), "for left employer")
       }
 
+
       "render the in year page with the minimum data items returned" when {
+        import Selectors._
+        val specific = userScenario.specificExpectedResults.get
+        val common = userScenario.commonExpectedResults
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(anEmploymentDetailsViewModel.copy(
-          employerRef = None,
           payrollId = None,
-          didYouLeaveQuestion = Some(false),
+          employerRef = None,
           startDate = None,
-          cessationDate = None,
+          taxablePayToDate = None,
+          totalTaxToDate = None,
+          offPayrollWorkingStatus = Some(false)
         ), taxYear = taxYear, isInYear = true)
+
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
         h1Check(specific.expectedH1)
         captionCheck(common.expectedCaption(taxYear))
-        textOnPageCheck(specific.expectedContent, contentTextSelector)
-        textOnPageCheck(specific.expectedInsetText, insetTextSelector)
+        textOnPageCheck(specific.expectedContent, content)
         welshToggleCheck(userScenario.isWelsh)
-        textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(1))
-        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(2), "for start date")
-        textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldValueSelector(3))
-        textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(4))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4), "for payee reference")
-        textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5), "for payroll")
-        textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(6))
-        textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
+
+        textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(5, 1))
+        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(5, 1))
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(5, 2))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5, 2), "for PAYE ref")
+        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(5, 3))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5, 3), "for start date")
+        textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(5, 4))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5, 4), "for pay recieved")
+        textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(5, 5))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5, 5), "for tax taken")
+        textOnPageCheck(specific.offPayrollWorkingStatusField, summaryListRowFieldNameSelector(8, 1))
+        textOnPageCheck(ContentValues.no, summaryListRowFieldValueSelector(8, 1), "for off-payroll working status")
+        textOnPageCheck(common.leftEmployerField, summaryListRowFieldNameSelector(10, 1))
+        textOnPageCheck(ContentValues.yes, summaryListRowFieldValueSelector(10, 1), "for left employer")
       }
 
       "for end of year return a fully populated page, with change links, when all the fields are populated" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
+        import Selectors._
+        val specific = userScenario.specificExpectedResults.get
+        val common = userScenario.commonExpectedResults
+
         val htmlFormat = underTest(anEmploymentDetailsViewModel, taxYear = taxYearEOY, isInYear = false)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
         h1Check(specific.expectedH1)
-        captionCheck(common.expectedCaption(taxYearEOY))
-        textOnPageCheck(specific.expectedContent, contentTextSelector)
+        captionCheck(common.expectedCaptionEOY(taxYearEOY))
+        textOnPageCheck(common.subHeading1, subHeading1)
+        textOnPageCheck(common.subHeading2, subHeading2)
+        textOnPageCheck(common.subHeading3, subHeading3)
+        textOnPageCheck(specific.expectedContent, content)
         welshToggleCheck(userScenario.isWelsh)
-        textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(1))
-        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(1)))
-        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(common.employmentStartDate, summaryListRowFieldValueSelector(2))
-        linkCheck(s"${common.changeLinkExpected} ${common.startDateHiddenText}", cyaChangeLink(2),
-          EmployerStartDateController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(2)))
-        textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(common.didYouLeaveYes, summaryListRowFieldValueSelector(3))
-        linkCheck(s"${common.changeLinkExpected} ${specific.didYouLeaveHiddenText}", cyaChangeLink(3),
-          DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(3)))
-        textOnPageCheck(common.employmentEndDateField, summaryListRowFieldNameSelector(4))
-        textOnPageCheck(common.employmentEndDate, summaryListRowFieldValueSelector(4))
-        linkCheck(s"${common.changeLinkExpected} ${common.endDateHiddenText}", cyaChangeLink(4),
-          EmployerEndDateController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4)))
-        textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(5))
-        textOnPageCheck(ContentValues.payeRef, summaryListRowFieldValueSelector(5))
-        linkCheck(s"${common.changeLinkExpected} ${common.payeRefHiddenText}", cyaChangeLink(5), PayeRefController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(5)))
-        textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(6))
-        textOnPageCheck(ContentValues.payrollId, summaryListRowFieldValueSelector(6))
-        linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(6), EmployerPayrollIdController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(6)))
-        textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(7))
-        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(7))
-        linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}",
-          cyaChangeLink(7), EmployerPayAmountController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(7)))
-        textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(8))
-        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(8))
-        linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(8), EmploymentTaxController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(8)))
+
+        textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(4, 1))
+        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(4, 1))
+        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(4,1), EmployerNameController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,1)))
+
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(4, 2))
+        textOnPageCheck(ContentValues.payeRef, summaryListRowFieldValueSelector(4, 2))
+        linkCheck(s"${common.changeLinkExpected} ${common.payeRefHiddenText}", cyaChangeLink(4,2), PayeRefController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,2)))
+
+        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(4, 3))
+        textOnPageCheck(common.employmentStartDate, summaryListRowFieldValueSelector(4, 3))
+        linkCheck(s"${common.changeLinkExpected} ${common.startDateHiddenText}", cyaChangeLink(4,3), EmployerStartDateController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,3)))
+
+        textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(4, 4))
+        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(4, 4))
+        linkCheck(s"${common.changeLinkExpected} ${common.payReceivedHiddenText}", cyaChangeLink(4,4), EmployerPayAmountController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,4)))
+
+        textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(4, 5))
+        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(4, 5))
+        linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(4,5), EmploymentTaxController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,5)))
+
+
+        "for in year return a fully populated page when off payroll work status field is populated" which {
+          textOnPageCheck(specific.offPayrollWorkingStatusField, summaryListRowFieldNameSelector(7, 1))
+          textOnPageCheck(ContentValues.no, summaryListRowFieldValueSelector(7, 1))
+          linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingStatusHiddenText}", cyaChangeLink(7,1), EmployerOffPayrollWorkingController.show(taxYearEOY).url,
+            Some(cyaHiddenChangeLink(7,1)))
+
+        }
+
+        "for in year return a fully populated page when left employer field is populated" which {
+          textOnPageCheck(common.leftEmployerField, summaryListRowFieldNameSelector(9, 1))
+          textOnPageCheck(ContentValues.yes, summaryListRowFieldValueSelector(9, 1))
+          linkCheck(s"${common.changeLinkExpected} ${common.leftEmployerHiddenText}", cyaChangeLink(9,1), DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url,
+            Some(cyaHiddenChangeLink(9,1)))
+
+        }
+
       }
 
-      "for end of year return a fully populated page, with change links when minimum data is returned" which {
+      "for end of year return a fully populated page, with change links when minimum data is returned" when {
+        import Selectors._
+        val specific = userScenario.specificExpectedResults.get
+        val common = userScenario.commonExpectedResults
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(anEmploymentDetailsViewModel.copy(
-          employerRef = None,
           payrollId = None,
-          didYouLeaveQuestion = Some(false),
+          employerRef = None,
           startDate = None,
-          cessationDate = None,
+          taxablePayToDate = None,
+          totalTaxToDate = None,
+          offPayrollWorkingStatus = Some(false)
         ), taxYear = taxYearEOY, isInYear = false)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
         h1Check(specific.expectedH1)
-        captionCheck(common.expectedCaption(taxYearEOY))
-        textOnPageCheck(specific.expectedContent, contentTextSelector)
+        captionCheck(common.expectedCaptionEOY(taxYearEOY))
+        textOnPageCheck(specific.expectedContent, content)
         welshToggleCheck(userScenario.isWelsh)
-        textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(1))
-        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(2), "for start date")
-        textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldValueSelector(3))
-        textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(4))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4), "for payee reference")
-        textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5), "for payroll")
-        textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-        textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(6))
-        textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-        textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
+
+        textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(4, 1))
+        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(4, 1))
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(4, 2))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 2), "for PAYE ref")
+        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(4, 3))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 3), "for start date")
+        textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(4, 4))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 4), "for pay recieved")
+        textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(4, 5))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 5), "for tax taken")
+        textOnPageCheck(specific.offPayrollWorkingStatusField, summaryListRowFieldNameSelector(7, 1))
+        textOnPageCheck(ContentValues.no, summaryListRowFieldValueSelector(7, 1), "for off-payroll working status")
+        textOnPageCheck(common.leftEmployerField, summaryListRowFieldNameSelector(9, 1))
+        textOnPageCheck(ContentValues.yes, summaryListRowFieldValueSelector(9, 1), "for left employer")
       }
 
-      "render the end of year page with no notification banner when there are data items missing" which {
+      "render the end of year page with no notification banner when there are data items missing" when {
+        import Selectors._
+        val specific = userScenario.specificExpectedResults.get
+        val common = userScenario.commonExpectedResults
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(anEmploymentDetailsViewModel.copy(
+          payrollId = None,
           employerRef = None,
           startDate = None,
-          payrollId = None,
-          didYouLeaveQuestion = Some(false),
           taxablePayToDate = None,
           totalTaxToDate = None,
+          offPayrollWorkingStatus = Some(false),
           isUsingCustomerData = true
         ), taxYear = taxYearEOY, isInYear = false)
 
@@ -317,33 +350,37 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
 
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
         h1Check(specific.expectedH1)
-        captionCheck(common.expectedCaption(taxYearEOY))
+        captionCheck(common.expectedCaptionEOY(taxYearEOY))
+        textOnPageCheck(specific.expectedContent, content)
         welshToggleCheck(userScenario.isWelsh)
-        textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
-        textOnPageCheck(anEmploymentDetailsViewModel.employerName, summaryListRowFieldValueSelector(1))
-        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(1), EmployerNameController.show(taxYearEOY, employmentId).url)
 
-        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(2), "employment start date")
-        textOnPageCheck(common.didYouLeaveEmployerField, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(common.didYouLeaveNo, summaryListRowFieldValueSelector(3))
-        linkCheck(s"${common.changeLinkExpected} ${specific.didYouLeaveHiddenText}",
-          cyaChangeLink(3), DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url)
-        textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(4))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4), "paye ref")
+        textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(4, 1))
+        textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(4, 1))
+        linkCheck(s"${common.changeLinkExpected} ${common.employerHiddenText}", cyaChangeLink(4,1), EmployerNameController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(4,1)))
 
-        textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(5), "payroll id")
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(4, 2))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 2), "for PAYE ref")
+        textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(4, 3))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 3), "for start date")
+        textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(4, 4))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 4), "for pay recieved")
+        textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(4, 5))
+        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(4, 5), "for tax taken")
 
-        textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(6), "pay received")
+        textOnPageCheck(specific.offPayrollWorkingStatusField, summaryListRowFieldNameSelector(7, 1))
+        textOnPageCheck(ContentValues.no, summaryListRowFieldValueSelector(7, 1), "for off-payroll working status")
+        linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingStatusHiddenText}", cyaChangeLink(7, 1), EmployerOffPayrollWorkingController.show(taxYearEOY).url,
+          Some(cyaHiddenChangeLink(7, 1)))
 
-        textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
-        textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(7), "tax taken from pay")
+        textOnPageCheck(common.leftEmployerField, summaryListRowFieldNameSelector(9, 1))
+        textOnPageCheck(ContentValues.yes, summaryListRowFieldValueSelector(9, 1), "for left employer")
+        linkCheck(s"${common.changeLinkExpected} ${common.leftEmployerHiddenText}", cyaChangeLink(9, 1), DidYouLeaveEmployerController.show(taxYearEOY, employmentId).url,
+          Some(cyaHiddenChangeLink(9, 1)))
 
         buttonCheck(common.continueButtonText, continueButtonSelector)
         formPostLinkCheck(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
+
     }
-  }
+    }
 }

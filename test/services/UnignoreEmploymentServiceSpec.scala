@@ -46,11 +46,15 @@ class UnignoreEmploymentServiceSpec extends UnitTest
 
   ".unignoreEmployment" should {
     "return a successful result" in {
-      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, anEmploymentDetailsViewModel, Some(aBenefits), Some(aDeductions))
+      val unignoreEmploymentViewModel = anEmploymentDetailsViewModel.copy(didYouLeaveQuestion = Some(true))
+
+      val unignoreEmploymentAudit = UnignoreEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, unignoreEmploymentViewModel
+        ,Some(aBenefits), Some(aDeductions))
 
       mockAuditSendEvent(unignoreEmploymentAudit.toAuditModel)
       mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Right(()))
-      verifySubmitEvent(anUnignoreEmploymentNRSModel)
+
+      verifySubmitEvent(anUnignoreEmploymentNRSModel.copy(employmentData = unignoreEmploymentViewModel))
 
       await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Right(())
     }

@@ -215,6 +215,10 @@ employment.unignoreEmployment.addANewEmployer = Ychwanegwch gyfnod newydd o gyfl
 employment.unignoreEmployment.error = Dewiswch gyfnod cyflogaeth neu ychwanegwch un newydd
 
 #################       Check Employment details messages        ########################################
+employment.employmentDetails.subHeading.offPayrollWorking = Gweithio oddi ar y gyflogres (IR35)
+employment.employmentDetails.subHeading.endOfEmploymentDetails = Manylion diwedd y gyflogaeth
+employment.employmentDetails.p1.individual = Gwnaeth ABC Digital Ltd eich trin fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd
+employment.employmentDetails.p1.agent = Gwnaeth ABC Digital Ltd drin eich cleient fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’i ffioedd
 
 employment.employmentDetails.bannerHeading = Mae’n rhaid i chi ychwanegu manylion cyflogaeth sydd ar goll:
 employment.employmentDetails.closeCompany =  Cwmni caeedig
@@ -223,15 +227,13 @@ employment.employmentDetails.content.agent = Mae manylion cyflogaeth eich cleien
 employment.employmentDetails.content.individual = Mae’ch manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
 employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rôl y cyfarwyddwr
 
-employment.employmentDetails.hiddenText.employer = Newid enw’r cyflogwr hwn
-employment.employmentDetails.hiddenText.payeRef = Newid y cyfeirnod TWE
+employment.employmentDetails.hiddenText.employer = Newid manylion cyflogaeth
+employment.employmentDetails.hiddenText.payeRef = Newid cyfeirnod TWE
 employment.employmentDetails.hiddenText.startDate = Newid dyddiad dechrau’r gyflogaeth
-employment.employmentDetails.hiddenText.endDate = Newid dyddiad dod i ben y gyflogaeth
-employment.employmentDetails.hiddenText.payrollId = Newid ID y gyflogres ar gyfer y gyflogaeth hon
-employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwyd
-employment.employmentDetails.hiddenText.totalTaxToDate = Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog
-employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon
-employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon
+employment.employmentDetails.hiddenText.payReceived = Newid cyflog a gafwyd
+employment.employmentDetails.hiddenText.totalTaxToDate = Newid treth y DU a dynnwyd o’r cyflog
+employment.employmentDetails.hiddenText.didYouLeave = Newid wedi gadael y cyflogwr
+employment.employmentDetails.hiddenText.offPayrollWorkingStatus = Newid statws gweithio oddi ar y gyflogres (IR35)
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Newidiwch os cafodd eich cleient daliadau sydd ddim ar ei P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Newidiwch os cawsoch daliadau sydd ddim ar eich P60
@@ -251,6 +253,8 @@ employment.employmentDetails.endDate = Dyddiad dod i ben y gyflogaeth
 employment.employmentDetails.tipsAndOtherPayments.agent = Swm y taliadau sydd ddim ar P60 eich cleient
 employment.employmentDetails.tipsAndOtherPayments.individual = Swm y taliadau sydd ddim ar eich P60
 employment.employmentDetails.totalTaxToDate = Treth y DU a dynnwyd o’r cyflog
+employment.employmentDetails.offPayrollWorkingStatus.individual = A ydych yn cytuno?
+employment.employmentDetails.offPayrollWorkingStatus.agent = A yw’ch cleient yn cytuno?
 
 #################       Employment name messages        ########################################
 

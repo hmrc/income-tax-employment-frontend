@@ -41,7 +41,8 @@ class ViewEmploymentDetailsSpec extends UnitTest with TaxYearProvider {
              |		"cessationDate": "${taxYearEOY - 1}-02-12",
              |		"taxablePayToDate": 34234.15,
              |		"totalTaxToDate": 6782.92,
-             |		"isUsingCustomerData": false
+             |		"isUsingCustomerData": false,
+             |    "offPayrollWorkingStatus": false
              |	}
              |}""".stripMargin)
 
@@ -58,7 +59,8 @@ class ViewEmploymentDetailsSpec extends UnitTest with TaxYearProvider {
             cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false
+            isUsingCustomerData = false,
+            offPayrollWorkingStatus = Some(false)
           ))
         Json.toJson(auditModel) shouldBe json
       }
