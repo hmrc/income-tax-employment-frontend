@@ -176,6 +176,17 @@ employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gy
 employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
 employment.tailorEmployment.button = Cadarnhau
 
+#################       Employer off payroll working messages        ########################################
+
+employment.employerOpw.title = Off-payroll working (IR35)
+employment.employerOpw.p1 = ABC Digital Ltd has told HMRC you work for them via an intermediary and are subject to the off-payroll rules.
+employment.employerOpw.p2 = This means ABC Digital Ltd:
+employment.employerOpw.b1 = treated you as an employee for tax purposes
+employment.employerOpw.b2 = deducted Income Tax and National Insurance contributions from your fees
+employment.employerOpw.link = Find out more about off-payroll working (opens in a new tab)
+employment.employerOpw.heading = Do you agree with ABC Digital's decision?
+employment.employerOpw.button = Confirm
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?
