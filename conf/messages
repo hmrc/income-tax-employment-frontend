@@ -191,6 +191,16 @@ employment.employerOpw.link = Find out more about off-payroll working (opens in 
 employment.employerOpw.heading = Do you agree with ABC Digital's decision?
 employment.employerOpw.button = Confirm
 
+employment.employerOpw.warning.title.individual = Do you want to change your employment details?
+employment.employerOpw.warning.heading.individual = Do you want to change your employment details?
+employment.employerOpw.warning.title.agent = Do you want to change your client's employment details?
+employment.employerOpw.warning.heading.agent = Do you want to change your client's employment details?
+employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
+employment.employerOpw.warning.b1 = Off-payroll working status
+employment.employerOpw.warning.p2 = HMRC may review this change.
+employment.employerOpw.warning.button = Confirm
+employment.employerOpw.warning.cancel = Cancel
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Which period of employment do you want to add?

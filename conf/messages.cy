@@ -187,6 +187,16 @@ employment.employerOpw.link = Find out more about off-payroll working (opens in 
 employment.employerOpw.heading = Do you agree with ABC Digital's decision?
 employment.employerOpw.button = Confirm
 
+employment.employerOpw.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
+employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
+employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
+employment.employerOpw.warning.button = Cadarnhau
+employment.employerOpw.warning.cancel = Canslo
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?
