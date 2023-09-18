@@ -27,10 +27,10 @@ import views.html.offPayrollWorking.ChangeYourEmployeeDetailsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChangeYourEmployeeDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                                    authAction: AuthorisedAction,
-                                                    view: ChangeYourEmployeeDetailsView)
-                                                   (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+class ChangeYourEmploymentDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                      authAction: AuthorisedAction,
+                                                      view: ChangeYourEmployeeDetailsView)
+                                                     (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>

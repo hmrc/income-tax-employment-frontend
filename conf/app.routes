@@ -348,7 +348,7 @@ POST        /:taxYear/remove-all-employments                                    
 GET         /:taxYear/employer-off-payroll-working                                         controllers.offPayrollWorking.EmployerOffPayrollWorkingController.show(taxYear: Int)
 POST        /:taxYear/employer-off-payroll-working                                         controllers.offPayrollWorking.EmployerOffPayrollWorkingController.submit(taxYear: Int)
 
-GET         /:taxYear/employer-off-payroll-working-warning                                 controllers.offPayrollWorking.ChangeYourEmployeeDetailsController.show(taxYear: Int)
+GET         /:taxYear/employer-off-payroll-working-warning                                 controllers.offPayrollWorking.ChangeYourEmploymentDetailsController.show(taxYear: Int)
 
 ###########################     Error pages     ####################################
 
