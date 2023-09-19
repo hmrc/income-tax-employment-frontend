@@ -22,14 +22,14 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.offPayrollWorking.ChangeYourEmployeeDetailsView
+import views.html.offPayrollWorking.ChangeYourEmploymentDetailsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeYourEmploymentDetailsController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthorisedAction,
-                                                      view: ChangeYourEmployeeDetailsView)
+                                                      view: ChangeYourEmploymentDetailsView)
                                                      (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
