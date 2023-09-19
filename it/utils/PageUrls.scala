@@ -284,6 +284,10 @@ object PageUrls extends IntegrationTest {
 
   def removeAllEmploymentUrl(taxYear: Int): String = s"$appUrl/$taxYear/remove-all-employments"
 
+
+  //  *****************     Off Payroll Working pages      ***************************
+  def changeYourEmploymentDetailsUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-off-payroll-working-warning"
+
 }
 
 //scalastyle:on number.of.methods
