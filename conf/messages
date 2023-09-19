@@ -193,8 +193,8 @@ employment.employerOpw.button = Confirm
 
 employment.employerOpw.warning.title.individual = Do you want to change your employment details?
 employment.employerOpw.warning.heading.individual = Do you want to change your employment details?
-employment.employerOpw.warning.title.agent = Do you want to change your client's employment details?
-employment.employerOpw.warning.heading.agent = Do you want to change your client's employment details?
+employment.employerOpw.warning.title.agent = Do you want to change your client’s employment details?
+employment.employerOpw.warning.heading.agent = Do you want to change your client’s employment details?
 employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
 employment.employerOpw.warning.b1 = Off-payroll working status
 employment.employerOpw.warning.p2 = HMRC may review this change.

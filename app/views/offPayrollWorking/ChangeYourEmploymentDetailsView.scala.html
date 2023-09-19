@@ -41,7 +41,7 @@
     <p class="govuk-body">@messages("employment.employerOpw.warning.p2")</p>
 
     <div class="govuk-button-group">
-        @button(href = Some(continueUrl))
+        @button(alternativeText = messages("employment.employerOpw.warning.button"), href = Some(continueUrl))
         @link(cancelUrl, messages("employment.employerOpw.warning.cancel"))
     </div>
 
