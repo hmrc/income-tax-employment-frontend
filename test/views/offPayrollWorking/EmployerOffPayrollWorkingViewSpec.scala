@@ -44,87 +44,81 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
   }
 
   trait SpecificExpectedResults {
-    val expectedTitle: String
-    val expectedHeading: String
     val expectedRadioHeading: String
     val expectedParagraph1: String
     val expectedBullet1: String
     val expectedBullet2: String
-    val expectedErrorTitle: String
     val expectedError: String
   }
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
+    val expectedTitle: String
+    val expectedHeading: String
     val yesText: String
     val noText: String
     val expectedParagraph2: String
     val expectedLink: String
     val expectedButtonText: String
     val expectedHelpLinkText: String
+    val expectedErrorTitle: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     override val expectedCaption: Int => String = (taxYear: Int) => s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    override val expectedTitle: String = "Off-payroll working (IR35)"
+    override val expectedHeading: String = "Off-payroll working (IR35)"
     override val yesText: String = "Yes"
     override val noText: String = "No"
     override val expectedParagraph2: String = "This means ABC Digital Ltd:"
     override val expectedLink: String = "Find out more about off-payroll working (opens in a new tab)"
+    override val expectedErrorTitle = s"Error: $expectedTitle"
     override val expectedButtonText: String = "Continue"
     override val expectedHelpLinkText: String = "Get help with this page"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val expectedCaption: Int => String = (taxYear: Int) => s"Cyflogaeth TWE ar gyfer 6 Ebrill ${taxYear - 1} i 5 Ebrill $taxYear"
+    override val expectedTitle: String = "Gweithio oddi ar y gyflogres (IR35)"
+    override val expectedHeading: String = "Gweithio oddi ar y gyflogres (IR35)"
     override val yesText: String = "Iawn"
     override val noText: String = "Na"
     override val expectedParagraph2: String = "Mae hyn yn golygu:"
     override val expectedLink: String = "Dysgwch ragor am weithio oddi ar y gyflogres (yn agor tab newydd)"
+    override val expectedErrorTitle = s"Gwall: $expectedTitle"
     override val expectedButtonText: String = "Yn eich blaen"
     override val expectedHelpLinkText: String = "Help gyda’r dudalen hon"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    override val expectedTitle: String = "Off-payroll working (IR35)"
-    override val expectedRadioHeading: String = "Does your client agree with ABC Digitals decision?"
-    override val expectedHeading: String = "Off-payroll working (IR35)"
+    override val expectedRadioHeading: String = "Do you agree with ABC Digital’s decision?"
     override val expectedParagraph1: String = "ABC Digital Ltd has told HMRC you work for them via an intermediary and are subject to the off-payroll rules."
     override val expectedBullet1: String = "treated you as an employee for tax purposes"
     override val expectedBullet2: String = "deducted Income Tax and National Insurance contributions from your fees"
-    override val expectedErrorTitle = s"Error: $expectedTitle"
     override val expectedError = "Select yes if you agree with ABC Digital’s decision"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    override val expectedTitle: String = "Gweithio oddi ar y gyflogres (IR35)"
     override val expectedRadioHeading: String = "A ydych yn cytuno â phenderfyniad ABC Digital Ltd?"
-    override val expectedHeading: String = "Gweithio oddi ar y gyflogres (IR35)"
     override val expectedParagraph1: String = "Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, eich bod yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
     override val expectedBullet1: String = "gwnaeth ABC Digital Ltd eich trin fel cyflogai at ddibenion treth"
     override val expectedBullet2: String = "gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd"
-    override val expectedErrorTitle = s"Gwall: $expectedTitle"
     override val expectedError = "Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad ABC Digital Ltd"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    override val expectedTitle: String = "Off-payroll working (IR35)"
     override val expectedRadioHeading: String = "Does your client agree with ABC Digital’s decision?"
-    override val expectedHeading: String = "Off-payroll working (IR35)"
     override val expectedParagraph1: String = "ABC Digital Ltd has told HMRC your client works for them via an intermediary and is subject to the off-payroll rules."
     override val expectedBullet1: String = "treated your client as an employee for tax purposes"
     override val expectedBullet2: String = "deducted Income Tax and National Insurance contributions from their fees"
-    override val expectedErrorTitle = s"Error: $expectedTitle"
     override val expectedError = "Select yes if your client agrees with ABC Digital’s decision"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    override val expectedTitle: String = "Gweithio oddi ar y gyflogres (IR35)"
     override val expectedRadioHeading: String = "A yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd?"
-    override val expectedHeading: String = "Gweithio oddi ar y gyflogres (IR35)"
     override val expectedParagraph1: String = "Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, fod eich cleient yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
     override val expectedBullet1: String = "gwnaeth ABC Digital Ltd drin eich cleient fel cyflogai at ddibenion treth"
     override val expectedBullet2: String = "gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o ffioedd eich cleient"
-    override val expectedErrorTitle = s"Gwall: $expectedTitle"
     override val expectedError = "Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd"
   }
 
@@ -150,8 +144,8 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        titleCheck(userScenario.commonExpectedResults.expectedTitle, userScenario.isWelsh)
+        h1Check(userScenario.commonExpectedResults.expectedHeading)
         captionCheck(userScenario.commonExpectedResults.expectedCaption(taxYearEOY))
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph1, paragraph1)
         textOnPageCheck(expectedParagraph2, paragraph2)
@@ -175,8 +169,8 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         import Selectors._
         import userScenario.commonExpectedResults._
 
-        titleCheck(userScenario.specificExpectedResults.get.expectedErrorTitle, userScenario.isWelsh)
-        h1Check(userScenario.specificExpectedResults.get.expectedHeading)
+        titleCheck(userScenario.commonExpectedResults.expectedErrorTitle, userScenario.isWelsh)
+        h1Check(userScenario.commonExpectedResults.expectedHeading)
         captionCheck(expectedCaption(taxYearEOY))
         textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph1, paragraph1)
         textOnPageCheck(expectedParagraph2, paragraph2)
