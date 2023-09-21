@@ -184,7 +184,8 @@ employment.employerOpw.warning.tax.title.agent = Do you want to change your clie
 employment.employerOpw.warning.tax.heading.agent = Do you want to change your client’s employment details?
 employment.employerOpw.warning.tax.p1 = You are about to change information ABC Digital sent to HMRC:
 employment.employerOpw.warning.tax.b1 = UK tax taken from pay
-employment.employerOpw.warning.tax.p2 = This change affects tax you owe and will be reviewed by HMRC.
+employment.employerOpw.warning.tax.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
+employment.employerOpw.warning.tax.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
 employment.employerOpw.warning.tax.button = Confirm
 employment.employerOpw.warning.tax.cancel = Cancel
 

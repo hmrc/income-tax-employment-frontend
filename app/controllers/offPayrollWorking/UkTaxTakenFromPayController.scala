@@ -40,13 +40,16 @@ class UkTaxTakenFromPayController @Inject()(mcc: MessagesControllerComponents,
     val titleIndividual = "employment.employerOpw.warning.tax.title.individual"
     val titleAgent = "employment.employerOpw.warning.tax.title.agent"
 
+    val p2Individual = "employment.employerOpw.warning.tax.p2.individual"
+    val p2Agent = "employment.employerOpw.warning.tax.p2.agent"
+
     val cancelUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear) //TODO: This needs to be changed when Samuel's ticket is merged in
     val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
 
     if (request.user.isAgent) {
-      Future.successful(Ok(view(taxYear, titleAgent, headingAgent, continueUrl, cancelUrl)))
+      Future.successful(Ok(view(taxYear, titleAgent, headingAgent, p2Agent, continueUrl, cancelUrl)))
     } else {
-      Future.successful(Ok(view(taxYear, titleIndividual, headingIndividual, continueUrl, cancelUrl)))
+      Future.successful(Ok(view(taxYear, titleIndividual, headingIndividual, p2Individual, continueUrl, cancelUrl)))
     }
   }
 

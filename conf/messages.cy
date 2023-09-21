@@ -184,7 +184,8 @@ employment.employerOpw.warning.tax.title.agent = A ydych am newid manylion cyflo
 employment.employerOpw.warning.tax.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
 employment.employerOpw.warning.tax.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 employment.employerOpw.warning.tax.b1 = Treth y DU a dynnwyd o’r cyflog
-employment.employerOpw.warning.tax.p2 = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
+employment.employerOpw.warning.tax.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
+employment.employerOpw.warning.tax.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
 employment.employerOpw.warning.tax.button = Cadarnhau
 employment.employerOpw.warning.tax.cancel = Canslo
 

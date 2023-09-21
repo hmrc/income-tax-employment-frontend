@@ -36,12 +36,12 @@ class UkTaxTakenFromPayViewSpec extends ViewUnitTest {
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedHeading: String
+    val expectedParagraph2: String
   }
 
   trait CommonExpectedResults {
     val expectedParagraph1: String
     val expectedBullet1: String
-    val expectedParagraph2: String
     val expectedButtonText: String
     val cancelLinkText: String
   }
@@ -49,28 +49,30 @@ class UkTaxTakenFromPayViewSpec extends ViewUnitTest {
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "Do you want to change your employment details?"
     val expectedHeading = "Do you want to change your employment details?"
+    val expectedParagraph2 = "This change affects tax you owe and will be reviewed by HMRC."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "A ydych am newid eich manylion cyflogaeth?"
     val expectedHeading = "A ydych am newid eich manylion cyflogaeth?"
+    val expectedParagraph2 = "Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "Do you want to change your client’s employment details?"
     val expectedHeading = "Do you want to change your client’s employment details?"
+    val expectedParagraph2 = "This change affects tax your client owes and will be reviewed by HMRC."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "A ydych am newid manylion cyflogaeth eich cleient?"
     val expectedHeading = "A ydych am newid manylion cyflogaeth eich cleient?"
-
+    val expectedParagraph2 = "Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedParagraph1 = "You are about to change information ABC Digital sent to HMRC:"
     val expectedBullet1 = "UK tax taken from pay"
-    val expectedParagraph2 = "This change affects tax you owe and will be reviewed by HMRC."
     val expectedButtonText = "Confirm"
     val cancelLinkText = "Cancel"
   }
@@ -78,7 +80,6 @@ class UkTaxTakenFromPayViewSpec extends ViewUnitTest {
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedParagraph1 = "Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:"
     val expectedBullet1 = "Treth y DU a dynnwyd o’r cyflog"
-    val expectedParagraph2 = "Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu."
     val expectedButtonText = "Cadarnhau"
     val cancelLinkText = "Canslo"
   }
@@ -106,6 +107,7 @@ class UkTaxTakenFromPayViewSpec extends ViewUnitTest {
         val htmlFormat = underTest(taxYear,
           s"employment.employerOpw.warning.tax.title.${if (userScenario.isAgent) "agent" else "individual"}",
           s"employment.employerOpw.warning.tax.heading.${if (userScenario.isAgent) "agent" else "individual"}",
+          s"employment.employerOpw.warning.tax.p2.${if (userScenario.isAgent) "agent" else "individual"}",
           continueUrl,
           cancelUrl
         )
@@ -116,7 +118,7 @@ class UkTaxTakenFromPayViewSpec extends ViewUnitTest {
         h1Check(userScenario.specificExpectedResults.get.expectedHeading)
         textOnPageCheck(expectedParagraph1, paragraph1Selector)
         textOnPageCheck(expectedBullet1, bullet1Selector)
-        textOnPageCheck(expectedParagraph2, paragraph2Selector)
+        textOnPageCheck(userScenario.specificExpectedResults.get.expectedParagraph2, paragraph2Selector)
         buttonCheck(expectedButtonText, continueButtonSelector)
         linkCheck(cancelLinkText, cancelLinkSelector, cancelUrl)
         welshToggleCheck(userScenario.isWelsh)
