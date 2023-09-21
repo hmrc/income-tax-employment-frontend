@@ -42,7 +42,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends ConnectorIntegrationTest {
   private val createUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     Some(employmentId),
     employment = Some(CreateUpdateEmployment(Some("123/12345"), "Misery Loves Company", s"${taxYearEOY-1}-11-11")),
-    employmentData = Some(CreateUpdateEmploymentData(CreateUpdatePay(564563456345.55, 34523523454.44), benefitsInKind = anEmploymentBenefits.benefits)),
+    employmentData = Some(CreateUpdateEmploymentData(CreateUpdatePay(564563456345.55, 34523523454.44), benefitsInKind = anEmploymentBenefits.benefits, offPayrollWorker = Some(true))),
     hmrcEmploymentIdToIgnore = None
   )
 
