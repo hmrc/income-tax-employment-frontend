@@ -176,6 +176,18 @@ employment.tailorEmployment.b1 = change details of your Income Tax Return includ
 employment.tailorEmployment.b2 = delete information you have entered about employers and expenses
 employment.tailorEmployment.button = Confirm
 
+#################       Employer off payroll working messages        ########################################
+
+employment.employerOpw.warning.tax.title.individual = Do you want to change your employment details?
+employment.employerOpw.warning.tax.heading.individual = Do you want to change your employment details?
+employment.employerOpw.warning.tax.title.agent = Do you want to change your client’s employment details?
+employment.employerOpw.warning.tax.heading.agent = Do you want to change your client’s employment details?
+employment.employerOpw.warning.tax.p1 = You are about to change information ABC Digital sent to HMRC:
+employment.employerOpw.warning.tax.b1 = UK tax taken from pay
+employment.employerOpw.warning.tax.p2 = This change affects tax you owe and will be reviewed by HMRC.
+employment.employerOpw.warning.tax.button = Confirm
+employment.employerOpw.warning.tax.cancel = Cancel
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Which period of employment do you want to add?
