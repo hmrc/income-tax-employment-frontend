@@ -176,6 +176,19 @@ employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gy
 employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
 employment.tailorEmployment.button = Cadarnhau
 
+#################       Employer off payroll working messages        ########################################
+
+employment.employerOpw.warning.payReceived.title.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.payReceived.heading.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.payReceived.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.payReceived.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.payReceived.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
+employment.employerOpw.warning.payReceived.b1 = Cyflog a gafwyd
+employment.employerOpw.warning.payReceived.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
+employment.employerOpw.warning.payReceived.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
+employment.employerOpw.warning.payReceived.button = Cadarnhau
+employment.employerOpw.warning.payReceived.cancel = Canslo
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?
