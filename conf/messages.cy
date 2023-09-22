@@ -176,6 +176,22 @@ employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gy
 employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
 employment.tailorEmployment.button = Cadarnhau
 
+#################       Employer off payroll working messages        ########################################
+
+employment.employerOpw.title = Gweithio oddi ar y gyflogres (IR35)
+employment.employerOpw.p1.individual = Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, eich bod yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres.
+employment.employerOpw.p2 = Mae hyn yn golygu:
+employment.employerOpw.b1.individual = gwnaeth ABC Digital Ltd eich trin fel cyflogai at ddibenion treth
+employment.employerOpw.b2.individual = gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd
+employment.employerOpw.link = Dysgwch ragor am weithio oddi ar y gyflogres (yn agor tab newydd)
+employment.employerOpw.heading.individual = A ydych yn cytuno â phenderfyniad ABC Digital Ltd?
+employment.employerOpw.p1.agent = Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, fod eich cleient yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres.
+employment.employerOpw.b1.agent = gwnaeth ABC Digital Ltd drin eich cleient fel cyflogai at ddibenion treth
+employment.employerOpw.b2.agent = gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o ffioedd eich cleient
+employment.employerOpw.heading.agent = A yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd?
+employment.employerOpw.error.individual = Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad ABC Digital Ltd
+employment.employerOpw.error.agent = Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Pa gyfnod o gyflogaeth ydych am ei ychwanegu?

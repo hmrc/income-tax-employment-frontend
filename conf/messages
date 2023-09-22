@@ -176,6 +176,22 @@ employment.tailorEmployment.b1 = change details of your Income Tax Return includ
 employment.tailorEmployment.b2 = delete information you have entered about employers and expenses
 employment.tailorEmployment.button = Confirm
 
+#################       Employer off payroll working messages        ########################################
+
+employment.employerOpw.title = Off-payroll working (IR35)
+employment.employerOpw.p1.individual = ABC Digital Ltd has told HMRC you work for them via an intermediary and are subject to the off-payroll rules.
+employment.employerOpw.p2 = This means ABC Digital Ltd:
+employment.employerOpw.b1.individual = treated you as an employee for tax purposes
+employment.employerOpw.b2.individual = deducted Income Tax and National Insurance contributions from your fees
+employment.employerOpw.link = Find out more about off-payroll working (opens in a new tab)
+employment.employerOpw.heading.individual = Do you agree with ABC Digital’s decision?
+employment.employerOpw.p1.agent = ABC Digital Ltd has told HMRC your client works for them via an intermediary and is subject to the off-payroll rules.
+employment.employerOpw.b1.agent = treated your client as an employee for tax purposes
+employment.employerOpw.b2.agent = deducted Income Tax and National Insurance contributions from their fees
+employment.employerOpw.heading.agent = Does your client agree with ABC Digital’s decision?
+employment.employerOpw.error.individual = Select yes if you agree with ABC Digital’s decision
+employment.employerOpw.error.agent = Select yes if your client agrees with ABC Digital’s decision
+
 #################       Select employer messages        ########################################
 
 employment.unignoreEmployment.title = Which period of employment do you want to add?
