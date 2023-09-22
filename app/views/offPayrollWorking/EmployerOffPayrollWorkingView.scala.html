@@ -35,41 +35,35 @@
 @(form: Form[Boolean], taxYear: Int)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages("employment.employerOpw.title")}
-@headingForUse = @{messages("employment.employerOpw.heading")}
+@headingForUse = @{messages(s"employment.employerOpw.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors, isAgent = request.user.isAgent) {
 
-    @errorSummary(form.errors.distinct)
-
+@errorSummary(form.errors.distinct)
 
 @heading(titleForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)))
 
-<p class="govuk-body" >@messages(s"employment.employerOpw.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body" id="employment-opw-paragraph-1">@messages(s"employment.employerOpw.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body" id="employment-opw-paragraph-2">@messages(s"employment.employerOpw.p2")</p>
+    <ul class="govuk-body govuk-list govuk-list--bullet">
+        <li>@messages(s"employment.employerOpw.b1.${if(request.user.isAgent) "agent" else "individual"}")</li>
+        <li>@messages(s"employment.employerOpw.b2.${if(request.user.isAgent) "agent" else "individual"}")</li>
+    </ul>
 
-<p class="govuk-body" >@messages(s"employment.employerOpw.p2.${if(request.user.isAgent) "agent" else "individual"}")</p>
-
-<ul class="govuk-body govuk-list govuk-list--bullet">
-    <li>@messages(s"employment.employerOpw.b1.${if(request.user.isAgent) "agent" else "individual"}")</li>
-    <li>@messages(s"employment.employerOpw.b2.${if(request.user.isAgent) "agent" else "individual"}")</li>
-</ul>
-
-<p class="govuk-body">
-    <a href=https://www.gov.uk/government/publications/gains-on-uk-life-insurance-policies-hs320-self-assessment-helpsheet/hs320-gains-on-uk-life-insurance-policies-2022
-       class="govuk-link govuk-link--no-visited-state" id="employment-OPW-link-1" target="_blank">
-        @messages("employment.employerOpw.link")
-    </a>
-</p>
-
-
+    <p class="govuk-body">
+        <a href=https://www.gov.uk/guidance/understanding-off-payroll-working-ir35
+           class="govuk-link govuk-link--no-visited-state" id="employment-OPW-link-1" target="_blank">
+            @messages("employment.employerOpw.link")
+        </a>
+    </p>
 
     @formWithCsrf(action = EmployerOffPayrollWorkingController.submit(taxYear)) {
         @inputRadio(
             form = form,
-classes = Option[String]("govuk-fieldset__legend--m"),
             legendHeading = Some(Html(headingForUse)),
+            classes = Some("govuk-fieldset__legend--m"),
             inline = true
         )
-
         @button()
     }
 }

@@ -22,8 +22,6 @@ import forms.{FormUtils, YesNoForm}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
-import services.tailoring.TailoringService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
@@ -31,51 +29,29 @@ import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerOffPayrollWorkingController @Inject()(tailoringService: TailoringService,
-                                            employmentSessionService: EmploymentSessionService,
-                                            mcc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
-                                            actionsProvider: ActionsProvider,
-                                            view: EmployerOffPayrollWorkingView,
-                                            errorHandler: ErrorHandler)
-                                           (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+class EmployerOffPayrollWorkingController @Inject()(mcc: MessagesControllerComponents,
+                                                    authAction: AuthorisedAction,
+                                                    actionsProvider: ActionsProvider,
+                                                    view: EmployerOffPayrollWorkingView,
+                                                    errorHandler: ErrorHandler)
+                                                   (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with FormUtils {
 
-  private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"tailoring.empty.error.${if (isAgent) "agent" else "individual"}")
+  private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}")
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    if (appConfig.tailoringEnabled) {
-      tailoringService.getExcludedJourneys(taxYear, request.user.mtditid, request.user.mtditid).map {
-        case Left(error) => errorHandler.handleError(error.status)
-        case Right(result) =>
-          Ok(view(form(request.user.isAgent).fill(!result.journeys.map(_.journey).contains("employment")), taxYear))
-      }
-    }
-    else {
-      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-    }
+
+    Future.successful(Ok(view(form(request.user.isAgent), taxYear)))
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
-    if (appConfig.tailoringEnabled) {
-      form(request.user.isAgent).bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear))),
-        yesNo => {
-          if (yesNo) {
-            tailoringService.clearExcludedJourney(taxYear, request.user.nino, request.user.mtditid).map {
-              case Left(error) => errorHandler.internalServerError()
-              case Right(value) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
-            }
-          }
-          else {
-            Future(Redirect(controllers.tailorings.routes.RemoveAllEmploymentController.show(taxYear)))
-          }
-        }
-      )
-    }
-    else {
-      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-    }
+
+    form(request.user.isAgent).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear))),
+      yesNo => {
+        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      }
+    )
   }
 
 }
