@@ -17,6 +17,7 @@ common.back = Yn ôl
 common.benefits = Buddiannau
 common.cancel = Canslo
 common.change = Newid
+common.confirm = Cadarnhau
 common.checkWithEmployer.agent = Gwiriwch â chyflogwr eich cleient os nad ydych yn siŵr.
 common.checkWithEmployer.individual = Gwiriwch â’ch cyflogwr os nad ydych yn siŵr.
 common.continue = Yn eich blaen
@@ -174,7 +175,6 @@ employment.tailorEmployment.p1 = Os byddwch yn newid eich manylion cyflogaeth TW
 employment.tailorEmployment.p2 = Ni allwch ddileu’r wybodaeth sydd gennym eisoes. Ni fyddwn yn defnyddio’r manylion hyn i gyfrifo eich Ffurflen Dreth Incwm ar gyfer y flwyddyn dreth hon.
 employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gynnwys cyflogaeth, budd-daliadau a benthyciadau myfyriwr
 employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
-employment.tailorEmployment.button = Cadarnhau
 
 #################       Employer off payroll working messages        ########################################
 
@@ -191,6 +191,14 @@ employment.employerOpw.b2.agent = gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a
 employment.employerOpw.heading.agent = A yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd?
 employment.employerOpw.error.individual = Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad ABC Digital Ltd
 employment.employerOpw.error.agent = Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd
+
+employment.employerOpw.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
+employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
+employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
+employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
+employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
 
 #################       Select employer messages        ########################################
 
