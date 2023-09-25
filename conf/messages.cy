@@ -17,6 +17,7 @@ common.back = Yn ôl
 common.benefits = Buddiannau
 common.cancel = Canslo
 common.change = Newid
+common.confirm = Cadarnhau
 common.checkWithEmployer.agent = Gwiriwch â chyflogwr eich cleient os nad ydych yn siŵr.
 common.checkWithEmployer.individual = Gwiriwch â’ch cyflogwr os nad ydych yn siŵr.
 common.continue = Yn eich blaen
@@ -174,7 +175,6 @@ employment.tailorEmployment.p1 = Os byddwch yn newid eich manylion cyflogaeth TW
 employment.tailorEmployment.p2 = Ni allwch ddileu’r wybodaeth sydd gennym eisoes. Ni fyddwn yn defnyddio’r manylion hyn i gyfrifo eich Ffurflen Dreth Incwm ar gyfer y flwyddyn dreth hon.
 employment.tailorEmployment.b1 = newid manylion eich Ffurflen Dreth Incwm gan gynnwys cyflogaeth, budd-daliadau a benthyciadau myfyriwr
 employment.tailorEmployment.b2 = dileu gwybodaeth rydych wedi nodi ynghylch cyflogwyr a threuliau
-employment.tailorEmployment.button = Cadarnhau
 
 #################       Employer off payroll working messages        ########################################
 
@@ -199,8 +199,6 @@ employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyfloga
 employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
 employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
-employment.employerOpw.warning.button = Cadarnhau
-employment.employerOpw.warning.cancel = Canslo
 
 #################       Select employer messages        ########################################
 

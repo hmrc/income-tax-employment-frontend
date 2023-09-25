@@ -104,8 +104,6 @@ class ChangeYourEmploymentDetailsViewSpec extends ViewUnitTest {
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
         val htmlFormat = underTest(taxYear,
-          s"employment.employerOpw.warning.title.${if (userScenario.isAgent) "agent" else "individual"}",
-          s"employment.employerOpw.warning.heading.${if (userScenario.isAgent) "agent" else "individual"}",
           continueUrl,
           cancelUrl
         )

@@ -17,6 +17,7 @@ common.back = Back
 common.benefits = Benefits
 common.cancel = Cancel
 common.change = Change
+common.confirm = Confirm
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.continue = Continue
@@ -174,7 +175,6 @@ employment.tailorEmployment.p1 = If you change your PAYE employment details, thi
 employment.tailorEmployment.p2 = You cannot delete information we already hold. We will not use these details to calculate your Income Tax Return for this tax year.
 employment.tailorEmployment.b1 = change details of your Income Tax Return including employment, benefits and student loans
 employment.tailorEmployment.b2 = delete information you have entered about employers and expenses
-employment.tailorEmployment.button = Confirm
 
 #################       Employer off payroll working messages        ########################################
 
@@ -199,8 +199,6 @@ employment.employerOpw.warning.heading.agent = Do you want to change your client
 employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
 employment.employerOpw.warning.b1 = Off-payroll working status
 employment.employerOpw.warning.p2 = HMRC may review this change.
-employment.employerOpw.warning.button = Confirm
-employment.employerOpw.warning.cancel = Cancel
 
 #################       Select employer messages        ########################################
 

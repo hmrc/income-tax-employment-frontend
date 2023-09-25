@@ -34,20 +34,10 @@ class ChangeYourEmploymentDetailsController @Inject()(mcc: MessagesControllerCom
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    val headingIndividual = "employment.employerOpw.warning.heading.individual"
-    val headingAgent = "employment.employerOpw.warning.heading.agent"
-
-    val titleIndividual = "employment.employerOpw.warning.title.individual"
-    val titleAgent = "employment.employerOpw.warning.title.agent"
-
     val cancelUrl = controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear).url
     val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
 
-    if (request.user.isAgent) {
-      Future.successful(Ok(view(taxYear, titleAgent, headingAgent, continueUrl, cancelUrl)))
-    } else {
-      Future.successful(Ok(view(taxYear, titleIndividual, headingIndividual, continueUrl, cancelUrl)))
-    }
+    Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
   }
 
 }
