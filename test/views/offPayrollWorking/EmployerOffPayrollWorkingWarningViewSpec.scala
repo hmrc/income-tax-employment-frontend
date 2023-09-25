@@ -22,9 +22,9 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import views.html.offPayrollWorking.EmployerOffPayrollWorkingStatusView
+import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
 
-class EmployerOffPayrollWorkingStatusViewSpec extends ViewUnitTest {
+class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > p:nth-child(2)"
     val bullet1Selector: String = "#main-content > div > div > ul > li"
@@ -90,7 +90,7 @@ class EmployerOffPayrollWorkingStatusViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private lazy val underTest = inject[EmployerOffPayrollWorkingStatusView]
+  private lazy val underTest = inject[EmployerOffPayrollWorkingWarningView]
 
   private val cancelUrl = controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear).url
   private val continueUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"

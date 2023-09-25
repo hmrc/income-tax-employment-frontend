@@ -22,15 +22,15 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.offPayrollWorking.EmployerOffPayrollWorkingStatusView
+import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerOffPayrollWorkingStatusController @Inject()(mcc: MessagesControllerComponents,
-                                                          authAction: AuthorisedAction,
-                                                          view: EmployerOffPayrollWorkingStatusView)
-                                                         (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+class EmployerOffPayrollWorkingWarningController @Inject()(mcc: MessagesControllerComponents,
+                                                           authAction: AuthorisedAction,
+                                                           view: EmployerOffPayrollWorkingWarningView)
+                                                          (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
