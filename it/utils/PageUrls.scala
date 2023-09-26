@@ -252,7 +252,7 @@ object PageUrls extends IntegrationTest {
   def startEmploymentExpensesUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment/expenses/start-employment-expenses"
 
   //  ***************************     Taxable lump sum pages    ************************************
- def taxableLumpSumListUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/lump-sums/taxable-lump-sums/list-of-taxable-lump-sums/list?employmentId=$employmentId"
+  def taxableLumpSumListUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/lump-sums/taxable-lump-sums/list-of-taxable-lump-sums/list?employmentId=$employmentId"
 
   //  ***************************     Error pages     ************************************
   def youNeedToSignUpUrl: String = s"$appUrl/error/you-need-to-sign-up"
@@ -285,7 +285,8 @@ object PageUrls extends IntegrationTest {
   def removeAllEmploymentUrl(taxYear: Int): String = s"$appUrl/$taxYear/remove-all-employments"
 
   //  *****************     Off Payroll Working pages      ***************************
-  def changeYourEmploymentDetailsUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-off-payroll-working-warning"
+  def employerOffPayrollWorkingWarningUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-off-payroll-working-warning"
+
   def employerOffPayrollWorkingUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-off-payroll-working"
 }
 

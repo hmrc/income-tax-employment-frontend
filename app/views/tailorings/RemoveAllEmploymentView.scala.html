@@ -56,7 +56,7 @@
             @govUkButton(Button(
                 attributes = Map("data-module" -> "govuk-button", "id" -> "remove-employer-button-id"),
                 preventDoubleClick = Some(true),
-                content = Text(messages("employment.tailorEmployment.button")),
+                content = Text(messages("common.confirm")),
                 classes = "govuk-button--warning"
             ))
             @link(EmploymentSummaryController.show(taxYear).url, messages("common.cancel"), id = Some("cancel-link-id"))
