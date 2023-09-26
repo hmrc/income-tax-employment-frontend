@@ -22,9 +22,9 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import views.html.offPayrollWorking.PayReceivedView
+import views.html.offPayrollWorking.EmployerIncomeWarningView
 
-class PayReceivedViewSpec extends ViewUnitTest {
+class EmployerIncomeWarningViewSpec extends ViewUnitTest {
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > p:nth-child(2)"
     val bullet1Selector: String = "#main-content > div > div > ul > li"
@@ -92,7 +92,7 @@ class PayReceivedViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private lazy val underTest = inject[PayReceivedView]
+  private lazy val underTest = inject[EmployerIncomeWarningView]
 
   private val cancelUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview" //TODO: This needs to be changed when Samuel's ticket is merged
   private val continueUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
@@ -105,13 +105,7 @@ class PayReceivedViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYear,
-          s"employment.employerOpw.warning.payReceived.title.${if (userScenario.isAgent) "agent" else "individual"}",
-          s"employment.employerOpw.warning.payReceived.heading.${if (userScenario.isAgent) "agent" else "individual"}",
-          s"employment.employerOpw.warning.payReceived.p2.${if (userScenario.isAgent) "agent" else "individual"}",
-          continueUrl,
-          cancelUrl
-        )
+        val htmlFormat = underTest(taxYear, continueUrl, cancelUrl)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

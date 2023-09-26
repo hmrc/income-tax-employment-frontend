@@ -289,7 +289,7 @@ object PageUrls extends IntegrationTest {
 
   def employerOffPayrollWorkingUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-off-payroll-working"
 
-  def payReceivedUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-income-warning"
+  def employerIncomeWarningUrl(taxYear: Int): String = s"$appUrl/$taxYear/employer-income-warning"
 }
 
 //scalastyle:on number.of.methods

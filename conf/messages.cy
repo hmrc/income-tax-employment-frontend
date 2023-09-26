@@ -74,6 +74,11 @@ common.september = Medi
 common.october = Hydref
 common.november = Tachwedd
 common.december = Rhagfyr
+common.employment.employerOpw.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
+common.employment.employerOpw.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
+common.employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
+common.employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
+common.employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 
 #################   Subheadings/Captions    ##################################
 
@@ -192,26 +197,12 @@ employment.employerOpw.heading.agent = A yw’ch cleient yn cytuno â phenderfyn
 employment.employerOpw.error.individual = Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad ABC Digital Ltd
 employment.employerOpw.error.agent = Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd
 
-employment.employerOpw.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
 employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
 
-#################       Employer off payroll working messages        ########################################
-
-employment.employerOpw.warning.payReceived.title.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.payReceived.heading.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.payReceived.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.payReceived.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.payReceived.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 employment.employerOpw.warning.payReceived.b1 = Cyflog a gafwyd
 employment.employerOpw.warning.payReceived.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
 employment.employerOpw.warning.payReceived.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
-employment.employerOpw.warning.payReceived.button = Cadarnhau
-employment.employerOpw.warning.payReceived.cancel = Canslo
 
 #################       Select employer messages        ########################################
 
