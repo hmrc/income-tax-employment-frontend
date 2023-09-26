@@ -94,7 +94,7 @@ class EmployerIncomeWarningViewSpec extends ViewUnitTest {
 
   private lazy val underTest = inject[EmployerIncomeWarningView]
 
-  private val cancelUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview" //TODO: This needs to be changed when Samuel's ticket is merged
+  private val cancelUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
   private val continueUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
 
   userScenarios.foreach { userScenario =>
