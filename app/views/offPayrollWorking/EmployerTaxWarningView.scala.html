@@ -26,23 +26,27 @@
     link: Link
 )
 
-@(taxYear: Int, title: String, heading: String, p2: String, continueUrl: String, cancelUrl: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, continueUrl: String, cancelUrl: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages(title), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
+@titleForUse = @{messages(s"common.employment.employerOpw.warning.title.${if(request.user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{messages(s"common.employment.employerOpw.warning.heading.${if(request.user.isAgent) "agent" else "individual"}")}
+@p2ForUse = @{messages(s"common.employment.employerOpw.warning.p2.${if(request.user.isAgent) "agent" else "individual"}")}
 
-    <h1 class="govuk-heading-l">@messages(heading)</h1>
+@layout(pageTitle = messages(titleForUse), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 
-    <p class="govuk-body">@messages("employment.employerOpw.warning.tax.p1")</p>
+    <h1 class="govuk-heading-l">@messages(headingForUse)</h1>
+
+    <p class="govuk-body">@messages("common.employment.employerOpw.warning.p1")</p>
 
     <ul class="govuk-body govuk-list govuk-list--bullet">
         <li>@messages("employment.employerOpw.warning.tax.b1")</li>
     </ul>
 
-    <p class="govuk-body">@messages(p2)</p>
+    <p class="govuk-body">@messages(p2ForUse)</p>
 
     <div class="govuk-button-group">
-        @button(alternativeText = messages("employment.employerOpw.warning.tax.button"), href = Some(continueUrl))
-        @link(cancelUrl, messages("employment.employerOpw.warning.tax.cancel"))
+        @button(alternativeText = messages("common.confirm"), href = Some(continueUrl))
+        @link(cancelUrl, messages("common.cancel"))
     </div>
 
 }

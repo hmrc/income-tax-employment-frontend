@@ -30,7 +30,7 @@
 
 @titleForUse = @{messages(s"common.employment.employerOpw.warning.title.${if(request.user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{messages(s"common.employment.employerOpw.warning.heading.${if(request.user.isAgent) "agent" else "individual"}")}
-@p2ForUse = @{messages(s"employment.employerOpw.warning.payReceived.p2.${if(request.user.isAgent) "agent" else "individual"}")}
+@p2ForUse = @{messages(s"common.employment.employerOpw.warning.p2.${if(request.user.isAgent) "agent" else "individual"}")}
 
 @layout(pageTitle = messages(titleForUse), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 

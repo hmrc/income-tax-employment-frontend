@@ -19,17 +19,17 @@ package controllers.offPayrollWorking
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
-import utils.PageUrls.{fullUrl, ukTaxTakenFromPayUrl}
+import utils.PageUrls.{employerTaxWarningUrl, fullUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
-class UkTaxTakenFromPayControllerISpec extends IntegrationTest with ViewHelpers {
+class EmployerTaxWarningControllerISpec extends IntegrationTest with ViewHelpers {
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
     "render the correct view for an individual in year" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(ukTaxTakenFromPayUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerTaxWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has OK status" in {
         result.status shouldBe OK
@@ -39,7 +39,7 @@ class UkTaxTakenFromPayControllerISpec extends IntegrationTest with ViewHelpers 
     "render the correct view for an agent in year" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
-        urlGet(fullUrl(ukTaxTakenFromPayUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerTaxWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has OK status" in {
         result.status shouldBe OK

@@ -79,6 +79,8 @@ common.employment.employerOpw.warning.heading.individual = A ydych am newid eich
 common.employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
 common.employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
 common.employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
+common.employment.employerOpw.warning.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
+common.employment.employerOpw.warning.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
 
 #################   Subheadings/Captions    ##################################
 
@@ -201,21 +203,8 @@ employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
 employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
 
 employment.employerOpw.warning.payReceived.b1 = Cyflog a gafwyd
-employment.employerOpw.warning.payReceived.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
-employment.employerOpw.warning.payReceived.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
 
-#################       Employer off payroll working messages        ########################################
-
-employment.employerOpw.warning.tax.title.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.tax.heading.individual = A ydych am newid eich manylion cyflogaeth?
-employment.employerOpw.warning.tax.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.tax.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
-employment.employerOpw.warning.tax.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:
 employment.employerOpw.warning.tax.b1 = Treth y DU a dynnwyd o’r cyflog
-employment.employerOpw.warning.tax.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
-employment.employerOpw.warning.tax.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
-employment.employerOpw.warning.tax.button = Cadarnhau
-employment.employerOpw.warning.tax.cancel = Canslo
 
 #################       Select employer messages        ########################################
 
