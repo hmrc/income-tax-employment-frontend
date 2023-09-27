@@ -74,6 +74,11 @@ common.september = September
 common.october = October
 common.november = November
 common.december = December
+common.employment.employerOpw.warning.title.individual = Do you want to change your employment details?
+common.employment.employerOpw.warning.heading.individual = Do you want to change your employment details?
+common.employment.employerOpw.warning.title.agent = Do you want to change your client’s employment details?
+common.employment.employerOpw.warning.heading.agent = Do you want to change your client’s employment details?
+common.employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
 
 #################   Subheadings/Captions    ##################################
 
@@ -192,13 +197,12 @@ employment.employerOpw.heading.agent = Does your client agree with ABC Digital�
 employment.employerOpw.error.individual = Select yes if you agree with ABC Digital’s decision
 employment.employerOpw.error.agent = Select yes if your client agrees with ABC Digital’s decision
 
-employment.employerOpw.warning.title.individual = Do you want to change your employment details?
-employment.employerOpw.warning.heading.individual = Do you want to change your employment details?
-employment.employerOpw.warning.title.agent = Do you want to change your client’s employment details?
-employment.employerOpw.warning.heading.agent = Do you want to change your client’s employment details?
-employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
 employment.employerOpw.warning.b1 = Off-payroll working status
 employment.employerOpw.warning.p2 = HMRC may review this change.
+
+employment.employerOpw.warning.payReceived.b1 = Pay received
+employment.employerOpw.warning.payReceived.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
+employment.employerOpw.warning.payReceived.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
 
 #################       Select employer messages        ########################################
 

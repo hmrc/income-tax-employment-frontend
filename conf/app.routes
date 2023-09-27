@@ -350,6 +350,8 @@ POST        /:taxYear/employer-off-payroll-working                              
 
 GET         /:taxYear/employer-off-payroll-working-warning                                 controllers.offPayrollWorking.EmployerOffPayrollWorkingWarningController.show(taxYear: Int)
 
+GET         /:taxYear/employer-income-warning                                              controllers.offPayrollWorking.EmployerIncomeWarningController.show(taxYear: Int)
+
 ###########################     Error pages     ####################################
 
 GET         /error/you-need-to-sign-up                                               controllers.errors.IndividualAuthErrorController.show

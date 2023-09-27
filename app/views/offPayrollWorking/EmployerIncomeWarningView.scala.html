@@ -30,18 +30,19 @@
 
 @titleForUse = @{messages(s"common.employment.employerOpw.warning.title.${if(request.user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{messages(s"common.employment.employerOpw.warning.heading.${if(request.user.isAgent) "agent" else "individual"}")}
+@p2ForUse = @{messages(s"employment.employerOpw.warning.payReceived.p2.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
+@layout(pageTitle = messages(titleForUse), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 
-    <h1 class="govuk-heading-l">@headingForUse</h1>
+    <h1 class="govuk-heading-l">@messages(headingForUse)</h1>
 
     <p class="govuk-body">@messages("common.employment.employerOpw.warning.p1")</p>
 
     <ul class="govuk-body govuk-list govuk-list--bullet">
-        <li>@messages("employment.employerOpw.warning.b1")</li>
+        <li>@messages("employment.employerOpw.warning.payReceived.b1")</li>
     </ul>
 
-    <p class="govuk-body">@messages("employment.employerOpw.warning.p2")</p>
+    <p class="govuk-body">@messages(p2ForUse)</p>
 
     <div class="govuk-button-group">
         @button(alternativeText = messages("common.confirm"), href = Some(continueUrl))
