@@ -79,6 +79,8 @@ common.employment.employerOpw.warning.heading.individual = Do you want to change
 common.employment.employerOpw.warning.title.agent = Do you want to change your client’s employment details?
 common.employment.employerOpw.warning.heading.agent = Do you want to change your client’s employment details?
 common.employment.employerOpw.warning.p1 = You are about to change information ABC Digital sent to HMRC:
+common.employment.employerOpw.warning.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
+common.employment.employerOpw.warning.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
 
 #################   Subheadings/Captions    ##################################
 
@@ -201,8 +203,8 @@ employment.employerOpw.warning.b1 = Off-payroll working status
 employment.employerOpw.warning.p2 = HMRC may review this change.
 
 employment.employerOpw.warning.payReceived.b1 = Pay received
-employment.employerOpw.warning.payReceived.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
-employment.employerOpw.warning.payReceived.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
+
+employment.employerOpw.warning.tax.b1 = UK tax taken from pay
 
 #################       Select employer messages        ########################################
 

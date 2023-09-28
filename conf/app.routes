@@ -345,12 +345,14 @@ POST        /:taxYear/remove-all-employments                                    
 
 #############################       Off Payroll Working      #############################
 
-GET         /:taxYear/employer-off-payroll-working                                         controllers.offPayrollWorking.EmployerOffPayrollWorkingController.show(taxYear: Int)
-POST        /:taxYear/employer-off-payroll-working                                         controllers.offPayrollWorking.EmployerOffPayrollWorkingController.submit(taxYear: Int)
+GET         /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.show(taxYear: Int)
+POST        /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.submit(taxYear: Int)
 
-GET         /:taxYear/employer-off-payroll-working-warning                                 controllers.offPayrollWorking.EmployerOffPayrollWorkingWarningController.show(taxYear: Int)
+GET         /:taxYear/employer-off-payroll-working-warning                           controllers.offPayrollWorking.EmployerOffPayrollWorkingWarningController.show(taxYear: Int)
 
-GET         /:taxYear/employer-income-warning                                              controllers.offPayrollWorking.EmployerIncomeWarningController.show(taxYear: Int)
+GET         /:taxYear/employer-income-warning                                        controllers.offPayrollWorking.EmployerIncomeWarningController.show(taxYear: Int)
+
+GET         /:taxYear/employer-tax-warning                                           controllers.offPayrollWorking.EmployerTaxWarningController.show(taxYear: Int)
 
 ###########################     Error pages     ####################################
 
