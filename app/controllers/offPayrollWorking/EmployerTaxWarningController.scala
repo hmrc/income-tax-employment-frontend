@@ -37,8 +37,10 @@ class EmployerTaxWarningController @Inject()(mcc: MessagesControllerComponents,
     val cancelUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
     val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
 
-    Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
-
+    if (appConfig.offPayrollWorking) {
+      Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
+    } else {
+      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
-
 }

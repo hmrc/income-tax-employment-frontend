@@ -191,6 +191,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
 
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, "id").url)
+        redirectLocation(result) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, "id").url)
       }
       "a new employment is created and mimic api calls is on" in {
         mockAuth(Some(nino))

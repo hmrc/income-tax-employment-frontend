@@ -19,10 +19,15 @@ package controllers.offPayrollWorking
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls.{employerOffPayrollWorkingWarningUrl, fullUrl}
-import utils.{IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmployerOffPayrollWorkingWarningControllerISpec extends IntegrationTest with ViewHelpers {
+import scala.concurrent.Future
+
+class EmployerOffPayrollWorkingWarningControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
 
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
@@ -35,6 +40,16 @@ class EmployerOffPayrollWorkingWarningControllerISpec extends IntegrationTest wi
       }
       "has OK status" in {
         result.status shouldBe OK
+      }
+
+      "redirect to submission overview when OPW feature switch is set to false" in {
+        val request = FakeRequest("GET", employerOffPayrollWorkingWarningUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        lazy val result: Future[Result] = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          route(appWithFeatureSwitchesOff, request, "{}").get
+        }
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
     }
 

@@ -26,6 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEmploymentDetailsViewModel
+import support.mocks.MockAppConfig
 import views.html.employment.CheckEmploymentDetailsView
 class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
 
@@ -381,6 +382,38 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         formPostLinkCheck(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url, continueButtonFormSelector)
       }
 
-    }
+      "render page with Off-Payroll-Working content when feature switch is disabled" when {
+
+      implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+      implicit val messages: Messages = getMessages(userScenario.isWelsh)
+      val htmlFormat = underTest(anEmploymentDetailsViewModel, taxYear = taxYearEOY, isInYear = false) (authRequest, messages, new MockAppConfig().config(isOffPayrollWorkingEnabled = false))
+      implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+      // in year (2024) cannot fill in employment until april (notification banner) but existing data still displays so displays text but no change links
+
+      titleCheck(specific.expectedTitle, userScenario.isWelsh)
+      h1Check(specific.expectedH1)
+      captionCheck(common.expectedCaptionEOY(taxYearEOY))
+      welshToggleCheck(userScenario.isWelsh)
+
+      textOnPageCheck(common.employerNameField, summaryListRowFieldNameSelector(4, 1))
+      textOnPageCheck(ContentValues.employerName, summaryListRowFieldValueSelector(4, 1))
+        textOnPageCheck(common.payeReferenceField, summaryListRowFieldNameSelector(4, 2))
+      textOnPageCheck(ContentValues.payeRef, summaryListRowFieldValueSelector(4, 2))
+      textOnPageCheck(common.employmentStartDateField, summaryListRowFieldNameSelector(4, 3))
+      textOnPageCheck(common.employmentStartDate, summaryListRowFieldValueSelector(4, 3))
+      textOnPageCheck(common.payReceivedField, summaryListRowFieldNameSelector(4, 4))
+      textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(4, 4))
+      textOnPageCheck(common.taxTakenField, summaryListRowFieldNameSelector(4, 5))
+      textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(4, 5))
+
+        elementNotOnPageCheck(subHeading2) //off payroll working heading
+        elementsNotOnPageCheck(subHeading3) //left employer heading
+        elementsNotOnPageCheck(summaryListRowFieldNameSelector(7, 1)) //for off-payroll working status
+        elementsNotOnPageCheck(summaryListRowFieldValueSelector(9, 1)) //for left employer status
+
+      }
+
+  }
     }
 }

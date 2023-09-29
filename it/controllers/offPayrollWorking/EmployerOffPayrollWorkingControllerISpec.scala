@@ -26,11 +26,11 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
 import utils.PageUrls.{employerOffPayrollWorkingUrl, fullUrl}
-import utils.{IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
 
-class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with ViewHelpers {
+class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 
   val url: String = fullUrl(employerOffPayrollWorkingUrl(taxYearEOY))
 
@@ -44,6 +44,16 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
         urlGet(url, false, false, Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe OK
+    }
+
+    "redirect to submission overview when OPW feature switch is set to false" in {
+      val request = FakeRequest("GET", employerOffPayrollWorkingUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+      lazy val result: Future[Result] = {
+        dropEmploymentDB()
+        authoriseIndividual()
+        route(appWithFeatureSwitchesOff, request, "{}").get
+      }
+      await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
     }
   }
 

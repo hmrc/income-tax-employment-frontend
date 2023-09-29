@@ -18,7 +18,7 @@ package controllers.offPayrollWorking
 
 import actions.{ActionsProvider, AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import forms.{FormUtils, YesNoForm}
+import forms.{YesNoForm}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,13 +35,17 @@ class EmployerOffPayrollWorkingController @Inject()(mcc: MessagesControllerCompo
                                                     view: EmployerOffPayrollWorkingView,
                                                     errorHandler: ErrorHandler)
                                                    (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
-  with I18nSupport with SessionHelper with FormUtils {
+  with I18nSupport with SessionHelper {
 
   private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}")
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
-    Future.successful(Ok(view(form(request.user.isAgent), taxYear)))
+    if (appConfig.offPayrollWorking) {
+      Future.successful(Ok(view(form(request.user.isAgent), taxYear)))
+    } else {
+      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>

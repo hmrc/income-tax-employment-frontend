@@ -28,6 +28,7 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
              _mimicEmploymentAPICalls: Boolean = false,
              slEnabled: Boolean = true,
              isEmploymentEOYEnabled: Boolean = true,
+             isOffPayrollWorkingEnabled: Boolean = true,
              taxYearErrorEnabled: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
 
     override lazy val signInContinueUrl: String = "/continue"
@@ -62,7 +63,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val studentLoansEnabled: Boolean = slEnabled
 
-    override lazy val offPayrollWorking: Boolean = true
+    override lazy val offPayrollWorking: Boolean = isOffPayrollWorkingEnabled
+
 
     override lazy val employmentEOYEnabled: Boolean = isEmploymentEOYEnabled
 

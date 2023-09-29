@@ -134,60 +134,61 @@
 
     @if(appConfig.offPayrollWorking){
 
-    <h3 class="govuk-heading-m">@messages(s"employment.employerOpw.title")</h3>
+        <h3 class="govuk-heading-m">@messages(s"employment.employerOpw.title")</h3>
 
-    <p class="govuk-body-m">@messages(s"employment.employmentDetails.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
-
-
-    @{
-        val offPayrollWorkingStatus = EmploymentDataForView(
-                messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
-                Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-                controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear),
-                messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
-            )
+        <p class="govuk-body-m">@messages(s"employment.employmentDetails.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
 
 
-           govukSummaryList(
-            SummaryList(
-                        Seq{summaryListRow(
-                            key = HtmlContent(messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}")),
-                            value = Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
-                            keyClasses = "govuk-!-width-two-thirds",
-                            actionClasses = "",
-                            actions = if(!isInYear) {
-                                Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
-                            } else Seq.empty
-                        )}
-            )
-        )
-    }
-    }
-    <h4 class="govuk-heading-m">@messages(s"employment.employmentDetails.subHeading.endOfEmploymentDetails")</h4>
-
-      @{
-            val leftEmployer = EmploymentDataForView(
-                    messages(s"employment.employmentDetails.didYouLeave"),
-                    Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-                    controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
-                    messages(s"employment.employmentDetails.hiddenText.didYouLeave")
+        @{
+            val offPayrollWorkingStatus = EmploymentDataForView(
+                    messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
+                    Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+                    controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear),
+                    messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
                 )
 
 
                govukSummaryList(
                 SummaryList(
                             Seq{summaryListRow(
-                                key = HtmlContent(messages(s"employment.employmentDetails.didYouLeave")),
-                                value = Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                                key = HtmlContent(messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}")),
+                                value = Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
                                 keyClasses = "govuk-!-width-two-thirds",
                                 actionClasses = "",
                                 actions = if(!isInYear) {
-                                    Seq((controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.didYouLeave"))))
+                                    Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
                                 } else Seq.empty
                             )}
                 )
             )
         }
+
+        <h4 class="govuk-heading-m">@messages(s"employment.employmentDetails.subHeading.endOfEmploymentDetails")</h4>
+
+          @{
+                val leftEmployer = EmploymentDataForView(
+                        messages(s"employment.employmentDetails.didYouLeave"),
+                        Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+                        controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId),
+                        messages(s"employment.employmentDetails.hiddenText.didYouLeave")
+                    )
+
+
+                   govukSummaryList(
+                    SummaryList(
+                                Seq{summaryListRow(
+                                    key = HtmlContent(messages(s"employment.employmentDetails.didYouLeave")),
+                                    value = Some(if(employmentDetails.didYouLeaveQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                                    keyClasses = "govuk-!-width-two-thirds",
+                                    actionClasses = "",
+                                    actions = if(!isInYear) {
+                                        Seq((controllers.details.routes.DidYouLeaveEmployerController.show(taxYear, employmentDetails.employmentId), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.didYouLeave"))))
+                                    } else Seq.empty
+                                )}
+                    )
+                )
+            }
+    }
 
     @if(!isInYear){
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
