@@ -227,12 +227,15 @@ employment.employmentDetails.content.agent = Mae manylion cyflogaeth eich cleien
 employment.employmentDetails.content.individual = Mae’ch manylion cyflogaeth yn seiliedig ar yr wybodaeth sydd eisoes gennym amdanoch.
 employment.employmentDetails.directorCeasedDate =  Dyddiad dod i ben rôl y cyfarwyddwr
 
-employment.employmentDetails.hiddenText.employer = Newid manylion cyflogaeth
-employment.employmentDetails.hiddenText.payeRef = Newid cyfeirnod TWE
+employment.employmentDetails.hiddenText.employer = Newid enw’r cyflogwr hwn
+employment.employmentDetails.hiddenText.payeRef = Newid y cyfeirnod TWE
 employment.employmentDetails.hiddenText.startDate = Newid dyddiad dechrau’r gyflogaeth
-employment.employmentDetails.hiddenText.payReceived = Newid cyflog a gafwyd
-employment.employmentDetails.hiddenText.totalTaxToDate = Newid treth y DU a dynnwyd o’r cyflog
-employment.employmentDetails.hiddenText.didYouLeave = Newid wedi gadael y cyflogwr
+employment.employmentDetails.hiddenText.endDate = Newid dyddiad dod i ben y gyflogaeth
+employment.employmentDetails.hiddenText.payrollId = Newid ID y gyflogres ar gyfer y gyflogaeth hon
+employment.employmentDetails.hiddenText.payReceived = Newid swm y cyflog a gafwyd
+employment.employmentDetails.hiddenText.totalTaxToDate = Newid swm y dreth yn y DU a ddidynnwyd oddi wrth y cyflog
+employment.employmentDetails.hiddenText.didYouLeave.individual = Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon
+employment.employmentDetails.hiddenText.didYouLeave.agent = Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon
 employment.employmentDetails.hiddenText.offPayrollWorkingStatus = Newid statws gweithio oddi ar y gyflogres (IR35)
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Newidiwch os cafodd eich cleient daliadau sydd ddim ar ei P60

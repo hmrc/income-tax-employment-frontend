@@ -19,8 +19,9 @@
 
 @this(govukSummaryList : GovukSummaryList)
 
-@(rows: Seq[SummaryListRow])
+@(rows: Seq[SummaryListRow], id: String = "")
 
 @govukSummaryList(SummaryList(
-    rows = rows
+    rows = rows,
+    attributes = Map("id" -> id)
 ))
