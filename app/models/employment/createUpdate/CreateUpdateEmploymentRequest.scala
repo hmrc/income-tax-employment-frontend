@@ -317,7 +317,8 @@ object CreateUpdateEmployment {
 
 case class CreateUpdateEmploymentData(pay: CreateUpdatePay,
                                       deductions: Option[Deductions] = None,
-                                      benefitsInKind: Option[Benefits] = None)
+                                      benefitsInKind: Option[Benefits] = None,
+                                      offPayrollWorker: Option[Boolean] = None)
 
 object CreateUpdateEmploymentData {
   implicit val formats: OFormat[CreateUpdateEmploymentData] = Json.format[CreateUpdateEmploymentData]
