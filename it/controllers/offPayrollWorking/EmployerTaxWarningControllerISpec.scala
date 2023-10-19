@@ -19,10 +19,16 @@ package controllers.offPayrollWorking
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls.{employerTaxWarningUrl, fullUrl}
-import utils.{IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmployerTaxWarningControllerISpec extends IntegrationTest with ViewHelpers {
+
+import scala.concurrent.Future
+
+class EmployerTaxWarningControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
   ".show" when {
@@ -36,14 +42,24 @@ class EmployerTaxWarningControllerISpec extends IntegrationTest with ViewHelpers
       }
     }
 
-    "render the correct view for an agent in year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = true)
-        urlGet(fullUrl(employerTaxWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      "redirect to submission overview when OPW feature switch is set to false" in {
+        val request = FakeRequest("GET", employerTaxWarningUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        lazy val result: Future[Result] = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          route(appWithFeatureSwitchesOff, request, "{}").get
+        }
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
-      "has OK status" in {
-        result.status shouldBe OK
-      }
+    }
+
+  "render the correct view for an agent in year" which {
+    implicit lazy val result: WSResponse = {
+      authoriseAgentOrIndividual(isAgent = true)
+      urlGet(fullUrl(employerTaxWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+    }
+    "has OK status" in {
+      result.status shouldBe OK
     }
   }
 }

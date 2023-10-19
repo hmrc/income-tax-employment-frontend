@@ -17,6 +17,7 @@
 @import controllers.details.routes._
 @import models.employment.EmploymentDetailsViewModel
 @import views.html.templates.helpers.Button
+@import views.html.templates.helpers.SummaryList
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Link
 @import views.html.templates.helpers.NotificationBanner
@@ -29,7 +30,7 @@
     layout: Layout,
     notificationBanner: NotificationBanner,
     heading: Heading,
-    govukSummaryList: GovukSummaryList,
+    summaryList: SummaryList,
     govukInsetText: GovukInsetText,
     formWithCSRF: FormWithCSRF,
     button: Button,
@@ -60,7 +61,7 @@
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
     @if(!employmentDetails.isUsingCustomerData){
-        <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(request.user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body" id="employmentInfoParagraph">@messages(s"employment.employmentInformation.content.${if(request.user.isAgent) "agent" else "individual"}")</p>
     }
 
     @if(isInYear){
@@ -143,27 +144,61 @@
             totalTaxToDate
         )
 
-        govukSummaryList(
-            SummaryList(
-                employmentDataFields.collect {
-                    case EmploymentDataForView(fieldHeading, mayBeFieldValue, changeLink, hiddenText) =>
+        {
+            summaryList(
+            id = "employmentDetailsSummaryList",
+            rows = employmentDataFields.collect {
+                case EmploymentDataForView(fieldHeading, mayBeFieldValue, changeLink, hiddenText) =>
+                    summaryListRow(
+                        key = HtmlContent(fieldHeading),
+                        value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                        keyClasses = "govuk-!-width-two-thirds",
+                        actionClasses = "",
+                        actions = if(!isInYear) {
+                            Seq((changeLink, messages("common.change"), Some(hiddenText)))
+                        } else Seq.empty
+                    )
+            }
+        )}
+    }
+
+     @if(appConfig.offPayrollWorking){
+
+        <h2 class="govuk-heading-m">@messages(s"employment.employerOpw.title")</h2>
+
+        <p class="govuk-body-m" id="offPayrollWorkingP1">@messages(s"employment.employmentDetails.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+
+
+        @{
+            val offPayrollWorkingStatus = EmploymentDataForView(
+                messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
+                Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+                controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear),
+                messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
+            )
+
+            {
+                summaryList(
+                    id = "opwSummaryList",
+                    rows = Seq(
                         summaryListRow(
-                            key = HtmlContent(fieldHeading),
-                            value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
+                            key = HtmlContent(messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}")),
+                            value = Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}).fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
                             keyClasses = "govuk-!-width-two-thirds",
                             actionClasses = "",
                             actions = if(!isInYear) {
-                                Seq((changeLink, messages("common.change"), Some(hiddenText)))
+                                Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
                             } else Seq.empty
                         )
-                }
-            )
-        )
+                    )
+                )
+            }
+        }
     }
 
     @if(!isInYear){
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
-            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"), attributes = Map("id" -> "saveAndContinueBtn"))
         }
     } else {
         @button("common.returnToEmployer", classes = Some("govuk-!-margin-top-3"), attributes = Map("id" -> "returnToEmployerBtn"),

@@ -121,9 +121,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "metrics.enabled" -> "false"
   )
 
-  def configContentFeatureSwitchOff: Map[String, String] = config() + (
+  def configContentFeatureSwitchOff: Map[String, String] = config() ++ Map(
     "feature-switch.studentLoans" -> "false",
-    "feature-switch.tailoringEnabled" -> "false"
+    "feature-switch.tailoringEnabled" -> "false",
+    "feature-switch.offPayrollWorking" -> "false"
   )
 
 

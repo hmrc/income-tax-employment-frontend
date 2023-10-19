@@ -196,7 +196,8 @@ class CheckYourBenefitsServiceSpec extends UnitTest
           )),
           employmentBenefits = Some(EmploymentBenefits(s"${taxYearEOY - 1}-02-15", Some(aBenefits)))
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val priorData: AllEmploymentData = AllEmploymentData(

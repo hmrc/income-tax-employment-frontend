@@ -45,11 +45,11 @@ class StudentLoansCYAServiceSpec extends UnitTest
 
 
   private lazy val hmrcSource: HmrcEmploymentSource = HmrcEmploymentSource(
-    employerId, "HMRC", None, None, None, None, None, None, None, None
+    employerId, "HMRC", None, None, None, None, None, None, None, None, None
   )
 
   private lazy val customerSource: EmploymentSource = EmploymentSource(
-    employerId, "Customer", None, None, None, None, None, None, None, None
+    employerId, "Customer", None, None, None, None, None, None, None, None, None
   )
 
   private lazy val allEmploymentData: AllEmploymentData = AllEmploymentData(
@@ -211,7 +211,8 @@ class StudentLoansCYAServiceSpec extends UnitTest
             None
           )
         ),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -350,7 +351,8 @@ class StudentLoansCYAServiceSpec extends UnitTest
           )),
           None
         )),
-        None
+        None,
+        offPayrollWorkingStatus = Some(false)
       )
 
       val priorData: AllEmploymentData = AllEmploymentData(

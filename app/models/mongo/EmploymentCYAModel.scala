@@ -40,7 +40,9 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     employmentDetails.cessationDate,
     employmentDetails.taxablePayToDate,
     employmentDetails.totalTaxToDate,
-    isUsingCustomerData)
+    isUsingCustomerData,
+    employmentDetails.offPayrollWorkingStatus
+  )
 
   def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentCYAModel = EncryptedEmploymentCYAModel(
     employmentDetails = employmentDetails.encrypted,

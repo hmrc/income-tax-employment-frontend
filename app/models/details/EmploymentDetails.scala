@@ -32,7 +32,9 @@ case class EmploymentDetails(employerName: String,
                              employmentDetailsSubmittedOn: Option[String] = None,
                              taxablePayToDate: Option[BigDecimal] = None,
                              totalTaxToDate: Option[BigDecimal] = None,
-                             currentDataIsHmrcHeld: Boolean) {
+                             currentDataIsHmrcHeld: Boolean,
+                             offPayrollWorkingStatus: Option[Boolean] = None
+                            ){
 
   lazy val isSubmittable: Boolean =
     startDate.isDefined &&
@@ -83,8 +85,9 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
                                       employmentDetailsSubmittedOn: Option[EncryptedValue] = None,
                                       taxablePayToDate: Option[EncryptedValue] = None,
                                       totalTaxToDate: Option[EncryptedValue] = None,
-                                      currentDataIsHmrcHeld: EncryptedValue) {
-
+                                      currentDataIsHmrcHeld: EncryptedValue,
+                                      offPayrollWorkingStatus: Option[EncryptedValue] = None)
+{
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentDetails = EmploymentDetails(
     employerName = employerName.decrypted[String],
     employerRef = employerRef.map(_.decrypted[String]),
@@ -97,8 +100,8 @@ case class EncryptedEmploymentDetails(employerName: EncryptedValue,
     employmentDetailsSubmittedOn = employmentDetailsSubmittedOn.map(_.decrypted[String]),
     taxablePayToDate = taxablePayToDate.map(_.decrypted[BigDecimal]),
     totalTaxToDate = totalTaxToDate.map(_.decrypted[BigDecimal]),
-    currentDataIsHmrcHeld = currentDataIsHmrcHeld.decrypted[Boolean]
-  )
+    currentDataIsHmrcHeld = currentDataIsHmrcHeld.decrypted[Boolean],
+    offPayrollWorkingStatus = offPayrollWorkingStatus.map(_.decrypted[Boolean]))
 }
 
 object EncryptedEmploymentDetails {

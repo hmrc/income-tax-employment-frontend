@@ -272,7 +272,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             startDate, None, None, None, None, None, None,
             Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(submittedOnDate), Some(3), Some(3))),
             Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
-          )), None
+          )), None, Some(false)
         )),
         None, None
       )))
@@ -284,7 +284,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           startDate, None, None, None, None, None, None,
           Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some(submittedOnDate), Some(3), Some(3))),
           Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
-        )), None)), None
+        )), None)), None, Some(false)
       )
 
       s"redirect to the employment information overview page for $inYearText for an $affinityText when there is $prior in $welshLang" when {

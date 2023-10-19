@@ -215,6 +215,10 @@ employment.unignoreEmployment.addANewEmployer = Add a new period of employment
 employment.unignoreEmployment.error = Select a period of employment or add a new one
 
 #################       Check Employment details messages        ########################################
+employment.employmentDetails.subHeading.offPayrollWorking = Off-payroll working (IR35)
+employment.employmentDetails.subHeading.endOfEmploymentDetails = End of employment details
+employment.employmentDetails.p1.individual = ABC Digital Ltd treated you as an employee for tax purposes and deducted Income Tax and National Insurance contributions from your fees
+employment.employmentDetails.p1.agent = ABC Digital Ltd treated your client as an employee for tax purposes and deducted Income Tax and National Insurance contributions from their fees
 
 employment.employmentDetails.bannerHeading = You must add missing employment details:
 employment.employmentDetails.closeCompany =  Close company
@@ -232,6 +236,7 @@ employment.employmentDetails.hiddenText.payReceived = Change the amount of pay r
 employment.employmentDetails.hiddenText.totalTaxToDate = Change the amount of UK tax taken from pay
 employment.employmentDetails.hiddenText.didYouLeave.individual = Change if you left the employer in this tax year
 employment.employmentDetails.hiddenText.didYouLeave.agent = Change if your client left the employer in this tax year
+employment.employmentDetails.hiddenText.offPayrollWorkingStatus = Change off-payroll working (IR35) status
 
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.agent = Change if your client got payments that are not on their P60
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = Change if you got payments that are not on your P60
@@ -251,6 +256,9 @@ employment.employmentDetails.endDate = Employment end date
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P60
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
+employment.employmentDetails.offPayrollWorkingStatus.individual = Do you agree?
+employment.employmentDetails.offPayrollWorkingStatus.agent = Does your client agree?
+
 
 #################       Employment name messages        ########################################
 

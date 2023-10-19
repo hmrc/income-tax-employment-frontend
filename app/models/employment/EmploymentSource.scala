@@ -33,7 +33,9 @@ case class HmrcEmploymentSource(employmentId: String,
                                 dateIgnored: Option[String],
                                 submittedOn: Option[String],
                                 hmrcEmploymentFinancialData: Option[EmploymentFinancialData],
-                                customerEmploymentFinancialData: Option[EmploymentFinancialData]) extends Logging {
+                                customerEmploymentFinancialData: Option[EmploymentFinancialData],
+                                offPayrollWorkingStatus: Option[Boolean]
+                               ) extends Logging {
 
   def toRemove: String = {
     (hmrcEmploymentFinancialData, customerEmploymentFinancialData) match {
@@ -86,7 +88,8 @@ case class HmrcEmploymentSource(employmentId: String,
       dateIgnored = dateIgnored,
       submittedOn = submittedOn,
       employmentData = latestData.flatMap(_.employmentData),
-      employmentBenefits = latestData.flatMap(_.employmentBenefits)
+      employmentBenefits = latestData.flatMap(_.employmentBenefits),
+      offPayrollWorkingStatus = offPayrollWorkingStatus
     )
   }
 }
@@ -110,7 +113,8 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits]
+                            employmentBenefits: Option[EmploymentBenefits],
+                            offPayrollWorkingStatus: Option[Boolean]
                            ) extends Logging {
 
   lazy val employmentDetailsSubmittable: Boolean = startDate.isDefined &&
@@ -177,8 +181,8 @@ case class EmploymentSource(employmentId: String,
       cessationDate,
       employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      isUsingCustomerData
-    )
+      isUsingCustomerData,
+      offPayrollWorkingStatus)
   }
 }
 

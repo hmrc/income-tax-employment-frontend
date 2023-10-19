@@ -32,6 +32,6 @@ object EmploymentDetailsViewModelBuilder {
     cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
     taxablePayToDate = aPay.taxablePayToDate,
     totalTaxToDate = aPay.totalTaxToDate,
-    isUsingCustomerData = false
-  )
+    isUsingCustomerData = false,
+    offPayrollWorkingStatus = Some(false))
 }

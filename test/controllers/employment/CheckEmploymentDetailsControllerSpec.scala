@@ -17,6 +17,7 @@
 package controllers.employment
 
 import common.{EmploymentDetailsSection, EmploymentSection, SessionValues}
+import config.AppConfig
 import controllers.employment.routes._
 import models.AuthorisationRequest
 import models.employment._
@@ -102,7 +103,8 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
               cessationDate = Some(s"${taxYearEOY - 1}-02-12"),
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
-              isUsingCustomerData = false
+              isUsingCustomerData = false,
+              offPayrollWorkingStatus = Some(false)
             ), taxYear, isInYear = true
           )))
 
@@ -188,6 +190,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
         }
 
         status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, "id").url)
         redirectLocation(result) shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, "id").url)
       }
       "a new employment is created and mimic api calls is on" in {

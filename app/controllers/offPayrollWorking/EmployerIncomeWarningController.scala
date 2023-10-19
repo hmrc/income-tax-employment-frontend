@@ -34,10 +34,14 @@ class EmployerIncomeWarningController @Inject()(mcc: MessagesControllerComponent
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
+
     val cancelUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
     val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
 
-    Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
-
+    if (appConfig.offPayrollWorking) {
+      Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
+    } else {
+      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
 }

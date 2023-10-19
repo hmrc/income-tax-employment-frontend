@@ -208,7 +208,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           "2022-04-01", None, None, None, None, None, None,
           Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some("2022-01-01"), Some(3), Some(3))),
           Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
-        )), None
+        )), None, Some(false)
       )),
       None,
       None
