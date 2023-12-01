@@ -17,22 +17,32 @@
 package controllers.offPayrollWorking
 
 import forms.YesNoForm
+import models.mongo.EmploymentUserData
 import models.tailoring.ExcludedJourneysResponseModel
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{employerOffPayrollWorkingUrl, fullUrl}
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
+import utils.PageUrls.{employerOffPayrollWorkingUrl, employerOffPayrollWorkingWarningUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
 
 class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 
-  val url: String = fullUrl(employerOffPayrollWorkingUrl(taxYearEOY))
+  private val employmentId: String = anEmploymentUserData.employmentId
+  val url: String = fullUrl(employerOffPayrollWorkingUrl(taxYearEOY, employmentId))
+
+  private def cya(offPayrollWorkingStatus: Option[Boolean] = Some(false), isPriorSubmission: Boolean = true): EmploymentUserData =
+    anEmploymentUserDataWithDetails(
+      anEmploymentDetails.copy("hmrc", offPayrollWorkingStatus = offPayrollWorkingStatus),
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = isPriorSubmission
+    )
 
   override val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
@@ -47,7 +57,7 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
     }
 
     "redirect to submission overview when OPW feature switch is set to false" in {
-      val request = FakeRequest("GET", employerOffPayrollWorkingUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+      val request = FakeRequest("GET", employerOffPayrollWorkingUrl(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
       lazy val result: Future[Result] = {
         dropEmploymentDB()
         authoriseIndividual()
@@ -57,12 +67,59 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
     }
   }
 
-    "Return a bad request when the selection is invalid" in {
+  ".submit" should {
+    "redirect to Overview Page when in year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(employerOffPayrollWorkingUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.headers("Location").head shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+      }
+    }
+
+    s"render page with an error when validation fails" in {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
       lazy val result: WSResponse = {
-        authoriseIndividual()
-        urlPost(url, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        dropEmploymentDB()
+        insertCyaData(cya())
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(employerOffPayrollWorkingUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
+
       result.status shouldBe BAD_REQUEST
     }
+
+    "return next page with false when answer is no" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(employerOffPayrollWorkingUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to OffPayroll Working Warning page" in {
+        result.status shouldBe SEE_OTHER
+        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYear, employmentId, false)
+      }
+    }
+
+    "return next page with true when answer is yes" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(employerOffPayrollWorkingUrl(taxYearEOY, employmentId)), body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to OffPayroll Working Warning page" in {
+        result.status shouldBe SEE_OTHER
+        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYear, employmentId, true)
+      }
+    }
+  }
  }

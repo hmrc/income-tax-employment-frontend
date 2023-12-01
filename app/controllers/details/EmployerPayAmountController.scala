@@ -18,7 +18,7 @@ package controllers.details
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.details.routes.EmploymentTaxController
+import controllers.details.routes.{EmployerIncomeWarningController, EmploymentTaxController}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
@@ -29,6 +29,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.EmploymentSessionService
 import services.employment.EmploymentService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.details.EmployerPayAmountView
@@ -83,19 +84,28 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).map {
-      case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
+    employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).flatMap {
+      case Left(_) => Future.successful(errorHandler.internalServerError())
+      case Right(employmentUserData) => getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId)
     }
   }
 
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
-                              employmentId: String): Call = {
-    if (employmentDetails.isFinished) {
-      CheckEmploymentDetailsController.show(taxYear, employmentId)
-    } else {
-      EmploymentTaxController.show(taxYear, employmentId)
+                              employmentId: String)
+                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+    employmentSessionService.isExistingEmployment(taxYear, employmentId).map {
+      case Left(value) => errorHandler.internalServerError()
+      case Right(isExisting) =>
+        if (isExisting){
+          Redirect(EmployerIncomeWarningController.show(taxYear, employmentId))
+        }
+        else if (employmentDetails.isFinished) {
+          Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
+        } else {
+          Redirect(EmploymentTaxController.show(taxYear, employmentId))
+        }
     }
+
   }
 }

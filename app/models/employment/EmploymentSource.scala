@@ -155,7 +155,8 @@ case class EmploymentSource(employmentId: String,
       employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
       taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      currentDataIsHmrcHeld = !isUsingCustomerData
+      currentDataIsHmrcHeld = !isUsingCustomerData,
+      offPayrollWorkingStatus = offPayrollWorkingStatus
     )
   }
 

@@ -16,12 +16,17 @@
 
 package controllers.offPayrollWorking
 
-import actions.{ActionsProvider, AuthorisedAction, TaxYearAction}
+import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import forms.{YesNoForm}
-import play.api.data.Form
+import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingWarningController
+import forms.details.EmploymentDetailsFormsProvider
+import models.UserSessionDataRequest
+import models.employment.EmploymentDetailsType
+import models.offPayrollWorking.{EmployerOffPayrollWorkingStatusPage => PageModel}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
@@ -29,33 +34,48 @@ import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerOffPayrollWorkingController @Inject()(mcc: MessagesControllerComponents,
-                                                    authAction: AuthorisedAction,
-                                                    actionsProvider: ActionsProvider,
+class EmployerOffPayrollWorkingController @Inject()(actionsProvider: ActionsProvider,
                                                     view: EmployerOffPayrollWorkingView,
+                                                    formsProvider: EmploymentDetailsFormsProvider,
+                                                    employmentService: EmploymentService,
                                                     errorHandler: ErrorHandler)
-                                                   (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
-  with I18nSupport with SessionHelper {
+                                                   (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}")
-
-  def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-
-    if (appConfig.offPayrollWorking) {
-      Future.successful(Ok(view(form(request.user.isAgent), taxYear)))
-    } else {
-      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ) { implicit request =>
+    val form = formsProvider.offPayrollStatusForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName)
+    Ok(view(PageModel(taxYear, employmentId, request.user, form, request.employmentUserData)))
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
-
-    form(request.user.isAgent).bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear))),
-      yesNo => {
-        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-      }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ).async { implicit request =>
+    formsProvider.offPayrollStatusForm(request.user.isAgent, request.employmentUserData.employment.employmentDetails.employerName).bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(view(PageModel(taxYear, employmentId, request.user, formWithErrors, request.employmentUserData)))),
+      yesNo => handleSuccessForm(taxYear, employmentId, yesNo)
     )
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, questionValue: Boolean)
+                               (implicit request: UserSessionDataRequest[_]): Future[Result] = {
+    questionValue match {
+      case true =>
+        employmentService.updateOffPayrollWorkingStatus(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
+          case Left(_) => errorHandler.internalServerError()
+          case Right(employmentUserData) => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
+        }
+      case false =>
+        employmentService.updateOffPayrollWorkingStatus(request.user, taxYear, employmentId, request.employmentUserData, questionValue).map {
+          case Left(_) => errorHandler.internalServerError()
+          case Right(employmentUserData) => Redirect(EmployerOffPayrollWorkingWarningController.show(taxYear, employmentId))
+        }
+    }
   }
 
 }

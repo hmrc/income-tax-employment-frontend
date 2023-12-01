@@ -70,4 +70,11 @@ class EmploymentDetailsFormsProvider {
     invalidCharactersKey = "employment.payrollId.error.invalidCharacters",
     tooManyCharactersKey = "employment.payrollId.error.tooManyCharacters"
   )
+
+  def offPayrollStatusForm(isAgent: Boolean,
+                           employerName: String)
+                     (implicit messages: Messages): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}",
+    Seq(employerName)
+  )
 }

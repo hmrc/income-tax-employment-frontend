@@ -100,6 +100,19 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
+  def isExistingEmployment(taxYear: Int, employmentId: String)(
+    implicit authorisationRequest: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, Boolean]] = {
+    getPriorData(authorisationRequest.user, taxYear)(hc).map {
+      case Right(IncomeTaxUserData(Some(priorData))) => priorData
+        Right(priorData.hmrcEmploymentSourceWith(employmentId).isDefined || priorData.customerEmploymentSourceWith(employmentId).isDefined)
+      case Right(IncomeTaxUserData(None)) =>
+        logger.info(s"[EmploymentSessionService][findPreviousEmploymentUserData] No employment data found for user. SessionId: " +
+          s"${authorisationRequest.user.sessionId}")
+        Right(false)
+      case Left(error) => Left(errorHandler.handleError(error.status))
+    }
+  }
+
   //scalastyle:off
   def createOrUpdateSessionData[A](user: User,
                                    taxYear: Int,
@@ -229,7 +242,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     Try {
       val employment = formCreateUpdateEmployment(cya, prior, section)
       val employmentData = formCreateUpdateEmploymentData(cya, prior, section)
-
       (employment.dataHasNotChanged, employmentData.dataHasNotChanged, customerEmploymentId.isDefined, hmrcEmploymentId.isDefined) match {
         case (true, true, _, _) => CreateUpdateEmploymentRequest()
         case (true, false, _, true) =>

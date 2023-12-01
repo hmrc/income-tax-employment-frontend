@@ -22,6 +22,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import utils.PageUrls.{employerIncomeWarningUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -30,18 +31,20 @@ import scala.concurrent.Future
 class EmployerIncomeWarningControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
 
+  private val employmentId: String = anEmploymentUserData.employmentId
+
   ".show" when {
     "render the correct view for an individual in year" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(employerIncomeWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerIncomeWarningUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has OK status" in {
         result.status shouldBe OK
       }
 
       "redirect to submission overview when OPW feature switch is set to false" in {
-        val request = FakeRequest("GET", employerIncomeWarningUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        val request = FakeRequest("GET", employerIncomeWarningUrl(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
         lazy val result: Future[Result] = {
           dropEmploymentDB()
           authoriseIndividual()
@@ -55,7 +58,7 @@ class EmployerIncomeWarningControllerISpec extends IntegrationTest with ViewHelp
     "render the correct view for an agent in year" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = true)
-        urlGet(fullUrl(employerIncomeWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerIncomeWarningUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       "has OK status" in {
         result.status shouldBe OK

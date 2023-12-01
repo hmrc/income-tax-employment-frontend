@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package controllers.offPayrollWorking
+package controllers.details
 
-import actions.ActionsProvider
-import config.{AppConfig, ErrorHandler}
+import actions.{ActionsProvider, AuthorisedAction}
+import config.AppConfig
 import controllers.employment.routes.CheckEmploymentDetailsController
-import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
+import models.details.pages.{EmployerIncomeWarningPage => PageModel}
 import models.employment.EmploymentDetailsType
-import models.offPayrollWorking.{EmployerOffPayrollWorkingWarningPage => PageModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
+import views.html.details.EmployerIncomeWarningView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: ActionsProvider,
-                                                           employmentService: EmploymentService,
-                                                           view: EmployerOffPayrollWorkingWarningView,
-                                                           errorHandler: ErrorHandler)
-                                                          (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport with SessionHelper {
+class EmployerIncomeWarningController @Inject()(actionsProvider: ActionsProvider,
+                                                employmentService: EmploymentService,
+                                                authAction: AuthorisedAction,
+                                                view: EmployerIncomeWarningView)
+                                               (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController(mcc)
+  with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
     taxYear = taxYear,
@@ -45,7 +45,7 @@ class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: Acti
     employmentType = EmploymentDetailsType
   ) { implicit request =>
 
-    val cancelUrl = EmployerOffPayrollWorkingController.show(taxYear, employmentId).url
+    val cancelUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
     val continueUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
     if (appConfig.offPayrollWorking) {

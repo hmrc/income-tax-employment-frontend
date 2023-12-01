@@ -119,4 +119,17 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
 
     employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
+
+  def updateOffPayrollWorkingStatus(user: User,
+                                taxYear: Int,
+                                employmentId: String,
+                                originalEmploymentUserData: EmploymentUserData,
+                                offPayrollWorkingStatus: Boolean): Future[Either[Unit, EmploymentUserData]] = {
+    val cya = originalEmploymentUserData.employment
+
+    val updatedEmployment = cya.copy(cya.employmentDetails.copy(offPayrollWorkingStatus = Some(offPayrollWorkingStatus)))
+
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+  }
+
 }
