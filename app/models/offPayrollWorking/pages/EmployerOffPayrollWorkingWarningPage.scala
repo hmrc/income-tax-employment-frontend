@@ -14,33 +14,28 @@
  * limitations under the License.
  */
 
-package models.offPayrollWorking
+package models.offPayrollWorking.pages
 
 import models.User
 import models.mongo.EmploymentUserData
-import play.api.data.Form
 
-case class EmployerOffPayrollWorkingStatusPage(taxYear: Int,
-                                               employmentId: String,
-                                               employerName: String,
-                                               isAgent: Boolean,
-                                               form: Form[Boolean])
+case class EmployerOffPayrollWorkingWarningPage(taxYear: Int,
+                                                employmentId: String,
+                                                employerName: String,
+                                                isAgent: Boolean)
 
-object EmployerOffPayrollWorkingStatusPage {
+object EmployerOffPayrollWorkingWarningPage {
 
   def apply(taxYear: Int,
             employmentId: String,
             user: User,
-            form: Form[Boolean],
-            employmentUserData: EmploymentUserData): EmployerOffPayrollWorkingStatusPage = {
-    val optOffPayrollWorkingStatus = employmentUserData.employment.employmentDetails.offPayrollWorkingStatus
+            employmentUserData: EmploymentUserData): EmployerOffPayrollWorkingWarningPage = {
 
-    EmployerOffPayrollWorkingStatusPage(
+    EmployerOffPayrollWorkingWarningPage(
       taxYear = taxYear,
       employmentId = employmentId,
       employerName = employmentUserData.employment.employmentDetails.employerName,
-      isAgent = user.isAgent,
-      form = optOffPayrollWorkingStatus.fold(form)(offPayrollWorkingStatus => if (form.hasErrors) form else form.fill(offPayrollWorkingStatus))
+      isAgent = user.isAgent
     )
   }
 }

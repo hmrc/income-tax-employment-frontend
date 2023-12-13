@@ -29,6 +29,7 @@ import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
@@ -416,7 +417,9 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         case (Right(None), Right(None)) if redirectWhenNoPrior => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
           s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-        case (Right(optionalCya), Right(employmentData)) => block(optionalCya, employmentData)
+        case (Right(optionalCya), Right(employmentData)) =>
+          print("=========priorDataResponse: "+Json.toJson(employmentData).toString)
+          block(optionalCya, employmentData)
         case (_, Left(error)) => Future(errorHandler.handleError(error.status))
         case (Left(_), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       }

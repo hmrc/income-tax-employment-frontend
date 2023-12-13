@@ -20,28 +20,22 @@ import models.User
 import models.mongo.EmploymentUserData
 
 case class EmployerTaxWarningPage(taxYear: Int,
-                                     employmentId: String,
-                                     employerName: String,
-                                     isAgent: Boolean,
-                                     continueUrl: String,
-                                     cancelUrl: String)
+                                  employmentId: String,
+                                  employerName: String,
+                                  isAgent: Boolean)
 
 object EmployerTaxWarningPage {
 
   def apply(taxYear: Int,
             employmentId: String,
             user: User,
-            employmentUserData: EmploymentUserData,
-            continueUrl: String,
-            cancelUrl: String): EmployerTaxWarningPage = {
+            employmentUserData: EmploymentUserData): EmployerTaxWarningPage = {
 
     EmployerTaxWarningPage(
       taxYear = taxYear,
       employmentId = employmentId,
       employerName = employmentUserData.employment.employmentDetails.employerName,
-      isAgent = user.isAgent,
-      continueUrl = continueUrl,
-      cancelUrl = cancelUrl
+      isAgent = user.isAgent
     )
   }
 }

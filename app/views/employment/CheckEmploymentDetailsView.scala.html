@@ -122,14 +122,14 @@
         val payReceived = EmploymentDataForView(
             messages(msgKeyGeneric + ".payReceived"),
             employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
+            EmployerIncomeWarningController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.payReceived")
         )
 
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            EmploymentTaxController.show(taxYear, employmentDetails.employmentId),
+            EmployerTaxWarningController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.totalTaxToDate")
         )
 
@@ -162,7 +162,7 @@
         )}
     }
 
-     @if(appConfig.offPayrollWorking){
+     @if(appConfig.offPayrollWorking && employmentDetails.offPayrollWorkingStatus.isDefined){
 
         <h2 class="govuk-heading-m">@messages(s"employment.employmentDetails.subHeading.offPayrollWorking")</h2>
 

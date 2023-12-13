@@ -18,11 +18,12 @@ package controllers.details
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.details.routes.{EmployerIncomeWarningController, EmploymentTaxController}
+import controllers.details.routes.EmploymentTaxController
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import models.details.EmploymentDetails
+import models.details.pages.{EmployerIncomeWarningPage => IncomeWarningPageModel}
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -94,18 +95,10 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
                               taxYear: Int,
                               employmentId: String)
                              (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
-    employmentSessionService.isExistingEmployment(taxYear, employmentId).map {
-      case Left(value) => errorHandler.internalServerError()
-      case Right(isExisting) =>
-        if (isExisting){
-          Redirect(EmployerIncomeWarningController.show(taxYear, employmentId))
-        }
-        else if (employmentDetails.isFinished) {
-          Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
-        } else {
-          Redirect(EmploymentTaxController.show(taxYear, employmentId))
-        }
+    if (employmentDetails.isFinished) {
+      Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+    } else {
+      Future.successful(Redirect(EmploymentTaxController.show(taxYear, employmentId)))
     }
-
   }
 }

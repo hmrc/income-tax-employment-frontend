@@ -18,7 +18,9 @@
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Link
-@import models.offPayrollWorking.EmployerOffPayrollWorkingWarningPage
+@import models.offPayrollWorking.pages.EmployerOffPayrollWorkingWarningPage
+@import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
+@import controllers.employment.routes.CheckEmploymentDetailsController
 
 @this(
     layout: Layout,
@@ -30,14 +32,14 @@
 
 @(pageModel: EmployerOffPayrollWorkingWarningPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"common.employment.employerOpw.warning.title.${if(pageModel.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"common.employment.warning.title.${if(pageModel.isAgent) "agent" else "individual"}")}
 
-@headingForUse = @{messages(s"common.employment.employerOpw.warning.heading.${if(pageModel.isAgent) "agent" else "individual"}")}
+@headingForUse = @{messages(s"common.employment.warning.heading.${if(pageModel.isAgent) "agent" else "individual"}")}
 
 @layout(pageTitle = titleForUse, taxYear = Some(pageModel.taxYear), isAgent = pageModel.isAgent) {
         <h1 class="govuk-heading-l">@headingForUse</h1>
 
-        <p class="govuk-body">@messages("common.employment.employerOpw.warning.p1")</p>
+        <p class="govuk-body">@messages("common.employment.warning.p1", pageModel.employerName)</p>
 
         <ul class="govuk-body govuk-list govuk-list--bullet">
             <li>@messages("employment.employerOpw.warning.b1")</li>
@@ -46,8 +48,8 @@
         <p class="govuk-body">@messages("employment.employerOpw.warning.p2")</p>
 
         <div class="govuk-button-group">
-            @button(alternativeText = messages("common.confirm"), href = Some(pageModel.continueUrl))
-            @link(pageModel.cancelUrl, messages("common.cancel"))
+            @button(alternativeText = messages("common.confirm"), href = Some(CheckEmploymentDetailsController.show(pageModel.taxYear, pageModel.employmentId).url))
+            @link(EmployerOffPayrollWorkingController.show(pageModel.taxYear, pageModel.employmentId).url, messages("common.cancel"))
         </div>
 
 }

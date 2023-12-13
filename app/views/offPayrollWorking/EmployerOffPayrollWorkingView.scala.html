@@ -21,7 +21,7 @@
 @import views.html.templates.helpers.InputRadio
 @import views.html.templates.helpers.Heading
 @import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
-@import models.offPayrollWorking.EmployerOffPayrollWorkingStatusPage
+@import models.offPayrollWorking.pages.EmployerOffPayrollWorkingStatusPage
 
 @this(
     layout: Layout,
@@ -47,8 +47,8 @@
     <p class="govuk-body" id="employment-opw-paragraph-1">@messages(s"employment.employerOpw.p1.${if(pageModel.isAgent) "agent" else "individual"}", pageModel.employerName)</p>
     <p class="govuk-body" id="employment-opw-paragraph-2">@messages(s"employment.employerOpw.p2", pageModel.employerName)</p>
     <ul class="govuk-body govuk-list govuk-list--bullet">
-        <li>@messages(s"employment.employerOpw.b1.${if(pageModel.isAgent) "agent" else "individual"}")</li>
-        <li>@messages(s"employment.employerOpw.b2.${if(pageModel.isAgent) "agent" else "individual"}")</li>
+        <li>@messages(s"employment.employerOpw.b1.${if(pageModel.isAgent) "agent" else "individual"}", pageModel.employerName)</li>
+        <li>@messages(s"employment.employerOpw.b2.${if(pageModel.isAgent) "agent" else "individual"}", pageModel.employerName)</li>
     </ul>
 
     <p class="govuk-body">
@@ -63,7 +63,7 @@
             form = pageModel.form,
             legendHeading = Some(Html(headingForUse)),
             classes = Some("govuk-fieldset__legend--m"),
-            inline = true
+                inline = true
         )
         @button()
     }

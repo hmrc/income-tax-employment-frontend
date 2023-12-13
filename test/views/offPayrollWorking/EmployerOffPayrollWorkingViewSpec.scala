@@ -18,6 +18,7 @@ package views.offPayrollWorking
 
 import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
 import forms.YesNoForm
+import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -25,10 +26,13 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.offPayrollWorking.EmployerOffPayrollWorkingStatusPageBuilder.aEmployerOffPayrollWorkingStatusPage
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingView
 
 class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
-
+  private val employerName = anEmploymentDetails.employerName
+  private val formsProvider = new EmploymentDetailsFormsProvider()
   object Selectors {
     val paragraph1 = "#employment-opw-paragraph-1"
     val paragraph2 = "#employment-opw-paragraph-2"
@@ -70,7 +74,7 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
     override val expectedHeading: String = "Off-payroll working (IR35)"
     override val yesText: String = "Yes"
     override val noText: String = "No"
-    override val expectedParagraph2: String = "This means ABC Digital Ltd:"
+    override val expectedParagraph2: String = s"This means $employerName:"
     override val expectedLink: String = "Find out more about off-payroll working (opens in a new tab)"
     override val expectedErrorTitle = s"Error: $expectedTitle"
     override val expectedButtonText: String = "Continue"
@@ -91,35 +95,35 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    override val expectedRadioHeading: String = "Do you agree with ABC Digital’s decision?"
-    override val expectedParagraph1: String = "ABC Digital Ltd has told HMRC you work for them via an intermediary and are subject to the off-payroll rules."
+    override val expectedRadioHeading: String = s"Do you agree with $employerName’s decision?"
+    override val expectedParagraph1: String = s"$employerName has told HMRC you work for them via an intermediary and are subject to the off-payroll rules."
     override val expectedBullet1: String = "treated you as an employee for tax purposes"
     override val expectedBullet2: String = "deducted Income Tax and National Insurance contributions from your fees"
-    override val expectedError = "Select yes if you agree with ABC Digital’s decision"
+    override val expectedError = s"Select yes if you agree with $employerName’s decision"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    override val expectedRadioHeading: String = "A ydych yn cytuno â phenderfyniad ABC Digital Ltd?"
-    override val expectedParagraph1: String = "Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, eich bod yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
-    override val expectedBullet1: String = "gwnaeth ABC Digital Ltd eich trin fel cyflogai at ddibenion treth"
-    override val expectedBullet2: String = "gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd"
-    override val expectedError = "Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad ABC Digital Ltd"
+    override val expectedRadioHeading: String = s"A ydych yn cytuno â phenderfyniad $employerName?"
+    override val expectedParagraph1: String = s"Gwnaeth $employerName roi gwybod i CThEF, drwy gyfryngwr, eich bod yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
+    override val expectedBullet1: String = s"gwnaeth $employerName eich trin fel cyflogai at ddibenion treth"
+    override val expectedBullet2: String = s"gwnaeth $employerName ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd"
+    override val expectedError = s"Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad $employerName"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    override val expectedRadioHeading: String = "Does your client agree with ABC Digital’s decision?"
-    override val expectedParagraph1: String = "ABC Digital Ltd has told HMRC your client works for them via an intermediary and is subject to the off-payroll rules."
+    override val expectedRadioHeading: String = s"Does your client agree with $employerName’s decision?"
+    override val expectedParagraph1: String = s"$employerName has told HMRC your client works for them via an intermediary and is subject to the off-payroll rules."
     override val expectedBullet1: String = "treated your client as an employee for tax purposes"
     override val expectedBullet2: String = "deducted Income Tax and National Insurance contributions from their fees"
-    override val expectedError = "Select yes if your client agrees with ABC Digital’s decision"
+    override val expectedError = s"Select yes if your client agrees with $employerName’s decision"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    override val expectedRadioHeading: String = "A yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd?"
-    override val expectedParagraph1: String = "Gwnaeth ABC Digital Ltd roi gwybod i CThEF, drwy gyfryngwr, fod eich cleient yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
-    override val expectedBullet1: String = "gwnaeth ABC Digital Ltd drin eich cleient fel cyflogai at ddibenion treth"
-    override val expectedBullet2: String = "gwnaeth ABC Digital Ltd ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o ffioedd eich cleient"
-    override val expectedError = "Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad ABC Digital Ltd"
+    override val expectedRadioHeading: String = s"A yw’ch cleient yn cytuno â phenderfyniad $employerName?"
+    override val expectedParagraph1: String = s"Gwnaeth $employerName roi gwybod i CThEF, drwy gyfryngwr, fod eich cleient yn gyflogai iddynt, ac felly yn destun rheolau oddi ar y gyflogres."
+    override val expectedBullet1: String = s"gwnaeth $employerName drin eich cleient fel cyflogai at ddibenion treth"
+    override val expectedBullet2: String = s"gwnaeth $employerName ddidynnu Treth Incwm a chyfraniadau Yswiriant Gwladol o ffioedd eich cleient"
+    override val expectedError = s"Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad $employerName"
   }
 
   override protected val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -129,6 +133,7 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
+  private val formProvider = new EmploymentDetailsFormsProvider()
   private lazy val underTest = inject[EmployerOffPayrollWorkingView]
   private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}")
 
@@ -138,7 +143,8 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(yesNoForm(userScenario.isAgent), taxYearEOY)
+        val pageModel = aEmployerOffPayrollWorkingStatusPage.copy(isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(pageModel)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         import Selectors._
@@ -154,7 +160,7 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButton)
-        formPostLinkCheck(EmployerOffPayrollWorkingController.submit(taxYearEOY).url, continueButtonFormSelector)
+        formPostLinkCheck(EmployerOffPayrollWorkingController.submit(pageModel.taxYear, pageModel.employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
       }
 
@@ -162,7 +168,9 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(yesNoForm(userScenario.isAgent).bind(Map(YesNoForm.yesNo -> "")), taxYearEOY)
+        val form = formsProvider.offPayrollStatusForm(userScenario.isAgent, aEmployerOffPayrollWorkingStatusPage.employerName)
+        val pageModel = aEmployerOffPayrollWorkingStatusPage.copy(isAgent = userScenario.isAgent, form = form.bind(Map("value" -> "")))
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -179,7 +187,7 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
         radioButtonCheck(yesText, radioNumber = 1, checked = false)
         radioButtonCheck(noText, radioNumber = 2, checked = false)
         buttonCheck(expectedButtonText, continueButton)
-        formPostLinkCheck(EmployerOffPayrollWorkingController.submit(taxYearEOY).url, continueButtonFormSelector)
+        formPostLinkCheck(EmployerOffPayrollWorkingController.submit(pageModel.taxYear, pageModel.employmentId).url, continueButtonFormSelector)
         welshToggleCheck(userScenario.isWelsh)
         errorSummaryCheck(userScenario.specificExpectedResults.get.expectedError, Selectors.yesSelector)
         errorAboveElementCheck(userScenario.specificExpectedResults.get.expectedError, Some("value"))

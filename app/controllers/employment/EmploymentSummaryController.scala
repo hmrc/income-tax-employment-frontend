@@ -51,7 +51,6 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       val priorData: Option[AllEmploymentData] = request.employmentPriorData
-
       val employmentData = if (isInYear) priorData.map(_.latestInYearEmployments).getOrElse(Seq()) else priorData.map(_.latestEOYEmployments).getOrElse(Seq())
       lazy val latestExpenses = if (isInYear) priorData.flatMap(_.latestInYearExpenses) else priorData.flatMap(_.latestEOYExpenses)
       lazy val doExpensesExist = latestExpenses.isDefined

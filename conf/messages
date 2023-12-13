@@ -74,13 +74,13 @@ common.september = September
 common.october = October
 common.november = November
 common.december = December
-common.employment.employerOpw.warning.title.individual = Do you want to change your employment details?
-common.employment.employerOpw.warning.heading.individual = Do you want to change your employment details?
-common.employment.employerOpw.warning.title.agent = Do you want to change your client’s employment details?
-common.employment.employerOpw.warning.heading.agent = Do you want to change your client’s employment details?
-common.employment.employerOpw.warning.p1 = You are about to change information {0} sent to HMRC:
-common.employment.employerOpw.warning.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
-common.employment.employerOpw.warning.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
+common.employment.warning.title.individual = Do you want to change your employment details?
+common.employment.warning.heading.individual = Do you want to change your employment details?
+common.employment.warning.title.agent = Do you want to change your client’s employment details?
+common.employment.warning.heading.agent = Do you want to change your client’s employment details?
+common.employment.warning.p1 = You are about to change information {0} sent to HMRC:
+common.employment.warning.p2.individual = This change affects tax you owe and will be reviewed by HMRC.
+common.employment.warning.p2.agent = This change affects tax your client owes and will be reviewed by HMRC.
 
 #################   Subheadings/Captions    ##################################
 
@@ -199,11 +199,9 @@ employment.employerOpw.heading.agent = Does your client agree with {0}’s decis
 employment.employerOpw.error.individual = Select yes if you agree with {0}’s decision
 employment.employerOpw.error.agent = Select yes if your client agrees with {0}’s decision
 
+#################       Employer off payroll working Warning messages        ########################################
 employment.employerOpw.warning.b1 = Off-payroll working status
 employment.employerOpw.warning.p2 = HMRC may review this change.
-
-employment.employerOpw.warning.payReceived.b1 = Pay received
-employment.employerOpw.warning.tax.b1 = UK tax taken from pay
 
 #################       Select employer messages        ########################################
 
@@ -372,6 +370,9 @@ employerPayAmount.paragraph.individual = If you were not paid {0}, tell us the c
 employerPayAmount.paragraphNewAccount.agent = Enter the gross amount. This can usually be found on your client’s P60.
 employerPayAmount.paragraphNewAccount.individual = Enter the gross amount. This can usually be found on your P60.
 
+#################       Employment pay warning messages        ########################################
+employment.employmentIncomeWarning.payReceived.b1 = Pay received
+
 #################       Employment tax messages        ########################################
 
 employment.employmentTax.error.format = Enter the amount of UK tax in the correct format
@@ -383,6 +384,9 @@ employment.employmentTax.formLabel.individual = You can usually find this amount
 employment.employmentTax.heading.agent = How much UK tax was taken from your client’s {0} earnings?
 employment.employmentTax.heading.individual = How much UK tax was taken from your {0} earnings?
 employment.employmentTax.preFill.amount = If £{0} was not taken in UK tax, tell us the correct amount.
+
+#################       Employment tax warning messages        ########################################
+employment.employmentTaxWarning.tax.b1 = UK tax taken from pay
 
 #################       Other payments amount messages        ########################################
 

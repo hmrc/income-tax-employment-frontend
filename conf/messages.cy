@@ -74,13 +74,13 @@ common.september = Medi
 common.october = Hydref
 common.november = Tachwedd
 common.december = Rhagfyr
-common.employment.employerOpw.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
-common.employment.employerOpw.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
-common.employment.employerOpw.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
-common.employment.employerOpw.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
-common.employment.employerOpw.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan {0}:
-common.employment.employerOpw.warning.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
-common.employment.employerOpw.warning.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
+common.employment.warning.title.individual = A ydych am newid eich manylion cyflogaeth?
+common.employment.warning.heading.individual = A ydych am newid eich manylion cyflogaeth?
+common.employment.warning.title.agent = A ydych am newid manylion cyflogaeth eich cleient?
+common.employment.warning.heading.agent = A ydych am newid manylion cyflogaeth eich cleient?
+common.employment.warning.p1 = Rydych ar fin newid manylion a anfonwyd at CThEF gan {0}:
+common.employment.warning.p2.individual = Mae’r newid hwn yn effeithio ar y dreth sydd arnoch, a bydd CThEF yn ei adolygu.
+common.employment.warning.p2.agent = Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu.
 
 #################   Subheadings/Captions    ##################################
 
@@ -199,12 +199,9 @@ employment.employerOpw.heading.agent = A yw’ch cleient yn cytuno â phenderfyn
 employment.employerOpw.error.individual = Dewiswch ‘Iawn’ os ydych yn cytuno â phenderfyniad {0}
 employment.employerOpw.error.agent = Dewiswch ‘Iawn’ os yw’ch cleient yn cytuno â phenderfyniad {0}
 
+#################       Employer off payroll working Warning messages        ########################################
 employment.employerOpw.warning.b1 = Statws gweithio oddi ar y gyflogres
 employment.employerOpw.warning.p2 = Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn
-
-employment.employerOpw.warning.payReceived.b1 = Cyflog a gafwyd
-
-employment.employerOpw.warning.tax.b1 = Treth y DU a dynnwyd o’r cyflog
 
 #################       Select employer messages        ########################################
 
@@ -216,8 +213,8 @@ employment.unignoreEmployment.error = Dewiswch gyfnod cyflogaeth neu ychwanegwch
 
 #################       Check Employment details messages        ########################################
 employment.employmentDetails.subHeading.offPayrollWorking = Gweithio oddi ar y gyflogres (IR35)
-employment.employmentDetails.p1.individual = Gwnaeth {0} eich trin fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd
-employment.employmentDetails.p1.agent = Gwnaeth {0} drin eich cleient fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’i ffioedd
+employment.employmentDetails.offPayrollWorking.p1.individual = Gwnaeth {0} eich trin fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd
+employment.employmentDetails.offPayrollWorking.p1.agent = Gwnaeth {0} drin eich cleient fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’i ffioedd
 
 employment.employmentDetails.bannerHeading = Mae’n rhaid i chi ychwanegu manylion cyflogaeth sydd ar goll:
 employment.employmentDetails.closeCompany =  Cwmni caeedig
@@ -372,6 +369,9 @@ employerPayAmount.paragraph.individual = Os na chafodd {0} ei dalu i chi, rhowch
 employerPayAmount.paragraphNewAccount.agent = Nodwch y swm gros. Fel arfer, mae hwn i’w weld ar P60 eich cleient.
 employerPayAmount.paragraphNewAccount.individual = Nodwch y swm gros. Mae hwn i’w weld fel arfer ar eich P60.
 
+#################       Employment pay warning messages        ########################################
+employment.employmentIncomeWarning.payReceived.b1 = Cyflog a gafwyd
+
 #################       Employment tax messages        ########################################
 
 employment.employmentTax.error.format = Nodwch y swm o dreth y DU yn y fformat cywir
@@ -383,6 +383,9 @@ employment.employmentTax.formLabel.individual = Fel arfer, mae’r swm hwn i’w
 employment.employmentTax.heading.agent = Faint o dreth y DU a gafodd ei thynnu o enillion {0} eich cleient?
 employment.employmentTax.heading.individual = Faint o dreth y DU a gafodd ei thynnu o’ch enillion {0}?
 employment.employmentTax.preFill.amount = Os na chafodd £{0} ei thynnu fel treth y DU, rhowch wybod i ni beth yw’r swm cywir.
+
+#################       Employment tax warning messages        ########################################
+employment.employmentTaxWarning.tax.b1 = Treth y DU a dynnwyd o’r cyflog
 
 #################       Other payments amount messages        ########################################
 

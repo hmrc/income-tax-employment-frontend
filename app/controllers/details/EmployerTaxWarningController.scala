@@ -16,9 +16,8 @@
 
 package controllers.details
 
-import actions.{ActionsProvider, AuthorisedAction, TaxYearAction}
+import actions.{ActionsProvider, AuthorisedAction}
 import config.AppConfig
-import controllers.employment.routes.CheckEmploymentDetailsController
 import models.details.pages.{EmployerTaxWarningPage => PageModel}
 import models.employment.EmploymentDetailsType
 import play.api.i18n.I18nSupport
@@ -29,7 +28,7 @@ import utils.SessionHelper
 import views.html.details.EmployerTaxWarningView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class EmployerTaxWarningController @Inject()(actionsProvider: ActionsProvider,
                                              employmentService: EmploymentService,
@@ -44,13 +43,6 @@ class EmployerTaxWarningController @Inject()(actionsProvider: ActionsProvider,
     employmentId = employmentId,
     employmentType = EmploymentDetailsType
   ){ implicit request =>
-    val cancelUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-    val continueUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-
-    if (appConfig.offPayrollWorking) {
-      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData,  continueUrl, cancelUrl)))
-    } else {
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
+      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData)))
   }
 }

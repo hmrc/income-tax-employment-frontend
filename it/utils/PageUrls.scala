@@ -285,13 +285,13 @@ object PageUrls extends IntegrationTest {
   def removeAllEmploymentUrl(taxYear: Int): String = s"$appUrl/$taxYear/remove-all-employments"
 
   //  *****************     Off Payroll Working pages      ***************************
-  def employerOffPayrollWorkingWarningUrl(taxYear: Int, employmentId: String, offPayrollWorkingStatus: Boolean): String = s"$appUrl/$taxYear/employer-off-payroll-working-warning"
+  def employerOffPayrollWorkingWarningUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-off-payroll-working-warning?employmentId=$employmentId"
 
-  def employerOffPayrollWorkingUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-off-payroll-working"
+  def employerOffPayrollWorkingUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-off-payroll-working?employmentId=$employmentId"
 
-  def employerIncomeWarningUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-income-warning"
+  def employerIncomeWarningUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-income-warning?employmentId=$employmentId"
 
-  def employerTaxWarningUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-tax-warning"
+  def employerTaxWarningUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-tax-warning?employmentId=$employmentId"
 }
 
 //scalastyle:on number.of.methods

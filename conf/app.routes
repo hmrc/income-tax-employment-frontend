@@ -60,6 +60,13 @@ GET         /:taxYear/employer-income-warning                                   
 
 GET         /:taxYear/employer-tax-warning                                           controllers.details.EmployerTaxWarningController.show(taxYear: Int, employmentId: String)
 
+#############################    Employment details  Off Payroll Working      #############################
+
+GET         /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.submit(taxYear: Int, employmentId: String)
+
+GET         /:taxYear/employer-off-payroll-working-warning                           controllers.offPayrollWorking.EmployerOffPayrollWorkingWarningController.show(taxYear: Int, employmentId: String)
+
 #################       Employment management pages      ###########################
 
 GET         /:taxYear/remove-employment                                              controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
@@ -346,13 +353,6 @@ POST        /:taxYear/income-from-employment                                    
 
 GET         /:taxYear/remove-all-employments                                         controllers.tailorings.RemoveAllEmploymentController.show(taxYear: Int)
 POST        /:taxYear/remove-all-employments                                         controllers.tailorings.RemoveAllEmploymentController.submit(taxYear: Int)
-
-#############################       Off Payroll Working      #############################
-
-GET         /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.show(taxYear: Int, employmentId: String)
-POST        /:taxYear/employer-off-payroll-working                                   controllers.offPayrollWorking.EmployerOffPayrollWorkingController.submit(taxYear: Int, employmentId: String)
-
-GET         /:taxYear/employer-off-payroll-working-warning                           controllers.offPayrollWorking.EmployerOffPayrollWorkingWarningController.show(taxYear: Int, employmentId: String)
 
 ###########################     Error pages     ####################################
 

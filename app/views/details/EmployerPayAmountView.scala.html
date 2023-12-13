@@ -44,8 +44,6 @@
         @{messages(s"employerPayAmount.paragraphNewAccount.${if (request.user.isAgent) "agent" else "individual"}")}
     </p>
 
-
-
     @formWithCsrf(controllers.details.routes.EmployerPayAmountController.submit(taxYear, empId)) {
         @inputText(
             form,

@@ -23,7 +23,7 @@ import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingWarningCont
 import forms.details.EmploymentDetailsFormsProvider
 import models.UserSessionDataRequest
 import models.employment.EmploymentDetailsType
-import models.offPayrollWorking.{EmployerOffPayrollWorkingStatusPage => PageModel}
+import models.offPayrollWorking.pages.{EmployerOffPayrollWorkingStatusPage => PageModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.employment.EmploymentService

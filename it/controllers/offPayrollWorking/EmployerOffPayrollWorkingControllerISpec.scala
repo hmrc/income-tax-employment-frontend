@@ -18,7 +18,6 @@ package controllers.offPayrollWorking
 
 import forms.YesNoForm
 import models.mongo.EmploymentUserData
-import models.tailoring.ExcludedJourneysResponseModel
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
@@ -37,9 +36,9 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
   private val employmentId: String = anEmploymentUserData.employmentId
   val url: String = fullUrl(employerOffPayrollWorkingUrl(taxYearEOY, employmentId))
 
-  private def cya(offPayrollWorkingStatus: Option[Boolean] = Some(false), isPriorSubmission: Boolean = true): EmploymentUserData =
+  private def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
     anEmploymentUserDataWithDetails(
-      anEmploymentDetails.copy("hmrc", offPayrollWorkingStatus = offPayrollWorkingStatus),
+      anEmploymentDetails.copy("hmrc"),
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = isPriorSubmission
     )
@@ -49,8 +48,9 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
   ".show" should {
     "Render the employer off payroll working page" in {
       lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya())
         authoriseIndividual()
-        excludeStub(ExcludedJourneysResponseModel(Seq()),"1234567890", taxYearEOY)
         urlGet(url, false, false, Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       result.status shouldBe OK
@@ -92,7 +92,7 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
       result.status shouldBe BAD_REQUEST
     }
 
-    "return next page with false when answer is no" which {
+    "return next page when answer is no" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -103,11 +103,11 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
 
       "redirects to OffPayroll Working Warning page" in {
         result.status shouldBe SEE_OTHER
-        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYear, employmentId, false)
+        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)
       }
     }
 
-    "return next page with true when answer is yes" which {
+    "return next page when answer is yes" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -118,7 +118,7 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
 
       "redirects to OffPayroll Working Warning page" in {
         result.status shouldBe SEE_OTHER
-        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYear, employmentId, true)
+        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)
       }
     }
   }

@@ -22,9 +22,12 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.offPayrollWorking.EmployerOffPayrollWorkingWarningPageBuilder.aEmployerOffPayrollWorkingWarningPage
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
 
 class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
+  private val employerName = anEmploymentDetails.employerName
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > p:nth-child(2)"
     val bullet1Selector: String = "#main-content > div > div > ul > li"
@@ -68,7 +71,7 @@ class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedParagraph1 = "You are about to change information ABC Digital sent to HMRC:"
+    val expectedParagraph1 = s"You are about to change information $employerName sent to HMRC:"
     val expectedBullet1 = "Off-payroll working status"
     val expectedParagraph2 = "HMRC may review this change."
     val expectedButtonText = "Confirm"
@@ -76,7 +79,7 @@ class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedParagraph1 = "Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:"
+    val expectedParagraph1 = s"Rydych ar fin newid manylion a anfonwyd at CThEF gan $employerName:"
     val expectedBullet1 = "Statws gweithio oddi ar y gyflogres"
     val expectedParagraph2 = "Mae’n bosibl y bydd CThEF yn adolygu’r newid hwn"
     val expectedButtonText = "Cadarnhau"
@@ -91,9 +94,7 @@ class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
   )
 
   private lazy val underTest = inject[EmployerOffPayrollWorkingWarningView]
-
-  private val cancelUrl = controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear).url
-  private val continueUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
+  private val cancelUrl = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-off-payroll-working?employmentId=employmentId"
 
   userScenarios.foreach { userScenario =>
     import Selectors._
@@ -103,10 +104,8 @@ class EmployerOffPayrollWorkingWarningViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYear,
-          continueUrl,
-          cancelUrl
-        )
+        val pageModel = aEmployerOffPayrollWorkingWarningPage.copy(isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

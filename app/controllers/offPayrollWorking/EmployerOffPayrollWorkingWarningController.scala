@@ -18,10 +18,8 @@ package controllers.offPayrollWorking
 
 import actions.ActionsProvider
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
-import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
 import models.employment.EmploymentDetailsType
-import models.offPayrollWorking.{EmployerOffPayrollWorkingWarningPage => PageModel}
+import models.offPayrollWorking.pages.{EmployerOffPayrollWorkingWarningPage => PageModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.employment.EmploymentService
@@ -45,11 +43,8 @@ class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: Acti
     employmentType = EmploymentDetailsType
   ) { implicit request =>
 
-    val cancelUrl = EmployerOffPayrollWorkingController.show(taxYear, employmentId).url
-    val continueUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-
     if (appConfig.offPayrollWorking) {
-      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData,  continueUrl, cancelUrl)))
+      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData)))
     } else {
       Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }

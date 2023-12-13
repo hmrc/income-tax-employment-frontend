@@ -17,12 +17,12 @@
 package controllers.details
 
 import actions.{ActionsProvider, AuthorisedAction}
-import config.AppConfig
-import controllers.employment.routes.CheckEmploymentDetailsController
+import config.{AppConfig, ErrorHandler}
 import models.details.pages.{EmployerIncomeWarningPage => PageModel}
 import models.employment.EmploymentDetailsType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.EmploymentSessionService
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
@@ -33,7 +33,9 @@ import scala.concurrent.ExecutionContext
 
 class EmployerIncomeWarningController @Inject()(actionsProvider: ActionsProvider,
                                                 employmentService: EmploymentService,
+                                                employmentSessionService: EmploymentSessionService,
                                                 authAction: AuthorisedAction,
+                                                errorHandler: ErrorHandler,
                                                 view: EmployerIncomeWarningView)
                                                (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc)
@@ -44,14 +46,6 @@ class EmployerIncomeWarningController @Inject()(actionsProvider: ActionsProvider
     employmentId = employmentId,
     employmentType = EmploymentDetailsType
   ) { implicit request =>
-
-    val cancelUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-    val continueUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-
-    if (appConfig.offPayrollWorking) {
-      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData,  continueUrl, cancelUrl)))
-    } else {
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
+      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData)))
   }
 }
