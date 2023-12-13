@@ -51,7 +51,6 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
   //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
-      print("if inyear")
       employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { employmentData =>
         employmentData.hmrcEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
@@ -70,7 +69,6 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
-            print("==============cya is :"+cya)
             Future.successful(redirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId))
           } else {
             prior match {
@@ -78,16 +76,13 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
                 if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
               case _ => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
-                print("==============view model is :"+viewModel)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
                 Ok(pageView(viewModel, taxYear, isInYear = false))
               }
             }
           }
           case None =>
-            print("==============no cya :")
             prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
-              print("==============employment data :"+Json.toJson(employmentData).toString())
             saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
           }
         }
