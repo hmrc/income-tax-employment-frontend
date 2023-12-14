@@ -28,7 +28,6 @@ import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNot
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.employment.CheckEmploymentDetailsService
 import services.{EmploymentSessionService, RedirectService}

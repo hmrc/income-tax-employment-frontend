@@ -351,7 +351,11 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     lazy val createUpdateEmploymentData = {
       section match {
         case common.EmploymentDetailsSection =>
-          CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans)
+          if(appConfig.offPayrollWorking && cya.employment.employmentDetails.offPayrollWorkingStatus.isDefined) {
+            CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans, offPayrollWorker = cya.employment.employmentDetails.offPayrollWorkingStatus)
+          } else {
+            CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans)
+          }
 
         case common.EmploymentBenefitsSection =>
 
@@ -374,11 +378,19 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     lazy val default = EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData, dataHasNotChanged = false)
 
     def dataHasNotChanged(prior: EmploymentSource): Boolean = {
-      section match {
-        case common.EmploymentDetailsSection => prior.employmentData.exists(_.payDataHasNotChanged(createUpdateEmploymentData.pay))
-        case common.EmploymentBenefitsSection => prior.employmentBenefits.exists(_.benefitsDataHasNotChanged(createUpdateEmploymentData.benefitsInKind))
-        case common.StudentLoansSection => prior.employmentData.exists(_.studentLoansDataHasNotChanged(createUpdateEmploymentData.deductions))
-      }
+        section match {
+          case common.EmploymentDetailsSection =>
+            if(appConfig.offPayrollWorking && createUpdateEmploymentData.offPayrollWorker.isDefined) {
+              prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) &&
+                data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker))
+            } else {
+              prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay))
+            }
+            prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) &&
+              (appConfig.offPayrollWorking && data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker)) )
+          case common.EmploymentBenefitsSection => prior.employmentBenefits.exists(_.benefitsDataHasNotChanged(createUpdateEmploymentData.benefitsInKind))
+          case common.StudentLoansSection => prior.employmentData.exists(_.studentLoansDataHasNotChanged(createUpdateEmploymentData.deductions))
+        }
     }
 
     priorEmployment match {

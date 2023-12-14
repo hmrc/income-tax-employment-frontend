@@ -118,7 +118,8 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         cessationDate = priorData.cessationDate,
         taxablePayToDate = priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
         totalTaxToDate = priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-        payrollId = priorData.payrollId
+        payrollId = priorData.payrollId,
+        offPayrollWorker = priorData.employmentData.flatMap(_.offPayrollWorker)
       ),
       employmentData = DecodedEmploymentData(
         employerName = employment.map(_.employerName).getOrElse(priorData.employerName),
@@ -128,7 +129,8 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         cessationDate = currentOrPrior(employment.flatMap(_.cessationDate), priorData.cessationDate),
         taxablePayToDate = currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
         totalTaxToDate = currentOrPrior(employmentData.map(_.pay.totalTaxToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))),
-        payrollId = currentOrPrior(employment.flatMap(_.payrollId), priorData.payrollId)
+        payrollId = currentOrPrior(employment.flatMap(_.payrollId), priorData.payrollId),
+        offPayrollWorker = currentOrPrior(employmentData.flatMap(_.offPayrollWorker), priorData.employmentData.flatMap(_.offPayrollWorker))
       )
     )
   }
