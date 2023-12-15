@@ -43,7 +43,7 @@ class EmploymentCYAModelSpec extends UnitTest
 
   "EmploymentCYAModel.apply" should {
     "return an EmploymentCYAModel with the lump sums that are related to the same employerRef" in {
-      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None, None)
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
       val otherEmploymentIncome = OtherEmploymentIncome(lumpSums = Some(Set(LumpSum(
         employerName = employmentSource.employerName,
         employerRef = employmentSource.employerRef.get,
@@ -59,7 +59,7 @@ class EmploymentCYAModelSpec extends UnitTest
     }
 
     "return an EmploymentCYAModel with no lump sums if there is not one with same employerRef" in {
-      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None, None)
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
       val otherEmploymentIncome = OtherEmploymentIncome(lumpSums = Some(Set(LumpSum(
         employerName = "differentName",
         employerRef = "differentRef",
@@ -75,7 +75,7 @@ class EmploymentCYAModelSpec extends UnitTest
     }
 
     "return an EmploymentCYAModel with no OtherEmploymentIncome if there is None" in {
-      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None,None)
+      val employmentSource = EmploymentSource("employmentId", "employmentName", Some("employerRef"), None, None, None, None, None, None, None)
 
       val result = EmploymentCYAModel(employmentSource, true, None)
 

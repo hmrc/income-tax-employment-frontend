@@ -82,11 +82,10 @@ class TailoringServiceSpec extends UnitTest
       )),
       None
     )),
-    None,
-    offPayrollWorkingStatus = Some(false)
+    None
   )
   private val employmentSource2: EmploymentSource =
-    EmploymentSource(employmentId = "002", employerName = "maggie", None, None, None, None, None, None, None, None, None)
+    EmploymentSource(employmentId = "002", employerName = "maggie", None, None, None, None, None, None, None, None)
 
   private val priorData: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(employmentSource1),

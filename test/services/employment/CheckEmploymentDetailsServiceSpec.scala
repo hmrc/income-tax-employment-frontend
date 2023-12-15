@@ -63,10 +63,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
                   Some(100)
                 ))
               )
-            )
+            ),
+            offPayrollWorker = Some(true)
           )
         ),
-        Some("001")
+        Some("001"),
+        None
       )
       val prior = None
 
@@ -102,10 +104,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
                   Some(100)
                 ))
               )
-            )
+            ),
+            offPayrollWorker = Some(true)
           )
         ),
-        Some("001")
+        Some("001"),
+        None
       )
       val employmentSource1 = HmrcEmploymentSource(
         employmentId = "002",
@@ -134,8 +138,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
             ))
           )),
           None
-        )), None,
-        offPayrollWorkingStatus = Some(false)
+        )), None
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -178,10 +181,12 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
                   Some(100)
                 ))
               )
-            )
+            ),
+            offPayrollWorker = Some(true)
           )
         ),
-        Some("001")
+        Some("001"),
+        None
       )
 
       val employmentSource1 = HmrcEmploymentSource(
@@ -212,8 +217,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None,
-        offPayrollWorkingStatus = Some(false)
+        None
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -268,7 +272,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
                   Some(100)
                 ))
               )
-            )
+            ),
+            offPayrollWorker = Some(true)
           )
         ),
         Some("001")
@@ -339,8 +344,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None,
-        offPayrollWorkingStatus = Some(false)
+        None
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -382,7 +386,8 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
                   Some(100)
                 ))
               )
-            )
+            ),
+            offPayrollWorker = Some(true)
           )
         ),
         Some("001")
@@ -416,8 +421,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           )),
           None
         )),
-        None,
-        offPayrollWorkingStatus = Some(false)
+        None
       )
 
       val prior: AllEmploymentData = AllEmploymentData(
@@ -436,9 +440,10 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         cessationDate = employmentSource1.cessationDate,
         taxablePayToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
         totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-        payrollId = employmentSource1.payrollId
+        payrollId = employmentSource1.payrollId,
+        offPayrollWorker = employmentSource1.toEmploymentSource.employmentData.flatMap(_.offPayrollWorker)
       ), DecodedEmploymentData(
-        "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999")
+        "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999"), Some(true)
       )
       ))
 

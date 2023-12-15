@@ -42,12 +42,10 @@ class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
       logger.info(s"[InYearAction][inYear] Employment pages for this request will not be in year.")
     }
 
-    if(appConfig.inYearDisabled)
-    {
+    if(appConfig.inYearDisabled) {
       false
     }
-    else
-    {
+    else {
       isNowBefore
     }
 

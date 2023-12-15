@@ -63,8 +63,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
     dateIgnored = None,
     submittedOn = None,
     None,
-    None,
-    offPayrollWorkingStatus = Some(false)
+    None
   )
 
   private val data: AllEmploymentData = AllEmploymentData(

@@ -20,13 +20,12 @@ import config.AppConfig
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers.stubMessagesControllerComponents
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
+import play.api.test.Injecting
 import support.mocks.MockAppConfig
 
 import scala.concurrent.ExecutionContext
 
 trait ControllerUnitTest extends UnitTest
-  with FutureAwaits with DefaultAwaitTimeout
   with GuiceOneAppPerSuite
   with Injecting
   with TaxYearProvider

@@ -51,7 +51,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
     view,
     new InYearUtil(),
     mockEmploymentSessionService,
-  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled, inYearDisabledStatus = false))
 
   private val nino = "AA123456A"
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
