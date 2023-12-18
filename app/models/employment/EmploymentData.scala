@@ -35,8 +35,8 @@ case class EmploymentData(submittedOn: String,
     pay.flatMap(_.totalTaxToDate).contains(cyaPay.totalTaxToDate)
   }
 
-  def offPayrollWorkerHasNotChanged(offPayrollWorkingStatus: Option[Boolean]): Boolean = {
-    offPayrollWorker.contains(offPayrollWorkingStatus)
+  def offPayrollWorkerHasNotChanged(cyaOffPayrollWorkingStatus: Option[Boolean]): Boolean = {
+    offPayrollWorker == cyaOffPayrollWorkingStatus
   }
 
   def studentLoansDataHasNotChanged(cyaStudentLoans: Option[Deductions]): Boolean = {

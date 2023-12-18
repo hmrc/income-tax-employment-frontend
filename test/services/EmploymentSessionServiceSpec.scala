@@ -94,6 +94,18 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     mockInYearUtil
   )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), ec)
 
+  private val underTestWithOPW: EmploymentSessionService = new EmploymentSessionService(
+    mockEmploymentUserDataRepository,
+    mockExpensesUserDataRepository,
+    mockUserDataConnector,
+    mockIncomeSourceConnector,
+    messages,
+    errorHandler,
+    mockCreateUpdateEmploymentDataConnector,
+    testClock,
+    mockInYearUtil
+  )(new MockAppConfig().config(offPayrollWorkingEnabled = true), ec)
+
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
     .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
@@ -202,7 +214,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       hasPriorStudentLoans = true, employmentCYA, testClock.now())
   }
 
-  private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+  private val createUpdateEmploymentRequestOPW: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
     Some(
       CreateUpdateEmployment(
@@ -217,7 +229,26 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
           employmentCYA.employmentDetails.taxablePayToDate.get,
           employmentCYA.employmentDetails.totalTaxToDate.get
         ),
-        offPayrollWorker = Some(true)
+        offPayrollWorker = employmentCYA.employmentDetails.offPayrollWorkingStatus
+      )
+    )
+  )
+
+  private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+    None,
+    Some(
+      CreateUpdateEmployment(
+        employmentCYA.employmentDetails.employerRef,
+        employmentCYA.employmentDetails.employerName,
+        employmentCYA.employmentDetails.startDate.get
+      )
+    ),
+    Some(
+      CreateUpdateEmploymentData(
+        pay = CreateUpdatePay(
+          employmentCYA.employmentDetails.taxablePayToDate.get,
+          employmentCYA.employmentDetails.totalTaxToDate.get
+        )
       )
     )
   )
@@ -494,7 +525,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
   "createModelOrReturnError" should {
     "return JourneyNotFinished redirect from an exception when an update is being made to student loans but no prior" in {
       lazy val response = underTest.createModelOrReturnError(authorisationRequest.user, employmentDataFull, None, StudentLoansSection)
-
       response.left.toOption.get shouldBe JourneyNotFinished
     }
 
@@ -1145,6 +1175,19 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       )
     }
 
+    "create the model to send and return the correct result when its a customer update with offPayrollWorking Status" in {
+
+      val response = underTestWithOPW.createModelOrReturnError(
+        authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.toEmploymentSource).map(_.copy(employmentId = "employmentId")))),
+
+        EmploymentDetailsSection
+      )
+
+      response.toOption.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY - 1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))), None)), None
+      )
+    }
+
     "create the model to send and return the correct result when its a customer update for just employment info" in {
 
       lazy val response = underTest.createModelOrReturnError(
@@ -1165,7 +1208,8 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
