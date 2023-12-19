@@ -65,10 +65,6 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[HmrcEmploymentSource],
     .find(source => source.employmentId.equals(employmentId))
     .map(hmrcSource => EmploymentSourceOrigin(hmrcSource.toEmploymentSource, isCustomerData = false))
 
-  def customerEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = customerEmploymentData
-    .find(source => source.employmentId.equals(employmentId))
-    .map(customerSource => EmploymentSourceOrigin(customerSource, isCustomerData = true))
-
   def eoyEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = {
     val hmrcRecord = hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
     val customerRecord = customerEmploymentData.find(source => source.employmentId.equals(employmentId))

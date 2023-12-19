@@ -94,18 +94,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     mockInYearUtil
   )(new MockAppConfig().config(_mimicEmploymentAPICalls = true), ec)
 
-  private val underTestWithOPW: EmploymentSessionService = new EmploymentSessionService(
-    mockEmploymentUserDataRepository,
-    mockExpensesUserDataRepository,
-    mockUserDataConnector,
-    mockIncomeSourceConnector,
-    messages,
-    errorHandler,
-    mockCreateUpdateEmploymentDataConnector,
-    testClock,
-    mockInYearUtil
-  )(new MockAppConfig().config(offPayrollWorkingEnabled = true), ec)
-
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withSession(SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(","))
     .withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
@@ -177,6 +165,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     ), otherEmploymentIncome = None
   )
 
+
   private val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
       employmentDetails = EmploymentDetails(
@@ -213,26 +202,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       hasPriorBenefits = true,
       hasPriorStudentLoans = true, employmentCYA, testClock.now())
   }
-
-  private val createUpdateEmploymentRequestOPW: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-    None,
-    Some(
-      CreateUpdateEmployment(
-        employmentCYA.employmentDetails.employerRef,
-        employmentCYA.employmentDetails.employerName,
-        employmentCYA.employmentDetails.startDate.get
-      )
-    ),
-    Some(
-      CreateUpdateEmploymentData(
-        pay = CreateUpdatePay(
-          employmentCYA.employmentDetails.taxablePayToDate.get,
-          employmentCYA.employmentDetails.totalTaxToDate.get
-        ),
-        offPayrollWorker = employmentCYA.employmentDetails.offPayrollWorkingStatus
-      )
-    )
-  )
 
   private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
@@ -1175,19 +1144,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       )
     }
 
-    "create the model to send and return the correct result when its a customer update with offPayrollWorking Status" in {
-
-      val response = underTestWithOPW.createModelOrReturnError(
-        authorisationRequest.user, employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.toEmploymentSource).map(_.copy(employmentId = "employmentId")))),
-
-        EmploymentDetailsSection
-      )
-
-      response.toOption.get shouldBe CreateUpdateEmploymentRequest(
-        Some("employmentId"), Some(CreateUpdateEmployment(Some("123/12345"), "Employer Name", s"${taxYearEOY - 1}-11-11", None, None)), Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), Some(Deductions(Some(StudentLoans(Some(100.0), Some(100.0))))), None)), None
-      )
-    }
-
     "create the model to send and return the correct result when its a customer update for just employment info" in {
 
       lazy val response = underTest.createModelOrReturnError(
@@ -1233,8 +1189,12 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
       lazy val response = underTest.createModelOrReturnError(
         authorisationRequest.user,
-
-        employmentDataFull, Some(
+        employmentDataFull.copy(
+          employment = employmentDataFull.employment.copy(
+            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(false))
+          )
+        ),
+        Some(
           AllEmploymentData(
             Seq(),
             None,
@@ -1249,7 +1209,53 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, Some(true),
+                  Some(Pay(
+                    Some(55.99),
+                    Some(3453453.0),
+                    None, None, None, None
+                  )), None
+                )),
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
+              )
+            ), None, None
+          )
+        ), EmploymentDetailsSection
+      )
+
+      response.toOption.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
+      )
+    }
+
+    "create the model to send and return the correct result when its a customer update for just offPayrollWorking in employment data info" in {
+
+      lazy val response = underTest.createModelOrReturnError(
+        authorisationRequest.user,
+        employmentDataFull.copy(
+          employment = employmentDataFull.employment.copy(
+            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(false))
+          )
+        ),
+        Some(
+          AllEmploymentData(
+            Seq(),
+            None,
+            Seq(
+              EmploymentSource(
+                employmentDataFull.employmentId,
+                employmentDataFull.employment.employmentDetails.employerName,
+                employmentDataFull.employment.employmentDetails.employerRef,
+                employmentDataFull.employment.employmentDetails.payrollId,
+                employmentDataFull.employment.employmentDetails.startDate,
+                employmentDataFull.employment.employmentDetails.cessationDate,
+                employmentDataFull.employment.employmentDetails.dateIgnored,
+                employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
+                Some(EmploymentData(
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, Some(true),
                   Some(Pay(
                     Some(3455545.55),
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -1266,7 +1272,8 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
-          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), None
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
       )
     }
 

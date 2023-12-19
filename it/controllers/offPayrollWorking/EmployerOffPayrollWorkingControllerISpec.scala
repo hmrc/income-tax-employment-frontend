@@ -26,7 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.route
 import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
 import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
-import utils.PageUrls.{employerOffPayrollWorkingUrl, employerOffPayrollWorkingWarningUrl, fullUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employerOffPayrollWorkingUrl, employerOffPayrollWorkingWarningUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -108,7 +108,7 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
     }
 
     "return next page when answer is yes" which {
-      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData)
@@ -118,7 +118,7 @@ class EmployerOffPayrollWorkingControllerISpec extends IntegrationTest with View
 
       "redirects to OffPayroll Working Warning page" in {
         result.status shouldBe SEE_OTHER
-        result.headers("Location").head shouldBe employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)
+        result.headers("Location").head shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
   }

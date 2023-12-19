@@ -272,7 +272,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(specific.offPayrollWorkingParagraph, offPayrollWorkingParagraph)
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(6))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(6),"for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(6),"for off payroll working")
 
         buttonCheck(userScenario.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
       }
@@ -312,7 +312,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
 
       }
 
@@ -358,7 +358,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(8), EmployerTaxWarningController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(8)))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
         linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(1), EmployerOffPayrollWorkingController.show(taxYearEOY, employmentId).url,
           Some(opwHiddenChangeLink(1)))
       }
@@ -397,7 +397,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10),"for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10),"for off payroll working")
       }
 
       "render the end of year page with no notification banner when there are data items missing" which {
@@ -412,7 +412,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
           taxablePayToDate = None,
           totalTaxToDate = None,
           isUsingCustomerData = true,
-          offPayrollWorkingStatus = Some(false)
+          offPayrollWorkingStatus = Some(true)
         ), taxYear = taxYearEOY, isInYear = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -444,7 +444,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(7), "tax taken from pay")
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
         linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(10), EmployerOffPayrollWorkingController.show(taxYearEOY, employmentId).url,
           Some(opwHiddenChangeLink(10)))
 
