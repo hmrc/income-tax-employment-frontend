@@ -64,7 +64,7 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val studentLoansEnabled: Boolean = slEnabled
 
-    override lazy val offPayrollWorking: Boolean = offPayrollWorkingEnabled
+    override val offPayrollWorking: Boolean = offPayrollWorkingEnabled
 
     override lazy val inYearDisabled: Boolean = inYearDisabledStatus
 
