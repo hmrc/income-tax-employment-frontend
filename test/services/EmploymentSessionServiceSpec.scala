@@ -141,8 +141,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
           )),
           None
         )),
-        None,
-        offPayrollWorkingStatus = Some(false)
+        None
       ),
     ),
     hmrcExpenses = Some(
@@ -165,6 +164,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       )
     ), otherEmploymentIncome = None
   )
+
 
   private val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
@@ -494,7 +494,6 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
   "createModelOrReturnError" should {
     "return JourneyNotFinished redirect from an exception when an update is being made to student loans but no prior" in {
       lazy val response = underTest.createModelOrReturnError(authorisationRequest.user, employmentDataFull, None, StudentLoansSection)
-
       response.left.toOption.get shouldBe JourneyNotFinished
     }
 
@@ -515,8 +514,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 None,
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, Seq(), None, None
           )
@@ -550,8 +548,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )), None
             )),
             None
-          )), None,
-          employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+          )), None
         )), None, Seq(), None, None)
         ), StudentLoansSection
       )
@@ -584,8 +581,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
               )), None
             )),
             None
-          )), None,
-          employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+          )), None
         )), None, Seq(), None, None)
         ), StudentLoansSection
       )
@@ -629,8 +625,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     )
                   )
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, Seq(), None, None
           )
@@ -669,8 +664,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     None, None, None, None
                   )), None
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -712,7 +706,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     "",
                     employmentDataFull.employment.employmentBenefits.map(_.asBenefits)
                   )
-                ), employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                )
               )
             ), None, None
           )
@@ -765,8 +759,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     "",
                     employmentDataFull.employment.employmentBenefits.map(_.asBenefits)
                   )
-                ),
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                )
               )
             ), None, None
           )
@@ -803,8 +796,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     None, None, None, None, None, None
                   )), None
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -841,8 +833,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 None,
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, Seq(), None, None
           )
@@ -879,8 +870,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     )), None
                   )),
                   None
-                )), None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                )), None
               )
             ), None, Seq(), None, None
           )
@@ -919,8 +909,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     None, None, None, None
                   )), None
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -964,8 +953,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     )
                   )
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -1017,8 +1005,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     )
                   )
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -1054,8 +1041,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                     None, None, None, None, None, None
                   )), None
                 )),
-                None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                None
               )
             ), None, None
           )
@@ -1094,8 +1080,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                   )),
                   employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
                     Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
-                )), None,
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                )), None
               )
             ), None, Seq(), None, None
           )
@@ -1179,7 +1164,8 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus,
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
@@ -1187,8 +1173,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                   )), None
                 )),
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits))),
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
             ), None, None
           )
@@ -1204,8 +1189,12 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
       lazy val response = underTest.createModelOrReturnError(
         authorisationRequest.user,
-
-        employmentDataFull, Some(
+        employmentDataFull.copy(
+          employment = employmentDataFull.employment.copy(
+            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(false))
+          )
+        ),
+        Some(
           AllEmploymentData(
             Seq(),
             None,
@@ -1220,16 +1209,15 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, Some(true),
                   Some(Pay(
-                    Some(3455545.55),
-                    employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                    Some(55.99),
+                    Some(3453453.0),
                     None, None, None, None
                   )), None
                 )),
                 employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits))),
-                employmentDataFull.employment.employmentDetails.offPayrollWorkingStatus
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
               )
             ), None, None
           )
@@ -1238,7 +1226,54 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
-          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)))), None
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
+      )
+    }
+
+    "create the model to send and return the correct result when its a customer update for just offPayrollWorking in employment data info" in {
+
+      lazy val response = underTest.createModelOrReturnError(
+        authorisationRequest.user,
+        employmentDataFull.copy(
+          employment = employmentDataFull.employment.copy(
+            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(false))
+          )
+        ),
+        Some(
+          AllEmploymentData(
+            Seq(),
+            None,
+            Seq(
+              EmploymentSource(
+                employmentDataFull.employmentId,
+                employmentDataFull.employment.employmentDetails.employerName,
+                employmentDataFull.employment.employmentDetails.employerRef,
+                employmentDataFull.employment.employmentDetails.payrollId,
+                employmentDataFull.employment.employmentDetails.startDate,
+                employmentDataFull.employment.employmentDetails.cessationDate,
+                employmentDataFull.employment.employmentDetails.dateIgnored,
+                employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
+                Some(EmploymentData(
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, Some(true),
+                  Some(Pay(
+                    Some(3455545.55),
+                    employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                    None, None, None, None
+                  )), None
+                )),
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
+              )
+            ), None, None
+          )
+        ), EmploymentDetailsSection
+      )
+
+      response.toOption.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
+          Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
       )
     }
 

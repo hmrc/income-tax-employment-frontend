@@ -66,7 +66,8 @@ case class EmploymentDetails(employerName: String,
     employmentDetailsSubmittedOn = employmentDetailsSubmittedOn.map(_.encrypted),
     taxablePayToDate = taxablePayToDate.map(_.encrypted),
     totalTaxToDate = totalTaxToDate.map(_.encrypted),
-    currentDataIsHmrcHeld = currentDataIsHmrcHeld.encrypted
+    currentDataIsHmrcHeld = currentDataIsHmrcHeld.encrypted,
+    offPayrollWorkingStatus = offPayrollWorkingStatus.map(_.encrypted)
   )
 }
 

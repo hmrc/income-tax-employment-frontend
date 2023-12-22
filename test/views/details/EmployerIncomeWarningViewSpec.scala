@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.offPayrollWorking
+package views.details
 
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
@@ -22,9 +22,13 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import views.html.offPayrollWorking.EmployerTaxWarningView
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.details.pages.EmployerIncomeWarningPageBuilder.aEmployerIncomeWarningPage
+import views.html.details.EmployerIncomeWarningView
 
-class EmployerTaxWarningViewSpec extends ViewUnitTest {
+class EmployerIncomeWarningViewSpec extends ViewUnitTest {
+
+  private val employerName = anEmploymentDetails.employerName
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > p:nth-child(2)"
     val bullet1Selector: String = "#main-content > div > div > ul > li"
@@ -68,18 +72,19 @@ class EmployerTaxWarningViewSpec extends ViewUnitTest {
     val expectedTitle = "A ydych am newid manylion cyflogaeth eich cleient?"
     val expectedHeading = "A ydych am newid manylion cyflogaeth eich cleient?"
     val expectedParagraph2 = "Mae’r newid hwn yn effeithio ar y dreth sydd ar eich cleient, a bydd CThEF yn ei adolygu."
+
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedParagraph1 = "You are about to change information ABC Digital sent to HMRC:"
-    val expectedBullet1 = "UK tax taken from pay"
+    val expectedParagraph1 = s"You are about to change information $employerName sent to HMRC:"
+    val expectedBullet1 = "Pay received"
     val expectedButtonText = "Confirm"
     val cancelLinkText = "Cancel"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedParagraph1 = "Rydych ar fin newid manylion a anfonwyd at CThEF gan ABC Digital Ltd:"
-    val expectedBullet1 = "Treth y DU a dynnwyd o’r cyflog"
+    val expectedParagraph1 = s"Rydych ar fin newid manylion a anfonwyd at CThEF gan $employerName:"
+    val expectedBullet1 = "Cyflog a gafwyd"
     val expectedButtonText = "Cadarnhau"
     val cancelLinkText = "Canslo"
   }
@@ -91,10 +96,9 @@ class EmployerTaxWarningViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private lazy val underTest = inject[EmployerTaxWarningView]
+  private lazy val underTest = inject[EmployerIncomeWarningView]
 
-  private val cancelUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
-  private val continueUrl = s"http://localhost:9302/update-and-submit-income-tax-return/$taxYear/income-tax-return-overview"
+  private val cancelUrl = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=employmentId"
 
   userScenarios.foreach { userScenario =>
     import Selectors._
@@ -104,7 +108,8 @@ class EmployerTaxWarningViewSpec extends ViewUnitTest {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
-        val htmlFormat = underTest(taxYear, continueUrl, cancelUrl)
+        val pageModel = aEmployerIncomeWarningPage.copy(isAgent = userScenario.isAgent)
+        val htmlFormat = underTest(pageModel)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 

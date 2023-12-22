@@ -198,8 +198,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest
           )),
           None
         )),
-        None,
-        offPayrollWorkingStatus = Some(false)
+        None
       )
 
       val priorExpenses: AllEmploymentData = AllEmploymentData(

@@ -71,7 +71,8 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
             Future.successful(redirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId))
           } else {
             prior match {
-              case Some(_) if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
+              case Some(_)
+                if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
               case _ => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
@@ -79,7 +80,8 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
               }
             }
           }
-          case None => prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
+          case None =>
+            prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
             saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
           }
         }

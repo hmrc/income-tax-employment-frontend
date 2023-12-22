@@ -122,14 +122,14 @@
         val payReceived = EmploymentDataForView(
             messages(msgKeyGeneric + ".payReceived"),
             employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
+            EmployerIncomeWarningController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.payReceived")
         )
 
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
-            EmploymentTaxController.show(taxYear, employmentDetails.employmentId),
+            EmployerTaxWarningController.show(taxYear, employmentDetails.employmentId),
             messages(s"$msgKeyGeneric.hiddenText.totalTaxToDate")
         )
 
@@ -162,21 +162,14 @@
         )}
     }
 
-     @if(appConfig.offPayrollWorking){
+     @if(appConfig.offPayrollWorking && employmentDetails.offPayrollWorkingStatus.isDefined){
 
-        <h2 class="govuk-heading-m">@messages(s"employment.employerOpw.title")</h2>
+        <h2 class="govuk-heading-m">@messages(s"employment.employmentDetails.subHeading.offPayrollWorking")</h2>
 
-        <p class="govuk-body-m" id="offPayrollWorkingP1">@messages(s"employment.employmentDetails.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body-m" id="offPayrollWorkingP1">@messages(s"employment.employmentDetails.offPayrollWorking.p1.${if(request.user.isAgent) "agent" else "individual"}",employmentDetails.employerName)</p>
 
 
         @{
-            val offPayrollWorkingStatus = EmploymentDataForView(
-                messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
-                Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-                controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear),
-                messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
-            )
-
             {
                 summaryList(
                     id = "opwSummaryList",
@@ -187,7 +180,7 @@
                             keyClasses = "govuk-!-width-two-thirds",
                             actionClasses = "",
                             actions = if(!isInYear) {
-                                Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
+                                Seq((controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear, employmentDetails.employmentId), messages("common.change"), Some(messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus"))))
                             } else Seq.empty
                         )
                     )

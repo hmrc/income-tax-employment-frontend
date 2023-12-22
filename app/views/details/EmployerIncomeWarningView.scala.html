@@ -1,0 +1,60 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Link
+@import models.details.pages.EmployerIncomeWarningPage
+@import controllers.details.routes.EmployerPayAmountController
+@import controllers.employment.routes.CheckEmploymentDetailsController
+
+@this(
+    layout: Layout,
+    heading: Heading,
+    button: Button,
+    formWithCsrf: FormWithCSRF,
+    link: Link
+)
+
+@(pageModel: EmployerIncomeWarningPage)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(s"common.employment.warning.title.${if(pageModel.isAgent) "agent" else "individual"}")}
+@headingForUse = @{messages(s"common.employment.warning.heading.${if(pageModel.isAgent) "agent" else "individual"}")}
+@p2ForUse = @{messages(s"common.employment.warning.p2.${if(pageModel.isAgent) "agent" else "individual"}")}
+
+@layout(pageTitle = messages(titleForUse), taxYear = Some(pageModel.taxYear), isAgent = pageModel.isAgent) {
+
+    <h1 class="govuk-heading-l">@messages(headingForUse)</h1>
+
+    <p class="govuk-body">@messages("common.employment.warning.p1", pageModel.employerName)</p>
+
+    <ul class="govuk-body govuk-list govuk-list--bullet">
+        <li>@messages("employment.employmentIncomeWarning.payReceived.b1")</li>
+    </ul>
+
+    <p class="govuk-body">@messages(p2ForUse)</p>
+
+    <div class="govuk-button-group">
+        @button(alternativeText = messages("common.confirm"), href = Some(EmployerPayAmountController.show(pageModel.taxYear, pageModel.employmentId).url))
+        @link(CheckEmploymentDetailsController.show(pageModel.taxYear, pageModel.employmentId).url, messages("common.cancel"))
+    </div>
+
+}
+
+@{
+// $COVERAGE-OFF$
+}

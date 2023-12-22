@@ -19,8 +19,8 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.AppConfig
 import controllers.employment.routes._
-import controllers.studentLoans.routes._
 import controllers.lumpSum.routes._
+import controllers.studentLoans.routes._
 import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

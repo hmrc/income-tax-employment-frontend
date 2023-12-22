@@ -16,12 +16,15 @@
 
 package controllers.offPayrollWorking
 
+import models.mongo.EmploymentUserData
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
+import support.builders.models.details.EmploymentDetailsBuilder.anEmploymentDetails
+import support.builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithDetails}
 import utils.PageUrls.{employerOffPayrollWorkingWarningUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -31,37 +34,51 @@ class EmployerOffPayrollWorkingWarningControllerISpec extends IntegrationTest wi
 
 
   val userScenarios: Seq[UserScenario[_, _]] = Seq.empty
+  private val employmentId: String = anEmploymentUserData.employmentId
 
-  ".show" when {
-    "render the correct view for an individual in year" which {
+  private def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
+    anEmploymentUserDataWithDetails(
+      anEmploymentDetails.copy("HMRC"),
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = isPriorSubmission
+    )
+
+  ".show" should {
+    "render the correct view for an individual" which {
       implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya())
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(fullUrl(employerOffPayrollWorkingWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "has OK status" in {
         result.status shouldBe OK
+      }
+
+      "render the correct view for an agent" which {
+        implicit lazy val result: WSResponse = {
+          dropEmploymentDB()
+          insertCyaData(cya())
+          authoriseAgentOrIndividual(isAgent = true)
+          urlGet(fullUrl(employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+        "has OK status" in {
+          result.status shouldBe OK
+        }
       }
 
       "redirect to submission overview when OPW feature switch is set to false" in {
-        val request = FakeRequest("GET", employerOffPayrollWorkingWarningUrl(taxYear)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        val request = FakeRequest("GET", employerOffPayrollWorkingWarningUrl(taxYearEOY, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
         lazy val result: Future[Result] = {
           dropEmploymentDB()
+          insertCyaData(cya())
           authoriseIndividual()
           route(appWithFeatureSwitchesOff, request, "{}").get
         }
-        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYearEOY)
       }
     }
 
-    "render the correct view for an agent in year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = true)
-        urlGet(fullUrl(employerOffPayrollWorkingWarningUrl(taxYear)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
-      "has OK status" in {
-        result.status shouldBe OK
-      }
-    }
   }
 
 }

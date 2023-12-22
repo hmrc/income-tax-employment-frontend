@@ -31,7 +31,7 @@ object EmploymentDataBuilder {
     closeCompany = Some(false),
     directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
     disguisedRemuneration = Some(false),
-    offPayrollWorker = Some(false),
+    offPayrollWorker = Some(true),
     pay = Some(aPay),
     deductions = Some(aDeductions)
   )
@@ -43,7 +43,7 @@ object EmploymentDataBuilder {
     closeCompany = Some(false),
     directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
     disguisedRemuneration = Some(false),
-    offPayrollWorker = Some(false),
+    offPayrollWorker = Some(true),
     pay = Some(aPay.copy(
       taxablePayToDate = aPay.taxablePayToDate.map(_ + 1000),
       totalTaxToDate = aPay.totalTaxToDate.map(_ + 1000)

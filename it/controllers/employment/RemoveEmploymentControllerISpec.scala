@@ -32,14 +32,14 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
   private val modelWithMultipleSources: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
-      HmrcEmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None, None),
-      HmrcEmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None, None)
+      HmrcEmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None),
+      HmrcEmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None)
     ),
     hmrcExpenses = None,
     customerEmploymentData = Seq(
-      EmploymentSource(employmentId = "employmentId", employerName = "maggie", None, None, None, None, None, None, None, None, None),
-      EmploymentSource(employmentId = "004", employerName = "microsoft", None, None, None, None, None, None, None, None, None),
-      EmploymentSource(employmentId = "005", employerName = "name", None, None, None, None, None, None, None, None, None)
+      EmploymentSource(employmentId = "employmentId", employerName = "maggie", None, None, None, None, None, None, None, None),
+      EmploymentSource(employmentId = "004", employerName = "microsoft", None, None, None, None, None, None, None, None),
+      EmploymentSource(employmentId = "005", employerName = "name", None, None, None, None, None, None, None, None)
     ),
     customerExpenses = None,
     otherEmploymentIncome = None

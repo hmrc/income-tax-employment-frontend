@@ -19,7 +19,6 @@ package forms.validation.mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
-import scala.util
 import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {

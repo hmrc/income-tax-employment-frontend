@@ -29,6 +29,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.EmploymentSessionService
 import services.employment.EmploymentService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
 import views.html.details.EmployerPayAmountView
@@ -91,7 +92,8 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
 
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
-                              employmentId: String): Call = {
+                              employmentId: String)
+                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Call = {
     if (employmentDetails.isFinished) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {

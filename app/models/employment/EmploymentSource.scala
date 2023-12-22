@@ -33,8 +33,7 @@ case class HmrcEmploymentSource(employmentId: String,
                                 dateIgnored: Option[String],
                                 submittedOn: Option[String],
                                 hmrcEmploymentFinancialData: Option[EmploymentFinancialData],
-                                customerEmploymentFinancialData: Option[EmploymentFinancialData],
-                                offPayrollWorkingStatus: Option[Boolean]
+                                customerEmploymentFinancialData: Option[EmploymentFinancialData]
                                ) extends Logging {
 
   def toRemove: String = {
@@ -88,8 +87,7 @@ case class HmrcEmploymentSource(employmentId: String,
       dateIgnored = dateIgnored,
       submittedOn = submittedOn,
       employmentData = latestData.flatMap(_.employmentData),
-      employmentBenefits = latestData.flatMap(_.employmentBenefits),
-      offPayrollWorkingStatus = offPayrollWorkingStatus
+      employmentBenefits = latestData.flatMap(_.employmentBenefits)
     )
   }
 }
@@ -113,8 +111,7 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits],
-                            offPayrollWorkingStatus: Option[Boolean]
+                            employmentBenefits: Option[EmploymentBenefits]
                            ) extends Logging {
 
   lazy val employmentDetailsSubmittable: Boolean = startDate.isDefined &&
@@ -155,7 +152,8 @@ case class EmploymentSource(employmentId: String,
       employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
       taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      currentDataIsHmrcHeld = !isUsingCustomerData
+      currentDataIsHmrcHeld = !isUsingCustomerData,
+      offPayrollWorkingStatus = employmentData.flatMap(_.offPayrollWorker)
     )
   }
 
@@ -182,7 +180,7 @@ case class EmploymentSource(employmentId: String,
       employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
       isUsingCustomerData,
-      offPayrollWorkingStatus)
+      employmentData.flatMap(_.offPayrollWorker))
   }
 }
 

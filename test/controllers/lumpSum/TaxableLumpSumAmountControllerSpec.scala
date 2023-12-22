@@ -17,16 +17,12 @@
 package controllers.lumpSum
 
 import common.SessionValues
-import forms.AmountForm
 import forms.lumpSums.LumpSumFormsProvider
 import models.employment.EmploymentDetailsType
-import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.stubMessagesControllerComponents
-import sttp.model.Method.POST
 import support.ControllerUnitTest
-import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel

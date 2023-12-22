@@ -16,8 +16,8 @@
 
 package support.builders.models
 
-import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import models.IncomeTaxUserData
+import support.builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 
 object IncomeTaxUserDataBuilder {
 

@@ -21,8 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import support.UnitTest
 import support.builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
 import uk.gov.hmrc.crypto.EncryptedValue
-import utils.AesGcmAdCrypto
-import utils. TaxYearHelper
+import utils.{AesGcmAdCrypto, TaxYearHelper}
 
 class IncomeTaxAndCostsModelSpec extends UnitTest
   with TaxYearHelper

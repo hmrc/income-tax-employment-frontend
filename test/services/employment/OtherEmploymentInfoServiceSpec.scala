@@ -16,15 +16,14 @@
 
 package services.employment
 
-import models.otheremployment.session.TaxableLumpSum
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
-import support.{TaxYearProvider, UnitTest}
 import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService, MockOtherEmploymentInfoService}
+import support.{TaxYearProvider, UnitTest}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class OtherEmploymentInfoServiceSpec extends UnitTest
   with TaxYearProvider

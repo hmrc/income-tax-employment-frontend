@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-package controllers.offPayrollWorking
+package controllers.details
 
-import actions.{AuthorisedAction, TaxYearAction}
+import actions.{ActionsProvider, AuthorisedAction}
 import config.AppConfig
+import models.details.pages.{EmployerTaxWarningPage => PageModel}
+import models.employment.EmploymentDetailsType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.offPayrollWorking.EmployerTaxWarningView
+import views.html.details.EmployerTaxWarningView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerTaxWarningController @Inject()(mcc: MessagesControllerComponents,
+class EmployerTaxWarningController @Inject()(actionsProvider: ActionsProvider,
+                                             employmentService: EmploymentService,
                                              authAction: AuthorisedAction,
                                              view: EmployerTaxWarningView)
-                                            (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                            (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    val cancelUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
-    val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
-
-    if (appConfig.offPayrollWorking) {
-      Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
-    } else {
-      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-    }
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ){ implicit request =>
+      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData)))
   }
 }

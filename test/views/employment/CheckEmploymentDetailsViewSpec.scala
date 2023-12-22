@@ -26,7 +26,6 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.employment.EmploymentDetailsViewModelBuilder.anEmploymentDetailsViewModel
-
 import views.html.employment.CheckEmploymentDetailsView
 class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
 
@@ -152,7 +151,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changePayReceivedHiddenText: String = "Change the amount of pay received"
     val offPayrollWorkingField: String = "Do you agree?"
-    val offPayrollWorkingParagraph: String = "ABC Digital Ltd treated you as an employee for tax purposes and deducted Income Tax and National Insurance contributions from your fees"
+    val offPayrollWorkingParagraph: String = s"${ContentValues.employerName} treated you as an employee for tax purposes and deducted Income Tax and National Insurance contributions from your fees"
 
 
     val didYouLeaveHiddenText: String = "Change if you left the employer in this tax year"
@@ -165,7 +164,8 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
     val changePayReceivedHiddenText: String = "Change the amount of pay received"
     val offPayrollWorkingField: String = "Does your client agree?"
-    val offPayrollWorkingParagraph: String = "ABC Digital Ltd treated your client as an employee for tax purposes and deducted Income Tax and National Insurance contributions from their fees"
+    val offPayrollWorkingParagraph: String = s"${ContentValues.employerName} treated your client as an employee for tax purposes and deducted" +
+      s" Income Tax and National Insurance contributions from their fees"
     val didYouLeaveHiddenText: String = "Change if your client left the employer in this tax year"
   }
 
@@ -212,7 +212,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val employeeFieldName8 = "Swm y taliadau sydd ddim ar eich P60"
     val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
     val offPayrollWorkingField: String = "A ydych yn cytuno?"
-    val offPayrollWorkingParagraph: String = "Gwnaeth ABC Digital Ltd eich trin fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd"
+    val offPayrollWorkingParagraph: String = s"Gwnaeth ${ContentValues.employerName} eich trin fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’ch ffioedd"
     val didYouLeaveHiddenText: String = "Newidiwch os gwnaethoch adael y cyflogwr yn ystod y flwyddyn dreth hon"
 
   }
@@ -224,7 +224,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
     val expectedInsetText = s"Ni allwch ddiweddaru manylion cyflogaeth eich cleient tan 6 Ebrill $taxYear."
     val changePayReceivedHiddenText: String = "Newid swm y cyflog a gafwyd"
     val offPayrollWorkingField: String = "A yw’ch cleient yn cytuno?"
-    val offPayrollWorkingParagraph: String = "Gwnaeth ABC Digital Ltd drin eich cleient fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’i ffioedd"
+    val offPayrollWorkingParagraph: String = s"Gwnaeth ${ContentValues.employerName} drin eich cleient fel cyflogai at ddibenion treth, a didynnodd Treth Incwm a chyfraniadau Yswiriant Gwladol o’i ffioedd"
     val didYouLeaveHiddenText: String = "Newidiwch os gwnaeth eich cleient adael y cyflogwr yn ystod y flwyddyn dreth hon"
 
   }
@@ -272,7 +272,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(specific.offPayrollWorkingParagraph, offPayrollWorkingParagraph)
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(6))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(6),"for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(6),"for off payroll working")
 
         buttonCheck(userScenario.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
       }
@@ -312,7 +312,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
 
       }
 
@@ -352,14 +352,14 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(7))
         textOnPageCheck(ContentValues.payReceived, summaryListRowFieldValueSelector(7))
         linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}",
-          cyaChangeLink(7), EmployerPayAmountController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(7)))
+          cyaChangeLink(7), EmployerIncomeWarningController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(7)))
         textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(8))
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(8))
-        linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(8), EmploymentTaxController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(8)))
+        linkCheck(s"${common.changeLinkExpected} ${common.totalTaxToDateHiddenText}", cyaChangeLink(8), EmployerTaxWarningController.show(taxYearEOY, employmentId).url, Some(cyaHiddenChangeLink(8)))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
-        linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(1), EmployerOffPayrollWorkingController.show(taxYearEOY).url,
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(1), EmployerOffPayrollWorkingController.show(taxYearEOY, employmentId).url,
           Some(opwHiddenChangeLink(1)))
       }
 
@@ -397,7 +397,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10),"for off payroll working")
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10),"for off payroll working")
       }
 
       "render the end of year page with no notification banner when there are data items missing" which {
@@ -412,7 +412,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
           taxablePayToDate = None,
           totalTaxToDate = None,
           isUsingCustomerData = true,
-          offPayrollWorkingStatus = Some(false)
+          offPayrollWorkingStatus = Some(true)
         ), taxYear = taxYearEOY, isInYear = false)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
@@ -444,8 +444,8 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(common.notProvided, summaryListRowFieldValueSelector(7), "tax taken from pay")
 
         textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
-        linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(10), EmployerOffPayrollWorkingController.show(taxYearEOY).url,
+        textOnPageCheck(common.yes, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        linkCheck(s"${common.changeLinkExpected} ${common.offPayrollWorkingHiddenText}", opwCyaChangeLink(10), EmployerOffPayrollWorkingController.show(taxYearEOY, employmentId).url,
           Some(opwHiddenChangeLink(10)))
 
         buttonCheck(common.continueButtonText, saveAndContinueButtonSelector)

@@ -40,6 +40,7 @@ class EmploymentDetailsSpec extends UnitTest
   private val encryptedTaxablePayToDate = EncryptedValue("encryptedTaxablePayToDate", "some-nonce")
   private val encryptedTotalTaxToDate = EncryptedValue("encryptedTotalTaxToDate", "some-nonce")
   private val encryptedCurrentDataIsHmrcHeld = EncryptedValue("encryptedCurrentDataIsHmrcHeld", "some-nonce")
+  private val encryptedOffPayrollWorkingStatus = EncryptedValue("encryptedOffPayrollWorkingStatus", "some-nonce")
 
   "EmploymentDetails.isSubmittable" should {
     "return false" when {
@@ -123,7 +124,7 @@ class EmploymentDetailsSpec extends UnitTest
 
   "EmploymentDetails.encrypted" should {
     "return EncryptedEmploymentDetails" in {
-      val underTest = anEmploymentDetails.copy(cessationDate = Some("some-cessation-date"), dateIgnored = Some("some-date-ignored"))
+      val underTest = anEmploymentDetails.copy(cessationDate = Some("some-cessation-date"), dateIgnored = Some("some-date-ignored"), offPayrollWorkingStatus = Some(true))
 
       (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerName, associatedText).returning(encryptedEmployerName)
       (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.employerRef.get, associatedText).returning(encryptedEmployerRef)
@@ -137,6 +138,7 @@ class EmploymentDetailsSpec extends UnitTest
       (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.taxablePayToDate.get.toString(), associatedText).returning(encryptedTaxablePayToDate)
       (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.totalTaxToDate.get.toString(), associatedText).returning(encryptedTotalTaxToDate)
       (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.currentDataIsHmrcHeld.toString, associatedText).returning(encryptedCurrentDataIsHmrcHeld)
+      (secureGCMCipher.encrypt(_: String)(_: String)).expects(underTest.offPayrollWorkingStatus.get.toString(), associatedText).returning(encryptedOffPayrollWorkingStatus)
 
       underTest.encrypted shouldBe EncryptedEmploymentDetails(
         employerName = encryptedEmployerName,
@@ -150,7 +152,8 @@ class EmploymentDetailsSpec extends UnitTest
         employmentDetailsSubmittedOn = Some(encryptedEmploymentDetailsSubmittedOn),
         taxablePayToDate = Some(encryptedTaxablePayToDate),
         totalTaxToDate = Some(encryptedTotalTaxToDate),
-        currentDataIsHmrcHeld = encryptedCurrentDataIsHmrcHeld
+        currentDataIsHmrcHeld = encryptedCurrentDataIsHmrcHeld,
+        offPayrollWorkingStatus = Some(encryptedOffPayrollWorkingStatus)
       )
     }
   }
@@ -169,7 +172,8 @@ class EmploymentDetailsSpec extends UnitTest
         employmentDetailsSubmittedOn = Some(encryptedEmploymentDetailsSubmittedOn),
         taxablePayToDate = Some(encryptedTaxablePayToDate),
         totalTaxToDate = Some(encryptedTotalTaxToDate),
-        currentDataIsHmrcHeld = encryptedCurrentDataIsHmrcHeld
+        currentDataIsHmrcHeld = encryptedCurrentDataIsHmrcHeld,
+        offPayrollWorkingStatus = Some(encryptedOffPayrollWorkingStatus)
       )
 
       (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
@@ -196,6 +200,8 @@ class EmploymentDetailsSpec extends UnitTest
         .expects(encryptedTotalTaxToDate, associatedText).returning("200")
       (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
         .expects(encryptedCurrentDataIsHmrcHeld, associatedText).returning("true")
+      (secureGCMCipher.decrypt(_: EncryptedValue)(_: String))
+        .expects(encryptedOffPayrollWorkingStatus, associatedText).returning("true")
 
       encryptedEmploymentDetails.decrypted shouldBe EmploymentDetails(
         employerName = "some-employer-name",
@@ -209,7 +215,8 @@ class EmploymentDetailsSpec extends UnitTest
         employmentDetailsSubmittedOn = Some("some-employment-details-submitted-on"),
         taxablePayToDate = Some(100),
         totalTaxToDate = Some(200),
-        currentDataIsHmrcHeld = true
+        currentDataIsHmrcHeld = true,
+        offPayrollWorkingStatus = Some(true)
       )
     }
   }

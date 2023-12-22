@@ -98,8 +98,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       )),
       None
     )),
-    None,
-    offPayrollWorkingStatus = Some(false)
+    None
   )
 
   private val priorData: AllEmploymentData = AllEmploymentData(

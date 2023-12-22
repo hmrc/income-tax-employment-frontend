@@ -33,7 +33,6 @@ object EmploymentSourceBuilder {
     dateIgnored = None,
     submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
     employmentData = Some(anEmploymentData),
-    employmentBenefits = Some(anEmploymentBenefits),
-    offPayrollWorkingStatus = Some(false)
+    employmentBenefits = Some(anEmploymentBenefits)
   )
 }

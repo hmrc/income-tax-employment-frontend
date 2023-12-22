@@ -18,8 +18,8 @@ package controllers.employment
 
 import common.SessionValues
 import controllers.employment.routes._
-import controllers.studentLoans.routes.StudentLoansCYAController
 import controllers.lumpSum.routes.TaxableLumpSumListController
+import controllers.studentLoans.routes.StudentLoansCYAController
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,8 +28,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
-import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.{contentAsString, redirectLocation, status, stubMessagesControllerComponents}
 import support.ControllerUnitTest
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import support.mocks.{MockAppConfig, MockAuthorisedAction, MockEmploymentSessionService}
@@ -51,7 +50,7 @@ class EmployerInformationControllerSpec extends ControllerUnitTest
     view,
     new InYearUtil(),
     mockEmploymentSessionService,
-  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled))
+  )(stubMessagesControllerComponents(), appConfig = new MockAppConfig().config(isEmploymentEOYEnabled = isEmploymentEOYEnabled, inYearDisabledStatus = false))
 
   private val nino = "AA123456A"
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

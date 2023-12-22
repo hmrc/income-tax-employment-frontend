@@ -33,5 +33,5 @@ object EmploymentDetailsViewModelBuilder {
     taxablePayToDate = aPay.taxablePayToDate,
     totalTaxToDate = aPay.totalTaxToDate,
     isUsingCustomerData = false,
-    offPayrollWorkingStatus = Some(false))
+    offPayrollWorkingStatus = Some(true))
 }

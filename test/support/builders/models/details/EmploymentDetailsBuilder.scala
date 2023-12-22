@@ -33,6 +33,7 @@ object EmploymentDetailsBuilder {
     employmentDetailsSubmittedOn = Some(s"$taxYearEOY-04-04T01:01:01Z"),
     taxablePayToDate = Some(55.99),
     totalTaxToDate = Some(3453453.00),
-    currentDataIsHmrcHeld = false
+    currentDataIsHmrcHeld = false,
+    offPayrollWorkingStatus = None
   )
 }

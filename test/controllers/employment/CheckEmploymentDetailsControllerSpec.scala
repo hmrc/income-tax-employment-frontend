@@ -16,8 +16,7 @@
 
 package controllers.employment
 
-import common.{EmploymentDetailsSection, EmploymentSection, SessionValues}
-import config.AppConfig
+import common.{EmploymentDetailsSection, SessionValues}
 import controllers.employment.routes._
 import models.AuthorisationRequest
 import models.employment._
@@ -82,7 +81,8 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
         pay = CreateUpdatePay(
           anEmploymentUserData.employment.employmentDetails.taxablePayToDate.get,
           anEmploymentUserData.employment.employmentDetails.totalTaxToDate.get
-        )
+        ),
+        offPayrollWorker = anEmploymentUserData.employment.employmentDetails.offPayrollWorkingStatus
       )
     )
   )
@@ -104,7 +104,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
               isUsingCustomerData = false,
-              offPayrollWorkingStatus = Some(false)
+              offPayrollWorkingStatus = Some(true)
             ), taxYear, isInYear = true
           )))
 

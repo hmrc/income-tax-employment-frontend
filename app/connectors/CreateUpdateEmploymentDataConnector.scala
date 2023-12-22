@@ -31,7 +31,6 @@ class CreateUpdateEmploymentDataConnector @Inject()(val http: HttpClient,
                                 (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
 
     val url: String = config.incomeTaxEmploymentBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
-
     http.POST[CreateUpdateEmploymentRequest, CreateUpdateEmploymentDataResponse](url, data)
   }
 }

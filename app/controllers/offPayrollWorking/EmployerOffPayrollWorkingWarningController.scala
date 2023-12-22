@@ -16,31 +16,36 @@
 
 package controllers.offPayrollWorking
 
-import actions.{AuthorisedAction, TaxYearAction}
-import config.AppConfig
+import actions.ActionsProvider
+import config.{AppConfig, ErrorHandler}
+import models.employment.EmploymentDetailsType
+import models.offPayrollWorking.pages.{EmployerOffPayrollWorkingWarningPage => PageModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class EmployerOffPayrollWorkingWarningController @Inject()(mcc: MessagesControllerComponents,
-                                                           authAction: AuthorisedAction,
-                                                           view: EmployerOffPayrollWorkingWarningView)
-                                                          (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
-  with I18nSupport with SessionHelper {
+class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: ActionsProvider,
+                                                           employmentService: EmploymentService,
+                                                           view: EmployerOffPayrollWorkingWarningView,
+                                                           errorHandler: ErrorHandler)
+                                                          (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    val cancelUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
-    val continueUrl = appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
+    taxYear = taxYear,
+    employmentId = employmentId,
+    employmentType = EmploymentDetailsType
+  ) { implicit request =>
 
     if (appConfig.offPayrollWorking) {
-      Future.successful(Ok(view(taxYear, continueUrl, cancelUrl)))
+      Ok(view(PageModel(taxYear, employmentId, request.user, request.employmentUserData)))
     } else {
-      Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
 }
