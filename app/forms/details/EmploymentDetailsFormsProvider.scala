@@ -72,8 +72,7 @@ class EmploymentDetailsFormsProvider {
   )
 
   def offPayrollStatusForm(isAgent: Boolean,
-                           employerName: String)
-                     (implicit messages: Messages): Form[Boolean] = YesNoForm.yesNoForm(
+                           employerName: String): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}",
     Seq(employerName)
   )

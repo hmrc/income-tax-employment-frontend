@@ -16,8 +16,8 @@
 
 package support.builders.models.mongo
 
-import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import models.mongo.ExpensesCYAModel
+import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 
 object ExpensesCYAModelBuilder {
 

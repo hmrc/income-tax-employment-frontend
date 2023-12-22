@@ -23,7 +23,6 @@ import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import models.details.EmploymentDetails
-import models.details.pages.{EmployerIncomeWarningPage => IncomeWarningPageModel}
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -85,20 +84,20 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
-    employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).flatMap {
-      case Left(_) => Future.successful(errorHandler.internalServerError())
-      case Right(employmentUserData) => getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId)
+    employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) => Redirect(getRedirectCall(employmentUserData.employment.employmentDetails, taxYear, employmentId))
     }
   }
 
   private def getRedirectCall(employmentDetails: EmploymentDetails,
                               taxYear: Int,
                               employmentId: String)
-                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+                             (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Call = {
     if (employmentDetails.isFinished) {
-      Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+      CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
-      Future.successful(Redirect(EmploymentTaxController.show(taxYear, employmentId)))
+      EmploymentTaxController.show(taxYear, employmentId)
     }
   }
 }

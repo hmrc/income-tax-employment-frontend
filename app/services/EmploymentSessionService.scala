@@ -327,7 +327,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     def priorPayData = CreateUpdatePay(taxablePayToDate = priorTaxablePayToDate, totalTaxToDate = priorTotalTaxToDate)
 
-    def priorOffPayrollWorkingStatus: Option[Boolean] = priorEmployment.flatMap(_.employmentData.flatMap(_.offPayrollWorker))
+    def priorOffPayrollWorkerData: Option[Boolean] = if(appConfig.offPayrollWorking)priorEmployment.flatMap(_.employmentData.flatMap(_.offPayrollWorker)) else None
 
     lazy val cyaPay = CreateUpdatePay(
       taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
@@ -336,42 +336,25 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.asBenefits)
     lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.asDeductions)
+    val cyaOffPayrollWorkerData = if(appConfig.offPayrollWorking) cya.employment.employmentDetails.offPayrollWorkingStatus else None
+
     lazy val createUpdateEmploymentData = {
-      if (appConfig.offPayrollWorking && cya.employment.employmentDetails.offPayrollWorkingStatus.isDefined) {
         section match {
           case common.EmploymentDetailsSection =>
-            CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans, offPayrollWorker = cya.employment.employmentDetails.offPayrollWorkingStatus)
+            CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans, offPayrollWorker = cyaOffPayrollWorkerData)
           case common.EmploymentBenefitsSection =>
             if (appConfig.mimicEmploymentAPICalls) {
-              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
+              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans, offPayrollWorker = cyaOffPayrollWorkerData)
             } else {
-              CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans, offPayrollWorker = priorOffPayrollWorkingStatus)
+              CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans, offPayrollWorker = priorOffPayrollWorkerData)
             }
           case common.StudentLoansSection =>
             if (appConfig.mimicEmploymentAPICalls) {
-              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
+              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans, offPayrollWorker = cyaOffPayrollWorkerData)
             } else {
-              CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.asDeductions), offPayrollWorker = priorOffPayrollWorkingStatus)
+              CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.asDeductions), offPayrollWorker = priorOffPayrollWorkerData)
             }
         }
-      } else {
-        section match {
-          case common.EmploymentDetailsSection =>
-            CreateUpdateEmploymentData(cyaPay, benefitsInKind = priorBenefits, deductions = priorStudentLoans)
-          case common.EmploymentBenefitsSection =>
-            if (appConfig.mimicEmploymentAPICalls) {
-              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
-            } else {
-              CreateUpdateEmploymentData(priorPayData, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = priorStudentLoans)
-            }
-          case common.StudentLoansSection =>
-            if (appConfig.mimicEmploymentAPICalls) {
-              CreateUpdateEmploymentData(cyaPay, benefitsInKind = if (cyaBenefits.exists(_.hasBenefitsPopulated)) cyaBenefits else None, deductions = cyaStudentLoans)
-            } else {
-              CreateUpdateEmploymentData(priorPayData, benefitsInKind = priorBenefits, deductions = cya.employment.studentLoans.flatMap(_.asDeductions))
-            }
-        }
-      }
     }
 
     lazy val default = EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData, dataHasNotChanged = false)
@@ -380,8 +363,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         section match {
           case common.EmploymentDetailsSection =>
             if(appConfig.offPayrollWorking && createUpdateEmploymentData.offPayrollWorker.isDefined) {
-              prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) &&
-                data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker))
+              prior.employmentData.exists(
+                data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) && data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker))
             } else {
               prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay))
             }

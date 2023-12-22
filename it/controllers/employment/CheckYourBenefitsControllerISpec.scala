@@ -266,7 +266,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits),
+              offPayrollWorker = anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.offPayrollWorker))
             )
           )
         )
@@ -341,7 +342,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits),
+              offPayrollWorker = anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.offPayrollWorker))
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -376,7 +378,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits)
+              benefitsInKind = anEmploymentCYAModel().employmentBenefits.map(_.asBenefits),
+              offPayrollWorker = anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.offPayrollWorker))
             )
           ),
           isHmrcEmploymentId = Some(true)
@@ -415,7 +418,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 34786788.77, 35553311.89
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = Some(anEmploymentCYAModel().employmentBenefits.get.asBenefits)
+              benefitsInKind = Some(anEmploymentCYAModel().employmentBenefits.get.asBenefits),
+              offPayrollWorker = Some(true)
             )
           )
         )
@@ -456,7 +460,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 34786788.77, 35553311.89
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = None
+              benefitsInKind = None,
+              offPayrollWorker = Some(true)
             )
           )
         )

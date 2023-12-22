@@ -16,8 +16,8 @@
 
 package support.builders.models.employment
 
-import StudentLoansBuilder.aStudentLoans
 import models.employment.Deductions
+import support.builders.models.employment.StudentLoansBuilder.aStudentLoans
 
 object DeductionsBuilder {
 

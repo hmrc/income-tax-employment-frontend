@@ -170,13 +170,6 @@
 
 
         @{
-            val offPayrollWorkingStatus = EmploymentDataForView(
-                messages(s"employment.employmentDetails.offPayrollWorkingStatus.${if(request.user.isAgent) "agent" else "individual"}"),
-                Some(if(employmentDetails.offPayrollWorkingStatus.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-                controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController.show(taxYear, employmentDetails.employmentId),
-                messages(s"employment.employmentDetails.hiddenText.offPayrollWorkingStatus")
-            )
-
             {
                 summaryList(
                     id = "opwSummaryList",

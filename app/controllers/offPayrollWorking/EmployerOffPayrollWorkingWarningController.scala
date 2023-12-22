@@ -28,13 +28,12 @@ import utils.SessionHelper
 import views.html.offPayrollWorking.EmployerOffPayrollWorkingWarningView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: ActionsProvider,
                                                            employmentService: EmploymentService,
                                                            view: EmployerOffPayrollWorkingWarningView,
                                                            errorHandler: ErrorHandler)
-                                                          (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                          (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(

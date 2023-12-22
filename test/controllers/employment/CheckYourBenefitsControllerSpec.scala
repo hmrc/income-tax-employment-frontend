@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import common.{EmploymentBenefitsSection, EmploymentSection, SessionValues}
+import common.{EmploymentBenefitsSection, SessionValues}
 import controllers.employment.routes._
 import controllers.expenses.routes._
 import controllers.studentLoans.routes._

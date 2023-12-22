@@ -25,8 +25,8 @@ import forms.details.EmployerNameForm.employerName
 import forms.employment.SelectEmployerForm
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, stubMessagesControllerComponents}
 import sttp.model.Method.POST

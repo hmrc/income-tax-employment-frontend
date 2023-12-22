@@ -26,8 +26,8 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.mocks.MockAppConfig
-import views.html.employment.EmployerInformationView
 import viewmodels.employment._
+import views.html.employment.EmployerInformationView
 
 class EmployerInformationViewSpec extends ViewUnitTest {
 

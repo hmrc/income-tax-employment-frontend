@@ -17,16 +17,15 @@
 package controllers.lumpSum
 
 import common.SessionValues
-import controllers.lumpSum.TaxableLumpSumListController
 import models.employment.EmploymentDetailsType
 import play.api.http.Status.OK
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Result
 import play.api.test.Helpers.stubMessagesControllerComponents
 import support.ControllerUnitTest
-import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 import support.mocks._
 import utils.InYearUtil
 import views.html.taxableLumpSum.TaxableLumpSumListView

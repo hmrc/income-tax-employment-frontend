@@ -16,15 +16,16 @@
 
 package views.employment
 
+import controllers.employment.routes._
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
-import controllers.employment.routes._
 import utils.ViewUtils.translatedDateFormatter
 import views.html.employment.RemoveEmploymentView
+
 import java.time.LocalDate
 
 class RemoveEmploymentViewSpec extends ViewUnitTest {

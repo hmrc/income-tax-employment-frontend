@@ -18,8 +18,8 @@ package repositories
 
 import config.AppConfig
 import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
+import org.mongodb.scala.model.{IndexModel, IndexOptions}
 
 import java.util.concurrent.TimeUnit
 

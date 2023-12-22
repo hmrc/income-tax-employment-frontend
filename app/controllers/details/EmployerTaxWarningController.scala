@@ -28,13 +28,12 @@ import utils.SessionHelper
 import views.html.details.EmployerTaxWarningView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class EmployerTaxWarningController @Inject()(actionsProvider: ActionsProvider,
                                              employmentService: EmploymentService,
                                              authAction: AuthorisedAction,
                                              view: EmployerTaxWarningView)
-                                            (implicit mcc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                            (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
   extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
