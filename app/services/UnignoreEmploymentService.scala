@@ -18,8 +18,7 @@ package services
 
 import audit.{AuditService, UnignoreEmploymentAudit}
 import connectors.UnignoreEmploymentConnector
-import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import models.employment.{EmploymentSource, UnignoreEmploymentNRSModel}
+import models.employment.EmploymentSource
 import models.{APIErrorModel, User}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,7 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreEmploymentConnector,
                                           auditService: AuditService,
-                                          nrsService: NrsService,
                                           implicit val executionContext: ExecutionContext) extends Logging {
 
   def unignoreEmployment(user: User, taxYear: Int, hmrcEmploymentSource: EmploymentSource)
@@ -39,7 +37,6 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
       case Left(error) => Left(error)
       case _ =>
         sendAuditEvent(user, taxYear, hmrcEmploymentSource)
-        performSubmitNrsPayload(user, hmrcEmploymentSource)
         Right(())
     }
   }
@@ -61,15 +58,5 @@ class UnignoreEmploymentService @Inject()(unignoreEmploymentConnector: UnignoreE
     )
 
     auditService.sendAudit[UnignoreEmploymentAudit](auditModel.toAuditModel)
-  }
-
-  private def performSubmitNrsPayload(user: User, hmrcEmploymentSource: EmploymentSource)
-                                     (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
-    val employmentData = hmrcEmploymentSource.toEmploymentDetailsViewModel(isUsingCustomerData = false)
-    val benefits = hmrcEmploymentSource.employmentBenefits.flatMap(_.benefits)
-    val deductions = hmrcEmploymentSource.employmentData.flatMap(_.deductions)
-    val nrsPayload = UnignoreEmploymentNRSModel(employmentData, benefits, deductions)
-
-    nrsService.submit(user.nino, nrsPayload, user.mtditid, user.trueUserAgent)
   }
 }

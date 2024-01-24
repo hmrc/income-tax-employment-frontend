@@ -34,13 +34,11 @@ import scala.concurrent.ExecutionContext
 class UnignoreEmploymentServiceSpec extends UnitTest
   with TaxYearProvider
   with MockUnignoreEmploymentConnector
-  with MockAuditService
-  with MockNrsService {
+  with MockAuditService{
 
   private val underTest = new UnignoreEmploymentService(
     mockUnignoreEmploymentConnector,
     mockAuditService,
-    mockNrsService,
     ExecutionContext.global
   )
 
@@ -54,7 +52,6 @@ class UnignoreEmploymentServiceSpec extends UnitTest
       mockAuditSendEvent(unignoreEmploymentAudit.toAuditModel)
       mockUnignoreEmployment(aUser.nino, taxYear, anEmploymentSource.employmentId, Right(()))
 
-      verifySubmitEvent(anUnignoreEmploymentNRSModel.copy(employmentData = unignoreEmploymentViewModel))
 
       await(underTest.unignoreEmployment(aUser, taxYear, anEmploymentSource)(HeaderCarrier())) shouldBe Right(())
     }

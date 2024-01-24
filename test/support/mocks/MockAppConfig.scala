@@ -60,8 +60,6 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val tailoringEnabled: Boolean = false
 
-    override lazy val nrsEnabled: Boolean = true
-
     override lazy val studentLoansEnabled: Boolean = slEnabled
 
     override lazy val offPayrollWorking: Boolean = offPayrollWorkingEnabled
@@ -79,7 +77,6 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
     override lazy val incomeTaxExpensesBEUrl: String = "http://localhost:11111/income-tax-expenses"
     override lazy val incomeTaxEmploymentBEUrl: String = "http://localhost:11111/income-tax-employment"
     override lazy val incomeTaxSubmissionBEBaseUrl: String = "http://localhost:11111/income-tax-submission-service"
-    override lazy val nrsProxyBaseUrl: String = "http://localhost:11111"
 
     override lazy val encryptionKey: String = "encryptionKey12345"
     override lazy val useEncryption: Boolean = encrypt

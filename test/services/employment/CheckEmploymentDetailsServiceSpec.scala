@@ -20,7 +20,7 @@ import audit._
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import support.builders.models.UserBuilder.aUser
-import support.mocks.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import support.mocks.{MockAuditService, MockEmploymentSessionService}
 import support.{TaxYearProvider, UnitTest}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
@@ -30,13 +30,12 @@ import scala.concurrent.ExecutionContext
 class CheckEmploymentDetailsServiceSpec extends UnitTest
   with TaxYearProvider
   with MockEmploymentSessionService
-  with MockNrsService
   with MockAuditService {
 
   private implicit val ec: ExecutionContext = ExecutionContext.global
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val underTest = new CheckEmploymentDetailsService(mockNrsService, mockAuditService)
+  private val underTest = new CheckEmploymentDetailsService(mockAuditService)
 
   "performSubmitAudits" should {
     "send the audit events from the model when it's a create" in {
@@ -280,12 +279,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
       val prior = None
 
-      verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
-        Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
-      ), Seq()
-      ))
-
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior)) shouldBe Right(())
     }
     "send the events from the model when it's a create and theres existing data" in {
 
@@ -355,12 +348,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         otherEmploymentIncome = None
       )
 
-      verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
-        Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
-      ), Seq(DecodedPriorEmploymentInfo("Mishima Zaibatsu", Some("223/AB12399")))
-      ))
-
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
     "send the events from the model when it's an amend" in {
 
@@ -431,23 +418,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         customerExpenses = None,
         None
       )
-
-      verifySubmitEvent(DecodedAmendEmploymentDetailsPayload(DecodedEmploymentData(
-        employerName = employmentSource1.employerName,
-        employerRef = employmentSource1.employerRef,
-        employmentId = employmentSource1.employmentId,
-        startDate = employmentSource1.startDate,
-        cessationDate = employmentSource1.cessationDate,
-        taxablePayToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-        totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-        payrollId = employmentSource1.payrollId,
-        offPayrollWorker = employmentSource1.toEmploymentSource.employmentData.flatMap(_.offPayrollWorker)
-      ), DecodedEmploymentData(
-        "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999"), Some(true)
-      )
-      ))
-
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(prior))) shouldBe Right(())
     }
   }
 }

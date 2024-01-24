@@ -36,7 +36,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
   with MockIncomeSourceConnector
   with MockAuditService
   with MockEmploymentUserDataRepository
-  with MockNrsService
   with MockDeleteOrIgnoreExpensesService {
 
   private implicit val headerCarrier: HeaderCarrier = new HeaderCarrier()
@@ -46,7 +45,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
     mockIncomeSourceConnector,
     mockDeleteOrIgnoreExpensesService,
     mockAuditService,
-    mockNrsService,
     ExecutionContext.global
   )
 
@@ -100,12 +98,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
-          verifySubmitEvent(DecodedDeleteEmploymentPayload(
-            employmentData = employmentDetailsViewModel,
-            benefits = None,
-            expenses = None,
-            deductions = None
-          ).toNrsPayloadModel)
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, employmentId, "HMRC-HELD")
@@ -123,12 +115,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
-          verifySubmitEvent(DecodedDeleteEmploymentPayload(
-            employmentData = employmentDetailsViewModel,
-            benefits = None,
-            expenses = None,
-            deductions = None
-          ).toNrsPayloadModel)
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, "002", "CUSTOMER")
           mockDeleteOrIgnoreExpenses(anAuthorisationRequest, allEmploymentData, taxYear)
@@ -161,12 +147,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val allEmploymentData = AllEmploymentData(List(), None, List(customerDataSource), None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
-        verifySubmitEvent(DecodedDeleteEmploymentPayload(
-          employmentData = employmentDetailsViewModel,
-          benefits = None,
-          expenses = None,
-          deductions = None
-        ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
         mockDeleteOrIgnoreEmploymentLeft(aUser.nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(anAuthorisationRequest, allEmploymentData, taxYear)
@@ -181,12 +161,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", aUser.nino, aUser.mtditid, employmentDetailsViewModel, None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
-        verifySubmitEvent(DecodedDeleteEmploymentPayload(
-          employmentData = employmentDetailsViewModel,
-          benefits = None,
-          expenses = None,
-          deductions = None
-        ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
         mockDeleteOrIgnoreEmploymentRight(aUser.nino, taxYear, "002", "CUSTOMER")
         mockDeleteOrIgnoreExpenses(anAuthorisationRequest, allEmploymentData, taxYear)
@@ -194,22 +168,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
         await(underTest.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002",
           aUser.copy(sessionId = aUser.sessionId))) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("CODE", "REASON")))
       }
-    }
-  }
-
-  "calling .performSubmitNrsPayload" should {
-    "send the event from the model" in {
-      val customerDataSource = dataWithExpenses.customerEmploymentData.find(_.employmentId.equals("001")).get
-
-      verifySubmitEvent(DecodedDeleteEmploymentPayload(
-        employmentData = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true),
-        benefits = None,
-        expenses = customerExpenses.expenses,
-        deductions = None
-      ).toNrsPayloadModel
-      )
-
-      await(underTest.performSubmitNrsPayload(dataWithExpenses, empSource.toEmploymentSource, isUsingCustomerData = true, aUser)) shouldBe Right(())
     }
   }
 }

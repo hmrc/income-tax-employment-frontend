@@ -127,9 +127,6 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConf.nrsEnabled) {
-      checkEmploymentDetailsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
-    }
   }
 
   private def getResultFromResponse(returnedEmploymentId: Option[String],

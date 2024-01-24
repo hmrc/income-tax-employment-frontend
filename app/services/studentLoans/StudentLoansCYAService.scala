@@ -18,16 +18,14 @@ package services.studentLoans
 
 import audit._
 import config.{AppConfig, ErrorHandler}
-import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.employment.{AllEmploymentData, Deductions, EmploymentSource, StudentLoansCYAModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import models.{AuthorisationRequest, User}
 import play.api.Logging
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
-import services.{EmploymentSessionService, NrsService}
+import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.SessionHelper
@@ -39,7 +37,6 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                                        appConfig: AppConfig,
                                        errorHandler: ErrorHandler,
                                        auditService: AuditService,
-                                       nrsService: NrsService,
                                        implicit val ec: ExecutionContext) extends Logging with SessionHelper {
 
   private[studentLoans] def extractEmploymentInformation(
@@ -150,20 +147,5 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val auditModel = ViewStudentLoansDeductionsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, deductions)
     auditService.sendAudit[ViewStudentLoansDeductionsAudit](auditModel.toAuditModel)
-  }
-
-  def performSubmitNrsPayload(user: User, createUpdateEmploymentRequest: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
-                             (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
-
-    val nrsPayload: Either[DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload] = prior.flatMap {
-      prior =>
-        val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => createUpdateEmploymentRequest.toAmendDecodedStudentLoansPayloadModel(prior.employmentSource))
-    }.map(Left(_)).getOrElse(Right(createUpdateEmploymentRequest.toCreateDecodedStudentLoansPayloadModel))
-
-    nrsPayload match {
-      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid, user.trueUserAgent)
-      case Right(create) => nrsService.submit(user.nino, create, user.mtditid, user.trueUserAgent)
-    }
   }
 }

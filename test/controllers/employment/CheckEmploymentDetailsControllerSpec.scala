@@ -43,7 +43,6 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
   with MockEmploymentSessionService
   with MockAuditService
   with MockCheckEmploymentDetailsService
-  with MockNrsService
   with MockErrorHandler {
 
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
