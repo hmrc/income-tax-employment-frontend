@@ -24,7 +24,6 @@ This service runs on port: `localhost:9317`
 | --- | --- |
 | Encryption | QA, Staging, Production, ET |
 | Welsh Toggle | Local, QA, ET |
-| NRS | Local |
 | Tax Year Error | Production |
 | Student loans | Local, QA, Staging, ET |
 | End of year employment | Local, QA, Staging, ET |
@@ -228,7 +227,7 @@ Customer data is provided by the user. At the end of the tax year, users can vie
 | AA370773A | Multiple employments - `occPen` set to true | HMRC-Held |
 
 ### End of Year
-| Nino | Employment data | Source
+| Nino | Employment data | Source|
 | --- | --- | --- |
 | AA123459A | Single employment - Employment details and expenses | HMRC-Held, Customer |
 | AA133742A | Single employment - Employment details and benefits | HMRC-Held, Customer|

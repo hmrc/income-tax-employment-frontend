@@ -235,7 +235,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     }
 
     "submit data and then clear the database and perform audits" in {
-      def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest, prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
+      def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest, prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
         logger.info("Performing fake audits")
       }
 
@@ -246,7 +246,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       mockClear(taxYear, "employmentId", response = true)
 
       val response = underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData), Some(
-        auditAndNRS
+        audit
       ))
 
       await(response) shouldBe Right((None, anEmploymentUserData))
