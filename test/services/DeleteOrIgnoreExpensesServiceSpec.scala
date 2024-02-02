@@ -18,7 +18,7 @@ package services
 
 import audit.DeleteEmploymentExpensesAudit
 import models.employment._
-import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
+import models.expenses.Expenses
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import support.builders.models.UserBuilder.aUser
@@ -32,7 +32,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with TaxYearProvider
   with MockDeleteOrIgnoreExpensesConnector
   with MockIncomeSourceConnector
-  with MockNrsService
   with MockDeleteOrIgnoreExpensesService
   with MockAuditService {
 
@@ -42,7 +41,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     mockDeleteOrIgnoreExpensesConnector,
     mockIncomeSourceConnector,
     mockAuditService,
-    mockNrsService,
     ExecutionContext.global
   )
 
@@ -124,17 +122,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
-          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-          ))
-          ).toNrsPayloadModel))
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "ALL")
@@ -150,17 +137,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
-          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-          ))
-          ).toNrsPayloadModel))
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
@@ -176,17 +152,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, hmrcExpensesWithoutDateIgnored.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
-          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-            businessTravelCosts = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.businessTravelCosts),
-            jobExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.jobExpenses),
-            flatRateJobExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.flatRateJobExpenses),
-            professionalSubscriptions = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.professionalSubscriptions),
-            hotelAndMealExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.hotelAndMealExpenses),
-            otherAndCapitalAllowances = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.otherAndCapitalAllowances),
-            vehicleExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.vehicleExpenses),
-            mileageAllowanceRelief = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.mileageAllowanceRelief)
-          ))
-          ).toNrsPayloadModel))
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "HMRC-HELD")
@@ -202,17 +167,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
           val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
           mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
-          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-          ))
-          ).toNrsPayloadModel))
 
           mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
           mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
@@ -237,18 +191,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
         mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
 
-        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-        ))
-        ).toNrsPayloadModel))
-
         mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
         mockDeleteOrIgnoreExpensesError(aUser.nino, taxYear, "ALL")
 
@@ -261,17 +203,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         val deleteEmploymentExpensesAudit = DeleteEmploymentExpensesAudit(taxYear, "individual", aUser.nino, aUser.mtditid, customerExpenses.expenses.getOrElse(Expenses()))
 
         mockAuditSendEvent(deleteEmploymentExpensesAudit.toAuditModel)
-        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-        ))
-        ).toNrsPayloadModel))
 
         mockRefreshIncomeSourceResponseError(taxYear, aUser.nino)
         mockDeleteOrIgnoreExpensesSuccess(aUser.nino, taxYear, "CUSTOMER")
@@ -283,21 +214,4 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     }
   }
 
-  "calling performNrsSubmitPayload" should {
-    "send the event from the model" in {
-      verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-        businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-        jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-        flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-        professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-        hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-        otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-        vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-        mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-      ))
-      ).toNrsPayloadModel))
-
-      await(underTest.performSubmitNrsPayload(aUser, priorData)) shouldBe Right(())
-    }
-  }
 }

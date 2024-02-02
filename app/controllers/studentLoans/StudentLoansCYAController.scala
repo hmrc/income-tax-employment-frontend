@@ -107,7 +107,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
         case Left(result) => Future.successful(result)
         case Right(OptionalCyaAndPrior(Some(cya), prior)) =>
           employmentSessionService.createModelOrReturnError(request.user, cya, prior, StudentLoansSection) match {
-            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNrs)).flatMap {
+            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(audit)).flatMap {
               case Left(result) => Future.successful(result)
               case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, cya)
             }
@@ -121,14 +121,11 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def auditAndNrs(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
+  private def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
                           prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
 
     implicit val implicitRequest: AuthorisationRequest[_] = request
     service.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConfig.nrsEnabled) {
-      service.performSubmitNrsPayload(request.user, model, employmentId, prior)
-    }
   }
   //scalastyle:on
 }

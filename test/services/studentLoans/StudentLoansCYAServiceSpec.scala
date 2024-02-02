@@ -19,7 +19,6 @@ package services.studentLoans
 import audit.{AmendStudentLoansDeductionsUpdateAudit, CreateNewStudentLoansDeductionsAudit, ViewStudentLoansDeductionsAudit}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.studentLoans.{DecodedAmendStudentLoansPayload, DecodedCreateNewStudentLoansPayload}
 import services.EmploymentSessionService
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -33,7 +32,6 @@ import scala.concurrent.ExecutionContext
 class StudentLoansCYAServiceSpec extends UnitTest
   with TaxYearProvider
   with MockAuditService
-  with MockNrsService
   with MockEmploymentSessionService
   with MockErrorHandler {
 
@@ -68,7 +66,7 @@ class StudentLoansCYAServiceSpec extends UnitTest
     pglDeductionAmount = Some(500.00)
   )
 
-  private val underTest = new StudentLoansCYAService(session, new MockAppConfig().config(), mockErrorHandler, mockAuditService, mockNrsService, ec)
+  private val underTest = new StudentLoansCYAService(session, new MockAppConfig().config(), mockErrorHandler, mockAuditService, ec)
 
   ".extractEmploymentInformation" should {
     "return an employment source" when {
@@ -250,131 +248,6 @@ class StudentLoansCYAServiceSpec extends UnitTest
       ).toAuditModel)
 
       await(underTest.sendViewStudentLoansDeductionsAudit(aUser, taxYearEOY, validModel.asDeductions)) shouldBe AuditResult.Success
-    }
-  }
-
-  "performSubmitNrsPayload" should {
-    "send the event from the model when it's a create" in {
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        Some("id"),
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-
-      verifySubmitEvent(DecodedCreateNewStudentLoansPayload(Some("name"), Some("employerRef"),
-        Deductions(Some(StudentLoans(
-          Some(100),
-          Some(100)
-        )))))
-
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", prior = None)) shouldBe Right(())
-
-    }
-
-    "send the event from the model when it's an amend" in {
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        Some("id"),
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(750),
-                  Some(1000)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-
-      val employmentSource1 = HmrcEmploymentSource(
-        employmentId = "001",
-        employerName = "Mishima Zaibatsu",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
-        dateIgnored = None,
-        submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
-        hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
-          employmentData = Some(EmploymentData(
-            submittedOn = s"${taxYearEOY - 1}-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
-            disguisedRemuneration = Some(false),
-            offPayrollWorker = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
-            Some(Deductions(
-              studentLoans = Some(StudentLoans(
-                uglDeductionAmount = Some(100.00),
-                pglDeductionAmount = Some(100.00)
-              ))
-            ))
-          )),
-          None
-        )),
-        None
-      )
-
-      val priorData: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(employmentSource1),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None,
-        None
-      )
-
-      verifySubmitEvent(DecodedAmendStudentLoansPayload(
-        priorEmploymentStudentLoansData = Deductions(Some(StudentLoans(
-          Some(100),
-          Some(100)
-        ))
-        ),
-        employmentStudentLoansData = Deductions(Some(StudentLoans(
-          Some(750),
-          Some(1000)
-        ))
-        )
-      ))
-
-      await(underTest.performSubmitNrsPayload(aUser, model, "001", Some(priorData))) shouldBe Right(())
     }
   }
 }

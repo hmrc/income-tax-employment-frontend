@@ -108,7 +108,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
               Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
 
             case Right(model) =>
-              employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNRS)).flatMap {
+              employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(audit)).flatMap {
                 case Left(result) => Future.successful(result)
                 case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId, cya)
               }
@@ -122,14 +122,11 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
   }
   //scalastyle:on
 
-  private def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
+  private def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
                           prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConf.nrsEnabled) {
-      checkEmploymentDetailsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
-    }
   }
 
   private def getResultFromResponse(returnedEmploymentId: Option[String],

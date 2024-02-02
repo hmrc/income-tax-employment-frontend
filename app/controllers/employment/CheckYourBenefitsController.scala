@@ -140,7 +140,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
               //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
               Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
 
-            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(auditAndNRS)).flatMap {
+            case Right(model) => employmentSessionService.submitAndClear(taxYear, employmentId, model, cya, prior, Some(audit)).flatMap {
               case Left(result) => Future.successful(result)
               case Right((returnedEmploymentId, cya)) => getResultFromResponse(returnedEmploymentId, taxYear, employmentId, cya)
             }
@@ -150,15 +150,12 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
       }
   }
 
-  private def auditAndNRS(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
+  private def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
                           prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
 
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkYourBenefitsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
-    if (appConf.nrsEnabled) {
-      checkYourBenefitsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
-    }
   }
 
   private def getResultFromResponse(returnedEmploymentId: Option[String], taxYear: Int, employmentId: String, cya: EmploymentUserData)(implicit request: AuthorisationRequest[_]): Future[Result] = {

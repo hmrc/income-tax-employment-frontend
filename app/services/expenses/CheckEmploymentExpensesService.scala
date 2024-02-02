@@ -17,20 +17,17 @@
 package services.expenses
 
 import audit._
-import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.User
 import models.employment._
 import models.expenses.Expenses
 import models.requests.CreateUpdateExpensesRequest
-import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
-                                               nrsService: NrsService) {
+class CheckEmploymentExpensesService @Inject()(auditService: AuditService) {
 
   def performSubmitAudits(user: User, createUpdateExpensesRequest: CreateUpdateExpensesRequest, taxYear: Int, prior: Option[AllEmploymentData])
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
@@ -49,19 +46,5 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
     auditService.sendAudit[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-  }
-
-  def performSubmitNrsPayload(createUpdateExpensesRequest: CreateUpdateExpensesRequest, prior: Option[AllEmploymentData], user: User)
-                             (implicit hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
-
-    val nrsPayload = prior
-      .flatMap(prior => prior.latestEOYExpenses.map(prior => createUpdateExpensesRequest.toAmendDecodedExpensesPayloadModel(prior.latestExpenses)))
-      .map(Left(_))
-      .getOrElse(Right(createUpdateExpensesRequest.toCreateDecodedExpensesPayloadModel()))
-
-    nrsPayload match {
-      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid, user.trueUserAgent)
-      case Right(create) => nrsService.submit(user.nino, create, user.mtditid, user.trueUserAgent)
-    }
   }
 }
