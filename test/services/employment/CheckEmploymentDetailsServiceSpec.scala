@@ -205,7 +205,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
             closeCompany = Some(false),
             directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
             disguisedRemuneration = Some(false),
-            offPayrollWorker = Some(false),
+            offPayrollWorker = Some(true),
             pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
@@ -236,9 +236,10 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
           cessationDate = employmentSource1.cessationDate,
           taxablePayToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
           totalTaxToDate = employmentSource1.toEmploymentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-          payrollId = employmentSource1.payrollId
+          payrollId = employmentSource1.payrollId,
+          offPayrollWorker = Some(true)
         ), AuditEmploymentData(
-          "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999")
+          "name", Some("employerRef"), "001", Some("2000-10-10"), Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999"), Some(true)
         )
       ).toAuditModel)
 

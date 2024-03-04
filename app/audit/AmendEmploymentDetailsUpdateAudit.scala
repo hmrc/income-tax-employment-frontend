@@ -25,7 +25,8 @@ case class AuditEmploymentData(employerName: String,
                                cessationDate: Option[String],
                                taxablePayToDate: Option[BigDecimal],
                                totalTaxToDate: Option[BigDecimal],
-                               payrollId: Option[String])
+                               payrollId: Option[String],
+                               offPayrollWorker : Option[Boolean])
 
 object AuditEmploymentData{
   implicit def writes: OWrites[AuditEmploymentData] = Json.writes[AuditEmploymentData]
