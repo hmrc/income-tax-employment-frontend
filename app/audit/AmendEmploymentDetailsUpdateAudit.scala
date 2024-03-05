@@ -39,8 +39,9 @@ case class AmendEmploymentDetailsUpdateAudit(taxYear: Int,
                                              priorEmploymentData: AuditEmploymentData,
                                              employmentData: AuditEmploymentData) {
 
-  private def name = "AmendEmploymentDetailsUpdate"
-  def toAuditModel: AuditModel[AmendEmploymentDetailsUpdateAudit] = AuditModel(name, name, this)
+  private def auditType = "AmendEmploymentDetailsUpdate"
+  private def transactionName =  "amend-employment-details-update"
+  def toAuditModel: AuditModel[AmendEmploymentDetailsUpdateAudit] = AuditModel(auditType, transactionName, this)
 }
 
 object AmendEmploymentDetailsUpdateAudit {
