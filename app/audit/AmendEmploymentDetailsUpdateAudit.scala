@@ -25,7 +25,8 @@ case class AuditEmploymentData(employerName: String,
                                cessationDate: Option[String],
                                taxablePayToDate: Option[BigDecimal],
                                totalTaxToDate: Option[BigDecimal],
-                               payrollId: Option[String])
+                               payrollId: Option[String],
+                               offPayrollWorker : Option[Boolean])
 
 object AuditEmploymentData{
   implicit def writes: OWrites[AuditEmploymentData] = Json.writes[AuditEmploymentData]
@@ -38,8 +39,9 @@ case class AmendEmploymentDetailsUpdateAudit(taxYear: Int,
                                              priorEmploymentData: AuditEmploymentData,
                                              employmentData: AuditEmploymentData) {
 
-  private def name = "AmendEmploymentDetailsUpdate"
-  def toAuditModel: AuditModel[AmendEmploymentDetailsUpdateAudit] = AuditModel(name, name, this)
+  private def auditType = "AmendEmploymentDetailsUpdate"
+  private def transactionName =  "amend-employment-details-update"
+  def toAuditModel: AuditModel[AmendEmploymentDetailsUpdateAudit] = AuditModel(auditType, transactionName, this)
 }
 
 object AmendEmploymentDetailsUpdateAudit {

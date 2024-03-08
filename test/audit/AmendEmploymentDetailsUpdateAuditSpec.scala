@@ -64,7 +64,7 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvide
           closeCompany = Some(false),
           directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
           disguisedRemuneration = Some(false),
-          offPayrollWorker = Some(false),
+          offPayrollWorker = None,
           pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
           Some(Deductions(
             studentLoans = Some(StudentLoans(
@@ -77,8 +77,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvide
       )
 
       model.toAmendAuditModel(aUser, employmentId = "id", taxYear = taxYearEOY, priorData = employmentSource1) shouldBe AmendEmploymentDetailsUpdateAudit(
-        taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some(s"${taxYearEOY - 1}-03-11"), Some(34234.15), Some(6782.92), Some("123456789999")),
-        AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999")))
+        taxYearEOY, "individual", "AA123456A", "1234567890", AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "001", None, Some(s"${taxYearEOY - 1}-03-11"), Some(34234.15), Some(6782.92), Some("123456789999"), None),
+        AuditEmploymentData("Mishima Zaibatsu", Some("223/AB12399"), "id", None, Some(s"${taxYearEOY - 1}-03-11"), Some(4354), Some(564), Some("123456789999"), None))
     }
   }
 
@@ -123,7 +123,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvide
             cessationDate = Some("10-10-2000"),
             taxablePayToDate = Some(55),
             totalTaxToDate = Some(55),
-            payrollId = Some("1235")
+            payrollId = Some("1235"),
+            offPayrollWorker = None
           ),
           employmentData = AuditEmploymentData(
             employerName = "Name 2",
@@ -133,7 +134,8 @@ class AmendEmploymentDetailsUpdateAuditSpec extends UnitTest with TaxYearProvide
             cessationDate = Some("10-10-2000"),
             taxablePayToDate = Some(552),
             totalTaxToDate = Some(552),
-            payrollId = Some("12356")
+            payrollId = Some("12356"),
+            offPayrollWorker = None
           )
         )
 
