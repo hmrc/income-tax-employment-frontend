@@ -18,13 +18,11 @@ package models.mongo
 
 import controllers.employment.routes.CheckEmploymentDetailsController
 import models.question.{Question, QuestionsJourney}
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, Json, OFormat}
 import play.api.mvc.Call
 import uk.gov.hmrc.crypto.EncryptedValue
-import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.AesGcmAdCrypto
-
+import utils.{AesGcmAdCrypto, MongoJavaDateTimeFormats}
+import java.time.{LocalDateTime, ZoneId}
 case class EmploymentUserData(sessionId: String,
                               mtdItId: String,
                               nino: String,
@@ -34,7 +32,7 @@ case class EmploymentUserData(sessionId: String,
                               hasPriorBenefits: Boolean,
                               hasPriorStudentLoans: Boolean,
                               employment: EmploymentCYAModel,
-                              lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+                              lastUpdated: LocalDateTime = LocalDateTime.now(ZoneId.of("UTC"))) {
 
   def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedEmploymentUserData = EncryptedEmploymentUserData(
     sessionId = sessionId,
@@ -50,9 +48,9 @@ case class EmploymentUserData(sessionId: String,
   )
 }
 
-object EmploymentUserData extends MongoJodaFormats {
+object EmploymentUserData extends MongoJavaDateTimeFormats {
 
-  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+  implicit val mongoJodaDateTimeFormats: Format[LocalDateTime] = localDateTimeFormat
 
   implicit val formats: Format[EmploymentUserData] = Json.format[EmploymentUserData]
 
@@ -75,7 +73,7 @@ case class EncryptedEmploymentUserData(sessionId: String,
                                        hasPriorBenefits: Boolean,
                                        hasPriorStudentLoans: Boolean,
                                        employment: EncryptedEmploymentCYAModel,
-                                       lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+                                       lastUpdated: LocalDateTime = LocalDateTime.now(ZoneId.of("UTC"))) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EmploymentUserData = EmploymentUserData(
     sessionId = sessionId,
@@ -91,10 +89,10 @@ case class EncryptedEmploymentUserData(sessionId: String,
   )
 }
 
-object EncryptedEmploymentUserData extends MongoJodaFormats {
+object EncryptedEmploymentUserData extends MongoJavaDateTimeFormats {
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
 
-  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+  implicit val mongoJodaDateTimeFormats: Format[LocalDateTime] = localDateTimeFormat
 
   implicit val formats: Format[EncryptedEmploymentUserData] = Json.format[EncryptedEmploymentUserData]
 }

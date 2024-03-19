@@ -22,7 +22,6 @@ import models.benefits._
 import models.details.EmploymentDetails
 import models.mongo._
 import models.{AuthorisationRequest, User}
-import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
@@ -34,6 +33,7 @@ import uk.gov.hmrc.mongo.MongoUtils
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 import utils.{AesGcmAdCrypto, IntegrationTest}
 
+import java.time.{LocalDateTime, ZoneId}
 import scala.concurrent.Future
 
 class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
@@ -66,7 +66,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   private val employmentIdTwo = UUID.randomUUID
   private val sessionIdTwo = UUID.randomUUID
 
-  private val now = DateTime.now(DateTimeZone.UTC)
+  private val now = LocalDateTime.now(ZoneId.of("UTC"))
   private val employerName = "some-employer-name"
 
   val employmentUserDataOne: EmploymentUserData = EmploymentUserData(
@@ -255,7 +255,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   "find" should {
     "get a document and update the TTL" in new EmptyDatabase {
-      private val now = DateTime.now(DateTimeZone.UTC)
+      private val now = LocalDateTime.now(ZoneId.of("UTC"))
       private val data = employmentUserDataOne.copy(lastUpdated = now)
 
       await(employmentRepo.createOrUpdate(data)) mustBe Right(())

@@ -16,11 +16,10 @@
 
 package models.mongo
 
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.crypto.EncryptedValue
-import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.AesGcmAdCrypto
+import utils.{AesGcmAdCrypto, MongoJavaDateTimeFormats}
+import java.time.{LocalDateTime, ZoneId}
 
 case class ExpensesUserData(sessionId: String,
                             mtdItId: String,
@@ -29,7 +28,7 @@ case class ExpensesUserData(sessionId: String,
                             isPriorSubmission: Boolean,
                             hasPriorExpenses: Boolean,
                             expensesCya: ExpensesCYAModel,
-                            lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+                            lastUpdated: LocalDateTime = LocalDateTime.now(ZoneId.of("UTC"))) {
 
   def encrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): EncryptedExpensesUserData = EncryptedExpensesUserData(
     sessionId = sessionId,
@@ -43,9 +42,9 @@ case class ExpensesUserData(sessionId: String,
   )
 }
 
-object ExpensesUserData extends MongoJodaFormats {
+object ExpensesUserData extends MongoJavaDateTimeFormats {
 
-  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+  implicit val mongoJodaDateTimeFormats: Format[LocalDateTime] = localDateTimeFormat
 
   implicit val format: OFormat[ExpensesUserData] = Json.format[ExpensesUserData]
 }
@@ -57,7 +56,7 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      isPriorSubmission: Boolean,
                                      hasPriorExpenses: Boolean,
                                      expensesCya: EncryptedExpensesCYAModel,
-                                     lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC)) {
+                                     lastUpdated: LocalDateTime = LocalDateTime.now(ZoneId.of("UTC"))) {
 
   def decrypted(implicit aesGcmAdCrypto: AesGcmAdCrypto, associatedText: String): ExpensesUserData = ExpensesUserData(
     sessionId = sessionId,
@@ -71,10 +70,10 @@ case class EncryptedExpensesUserData(sessionId: String,
   )
 }
 
-object EncryptedExpensesUserData extends MongoJodaFormats {
+object EncryptedExpensesUserData extends MongoJavaDateTimeFormats {
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
 
-  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+  implicit val mongoJodaDateTimeFormats: Format[LocalDateTime] = localDateTimeFormat
 
   implicit val format: Format[EncryptedExpensesUserData] = Json.format[EncryptedExpensesUserData]
 }

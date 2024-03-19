@@ -16,7 +16,7 @@
 
 package utils
 
-import org.joda.time.{DateTime, DateTimeZone}
+import java.time.{LocalDateTime, ZoneId}
 import support.TaxYearUtils.taxYearEOY
 
 object UnitTestClock extends Clock {
@@ -26,5 +26,5 @@ object UnitTestClock extends Clock {
   private val hour = 0
   private val minute = 0
 
-  override def now(zone: DateTimeZone = DateTimeZone.UTC): DateTime = new DateTime(year, month, day, hour, minute, zone)
+  override def now(zone: ZoneId = ZoneId.of("UTC")): LocalDateTime = LocalDateTime.of(year, month, day, hour, minute).atZone(zone).toLocalDateTime
 }

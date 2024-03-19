@@ -17,7 +17,7 @@
 package controllers.employment
 
 import actions.ActionsProvider
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import common.SessionValues
 import config.AppConfig
 import models.employment._

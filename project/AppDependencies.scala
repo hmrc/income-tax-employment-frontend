@@ -19,27 +19,26 @@ import sbt._
 
 object AppDependencies {
 
-  private val bootstrapFrontendPlay28Version = "7.22.0"
-  private val mongoPlayVersion = "1.3.0"
+  private val bootstrapFrontendPlay30Version = "8.4.0"
+  private val mongoPlayVersion = "1.7.0"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"                   %% "bootstrap-frontend-play-28" % bootstrapFrontendPlay28Version,
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-28" % "8.5.0",
-    "uk.gov.hmrc.mongo"             %% "hmrc-mongo-play-28"         % mongoPlayVersion,
+    "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30" % bootstrapFrontendPlay30Version,
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30" % bootstrapFrontendPlay30Version,
+    "uk.gov.hmrc.mongo"             %% "hmrc-mongo-play-30"         % mongoPlayVersion,
     "com.fasterxml.jackson.module"  %% "jackson-module-scala"       % "2.14.2"
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapFrontendPlay28Version  % Test,
+    "uk.gov.hmrc"             %% "bootstrap-test-play-30"   % bootstrapFrontendPlay30Version  % Test,
     "org.scalatest"           %% "scalatest"                % "3.2.15"                        % Test,
     "org.scalatestplus"       %% "mockito-3-4"              % "3.2.10.0"                      % Test,
-    "org.mockito"             %% "mockito-scala"            % "1.16.42"                       % Test,
+    "org.mockito"             %% "mockito-scala"            % "1.17.12"                       % Test,
     "org.jsoup"               % "jsoup"                     % "1.15.4"                        % Test,
-    "com.typesafe.play"       %% "play-test"                % current                         % Test,
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                         % "test, it",
-    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.35.0"                        % "test, it",
+    "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                         % Test,
+    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.35.0"                        % Test,
     "org.scalamock"           %% "scalamock"                % "5.2.0"                         % Test,
-    "com.vladsch.flexmark"    % "flexmark-all"              % "0.64.0"                        % "test, it",
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % mongoPlayVersion                % "test, it"
+    "com.vladsch.flexmark"    % "flexmark-all"              % "0.64.0"                        % Test,
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"  % mongoPlayVersion                % Test
   )
 }

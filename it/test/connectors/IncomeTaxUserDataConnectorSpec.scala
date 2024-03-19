@@ -22,8 +22,8 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.OK
 import support.builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import support.mocks.MockAppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.ConnectorIntegrationTest
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

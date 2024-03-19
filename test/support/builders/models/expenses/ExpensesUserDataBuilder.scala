@@ -18,7 +18,7 @@ package support.builders.models.expenses
 
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import org.joda.time.{DateTime, DateTimeZone}
+import java.time.{LocalDateTime, ZoneId}
 import support.TaxYearUtils.taxYearEOY
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 
@@ -32,7 +32,7 @@ object ExpensesUserDataBuilder {
     isPriorSubmission = true,
     hasPriorExpenses = true,
     expensesCya = anExpensesCYAModel,
-    lastUpdated = DateTime.now(DateTimeZone.UTC)
+    lastUpdated = LocalDateTime.now(ZoneId.of("UTC"))
   )
 
   // TODO: This should be removed and relevant object created where needed from the base above.

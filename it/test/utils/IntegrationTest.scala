@@ -17,7 +17,7 @@
 package utils
 
 import actions.AuthorisedAction
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig

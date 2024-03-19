@@ -25,7 +25,6 @@ import models.employment._
 import models.employment.createUpdate._
 import models.mongo._
 import models.{AuthorisationRequest, IncomeTaxUserData, User}
-import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
@@ -34,7 +33,6 @@ import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{Clock, InYearUtil}
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -119,7 +117,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       hasPriorBenefits = hasPriorBenefits,
       hasPriorStudentLoans = hasPriorStudentLoans,
       cyaModel,
-      clock.now(DateTimeZone.UTC)
+      clock.now()
     )
 
     employmentUserDataRepository.createOrUpdate(userData).map {
@@ -143,7 +141,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       originalEmploymentUserData.hasPriorBenefits,
       originalEmploymentUserData.hasPriorStudentLoans,
       employment = employment,
-      clock.now(DateTimeZone.UTC)
+      clock.now()
     )
 
     employmentUserDataRepository.createOrUpdate(employmentUserData).map {
@@ -166,7 +164,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       isPriorSubmission,
       hasPriorExpenses,
       cyaModel,
-      clock.now(DateTimeZone.UTC)
+      clock.now()
     )
 
     expensesUserDataRepository.createOrUpdate(userData).map {
@@ -188,7 +186,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       isPriorSubmission,
       hasPriorExpenses,
       expensesCYAModel,
-      clock.now(DateTimeZone.UTC)
+      clock.now()
     )
 
     expensesUserDataRepository.createOrUpdate(expensesUserData).map {
