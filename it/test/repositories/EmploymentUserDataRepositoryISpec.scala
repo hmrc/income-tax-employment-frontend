@@ -33,7 +33,7 @@ import uk.gov.hmrc.mongo.MongoUtils
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 import utils.{AesGcmAdCrypto, IntegrationTest}
 
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{Clock, Duration, LocalDateTime, ZoneId}
 import scala.concurrent.Future
 
 class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
@@ -66,7 +66,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   private val employmentIdTwo = UUID.randomUUID
   private val sessionIdTwo = UUID.randomUUID
 
-  private val now = LocalDateTime.now(ZoneId.of("UTC"))
+  private val millisecondClock = Clock.tick(Clock.systemDefaultZone, Duration.ofNanos(1000000))
+  private val now = LocalDateTime.now(millisecondClock)
   private val employerName = "some-employer-name"
 
   val employmentUserDataOne: EmploymentUserData = EmploymentUserData(
