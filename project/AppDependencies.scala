@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import play.core.PlayVersion.current
-import sbt._
+import sbt.*
 
 object AppDependencies {
 
@@ -36,7 +35,7 @@ object AppDependencies {
     "org.mockito"             %% "mockito-scala"            % "1.17.12"                       % Test,
     "org.jsoup"               % "jsoup"                     % "1.15.4"                        % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                         % Test,
-    "com.github.tomakehurst"  % "wiremock-jre8"             % "2.35.0"                        % Test,
+    "com.github.tomakehurst"  %  "wiremock-jre8-standalone" % "2.35.0"                        % Test,
     "org.scalamock"           %% "scalamock"                % "5.2.0"                         % Test,
     "com.vladsch.flexmark"    % "flexmark-all"              % "0.64.0"                        % Test,
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"  % mongoPlayVersion                % Test
