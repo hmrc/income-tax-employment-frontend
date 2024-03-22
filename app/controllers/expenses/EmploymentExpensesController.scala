@@ -23,7 +23,6 @@ import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import org.joda.time.DateTimeZone
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -73,7 +72,7 @@ class EmploymentExpensesController @Inject()(authAction: AuthorisedAction,
   private def handleSuccessForm(taxYear: Int, data: Option[ExpensesUserData], questionValue: Boolean)
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     val expensesUserData = data.getOrElse(ExpensesUserData(request.user.sessionId, request.user.mtditid, request.user.nino, taxYear, isPriorSubmission = false,
-      hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)), clock.now(DateTimeZone.UTC))
+      hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)), clock.now())
     )
     expensesService.updateClaimingEmploymentExpenses(request.user, taxYear, expensesUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()

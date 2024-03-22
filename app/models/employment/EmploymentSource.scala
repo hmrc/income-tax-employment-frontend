@@ -20,9 +20,9 @@ import common.EmploymentToRemove.{all, hmrcHeld}
 import models.benefits.BenefitsViewModel
 import models.details.EmploymentDetails
 import models.employment.createUpdate.CreateUpdateEmployment
-import org.joda.time.DateTime
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDateTime
 
 case class HmrcEmploymentSource(employmentId: String,
                                 employerName: String,
@@ -43,9 +43,9 @@ case class HmrcEmploymentSource(employmentId: String,
     }
   }
 
-  private def parseDate(submittedOn: String): Option[DateTime] = {
+  private def parseDate(submittedOn: String): Option[LocalDateTime] = {
     try {
-      Some(DateTime.parse(submittedOn))
+      Some(LocalDateTime.parse(submittedOn))
     } catch {
       case e: Exception =>
         logger.error(s"[HmrcEmploymentSource][parseDate] Couldn't parse submitted on to DateTime - ${e.getMessage}")
@@ -61,8 +61,8 @@ case class HmrcEmploymentSource(employmentId: String,
       case (None, Some(customer)) => Some(customer)
       case (Some(hmrc), Some(customer)) =>
 
-        val hmrcSubmittedOn: Option[DateTime] = hmrc.employmentData.map(_.submittedOn).flatMap(parseDate)
-        val customerSubmittedOn: Option[DateTime] = customer.employmentData.map(_.submittedOn).flatMap(parseDate)
+        val hmrcSubmittedOn: Option[LocalDateTime] = hmrc.employmentData.map(_.submittedOn).flatMap(parseDate)
+        val customerSubmittedOn: Option[LocalDateTime] = customer.employmentData.map(_.submittedOn).flatMap(parseDate)
 
         Some((hmrcSubmittedOn, customerSubmittedOn) match {
           case (Some(hmrcSubmittedOn), Some(customerSubmittedOn)) => if (hmrcSubmittedOn.isAfter(customerSubmittedOn)) hmrc else customer

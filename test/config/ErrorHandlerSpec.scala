@@ -16,7 +16,7 @@
 
 package config
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import common.SessionValues
 import models.AuthorisationRequest
 import org.jsoup.Jsoup

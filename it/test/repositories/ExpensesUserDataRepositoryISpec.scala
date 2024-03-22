@@ -21,7 +21,6 @@ import common.UUID
 import models.expenses.ExpensesViewModel
 import models.mongo._
 import models.{AuthorisationRequest, User}
-import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
@@ -32,6 +31,7 @@ import uk.gov.hmrc.mongo.MongoUtils
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 import utils.{AesGcmAdCrypto, IntegrationTest}
 
+import java.time.{LocalDateTime, ZoneId}
 import scala.concurrent.Future
 
 class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
@@ -50,7 +50,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   private val sessionIdOne = UUID.randomUUID
   private val sessionIdTwo = UUID.randomUUID
 
-  private val now = DateTime.now(DateTimeZone.UTC)
+  private val now = LocalDateTime.now(ZoneId.of("UTC"))
 
   val expensesUserDataOne: ExpensesUserData = ExpensesUserData(
     sessionIdOne,
@@ -182,7 +182,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   "find" should {
     "get a document and update the TTL" in new EmptyDatabase {
-      private val now = DateTime.now(DateTimeZone.UTC)
+      private val now = LocalDateTime.now(ZoneId.of("UTC"))
       private val data = expensesUserDataOne.copy(lastUpdated = now)
 
       await(repo.createOrUpdate(data)) mustBe Right(())

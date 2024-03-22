@@ -22,9 +22,8 @@ import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import support.mocks.MockAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.ConnectorIntegrationTest
-
+import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration

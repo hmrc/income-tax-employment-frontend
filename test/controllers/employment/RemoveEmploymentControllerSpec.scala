@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import common.SessionValues
 import controllers.employment.routes.EmploymentSummaryController
 import models.AuthorisationRequest
