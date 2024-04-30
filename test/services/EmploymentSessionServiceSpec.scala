@@ -92,7 +92,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     mockCreateUpdateEmploymentDataConnector,
     testClock,
     mockInYearUtil
-  )(new MockAppConfig().configOpwDisabled(), ec)
+  )(new MockAppConfig().config(offPayrollWorkingEnabled = false), ec)
 
   private val underTestWithMimicking: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
