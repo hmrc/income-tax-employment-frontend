@@ -325,7 +325,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     def priorPayData = CreateUpdatePay(taxablePayToDate = priorTaxablePayToDate, totalTaxToDate = priorTotalTaxToDate)
 
-    def priorOffPayrollWorkerData: Option[Boolean] = if(appConfig.offPayrollWorking)priorEmployment.flatMap(_.employmentData.flatMap(_.offPayrollWorker)) else None
+    def priorOffPayrollWorkerData: Option[Boolean] = if (appConfig.offPayrollWorking) priorEmployment.flatMap(_.employmentData.flatMap(_.offPayrollWorker)) else None
 
     lazy val cyaPay = CreateUpdatePay(
       taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
@@ -334,7 +334,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.asBenefits)
     lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.asDeductions)
-    val cyaOffPayrollWorkerData = if(appConfig.offPayrollWorking) cya.employment.employmentDetails.offPayrollWorkingStatus else None
+    // API only accepts 'true' for this offPayroll field, if 'false' must not send offPayroll field.
+    val cyaOffPayrollWorkerData = if(appConfig.offPayrollWorking && cya.employment.employmentDetails.offPayrollWorkingStatus.contains(true)) cya.employment.employmentDetails.offPayrollWorkingStatus else None
 
     lazy val createUpdateEmploymentData = {
         section match {
@@ -459,7 +460,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                         (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, OptionalCyaAndPrior]] = {
 
     val overviewRedirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-
     if (!inYearUtil.inYear(taxYear)) {
       getOptionalCYAAndPrior(taxYear, employmentId)
     } else {
@@ -490,7 +490,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     createOrUpdateEmploymentResult(taxYear, model).flatMap {
       case Left(result) => Future.successful(Left(result))
       case Right(returnedEmploymentId) =>
-
         auditFunction.foreach(function => function(employmentId, taxYear, model, prior, request))
 
         clear(request.user, taxYear, employmentId).map {

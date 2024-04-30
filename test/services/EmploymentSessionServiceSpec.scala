@@ -40,7 +40,7 @@ import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAMo
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import support.mocks._
-import support.{TaxYearProvider, UnitTest}
+import support.{TaxYearProvider, TaxYearUtils, UnitTest}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.{Clock, InYearUtil, UnitTestClock}
@@ -1209,9 +1209,9 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
                 employmentDataFull.employment.employmentDetails.dateIgnored,
                 employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
                 Some(EmploymentData(
-                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, Some(true),
+                  employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
                   Some(Pay(
-                    Some(55.99),
+                    Some(54.99),
                     Some(3453453.0),
                     None, None, None, None
                   )), None
@@ -1227,7 +1227,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
           Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
+            None, None, None, None, None, None, None, None, None, None, None)), None)), None
       )
     }
 
@@ -1273,7 +1273,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
           Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None, None)), Some(false))), None
+            None, None, None, None, None, None, None, None, None, None, None)), None)), None
       )
     }
 
