@@ -335,7 +335,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     lazy val cyaBenefits = cya.employment.employmentBenefits.map(_.asBenefits)
     lazy val cyaStudentLoans = cya.employment.studentLoans.flatMap(_.asDeductions)
     // API only accepts 'true' for this offPayroll field, if 'false' must not send offPayroll field.
-    val cyaOffPayrollWorkerData = if(appConfig.offPayrollWorking && cya.employment.employmentDetails.offPayrollWorkingStatus.contains(true)) cya.employment.employmentDetails.offPayrollWorkingStatus else None
+    val cyaOffPayrollWorkerData = if (appConfig.offPayrollWorking && cya.employment.employmentDetails.offPayrollWorkingStatus.contains(true)) cya.employment.employmentDetails.offPayrollWorkingStatus else None
 
     lazy val createUpdateEmploymentData = {
         section match {
@@ -361,12 +361,9 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     def dataHasNotChanged(prior: EmploymentSource): Boolean = {
         section match {
           case common.EmploymentDetailsSection =>
-            if(appConfig.offPayrollWorking) {
               prior.employmentData.exists(
-                data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) && data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker))
-            } else {
-              prior.employmentData.exists(data => data.payDataHasNotChanged(createUpdateEmploymentData.pay))
-            }
+                data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) && data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker)
+              )
           case common.EmploymentBenefitsSection => prior.employmentBenefits.exists(_.benefitsDataHasNotChanged(createUpdateEmploymentData.benefitsInKind))
           case common.StudentLoansSection => prior.employmentData.exists(_.studentLoansDataHasNotChanged(createUpdateEmploymentData.deductions))
         }
