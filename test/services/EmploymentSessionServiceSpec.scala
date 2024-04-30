@@ -40,7 +40,7 @@ import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAMo
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import support.mocks._
-import support.{TaxYearProvider, TaxYearUtils, UnitTest}
+import support.{TaxYearProvider, UnitTest}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.{Clock, InYearUtil, UnitTestClock}
@@ -81,6 +81,18 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
     testClock,
     mockInYearUtil
   )(new MockAppConfig().config(), ec)
+
+  private val underTestOpwDisabled: EmploymentSessionService = new EmploymentSessionService(
+    mockEmploymentUserDataRepository,
+    mockExpensesUserDataRepository,
+    mockUserDataConnector,
+    mockIncomeSourceConnector,
+    messages,
+    errorHandler,
+    mockCreateUpdateEmploymentDataConnector,
+    testClock,
+    mockInYearUtil
+  )(new MockAppConfig().configOpwDisabled(), ec)
 
   private val underTestWithMimicking: EmploymentSessionService = new EmploymentSessionService(
     mockEmploymentUserDataRepository,
@@ -224,6 +236,17 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
   "submitAndClear" should {
     "submit data and then clear the database" in {
+      val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
+
+      mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
+      mockRefreshIncomeSourceResponseSuccess(taxYear, aUser.nino)
+      mockClear(taxYear, "employmentId", response = true)
+
+      await(underTest.submitAndClear(taxYear, "employmentId", requestWithoutEmploymentId, anEmploymentUserData, Some(anAllEmploymentData))) shouldBe
+        Right((None, anEmploymentUserData))
+    }
+
+    "submit data and then clear the database when OPW is disabled" in {
       val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
 
       mockCreateUpdateEmploymentData(aUser.nino, taxYear, requestWithoutEmploymentId)(Right(None))
@@ -1090,6 +1113,44 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       response.left.toOption.get shouldBe NothingToUpdate
     }
 
+    "return to employment details when nothing to update and OPW is disabled" in {
+
+      lazy val response = underTestOpwDisabled.createModelOrReturnError(
+        authorisationRequest.user,
+
+        employmentDataFull, Some(
+          AllEmploymentData(
+            Seq(
+              HmrcEmploymentSource(
+                employmentDataFull.employmentId,
+                employmentDataFull.employment.employmentDetails.employerName,
+                employmentDataFull.employment.employmentDetails.employerRef,
+                employmentDataFull.employment.employmentDetails.payrollId,
+                employmentDataFull.employment.employmentDetails.startDate,
+                employmentDataFull.employment.employmentDetails.cessationDate,
+                employmentDataFull.employment.employmentDetails.dateIgnored,
+                employmentDataFull.employment.employmentDetails.employmentSubmittedOn,
+                hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
+                  Some(EmploymentData(
+                    employmentDataFull.employment.employmentDetails.employmentDetailsSubmittedOn.get, None, None, None, None, None, None,
+                    Some(Pay(
+                      employmentDataFull.employment.employmentDetails.taxablePayToDate,
+                      employmentDataFull.employment.employmentDetails.totalTaxToDate,
+                      None, None, None, None
+                    )), None
+                  )),
+                  employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                    Some(employmentDataFull.employment.employmentBenefits.get.asBenefits)))
+                )), None
+              )
+            ), None, Seq(), None, None
+          )
+        ), EmploymentDetailsSection
+      )
+
+      response.left.toOption.get shouldBe NothingToUpdate
+    }
+
     "create the model to send and return the correct result" in {
 
       val response = underTest.createModelOrReturnError(
@@ -1237,7 +1298,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
         authorisationRequest.user,
         employmentDataFull.copy(
           employment = employmentDataFull.employment.copy(
-            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(false))
+            employmentDetails = employmentDataFull.employment.employmentDetails.copy(offPayrollWorkingStatus = Some(true))
           )
         ),
         Some(
@@ -1273,7 +1334,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
       response.toOption.get shouldBe CreateUpdateEmploymentRequest(
         Some("employmentId"), None, Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99, 3453453.0), None,
           Some(Benefits(None, Some(100.0), Some(100.0), None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None, None, None, None)), None)), None
+            None, None, None, None, None, None, None, None, None, None, None)), Some(true))), None
       )
     }
 

@@ -361,7 +361,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     def dataHasNotChanged(prior: EmploymentSource): Boolean = {
         section match {
           case common.EmploymentDetailsSection =>
-            if(appConfig.offPayrollWorking && createUpdateEmploymentData.offPayrollWorker.isDefined) {
+            if(appConfig.offPayrollWorking) {
               prior.employmentData.exists(
                 data => data.payDataHasNotChanged(createUpdateEmploymentData.pay) && data.offPayrollWorkerHasNotChanged(createUpdateEmploymentData.offPayrollWorker))
             } else {
