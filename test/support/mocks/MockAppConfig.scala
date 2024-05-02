@@ -34,7 +34,6 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
-
     override lazy val defaultTaxYear: Int = taxYear
 
     override def incomeTaxSubmissionOverviewUrl(taxYear: Int): String = "/overview"
@@ -83,4 +82,5 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val mimicEmploymentAPICalls: Boolean = _mimicEmploymentAPICalls
   }
+
 }
