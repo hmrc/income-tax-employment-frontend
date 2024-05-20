@@ -28,6 +28,9 @@ import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNot
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
+import play.api.libs.Comet.json
+import play.api.libs.json
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.employment.CheckEmploymentDetailsService
 import services.{EmploymentSessionService, RedirectService}
@@ -55,7 +58,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-            Ok(pageView(viewModel, taxYear, isInYear = true))
+            Ok(pageView(viewModel, None, taxYear, isInYear = true))
           case None =>
             logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
               s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
@@ -66,18 +69,29 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+        println("DUMMY TEXT")
         cya match {
           case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
+            println("STUPID CASE")
             Future.successful(redirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId))
           } else {
             prior match {
               case Some(_)
                 if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
-              case _ => Future.successful {
+              case Some(data) => Future.successful {
+                val hmrcPriorOPW: Option[Boolean] = data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) &&
+                  source.dateIgnored.isEmpty).flatMap(_.hmrcEmploymentFinancialData.flatMap(_.employmentData.flatMap(_.offPayrollWorker)))
+                println("EMPLOY ID", employmentId)
+                println("CHECK THIS TEXT 3" + hmrcPriorOPW)
+                println("NORMAL PRIOR NEW", Json.prettyPrint(Json.toJson(prior)))
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                Ok(pageView(viewModel, taxYear, isInYear = false))
+                Ok(pageView(viewModel, hmrcPriorOPW, taxYear, isInYear = false))
               }
+              case None => Future.successful {
+                val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
+                checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
+                Ok(pageView(viewModel, None, taxYear, isInYear = false)) }
             }
           }
           case None =>
@@ -176,7 +190,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       )(errorHandler.internalServerError())({
         val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
         checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-        Ok(pageView(viewModel, taxYear, isInYear = false))
+        Ok(pageView(viewModel, None, taxYear, isInYear = false))
       })
       case None =>
         logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
