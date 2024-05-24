@@ -28,7 +28,6 @@ import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNot
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.employment.CheckEmploymentDetailsService
 import services.{EmploymentSessionService, RedirectService}
@@ -84,13 +83,14 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
               case None => Future.successful {
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                Ok(pageView(viewModel, None, taxYear, isInYear = false)) }
+                Ok(pageView(viewModel, None, taxYear, isInYear = false))
+              }
             }
           }
           case None =>
             prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
-            saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
-          }
+              saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
+            }
         }
       }
     }
@@ -130,7 +130,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
   //scalastyle:on
 
   private def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
-                          prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
+                    prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
