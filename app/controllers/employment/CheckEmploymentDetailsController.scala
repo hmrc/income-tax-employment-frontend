@@ -55,7 +55,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-            Ok(pageView(viewModel, taxYear, isInYear = true))
+            Ok(pageView(viewModel, viewModel.offPayrollWorkingStatus, taxYear, isInYear = true))
           case None =>
             logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
               s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
@@ -73,17 +73,24 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
             prior match {
               case Some(_)
                 if !cya.employment.employmentDetails.isSubmittable => Future.successful(Redirect(EmployerNameController.show(taxYear, employmentId)))
-              case _ => Future.successful {
+              case Some(data) => Future.successful {
+                val hmrcPriorOPW: Option[Boolean] = data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) &&
+                  source.dateIgnored.isEmpty).flatMap(_.hmrcEmploymentFinancialData.flatMap(_.employmentData.flatMap(_.offPayrollWorker)))
                 val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
                 checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-                Ok(pageView(viewModel, taxYear, isInYear = false))
+                Ok(pageView(viewModel, hmrcPriorOPW, taxYear, isInYear = false))
+              }
+              case None => Future.successful {
+                val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
+                checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
+                Ok(pageView(viewModel, None, taxYear, isInYear = false))
               }
             }
           }
           case None =>
             prior.fold(Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
-            saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
-          }
+              saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
+            }
         }
       }
     }
@@ -123,7 +130,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
   //scalastyle:on
 
   private def audit(employmentId: String, taxYear: Int, model: CreateUpdateEmploymentRequest,
-                          prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
+                    prior: Option[AllEmploymentData], request: AuthorisationRequest[_]): Unit = {
     implicit val implicitRequest: AuthorisationRequest[_] = request
 
     checkEmploymentDetailsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
@@ -176,7 +183,9 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
       )(errorHandler.internalServerError())({
         val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
         checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-        Ok(pageView(viewModel, taxYear, isInYear = false))
+        val hmrcPriorOPW: Option[Boolean] = employmentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) &&
+          source.dateIgnored.isEmpty).flatMap(_.hmrcEmploymentFinancialData.flatMap(_.employmentData.flatMap(_.offPayrollWorker)))
+        Ok(pageView(viewModel, hmrcPriorOPW, taxYear, isInYear = false))
       })
       case None =>
         logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +

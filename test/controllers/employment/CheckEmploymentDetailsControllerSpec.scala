@@ -104,7 +104,7 @@ class CheckEmploymentDetailsControllerSpec extends ControllerUnitTest
               totalTaxToDate = Some(6782.92),
               isUsingCustomerData = false,
               offPayrollWorkingStatus = Some(true)
-            ), taxYear, isInYear = true
+            ),hmrcPriorOPW = Some(true), taxYear, isInYear = true
           )))
 
           controller().show(taxYear, employmentId = employmentId)(fakeRequest.withSession(

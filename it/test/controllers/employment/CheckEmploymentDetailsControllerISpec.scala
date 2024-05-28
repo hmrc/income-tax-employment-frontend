@@ -251,6 +251,46 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
     }
 
+    "for end of year return a fully populated page when cya data exists and prior data is none" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(EmploymentUserData(
+          sessionId,
+          "1234567890",
+          "AA123456A",
+          taxYearEOY,
+          employmentId,
+          isPriorSubmission = true,
+          hasPriorBenefits = true,
+          hasPriorStudentLoans = true,
+          EmploymentCYAModel(
+            anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(didYouLeaveQuestion = Some(true)),
+            None
+          )
+        ))
+        noUserDataStub(nino, taxYearEOY)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
+
+    "for end of year return a fully populated page when cya data is None" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+    }
+
     "for end of year return a fully populated page, with change links, when all the fields are populated" which {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()

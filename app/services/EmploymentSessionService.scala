@@ -216,7 +216,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     val hmrcEmploymentId: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
     val customerEmploymentId: Option[String] = {
-
       if (appConfig.mimicEmploymentAPICalls && section != EmploymentDetailsSection) {
         Some(cya.employmentId)
       } else {
