@@ -315,32 +315,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         s"should not display offPayrollWorking section" in {
           document.body().toString.contains(specific.offPayrollWorkingField) shouldBe false
         }
-        /*textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")*/
-
       }
-
-     /* "render the in year page without offPayrollWorking section when hmrcPriorOPW is false" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-        implicit val messages: Messages = getMessages(userScenario.isWelsh)
-
-        val htmlFormat = underTest(anEmploymentDetailsViewModel.copy(
-          employerRef = None,
-          startDate = None,
-          payrollId = None,
-          didYouLeaveQuestion = Some(false),
-          taxablePayToDate = None,
-          totalTaxToDate = None,
-          isUsingCustomerData = true,
-          offPayrollWorkingStatus = Some(true)
-        ), hmrcPriorOPW = None, taxYear = taxYearEOY, isInYear = true)
-
-        implicit val document: Document = Jsoup.parse(htmlFormat.body)
-
-        s"should not display offPayrollWorking section" in {
-          document.body().toString.contains(specific.offPayrollWorkingField) shouldBe false
-        }
-      }*/
 
       "for end of year return a fully populated page, with change links, when all the fields are populated" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
