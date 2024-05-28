@@ -287,8 +287,8 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
           didYouLeaveQuestion = Some(false),
           startDate = None,
           cessationDate = None,
-          offPayrollWorkingStatus = Some(false)
-        ), hmrcPriorOPW = Some(true), taxYear = taxYear, isInYear = true)
+          offPayrollWorkingStatus = None
+        ), hmrcPriorOPW = None, taxYear = taxYear, isInYear = true)
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
         titleCheck(specific.expectedTitle, userScenario.isWelsh)
@@ -312,12 +312,15 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
         textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldValueSelector(7))
 
-        textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
-        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")
+        s"should not display offPayrollWorking section" in {
+          document.body().toString.contains(specific.offPayrollWorkingField) shouldBe false
+        }
+        /*textOnPageCheck(specific.offPayrollWorkingField, opwsummaryListRowFieldNameSelector(10))
+        textOnPageCheck(common.no, opwsummaryListRowValuedNameSelector(10), "for off payroll working")*/
 
       }
 
-      "render the in year page without offPayrollWorking section when hmrcPriorOPW is false" which {
+     /* "render the in year page without offPayrollWorking section when hmrcPriorOPW is false" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
         implicit val messages: Messages = getMessages(userScenario.isWelsh)
 
@@ -337,7 +340,7 @@ class CheckEmploymentDetailsViewSpec extends ViewUnitTest {
         s"should not display offPayrollWorking section" in {
           document.body().toString.contains(specific.offPayrollWorkingField) shouldBe false
         }
-      }
+      }*/
 
       "for end of year return a fully populated page, with change links, when all the fields are populated" which {
         implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)

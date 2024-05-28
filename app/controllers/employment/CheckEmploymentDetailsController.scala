@@ -55,7 +55,7 @@ class CheckEmploymentDetailsController @Inject()(pageView: CheckEmploymentDetail
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
             checkEmploymentDetailsService.sendViewEmploymentDetailsAudit(request.user, viewModel, taxYear)
-            Ok(pageView(viewModel, None, taxYear, isInYear = true))
+            Ok(pageView(viewModel, viewModel.offPayrollWorkingStatus, taxYear, isInYear = true))
           case None =>
             logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
               s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
