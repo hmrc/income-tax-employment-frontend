@@ -64,7 +64,7 @@
             isPageHeading = false
             ))
             )),
-            errorMessage = form.errors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+            errorMessage = form.errors.headOption.map(err => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(err.message, err.args:_*)))),
             idPrefix = Some("studentLoans"),
             name = "studentLoans[]",
             items = Seq(

@@ -45,18 +45,18 @@
     } else {
         if(id == "startAmount") {
             if(!form.errors.filter(_.key.contains("startAmount")).isEmpty){
-                Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("startAmount"))))))
+                Some(ErrorMessage.errorMessageWithDefaultStringsTranslated(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("startAmount"))))))
             } else {
                 None
             }
         } else if(id == "endAmount") {
             if(!form.errors.filter(_.key.contains("endAmount")).isEmpty){
-                Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("endAmount"))))))
+                Some(ErrorMessage.errorMessageWithDefaultStringsTranslated(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("endAmount"))))))
             } else {
                 None
             }
         } else {
-            Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors))))
+            Some(ErrorMessage.errorMessageWithDefaultStringsTranslated(content = HtmlContent(errorHtml(form.errors))))
         }
     }
 }

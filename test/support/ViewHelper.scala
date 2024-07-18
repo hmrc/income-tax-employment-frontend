@@ -19,6 +19,7 @@ package support
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.i18n.Messages
 
 trait ViewHelper {
   self: AnyWordSpec with Matchers =>
@@ -260,11 +261,12 @@ trait ViewHelper {
     }
   }
 
-  def errorAboveElementCheck(text: String, id: Option[String] = None)(implicit document: Document): Unit = {
+  def errorAboveElementCheck(text: String, id: Option[String] = None)(implicit messages: Messages, document: Document): Unit = {
     s"has a $text error above the element" which {
       s"has the text '$text'" in {
+        val errorPrefix = if (messages.lang.code == "cy") "Gwall" else "Error"
         val selector = if (id.isDefined) s"#${id.get}-error" else ".govuk-error-message"
-        document.select(selector).text() shouldBe s"Error: $text"
+        document.select(selector).text() shouldBe s"$errorPrefix: $text"
       }
     }
   }
