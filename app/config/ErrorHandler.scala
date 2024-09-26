@@ -21,7 +21,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
 import play.api.mvc.{Request, RequestHeader, Result}
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.LegacyFrontendErrorHandler
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import javax.inject.{Inject, Singleton}
@@ -32,7 +32,7 @@ class ErrorHandler @Inject()(internalServerErrorTemplate: InternalServerErrorTem
                              serviceUnavailableTemplate: ServiceUnavailableTemplate,
                              val messagesApi: MessagesApi,
                              notFoundTemplate: NotFoundTemplate)(implicit appConfig: AppConfig)
-  extends FrontendErrorHandler with I18nSupport {
+  extends LegacyFrontendErrorHandler with I18nSupport {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
     internalServerErrorTemplate()
