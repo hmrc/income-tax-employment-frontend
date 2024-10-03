@@ -59,14 +59,14 @@
              removeRoute: Call
              ) = {
     @if(isInYear) {
-        <a class='govuk-link' href=@viewRoute>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
+        <a class='govuk-link' href='@viewRoute'>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
     } else {
         <ul class='govuk-summary-list__actions-list'>
             <li class='govuk-summary-list__actions-list-item'>
-                <a class='govuk-link' href=@viewRoute>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
+                <a class='govuk-link' href='@viewRoute'>@message<span class='govuk-visually-hidden'>@{s" $message $hiddenText"}</span></a>
             </li>
             <li class='govuk-summary-list__actions-list-item'>
-                <a class='govuk-link' href=@removeRoute>@messages("common.remove")<span class='govuk-visually-hidden'>@{" "} @{messages("common.remove")} @{s" $hiddenText"}</span></a>
+                <a class='govuk-link' href='@removeRoute'>@messages("common.remove")<span class='govuk-visually-hidden'>@{" "} @{messages("common.remove")} @{s" $hiddenText"}</span></a>
             </li>
         </ul>
     }
