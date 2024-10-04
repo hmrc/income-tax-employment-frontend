@@ -99,11 +99,11 @@
         @{ govukInsetText(InsetText(content = Text(messages(s"checkYourBenefits.p2.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString)))) }
     }
 
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@employerName</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@employerName</h2>
     @govukSummaryList(SummaryList(Seq(toSummaryListRow("checkYourBenefits.benefitsReceived", mapToYesNo(benefits.isBenefitsReceived), if (isInYear) None else Some(ReceiveAnyBenefitsController.show(taxYear, employmentId))))))
 
     @if(if(isInYear) benefits.vehicleDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.vehicleHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                     Some(toSummaryListRow("checkYourBenefits.carSubheading", mapToYesNo(benefits.carVanFuelModel.flatMap(_.sectionQuestion).getOrElse(false)), if (isInYear) None else Some(CarVanFuelBenefitsController.show(taxYear, employmentId)))),
