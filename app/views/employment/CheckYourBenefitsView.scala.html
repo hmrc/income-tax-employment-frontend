@@ -154,7 +154,7 @@
     }
 
     @if(if(isInYear) benefits.accommodationDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.accommodationHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.accommodationHeader")</h2>
         @{
 
         val rows: Seq[SummaryListRow] =
@@ -191,7 +191,7 @@
     }
 
     @if(if(isInYear) benefits.travelDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.travelHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.travelHeader")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
@@ -227,7 +227,7 @@
     }
 
     @if(if(isInYear) benefits.utilitiesDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.utilitiesHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.utilitiesHeader")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
@@ -271,7 +271,7 @@
     }
 
     @if(if(isInYear) benefits.medicalDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.medicalHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.medicalHeader")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
@@ -315,7 +315,7 @@
     }
 
     @if(if(isInYear) benefits.incomeTaxDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.incomeTaxHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.incomeTaxHeader")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
@@ -343,7 +343,7 @@
     }
 
     @if(if(isInYear) benefits.reimbursedDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.reimbursedHeader")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.reimbursedHeader")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
@@ -395,7 +395,7 @@
     }
 
     @if(if(isInYear) benefits.assetsDetailsPopulated else benefits.isBenefitsReceived){
-    <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.assetsSubheading")</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">@messages("checkYourBenefits.assetsSubheading")</h2>
         @{
         val rows: Seq[SummaryListRow] =
             Seq(
