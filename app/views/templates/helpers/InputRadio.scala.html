@@ -43,7 +43,7 @@
         legend = Some(Legend(
             content = HtmlContent(contentHtml),
             isPageHeading = legendAsHeading,
-            classes = if(legendAsHeading) "govuk-label--l" else if (legendHidden) "govuk-visually-hidden" else if (classes != None && classes != "") classes.getOrElse("") else ""
+            classes = if(legendAsHeading) "govuk-fieldset__legend--l" else if (legendHidden) "govuk-visually-hidden" else if (classes != None && classes != "") classes.getOrElse("") else ""
         ))
     )),
     hint = hint.map(hintHtml => Hint(
