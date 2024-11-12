@@ -90,6 +90,12 @@ benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 studentLoans.subheading = Student loans for 6 April {0} to 5 April {1}
 
+#################       Section completed       ########################################
+
+sectionCompletedState.title = Have you finished this section?
+sectionCompletedState.hint = You’ll still be able to go back and review the information that you’ve given us.
+sectionCompletedState.error.required = Select if you’ve completed this section
+
 #################       Error messages        ########################################
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use

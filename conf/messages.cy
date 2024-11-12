@@ -90,6 +90,13 @@ benefits.caption = Buddiannau cyflogaeth ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 expenses.caption = Treuliau cyflogaeth ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 studentLoans.subheading = Benthyciadau Myfyrwyr ar gyfer 6 Ebrill {0} i 5 Ebrill {1}
 
+#################       Section completed       ########################################
+
+sectionCompletedState.title = A ydych wedi gorffen yr adran hon?
+sectionCompletedState.hint = Byddwch yn dal i allu mynd yn ôl ac adolygu’r wybodaeth rydych wedi’i rhoi i ni.
+sectionCompletedState.error.required = Dewiswch a ydych wedi llenwi’r adran hon
+
+
 #################       Error messages        ########################################
 
 common.error.self-assessment.paragraph.1.1 = Os yw’r cyfeiriad gwe yn gywir neu os ydych wedi dewis cysylltiad neu fotwm, gallwch ddefnyddio

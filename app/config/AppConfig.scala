@@ -53,6 +53,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   lazy val incomeTaxExpensesBEUrl: String = s"${servicesConfig.getString(ConfigKeys.incomeTaxExpensesUrl)}/income-tax-expenses"
 
+  def commonTaskListUrl(taxYear: Int): String = incomeTaxSubmissionBaseUrl + "/" + taxYear + "/tasklist"
+
   private lazy val vcBaseUrl: String = servicesConfig.getString(ConfigKeys.viewAndChangeUrl)
 
   def viewAndChangeEnterUtrUrl: String = s"$vcBaseUrl/report-quarterly/income-and-expenses/view/agents/client-utr"

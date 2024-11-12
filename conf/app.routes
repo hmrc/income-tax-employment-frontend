@@ -339,12 +339,17 @@ POST        /:taxYear/student-loans/student-loan-repayment-amount               
 GET         /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.submit(taxYear: Int, employmentId: String)
 
-#############################       Taxable Lump Sums      #############################
+#############################       Taxable Lump Sums       #############################
 
 GET         /:taxYear/lump-sums/taxable-lump-sums/list-of-taxable-lump-sums          controllers.lumpSum.TaxableLumpSumListController.show(taxYear: Int, employmentId: String)
 
 GET         /:taxYear/lump-sums/taxable-lump-sums/amount                             controllers.lumpSum.TaxableLumpSumAmountController.show(taxYear: Int, employmentId: String, index: Option[Int])
 POST        /:taxYear/lump-sums/taxable-lump-sums/amount                             controllers.lumpSum.TaxableLumpSumAmountController.submit(taxYear: Int, employmentId: String, index: Option[Int])
+
+#############################       Section Completed       #############################
+
+GET         /:taxYear/:journey/section-completed                                     controllers.SectionCompletedStateController.show(taxYear: Int, journey: String)
+POST        /:taxYear/:journey/section-completed                                     controllers.SectionCompletedStateController.submit(taxYear: Int, journey: String)
 
 #############################       Tailorings      #############################
 

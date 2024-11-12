@@ -125,6 +125,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "feature-switch.offPayrollWorking" -> "false"
   )
 
+  def configContentTailoringOn: Map[String, String] = config() ++ Map(
+    "feature-switch.tailoringEnabled" -> "true"
+  )
+
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
@@ -148,6 +152,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   lazy val appWithFeatureSwitchesOff: Application = GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(configContentFeatureSwitchOff)
+    .build()
+
+  lazy val appWithTailoringOn: Application = GuiceApplicationBuilder()
+    .in(Environment.simple(mode = Mode.Dev))
+    .configure(configContentTailoringOn)
     .build()
 
   lazy val appWithMimicApiCallsOn: Application = GuiceApplicationBuilder()
