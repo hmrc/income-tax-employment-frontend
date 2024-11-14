@@ -120,4 +120,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   lazy val inYearDisabled: Boolean = servicesConfig.getBoolean("feature-switch.inYearDisabled")
 
+  def sectionCompletedQuestionEnabled: Boolean = servicesConfig.getBoolean(key = "feature-switch.sectionCompletedQuestionEnabled")
+
 }

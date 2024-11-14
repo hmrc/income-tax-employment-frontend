@@ -16,8 +16,10 @@
 
 package views.employment
 
+import config.AppConfig
 import controllers.employment.routes.{EmployerInformationController, EmploymentSummaryController, RemoveEmploymentController}
 import controllers.expenses.routes.{EmploymentExpensesController, ExpensesInterruptPageController, RemoveExpensesController}
+import controllers.routes.SectionCompletedStateController
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -25,6 +27,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
 import support.builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import support.mocks.MockAppConfig
 import utils.ViewUtils
 import views.html.employment.EmploymentSummaryView
 
@@ -109,6 +112,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val employer: String
     val employers: String
     val returnToOverview: String
+    val continue: String
     val employmentDetails: String
     val benefits: String
     val view: String
@@ -138,6 +142,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val employer: String = "Employer"
     val employers: String = "Employers"
     val returnToOverview: String = "Return to overview"
+    val continue: String = "Continue"
     val employmentDetails: String = "Employment details"
     val benefits: String = "Benefits"
     val view: String = "View"
@@ -167,6 +172,7 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val employer: String = "Cyflogwr"
     val employers: String = "Cyflogwyr"
     val returnToOverview: String = "Yn ôl i’r trosolwg"
+    val continue: String = "Yn eich blaen"
     val employmentDetails: String = "Manylion Cyflogaeth"
     val benefits: String = "Buddiannau"
     val view: String = "Bwrw golwg"
@@ -218,11 +224,12 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
     val specific = userScenario.specificExpectedResults.get
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
       "return the multiple employment summary EOY page" when {
-        "there are 2 employments and its EOY showing 2 employments with expenses" which {
-          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+        "there are 2 employments and its EOY showing 2 employments with expenses and sectionCompletedQuestionEnabled is 'false'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = true, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = true, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -247,11 +254,24 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           buttonCheck(returnToOverview)
         }
 
-        "there are 2 employments and its EOY showing 2 employments without expenses" which {
-          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+        "there are 2 employments and its EOY showing 2 employments with expenses and sectionCompletedQuestionEnabled is 'true'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = true, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYearEOY, "employment-summary").url))
+        }
+
+        "there are 2 employments and its EOY showing 2 employments without expenses and sectionCompletedQuestionEnabled is 'false'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
+          val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -271,14 +291,27 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           linkCheck(addExpenses, addExpensesSelector, EmploymentExpensesController.show(taxYearEOY).url)
           buttonCheck(returnToOverview)
         }
+
+        "there are 2 employments and its EOY showing 2 employments without expenses and sectionCompletedQuestionEnabled is 'true'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
+          val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
+          val htmlFormat = underTest(taxYearEOY, employments, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYearEOY, "employment-summary").url))
+        }
       }
 
       "return the multiple employment summary in year page" when {
-        "there are 2 employments and its in year showing 2 employments with expenses" which {
-          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+        "there are 2 employments and its in year showing 2 employments with expenses and sectionCompletedQuestionEnabled is 'false'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYear, employments, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
+          val htmlFormat = underTest(taxYear, employments, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -300,11 +333,24 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           buttonCheck(returnToOverview)
         }
 
-        "there are 2 employments and its in year showing 2 employments without expenses" which {
-          implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-          implicit val messages: Messages = getMessages(userScenario.isWelsh)
+        "there are 2 employments and its in year showing 2 employments with expenses and sectionCompletedQuestionEnabled is 'true'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
           val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
-          val htmlFormat = underTest(taxYear, employments, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
+          val htmlFormat = underTest(taxYear, employments, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYear, "employment-summary").url))
+        }
+
+        "there are 2 employments and its in year showing 2 employments without expenses and sectionCompletedQuestionEnabled is 'false'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
+          val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
+          val htmlFormat = underTest(taxYear, employments, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
           implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -321,13 +367,26 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
           linkCheck(s"$view $view $employerName2", viewEmployerSelector(2), EmployerInformationController.show(taxYear, employmentId2).url)
           buttonCheck(returnToOverview)
         }
+
+        "there are 2 employments and its in year showing 2 employments without expenses and sectionCompletedQuestionEnabled is 'true'" which {
+          val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+          val messages: Messages = getMessages(userScenario.isWelsh)
+          val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
+          val employments = Seq(anEmploymentSource, anEmploymentSource.copy(employerName = "Ken Bosford", employmentId = "002"))
+          val htmlFormat = underTest(taxYear, employments, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+          implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+          buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYear, "employment-summary").url))
+        }
       }
 
-      "render template when in year without employment but has expenses" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+      "render template when in year without employment but has expenses and sectionCompletedQuestionEnabled is 'false'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
 
-        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -342,11 +401,24 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         buttonCheck(returnToOverview)
       }
 
-      "show the summary page when no data is in session and in year" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+      "render template when in year without employment but has expenses and sectionCompletedQuestionEnabled is 'true'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
 
-        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = true, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYear, "employment-summary").url))
+      }
+
+      "show the summary page when no data is in session and in year and sectionCompletedQuestionEnabled is 'false'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
+
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -358,11 +430,24 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         buttonCheck(returnToOverview)
       }
 
-      "show the summary page when no data is in session EOY" which {
-        implicit val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
-        implicit val messages: Messages = getMessages(userScenario.isWelsh)
+      "show the summary page when no data is in session and in year and sectionCompletedQuestionEnabled is 'true'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
 
-        val htmlFormat = underTest(taxYearEOY, Seq.empty, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))
+        val htmlFormat = underTest(taxYear, Seq.empty, expensesExist = false, isInYear = true, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYear, "employment-summary").url))
+      }
+
+      "show the summary page when no data is in session EOY and sectionCompletedQuestionEnabled is 'false'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = false)
+
+        val htmlFormat = underTest(taxYearEOY, Seq.empty, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
 
         implicit val document: Document = Jsoup.parse(htmlFormat.body)
 
@@ -372,6 +457,18 @@ class EmploymentSummaryViewSpec extends ViewUnitTest {
         captionCheck(expectedCaption(taxYearEOY))
         linkCheck(addEmployer, addEmployerSelector, EmploymentSummaryController.addNewEmployment(taxYearEOY).url, isExactUrlMatch = false)
         buttonCheck(returnToOverview)
+      }
+
+      "show the summary page when no data is in session EOY and sectionCompletedQuestionEnabled is 'true'" which {
+        val authRequest: AuthorisationRequest[AnyContent] = getAuthRequest(userScenario.isAgent)
+        val messages: Messages = getMessages(userScenario.isWelsh)
+        val appConfig: AppConfig = new MockAppConfig().config(isSectionCompletedQuestionEnabled = true)
+
+        val htmlFormat = underTest(taxYearEOY, Seq.empty, expensesExist = false, isInYear = false, isAgent = userScenario.isAgent, gateway = Some(true))(authRequest, messages, appConfig)
+
+        implicit val document: Document = Jsoup.parse(htmlFormat.body)
+
+        buttonCheck(continue, href = Some(SectionCompletedStateController.show(taxYearEOY, "employment-summary").url))
       }
     }
   }
