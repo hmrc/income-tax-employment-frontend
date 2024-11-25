@@ -18,7 +18,6 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import config.AppConfig
 import models.mongo.JourneyAnswers
 import models.mongo.JourneyStatus.Completed
 import org.scalatest.OptionValues.convertOptionToValuable
@@ -28,8 +27,6 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpResponse
 import utils.IntegrationTest
 
 import java.time.Instant
