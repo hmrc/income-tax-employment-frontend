@@ -68,7 +68,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val invalidTaxYear: Int = taxYear + 999
 
-
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> defaultUser.mtdItId)
 
@@ -125,11 +124,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "feature-switch.offPayrollWorking" -> "false"
   )
 
-  def configContentTailoringOn: Map[String, String] = config() ++ Map(
-    "feature-switch.tailoringEnabled" -> "true"
-  )
-
-
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   protected val redirectService: RedirectServiceStub.type = RedirectServiceStub
@@ -152,11 +146,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   lazy val appWithFeatureSwitchesOff: Application = GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(configContentFeatureSwitchOff)
-    .build()
-
-  lazy val appWithTailoringOn: Application = GuiceApplicationBuilder()
-    .in(Environment.simple(mode = Mode.Dev))
-    .configure(configContentTailoringOn)
     .build()
 
   lazy val appWithMimicApiCallsOn: Application = GuiceApplicationBuilder()
