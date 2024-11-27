@@ -10,23 +10,23 @@ You will need to have the following:
 
 The service manager profile for this service is:
 
-    sm --start INCOME_TAX_EMPLOYMENT_FRONTEND
+    sm2 --start INCOME_TAX_EMPLOYMENT_FRONTEND
 Run the following command to start the remaining services locally:
 
     sudo mongod (If not already running)
-    sm --start INCOME_TAX_SUBMISSION_ALL -r
+    sm2 --start INCOME_TAX_SUBMISSION_ALL
 
 This service runs on port: `localhost:9317`
 
 ### Feature Switches
 
-| Feature | Environments Enabled In |
-| --- | --- |
-| Encryption | QA, Staging, Production, ET |
-| Welsh Toggle | Local, QA, ET |
-| Tax Year Error | Production |
-| Student loans | Local, QA, Staging, ET |
-| End of year employment | Local, QA, Staging, ET |
+| Feature                | Environments Enabled In     |
+|------------------------|-----------------------------|
+| Encryption             | QA, Staging, Production, ET |
+| Welsh Toggle           | Local, QA, ET               |
+| Tax Year Error         | Production                  |
+| Student loans          | Local, QA, Staging, ET      |
+| End of year employment | Local, QA, Staging, ET      |
 
 ### Employment Journeys:
 - View employment data
@@ -219,22 +219,22 @@ Customer data is provided by the user. At the end of the tax year, users can vie
 ## Ninos with stub data for employment
 
 ### In-Year
-| Nino | Employment data | Source |
-| --- | --- | --- |
-| AA123459A | Single employment - Employment details and expenses | HMRC-Held |
-| AA133742A | Single employment - Employment details, benefits and expenses | HMRC-Held |
-| BB444444A | Multiple employments - Employment details, benefits and expenses| HMRC-Held |
-| AA370773A | Multiple employments - `occPen` set to true | HMRC-Held |
+| Nino      | Employment data                                                  | Source    |
+|-----------|------------------------------------------------------------------|-----------|
+| AA123459A | Single employment - Employment details and expenses              | HMRC-Held |
+| AA133742A | Single employment - Employment details, benefits and expenses    | HMRC-Held |
+| BB444444A | Multiple employments - Employment details, benefits and expenses | HMRC-Held |
+| AA370773A | Multiple employments - `occPen` set to true                      | HMRC-Held |
 
 ### End of Year
-| Nino | Employment data | Source|
-| --- | --- | --- |
-| AA123459A | Single employment - Employment details and expenses | HMRC-Held, Customer |
-| AA133742A | Single employment - Employment details and benefits | HMRC-Held, Customer|
+| Nino      | Employment data                                                  | Source              |
+|-----------|------------------------------------------------------------------|---------------------|
+| AA123459A | Single employment - Employment details and expenses              | HMRC-Held, Customer |
+| AA133742A | Single employment - Employment details and benefits              | HMRC-Held, Customer |
 | BB444444A | Multiple employments - Employment details, benefits and expenses | HMRC-Held, Customer |
-| AA370773A | Multiple employments - `occPen` set to true | HMRC-Held, Customer |
-| AA455555A | User with ignored hmrc data (Employments can be reinstated) | HMRC-Held |
-| AA333444A | User with only expenses data | HMRC-Held |
+| AA370773A | Multiple employments - `occPen` set to true                      | HMRC-Held, Customer |
+| AA455555A | User with ignored hmrc data (Employments can be reinstated)      | HMRC-Held           |
+| AA333444A | User with only expenses data                                     | HMRC-Held           |
 
 ### License
 

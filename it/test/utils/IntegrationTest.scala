@@ -68,7 +68,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val invalidTaxYear: Int = taxYear + 999
 
-
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> defaultUser.mtdItId)
 
@@ -124,7 +123,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "feature-switch.tailoringEnabled" -> "false",
     "feature-switch.offPayrollWorking" -> "false"
   )
-
 
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
