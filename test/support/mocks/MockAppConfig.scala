@@ -30,7 +30,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
              isEmploymentEOYEnabled: Boolean = true,
              offPayrollWorkingEnabled: Boolean = true,
              inYearDisabledStatus : Boolean = false,
-             taxYearErrorEnabled: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
+             taxYearErrorEnabled: Boolean = true,
+             isSectionCompletedQuestionEnabled: Boolean = false): AppConfig = new AppConfig(mock[ServicesConfig]) {
 
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
@@ -66,6 +67,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
     override lazy val inYearDisabled: Boolean = inYearDisabledStatus
 
     override lazy val employmentEOYEnabled: Boolean = isEmploymentEOYEnabled
+
+    override lazy val sectionCompletedQuestionEnabled: Boolean = isSectionCompletedQuestionEnabled
 
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"
 

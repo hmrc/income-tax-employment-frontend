@@ -28,6 +28,7 @@
 @import controllers.expenses.routes.ExpensesInterruptPageController
 @import controllers.expenses.routes.RemoveExpensesController
 @import controllers.tailorings.routes.EmploymentGatewayController
+@import controllers.routes.SectionCompletedStateController
 @import utils.ViewUtils.translatedDateFormatter
 @import utils.ViewUtils.summaryListRow
 
@@ -182,13 +183,23 @@
         }
 
     }
-    @govUkButton(Button(
-        attributes = Map("id" -> "returnToOverviewPageBtn"),
-        preventDoubleClick = Some(true),
-        content = Text(messages("common.return.overview.buttonText")),
-        classes = "govuk-button govuk-!-margin-top-6",
-        href = Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    ))
+    @if(appConfig.sectionCompletedQuestionEnabled) {
+        @govUkButton(Button(
+            attributes = Map("id" -> "continue"),
+            preventDoubleClick = Some(true),
+            content = Text(messages("common.continue")),
+            classes = "govuk-button govuk-!-margin-top-6",
+            href = Some(SectionCompletedStateController.show(taxYear, "employment-summary").url)
+        ))
+    } else {
+        @govUkButton(Button(
+            attributes = Map("id" -> "returnToOverviewPageBtn"),
+            preventDoubleClick = Some(true),
+            content = Text(messages("common.return.overview.buttonText")),
+            classes = "govuk-button govuk-!-margin-top-6",
+            href = Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        ))
+    }
 }
 
 @{
