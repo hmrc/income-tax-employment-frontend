@@ -33,10 +33,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class SectionCompletedConnector @Inject()(appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
   private def keepAliveUrl(journey: String, taxYear:Int) =
-    url"${appConfig.incomeTaxSubmissionBEBaseUrl}/journey-answers/keep-alive/$journey/$taxYear"
+    url"${appConfig.incomeTaxEmploymentBEUrl}/income-tax/journey-answers/keep-alive/$journey/$taxYear"
 
   def completedSectionUrl(journey: String, taxYear: Int): URL =
-    url"${appConfig.incomeTaxSubmissionBEBaseUrl}/journey-answers/$journey/$taxYear"
+    url"${appConfig.incomeTaxEmploymentBEUrl}/income-tax/journey-answers/$journey/$taxYear"
 
   def get(mtdItId: String, taxYear: Int, journey: String)(implicit hc: HeaderCarrier): Future[Option[JourneyAnswers]] = {
     httpClient
@@ -47,7 +47,7 @@ class SectionCompletedConnector @Inject()(appConfig: AppConfig, httpClient: Http
   }
 
   def set(answers: JourneyAnswers)(implicit hc: HeaderCarrier): Future[Done] = {
-    val url = url"${appConfig.incomeTaxSubmissionBEBaseUrl}/journey-answers"
+    val url = url"${appConfig.incomeTaxEmploymentBEUrl}/income-tax/journey-answers"
 
     val result = httpClient
       .post(url)
