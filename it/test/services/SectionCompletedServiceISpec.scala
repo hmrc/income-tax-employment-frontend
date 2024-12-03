@@ -46,10 +46,10 @@ class SectionCompletedServiceISpec extends IntegrationTest {
   )
 
   private def keepAliveUrl(journey: String, taxYear: Int) =
-    s"/income-tax-submission-service/income-tax/journey-answers/keep-alive/$journey/$taxYear"
+    s"/income-tax-employment/income-tax/journey-answers/keep-alive/$journey/$taxYear"
 
   private def completedSectionUrl(journey: String, taxYear: Int) =
-    s"/income-tax-submission-service/income-tax/journey-answers/$journey/$taxYear"
+    s"/income-tax-employment/income-tax/journey-answers/$journey/$taxYear"
 
   val service: SectionCompletedService = new SectionCompletedService(mockConnector)
 
@@ -68,12 +68,12 @@ class SectionCompletedServiceISpec extends IntegrationTest {
       val result = await(service.get(mtdItId, taxYear, journeyName))
       result shouldBe Some(journeyAnswers)
 
-      verify(getRequestedFor(urlEqualTo(s"/income-tax-submission-service/income-tax/journey-answers/$journeyName/$taxYear"))
+      verify(getRequestedFor(urlEqualTo(s"/income-tax-employment/income-tax/journey-answers/$journeyName/$taxYear"))
         .withHeader("MTDITID", equalTo(mtdItId)))
     }
 
     "set journey answers successfully via the connector" in {
-      stubFor(post(urlEqualTo("/income-tax-submission-service/income-tax/journey-answers"))
+      stubFor(post(urlEqualTo("/income-tax-employment/income-tax/journey-answers"))
         .withHeader("MTDITID", equalTo(mtdItId))
         .withRequestBody(equalTo(Json.toJson(journeyAnswers).toString()))
         .willReturn(aResponse().withStatus(NO_CONTENT))
@@ -82,7 +82,7 @@ class SectionCompletedServiceISpec extends IntegrationTest {
       val result = await(service.set(journeyAnswers))
       result shouldBe Done
 
-      verify(postRequestedFor(urlEqualTo("/income-tax-submission-service/income-tax/journey-answers"))
+      verify(postRequestedFor(urlEqualTo("/income-tax-employment/income-tax/journey-answers"))
         .withHeader("MTDITID", equalTo(mtdItId))
         .withRequestBody(equalTo(Json.toJson(journeyAnswers).toString())))
     }

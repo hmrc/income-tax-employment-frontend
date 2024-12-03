@@ -47,10 +47,10 @@ class SectionCompletedConnectorISpec extends IntegrationTest {
   lazy val httpClient: HttpClientV2 = app.injector.instanceOf[HttpClientV2]
 
   private def keepAliveUrl(journey: String, taxYear: Int) =
-    s"/income-tax-submission-service/income-tax/journey-answers/keep-alive/$journey/$taxYear"
+    s"/income-tax-employment/income-tax/journey-answers/keep-alive/$journey/$taxYear"
 
   private def completedSectionUrl(journey: String, taxYear: Int) =
-    s"/income-tax-submission-service/income-tax/journey-answers/$journey/$taxYear"
+    s"/income-tax-employment/income-tax/journey-answers/$journey/$taxYear"
 
 
   private val mtditId: String = "1234567890"
@@ -98,21 +98,21 @@ class SectionCompletedConnectorISpec extends IntegrationTest {
   ".set" when {
     "must post user answers to the server" in {
 
-      stubPost(s"/income-tax-submission-service/income-tax/journey-answers", NO_CONTENT, "{}")
+      stubPost(s"/income-tax-employment/income-tax/journey-answers", NO_CONTENT, "{}")
 
 
       connector.set(answers).futureValue
     }
 
     "must return a failed future when the server returns error" in {
-      stubPost(s"/income-tax-submission-service/income-tax/journey-answers", INTERNAL_SERVER_ERROR, "{}")
+      stubPost(s"/income-tax-employment/income-tax/journey-answers", INTERNAL_SERVER_ERROR, "{}")
 
 
       connector.set(answers).failed.futureValue
     }
 
     "must return a failed future when the server returns an unexpected response code" in {
-      stubPost(s"/income-tax-submission-service/income-tax/journey-answers", OK, "{}")
+      stubPost(s"/income-tax-employment/income-tax/journey-answers", OK, "{}")
 
 
       connector.set(answers).failed.futureValue
