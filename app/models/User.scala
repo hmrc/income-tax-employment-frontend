@@ -21,7 +21,8 @@ case class User(mtditid: String,
                 nino: String,
                 sessionId: String,
                 affinityGroup: String,
-                trueUserAgent: Option[String] = None) {
+                trueUserAgent: Option[String] = None,
+                isSupportingAgent: Boolean = false) {
 
   def isAgent: Boolean = arn.nonEmpty
 }
