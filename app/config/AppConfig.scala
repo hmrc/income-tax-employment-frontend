@@ -16,6 +16,7 @@
 
 package config
 
+import com.google.inject.ImplementedBy
 import play.api.i18n.Lang
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
@@ -24,8 +25,52 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 
+@ImplementedBy(classOf[AppConfigImpl])
+trait AppConfig {
+  def signInUrl: String
+  def defaultTaxYear: Int
+  def incomeTaxSubmissionBEBaseUrl: String
+  def incomeTaxSubmissionOverviewUrl(taxYear: Int): String
+  def incomeTaxSubmissionStartUrl(taxYear: Int): String
+  def incomeTaxSubmissionIvRedirect: String
+
+  def incomeTaxEmploymentBEUrl: String
+  def incomeTaxExpensesBEUrl: String
+  def commonTaskListUrl(taxYear: Int): String
+
+  def viewAndChangeEnterUtrUrl: String
+  def feedbackSurveyUrl(implicit isAgent: Boolean): String
+  def betaFeedbackUrl(implicit request: RequestHeader, isAgent: Boolean): String
+  def contactUrl(implicit isAgent: Boolean): String
+
+  def signOutUrl: String
+  def timeoutDialogTimeout: Int
+  def timeoutDialogCountdown: Int
+
+  //Mongo config
+  def encryptionKey: String
+  def mongoTTL: Int
+
+  def taxYearErrorFeature: Boolean
+  def languageMap: Map[String, Lang]
+
+  def routeToSwitchLanguage: String => Call
+
+  def welshToggleEnabled: Boolean
+  def studentLoansEnabled: Boolean
+  def taxableLumpSumsEnabled: Boolean
+  def employmentEOYEnabled: Boolean
+  def tailoringEnabled: Boolean
+  def useEncryption: Boolean
+  def mimicEmploymentAPICalls: Boolean
+  def offPayrollWorking: Boolean
+  def inYearDisabled: Boolean
+  def sectionCompletedQuestionEnabled: Boolean
+  def emaSupportingAgentsEnabled: Boolean
+}
+
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) {
+class AppConfigImpl @Inject()(servicesConfig: ServicesConfig) extends AppConfig {
   private lazy val signInBaseUrl: String = servicesConfig.getString(ConfigKeys.signInUrl)
 
   private lazy val signInContinueBaseUrl: String = servicesConfig.getString(ConfigKeys.signInContinueUrl)
@@ -65,7 +110,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy private val contactFormServiceIndividual = "update-and-submit-income-tax-return"
   lazy private val contactFormServiceAgent = "update-and-submit-income-tax-return-agent"
 
-  def contactFormServiceIdentifier(implicit isAgent: Boolean): String = if (isAgent) contactFormServiceAgent else contactFormServiceIndividual
+  private def contactFormServiceIdentifier(implicit isAgent: Boolean): String = if (isAgent) contactFormServiceAgent else contactFormServiceIndividual
 
   private def requestUri(implicit request: RequestHeader): String = SafeRedirectUrl(appUrl + request.uri).encodedUrl
 
@@ -103,23 +148,14 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
     (lang: String) => controllers.routes.LanguageSwitchController.switchToLanguage(lang)
 
   lazy val welshToggleEnabled: Boolean = servicesConfig.getBoolean("feature-switch.welshToggleEnabled")
-
   lazy val studentLoansEnabled: Boolean = servicesConfig.getBoolean("feature-switch.studentLoans")
-
   lazy val taxableLumpSumsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.taxableLumpSums")
-
   lazy val employmentEOYEnabled: Boolean = servicesConfig.getBoolean("feature-switch.employmentEOYEnabled")
-
   lazy val tailoringEnabled: Boolean = servicesConfig.getBoolean("feature-switch.tailoringEnabled")
-
   lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
-
   lazy val mimicEmploymentAPICalls: Boolean = servicesConfig.getBoolean("mimicEmploymentAPICalls")
-
   lazy val offPayrollWorking: Boolean = servicesConfig.getBoolean("feature-switch.offPayrollWorking")
-
   lazy val inYearDisabled: Boolean = servicesConfig.getBoolean("feature-switch.inYearDisabled")
-
-  def sectionCompletedQuestionEnabled: Boolean = servicesConfig.getBoolean(key = "feature-switch.sectionCompletedQuestionEnabled")
-
+  lazy val sectionCompletedQuestionEnabled: Boolean = servicesConfig.getBoolean("feature-switch.sectionCompletedQuestionEnabled")
+  lazy val emaSupportingAgentsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.ema-supporting-agents-enabled")
 }

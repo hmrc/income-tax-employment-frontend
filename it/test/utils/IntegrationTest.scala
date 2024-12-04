@@ -91,6 +91,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
     "taxYearErrorFeatureSwitch" -> "false",
+    "feature-switch.ema-supporting-agents-enabled" -> "false",
     "useEncryption" -> "true",
     "mimicEmploymentAPICalls" -> s"$mimicEmploymentAPICalls"
   )

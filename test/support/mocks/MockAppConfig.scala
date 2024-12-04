@@ -16,7 +16,7 @@
 
 package support.mocks
 
-import config.AppConfig
+import config.{AppConfig, AppConfigImpl}
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.RequestHeader
 import support.TaxYearProvider
@@ -31,7 +31,7 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
              offPayrollWorkingEnabled: Boolean = true,
              inYearDisabledStatus : Boolean = false,
              taxYearErrorEnabled: Boolean = true,
-             isSectionCompletedQuestionEnabled: Boolean = false): AppConfig = new AppConfig(mock[ServicesConfig]) {
+             isSectionCompletedQuestionEnabled: Boolean = false): AppConfig = new AppConfigImpl(mock[ServicesConfig]) {
 
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
