@@ -18,6 +18,7 @@ package common
 
 object EnrolmentKeys {
   val Individual = "HMRC-MTD-IT"
+  val Supporting = "HMRC-MTD-IT-SUPP"
   val Agent = "HMRC-AS-AGENT"
   val nino = "HMRC-NI"
 }
@@ -32,4 +33,9 @@ object EmploymentToRemove {
   val all = "ALL"
   val customer = "CUSTOMER"
   val hmrcHeld = "HMRC-HELD"
+}
+
+object DelegatedAuthRules {
+  val agentDelegatedAuthRule = "mtd-it-auth"
+  val supportingAgentDelegatedAuthRule = "mtd-it-auth-supp"
 }

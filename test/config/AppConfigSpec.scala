@@ -25,7 +25,7 @@ class AppConfigSpec extends UnitTest with MockFactory with FakeRequestProvider {
 
   private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   private val appUrl = "http://localhost:9308"
-  private val appConfig = new AppConfig(mockServicesConfig)
+  private val appConfig = new AppConfigImpl(mockServicesConfig)
 
   (mockServicesConfig.getString(_: String)).expects("microservice.services.bas-gateway-frontend.url").returns("http://bas-gateway-frontend:9553")
 

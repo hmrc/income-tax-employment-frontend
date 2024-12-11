@@ -16,20 +16,20 @@
 
 package config
 
-import com.google.inject.AbstractModule
 import common.UUID
+import play.api.{Configuration, Environment}
 import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, ExpensesUserDataRepository, ExpensesUserDataRepositoryImpl}
 import services.{DefaultRedirectService, RedirectService}
 import utils.Clock
+import play.api.inject.{Binding, Module}
 
-class Modules extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).asEagerSingleton()
-    bind(classOf[UUID]).toInstance(UUID)
-    bind(classOf[Clock]).toInstance(Clock)
-    bind(classOf[RedirectService]).to(classOf[DefaultRedirectService]).asEagerSingleton()
-    bind(classOf[EmploymentUserDataRepository]).to(classOf[EmploymentUserDataRepositoryImpl]).asEagerSingleton()
-    bind(classOf[ExpensesUserDataRepository]).to(classOf[ExpensesUserDataRepositoryImpl]).asEagerSingleton()
-  }
+class Modules extends Module {
+  override def bindings(environment: Environment, configuration: Configuration): collection.Seq[Binding[_]] = Seq(
+    bind[AppConfig].to(classOf[AppConfigImpl]),
+    bind[UUID].toInstance(UUID),
+    bind[Clock].toInstance(Clock),
+    bind[RedirectService].to(classOf[DefaultRedirectService]).eagerly(),
+    bind[EmploymentUserDataRepository].to(classOf[EmploymentUserDataRepositoryImpl]).eagerly(),
+    bind[ExpensesUserDataRepository].to(classOf[ExpensesUserDataRepositoryImpl]).eagerly()
+  )
 }
