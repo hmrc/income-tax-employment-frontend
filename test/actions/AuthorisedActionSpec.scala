@@ -353,7 +353,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
           mockMultipleAgentsSwitch(false)
 
           mockAuthReturnException(new Exception("bang"), primaryAgentPredicate(mtdItId))
-          mockInternalServerError(InternalServerError)
+          mockInternalServerError(InternalServerError("An unexpected error occurred"))
 
           val result: Future[Result] = testAuth.agentAuthentication(testBlock)(
             request = FakeRequest().withSession(fakeRequestWithMtditidAndNino.session.data.toSeq :_*),
@@ -361,6 +361,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
+          bodyOf(result) shouldBe "An unexpected error occurred"
         }
       }
 
@@ -386,7 +387,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
 
           mockAuthReturnException(InsufficientEnrolments(), primaryAgentPredicate(mtdItId))
           mockAuthReturnException(new Exception("bang"), secondaryAgentPredicate(mtdItId))
-          mockInternalServerError(InternalServerError)
+          mockInternalServerError(InternalServerError("An unexpected error occurred"))
 
           lazy val result: Future[Result] = testAuth.agentAuthentication(testBlock)(
             request = FakeRequest().withSession(fakeRequestWithMtditidAndNino.session.data.toSeq :_*),
@@ -394,6 +395,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
+          bodyOf(result) shouldBe "An unexpected error occurred"
         }
 
         "return a redirect to the agent error page when secondary agent auth call also fails" in new AgentTest {
@@ -540,6 +542,22 @@ class AuthorisedActionSpec extends ControllerUnitTest
         }
 
         status(result) shouldBe SEE_OTHER
+      }
+    }
+
+    "render ISE" when {
+      "an unexpected exception is caught that is not related to Authorisation" in {
+
+        (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(Future.failed(new Exception("bang")))
+
+        mockInternalServerError(InternalServerError("An unexpected error occurred"))
+
+        val result = underTest.invokeBlock(fakeAgentRequest, block)
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+        bodyOf(result) shouldBe "An unexpected error occurred"
       }
     }
   }

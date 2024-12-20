@@ -67,6 +67,9 @@ class AuthorisedAction @Inject()(appConfig: AppConfig,
       case _: AuthorisationException =>
         logger.warn(s"[AuthorisedAction][invokeBlock] - User failed to authenticate")
         Redirect(controllers.errors.routes.UnauthorisedUserErrorController.show)
+      case e =>
+        logger.error(s"[AuthorisedAction][invokeBlock] - Unexpected exception of type '${e.getClass.getSimpleName}' was caught.")
+        errorHandler.internalServerError()(request)
     }
   }
 
