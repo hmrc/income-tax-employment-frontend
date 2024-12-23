@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import org.apache.pekko.actor.ActorSystem
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData
@@ -155,6 +155,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     .build()
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  implicit lazy val errorHandler: ErrorHandler = app.injector.instanceOf[ErrorHandler]
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -204,7 +205,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       acceptedConfidenceLevel
     } else {
       defaultAcceptedConfidenceLevels
-    })
+    }),
+    errorHandler
   )
 
   def successfulRetrieval: Future[Enrolments ~ Some[AffinityGroup] ~ ConfidenceLevel] = Future.successful(
