@@ -39,6 +39,7 @@ trait AppConfig {
   def commonTaskListUrl(taxYear: Int): String
 
   def viewAndChangeEnterUtrUrl: String
+  def viewAndChangeAgentsUrl: String
   def feedbackSurveyUrl(implicit isAgent: Boolean): String
   def betaFeedbackUrl(implicit request: RequestHeader, isAgent: Boolean): String
   def contactUrl(implicit isAgent: Boolean): String
@@ -66,7 +67,6 @@ trait AppConfig {
   def offPayrollWorking: Boolean
   def inYearDisabled: Boolean
   def sectionCompletedQuestionEnabled: Boolean
-  def emaSupportingAgentsEnabled: Boolean
 }
 
 @Singleton
@@ -103,6 +103,7 @@ class AppConfigImpl @Inject()(servicesConfig: ServicesConfig) extends AppConfig 
   private lazy val vcBaseUrl: String = servicesConfig.getString(ConfigKeys.viewAndChangeUrl)
 
   def viewAndChangeEnterUtrUrl: String = s"$vcBaseUrl/report-quarterly/income-and-expenses/view/agents/client-utr"
+  def viewAndChangeAgentsUrl: String = s"$vcBaseUrl/report-quarterly/income-and-expenses/view/agents"
 
   lazy private val appUrl: String = servicesConfig.getString("microservice.url")
   lazy private val contactFrontEndUrl = servicesConfig.getString(ConfigKeys.contactFrontendUrl)
@@ -157,5 +158,4 @@ class AppConfigImpl @Inject()(servicesConfig: ServicesConfig) extends AppConfig 
   lazy val offPayrollWorking: Boolean = servicesConfig.getBoolean("feature-switch.offPayrollWorking")
   lazy val inYearDisabled: Boolean = servicesConfig.getBoolean("feature-switch.inYearDisabled")
   lazy val sectionCompletedQuestionEnabled: Boolean = servicesConfig.getBoolean("feature-switch.sectionCompletedQuestionEnabled")
-  lazy val emaSupportingAgentsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.ema-supporting-agents-enabled")
 }

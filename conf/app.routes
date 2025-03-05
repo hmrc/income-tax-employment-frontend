@@ -367,6 +367,8 @@ GET         /error/wrong-tax-year                                               
 
 GET         /error/you-need-client-authorisation                                     controllers.errors.AgentAuthErrorController.show
 
+GET         /error/supporting-agent-not-authorised                                   controllers.errors.SupportingAgentAuthErrorController.show
+
 GET         /error/not-authorised-to-use-service                                     controllers.errors.UnauthorisedUserErrorController.show
 
 GET         /error/you-need-agent-services-account                                   controllers.errors.YouNeedAgentServicesController.show
