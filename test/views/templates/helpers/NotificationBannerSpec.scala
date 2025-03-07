@@ -39,12 +39,12 @@ class NotificationBannerSpec extends ViewUnitTest {
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val bannerTitle: String = "Important"
+    val bannerTitle: String = " Important"
     val bannerContent: String = "some-content"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val bannerTitle: String = "Pwysig"
+    val bannerTitle: String = " Pwysig"
     val bannerContent: String = "some-content"
   }
 

@@ -72,6 +72,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"
 
+    override def viewAndChangeAgentsUrl: String = "/report-quarterly/income-and-expenses/view/agents"
+
     override def incomeTaxSubmissionBaseUrl: String = ""
 
     override def incomeTaxSubmissionIvRedirect: String = "/update-and-submit-income-tax-return/iv-uplift"

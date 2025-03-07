@@ -47,7 +47,7 @@ lazy val coverageSettings: Seq[Setting[?]] = {
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
     ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
-    ScoverageKeys.coverageMinimumStmtTotal := 78,
+    ScoverageKeys.coverageMinimumStmtTotal := 92,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
   )
