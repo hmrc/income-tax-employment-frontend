@@ -22,6 +22,8 @@ import uk.gov.hmrc.http.HttpResponse
 import utils.PagerDutyHelper.PagerDutyKeys.{BAD_SUCCESS_JSON_FROM_API, UNEXPECTED_RESPONSE_FROM_API}
 import utils.PagerDutyHelper.pagerDutyLog
 
+import scala.util.control.NonFatal
+
 trait APIParser {
 
   val parserName: String
@@ -54,7 +56,7 @@ trait APIParser {
           Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
       }
     } catch {
-      case _: Exception => Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
+      case NonFatal(_) => Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
     }
   }
 }
