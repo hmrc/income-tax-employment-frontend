@@ -18,7 +18,7 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapFrontendPlay30Version = "9.12.0"
+  private val bootstrapFrontendPlay30Version = "9.13.0"
   private val mongoPlayVersion = "2.6.0"
 
   val jacksonAndPlayExclusions: Seq[InclusionRule] = Seq(

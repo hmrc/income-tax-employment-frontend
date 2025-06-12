@@ -20,6 +20,7 @@ import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmplo
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import support.TaxYearUtils.{taxYear, taxYearEOY}
 import support.builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier

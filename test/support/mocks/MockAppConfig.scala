@@ -70,6 +70,8 @@ class MockAppConfig extends MockFactory with TaxYearProvider {
 
     override lazy val sectionCompletedQuestionEnabled: Boolean = isSectionCompletedQuestionEnabled
 
+    override lazy val sessionCookieServiceEnabled: Boolean = false
+
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"
 
     override def viewAndChangeAgentsUrl: String = "/report-quarterly/income-and-expenses/view/agents"

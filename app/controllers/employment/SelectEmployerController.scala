@@ -40,7 +40,7 @@ class SelectEmployerController @Inject()(actionsProvider: ActionsProvider,
                                          employmentSessionService: EmploymentSessionService,
                                          errorHandler: ErrorHandler,
                                          selectEmployerForm: SelectEmployerForm)
-                                        (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                        (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = actionsProvider.notInYearWithPriorData(taxYear) { implicit request =>

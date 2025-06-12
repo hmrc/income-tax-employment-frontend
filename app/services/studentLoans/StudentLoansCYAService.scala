@@ -34,7 +34,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessionService,
-                                       appConfig: AppConfig,
+                                       val appConfig: AppConfig,
                                        errorHandler: ErrorHandler,
                                        auditService: AuditService,
                                        implicit val ec: ExecutionContext) extends Logging with SessionHelper {

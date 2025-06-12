@@ -19,6 +19,7 @@ package controllers.employment
 import common.SessionValues
 import controllers.expenses.CheckEmploymentExpensesController
 import models.AuthorisationRequest
+import models.session.SessionData
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.{Messages, MessagesApi}
@@ -27,6 +28,7 @@ import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.Helpers.{header, status, stubMessagesControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import support.ControllerUnitTest
+import support.builders.models.UserBuilder.aUser
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import support.mocks._
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -59,14 +61,16 @@ class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
   )
 
   private val nino = "AA123456A"
+  val sessionData: SessionData = SessionData(aUser.sessionId, aUser.mtditid, nino)
+
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
     SessionValues.CLIENT_NINO -> nino,
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
-  ).withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  ).withHeaders("X-Session-ID" -> aUser.sessionId)
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
-    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+    new AuthorisationRequest[AnyContent](models.User(aUser.mtditid, None, nino, aUser.sessionId, AffinityGroup.Individual.toString),
       fakeRequest)
   implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 
@@ -101,6 +105,7 @@ class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
   "calling show() as an agent" should {
     "return status code 303 with correct Location header" when {
       "there is no expenses data in the database" in {
+        mockGetSessionData(aUser.sessionId)(sessionData)
         mockAuthAsAgent()
         val responseF: Future[Result] = {
           mockFind(taxYear, Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -114,6 +119,7 @@ class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
 
     "return status code 200 with correct content" when {
       "there is expenses data in the database" in {
+        mockGetSessionData(aUser.sessionId)(sessionData)
         mockAuthAsAgent()
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest
         val responseF: Future[Result] = {

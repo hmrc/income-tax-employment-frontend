@@ -40,7 +40,7 @@ class AssetsBenefitsController @Inject()(actionsProvider: ActionsProvider,
                                          redirectService: RedirectService,
                                          errorHandler: ErrorHandler,
                                          formsProvider: AssetsFormsProvider)
-                                        (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                        (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(

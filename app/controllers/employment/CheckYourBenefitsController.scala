@@ -32,7 +32,7 @@ import models.employment.{AllEmploymentData, EmploymentSourceOrigin, OptionalCya
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import services.employment.CheckYourBenefitsService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -49,8 +49,8 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                                             redirectService: RedirectService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler)
-                                           (implicit mcc: MessagesControllerComponents, ec: ExecutionContext, appConf: AppConfig, authAction: AuthorisedAction)
-  extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
+                                           (implicit mcc: MessagesControllerComponents, ec: ExecutionContext, val appConfig: AppConfig, authAction: AuthorisedAction)
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async {
@@ -58,7 +58,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
       if (inYearAction.inYear(taxYear)) {
         employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) {
           allEmploymentData: AllEmploymentData =>
-            val redirect = Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear))
+            val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
             allEmploymentData.hmrcEmploymentSourceWith(employmentId) match {
               case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
                 source.employmentBenefits.flatMap(_.benefits) match {
@@ -71,8 +71,8 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
               case None => redirect
             }
         }
-      } else if (!appConf.employmentEOYEnabled) {
-        Future.successful(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
+      } else if (!appConfig.employmentEOYEnabled) {
+        Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       } else {
         employmentSessionService.getAndHandle(taxYear, employmentId, redirectWhenNoPrior = true) {
           (cya, prior) =>
@@ -113,7 +113,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
                     s"Redirecting to overview page. SessionId: ${
                       request.user.sessionId
                     }")
-                  Future(Redirect(appConf.incomeTaxSubmissionOverviewUrl(taxYear)))
+                  Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
               }
             }
         }
@@ -129,7 +129,7 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
             case Left(NothingToUpdate) =>
               getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
                 case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
-                  if (appConf.studentLoansEnabled) {
+                  if (appConfig.studentLoansEnabled) {
                     Future.successful(Redirect(StudentLoansCYAController.show(taxYear, employmentId)))
                   } else {
                     Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
@@ -164,13 +164,13 @@ class CheckYourBenefitsController @Inject()(pageView: CheckYourBenefitsView,
       case None =>
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
           case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
-            val result = Redirect(if (appConf.studentLoansEnabled) {
+            val result = Redirect(if (appConfig.studentLoansEnabled) {
               StudentLoansCYAController.show(taxYear, employmentId)
             } else {
               CheckEmploymentExpensesController.show(taxYear)
             })
 
-            if (appConf.mimicEmploymentAPICalls) {
+            if (appConfig.mimicEmploymentAPICalls) {
               employmentSessionService.createOrUpdateSessionData(
                 request.user, taxYear, employmentId, cya.employment, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = false
               )(errorHandler.internalServerError())(result)

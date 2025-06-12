@@ -44,7 +44,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthorisedAction,
                                           inYearAction: InYearUtil,
                                           errorHandler: ErrorHandler)
-                                         (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                         (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>

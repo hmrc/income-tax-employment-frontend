@@ -41,7 +41,7 @@ class EmployerEndDateController @Inject()(actionsProvider: ActionsProvider,
                                           formsProvider: EmploymentDetailsFormsProvider,
                                           employmentService: EmploymentService,
                                           errorHandler: ErrorHandler)
-                                         (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                         (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(

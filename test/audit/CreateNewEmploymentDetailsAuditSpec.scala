@@ -17,10 +17,10 @@
 package audit
 
 import play.api.libs.json.Json
+import support.TaxYearUtils.taxYearEOY
 import support.UnitTest
-import utils.TaxYearHelper
 
-class CreateNewEmploymentDetailsAuditSpec extends UnitTest with TaxYearHelper {
+class CreateNewEmploymentDetailsAuditSpec extends UnitTest {
 
   "writes" when {
     "passed a CreateNewEmploymentDetails model" should {

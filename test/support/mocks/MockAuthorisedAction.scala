@@ -19,9 +19,8 @@ package support.mocks
 import actions.AuthorisedAction
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import org.scalamock.handlers.CallHandler4
-import org.scalamock.scalatest.MockFactory
 import play.api.test.Helpers.stubMessagesControllerComponents
-import services.AuthService
+import services.{AuthService}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
@@ -31,13 +30,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAuthorisedAction extends MockFactory with MockErrorHandler {
+trait MockAuthorisedAction extends MockSessionDataService with MockErrorHandler {
 
   private val mockAppConfig = new MockAppConfig().config()
-  private val mockAuthConnector = mock[AuthConnector]
-  private val mockAuthService = new AuthService(mockAuthConnector)
+  val mockAuthConnector = mock[AuthConnector]
+  val mockAuthService = new AuthService(mockAuthConnector)
 
-  protected val mockAuthorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig, mockAuthService, mockErrorHandler)(stubMessagesControllerComponents())
+  protected val mockAuthorisedAction: AuthorisedAction = new AuthorisedAction(mockAppConfig, mockErrorHandler, mockAuthService, mockSessionDataService)(stubMessagesControllerComponents())
 
   protected def mockAuthAsAgent(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
     val enrolments: Enrolments = Enrolments(Set(

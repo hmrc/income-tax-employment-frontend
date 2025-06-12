@@ -38,7 +38,7 @@ class RemoveAllEmploymentController @Inject()(cc: MessagesControllerComponents,
                                               employmentSessionService: EmploymentSessionService,
                                               tailoringService: TailoringService,
                                               errorHandler: ErrorHandler)
-                                             (implicit appConfig: AppConfig, ec: ExecutionContext)
+                                             (implicit val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>

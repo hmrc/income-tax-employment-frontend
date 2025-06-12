@@ -43,7 +43,7 @@ class CompanyVanFuelBenefitsController @Inject()(authAction: AuthorisedAction,
                                                  redirectService: RedirectService,
                                                  errorHandler: ErrorHandler,
                                                  formsProvider: FuelFormsProvider)
-                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
