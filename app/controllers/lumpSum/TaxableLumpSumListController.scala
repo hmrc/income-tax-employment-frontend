@@ -35,7 +35,7 @@ class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
                                              view: TaxableLumpSumListView,
                                              inYearAction: InYearUtil,
                                              errorHandler: ErrorHandler)
-                                            (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                            (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(

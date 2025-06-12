@@ -17,14 +17,14 @@
 package models.expenses
 
 import org.scalamock.scalatest.MockFactory
+import support.TaxYearUtils.taxYearEOY
 import support.UnitTest
 import support.builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import uk.gov.hmrc.crypto.EncryptedValue
-import utils.{AesGcmAdCrypto, TaxYearHelper}
+import utils.AesGcmAdCrypto
 
 class ExpensesViewModelSpec extends UnitTest
-  with MockFactory
-  with TaxYearHelper {
+  with MockFactory {
 
   private implicit val secureGCMCipher: AesGcmAdCrypto = mock[AesGcmAdCrypto]
   private implicit val associatedText: String = "some-associated-text"

@@ -40,7 +40,7 @@ class CompanyCarBenefitsController @Inject()(actionsProvider: ActionsProvider,
                                              redirectService: RedirectService,
                                              errorHandler: ErrorHandler,
                                              formsProvider: FuelFormsProvider)
-                                            (implicit cc: MessagesControllerComponents, appConfig: AppConfig)
+                                            (implicit cc: MessagesControllerComponents, val appConfig: AppConfig)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = cc.executionContext

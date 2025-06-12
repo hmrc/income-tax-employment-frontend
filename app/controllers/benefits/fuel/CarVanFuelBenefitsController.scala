@@ -41,7 +41,7 @@ class CarVanFuelBenefitsController @Inject()(actionsProvider: ActionsProvider,
                                              redirectService: RedirectService,
                                              errorHandler: ErrorHandler,
                                              formsProvider: FuelFormsProvider)
-                                            (implicit val cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                            (implicit val cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionDataWithRedirects(

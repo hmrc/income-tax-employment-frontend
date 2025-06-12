@@ -43,7 +43,7 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
                                                                  expensesService: ExpensesService,
                                                                  errorHandler: ErrorHandler,
                                                                  formsProvider: ExpensesFormsProvider)
-                                                                (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                                (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>

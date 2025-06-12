@@ -43,7 +43,7 @@ class IncurredCostsBenefitsController @Inject()(authAction: AuthorisedAction,
                                                 redirectService: RedirectService,
                                                 errorHandler: ErrorHandler,
                                                 formsProvider: IncomeFormsProvider)
-                                               (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+                                               (implicit mcc: MessagesControllerComponents, val appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext

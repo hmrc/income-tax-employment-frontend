@@ -36,7 +36,7 @@ class RemoveExpensesController @Inject()(authAction: AuthorisedAction,
                                          employmentSessionService: EmploymentSessionService,
                                          deleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService,
                                          errorHandler: ErrorHandler)
-                                        (implicit cc: MessagesControllerComponents, ec: ExecutionContext, appConfig: AppConfig)
+                                        (implicit cc: MessagesControllerComponents, ec: ExecutionContext, val appConfig: AppConfig)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>

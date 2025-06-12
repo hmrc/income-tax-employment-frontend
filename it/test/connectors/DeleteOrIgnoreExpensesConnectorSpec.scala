@@ -19,6 +19,7 @@ package connectors
 import com.github.tomakehurst.wiremock.http.HttpHeader
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
+import support.TaxYearUtils.taxYear
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.ConnectorIntegrationTest

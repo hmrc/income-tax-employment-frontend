@@ -44,7 +44,7 @@ class TravelOrEntertainmentBenefitsController @Inject()(authAction: AuthorisedAc
                                                         redirectService: RedirectService,
                                                         formsProvider: TravelFormsProvider,
                                                         errorHandler: ErrorHandler)
-                                                       (implicit cc: MessagesControllerComponents, appConfig: AppConfig, ec: ExecutionContext)
+                                                       (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>

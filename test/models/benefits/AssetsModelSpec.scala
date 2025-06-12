@@ -19,13 +19,13 @@ package models.benefits
 import controllers.benefits.assets.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import org.scalamock.scalatest.MockFactory
+import support.TaxYearUtils.taxYear
 import support.UnitTest
 import support.builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import uk.gov.hmrc.crypto.EncryptedValue
-import utils.{AesGcmAdCrypto, TaxYearHelper}
+import utils.AesGcmAdCrypto
 
 class AssetsModelSpec extends UnitTest
-  with TaxYearHelper
   with MockFactory {
 
   private val employmentId = "employmentId"
