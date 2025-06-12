@@ -20,7 +20,6 @@ import common.SessionValues
 import controllers.expenses.CheckEmploymentExpensesController
 import models.AuthorisationRequest
 import models.session.SessionData
-import org.scalamock.handlers.CallHandler4
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.{Messages, MessagesApi}
@@ -69,9 +68,9 @@ class CheckEmploymentExpensesControllerSpec extends ControllerUnitTest
     SessionValues.CLIENT_NINO -> nino,
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionValues.VALID_TAX_YEARS -> validTaxYearList.mkString(",")
-  ).withHeaders("X-Session-ID" -> "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe")
+  ).withHeaders("X-Session-ID" -> aUser.sessionId)
   implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
-    new AuthorisationRequest[AnyContent](models.User("1234567890", None, nino, "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe", AffinityGroup.Individual.toString),
+    new AuthorisationRequest[AnyContent](models.User(aUser.mtditid, None, nino, aUser.sessionId, AffinityGroup.Individual.toString),
       fakeRequest)
   implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
 

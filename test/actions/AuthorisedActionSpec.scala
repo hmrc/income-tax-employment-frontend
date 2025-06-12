@@ -33,7 +33,7 @@ import play.api.test.Helpers.status
 import services.AuthService
 import support.ControllerUnitTest
 import support.builders.models.UserBuilder.aUser
-import support.mocks.{MockAuthorisedAction, MockErrorHandler, MockSessionDataService}
+import support.mocks.{MockErrorHandler, MockSessionDataService}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
@@ -46,7 +46,7 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedActionSpec extends ControllerUnitTest
-  with MockFactory with MockSessionDataService with MockErrorHandler with MockAuthorisedAction {
+  with MockFactory with MockSessionDataService with MockErrorHandler {
 
   val mtdItId: String = "1234567890"
   val arn: String = "0987654321"
@@ -54,8 +54,8 @@ class AuthorisedActionSpec extends ControllerUnitTest
   val sessionData: SessionData = SessionData(aUser.sessionId, mtdItId, nino)
 
   private implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(aUser.sessionId)))
-//  private implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
-//  private implicit val authService: AuthService = new AuthService(mockAuthConnector)
+  private implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  private implicit val authService: AuthService = new AuthService(mockAuthConnector)
   private val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
   private val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = fakeAgentRequest
     .withHeaders(newHeaders = "X-Session-ID" -> aUser.sessionId)
@@ -64,7 +64,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
   private val underTest: AuthorisedAction = new AuthorisedAction(
     appConfig,
     mockErrorHandler,
-    mockAuthService,
+    authService,
     mockSessionDataService
   )(stubMessagesControllerComponents())
 
@@ -73,38 +73,38 @@ class AuthorisedActionSpec extends ControllerUnitTest
     await(awaited.body.consumeData.map(_.utf8String))
   }
 
-//  private def mockAuthAsAgent(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
-//    val enrolments: Enrolments = Enrolments(Set(
-//      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, mtdItId)), "Activated"),
-//      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, arn)), "Activated")
-//    ))
-//    val agentRetrievals: Some[AffinityGroup] = Some(AffinityGroup.Agent)
-//
-//    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-//      .expects(*, Retrievals.affinityGroup, *, *)
-//      .returning(Future.successful(agentRetrievals))
-//
-//    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-//      .expects(*, Retrievals.allEnrolments, *, *)
-//      .returning(Future.successful(enrolments))
-//  }
+  private def mockAuthAsAgent(): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
+    val enrolments: Enrolments = Enrolments(Set(
+      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, mtdItId)), "Activated"),
+      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, arn)), "Activated")
+    ))
+    val agentRetrievals: Some[AffinityGroup] = Some(AffinityGroup.Agent)
 
-//  private def mockAuth(nino: Option[String]): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
-//    val enrolments = Enrolments(Set(
-//      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, mtdItId)), "Activated"),
-//      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, arn)), "Activated")
-//    ) ++ nino.fold(Seq.empty[Enrolment])(unwrappedNino =>
-//      Seq(Enrolment(EnrolmentKeys.nino, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.nino, unwrappedNino)), "Activated"))
-//    ))
-//
-//    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-//      .expects(*, Retrievals.affinityGroup, *, *)
-//      .returning(Future.successful(Some(AffinityGroup.Individual)))
-//
-//    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-//      .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
-//      .returning(Future.successful(enrolments and ConfidenceLevel.L250))
-//  }
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, Retrievals.affinityGroup, *, *)
+      .returning(Future.successful(agentRetrievals))
+
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, Retrievals.allEnrolments, *, *)
+      .returning(Future.successful(enrolments))
+  }
+
+  private def mockAuth(nino: Option[String]): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
+    val enrolments = Enrolments(Set(
+      Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, mtdItId)), "Activated"),
+      Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, arn)), "Activated")
+    ) ++ nino.fold(Seq.empty[Enrolment])(unwrappedNino =>
+      Seq(Enrolment(EnrolmentKeys.nino, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.nino, unwrappedNino)), "Activated"))
+    ))
+
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, Retrievals.affinityGroup, *, *)
+      .returning(Future.successful(Some(AffinityGroup.Individual)))
+
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
+      .returning(Future.successful(enrolments and ConfidenceLevel.L250))
+  }
 
   trait AgentTest {
     val baseUrl = "/update-and-submit-income-tax-return/employment-income"
@@ -171,7 +171,7 @@ class AuthorisedActionSpec extends ControllerUnitTest
 
       new AuthorisedAction(
         appConfig = mockAppConfig,
-        authService = mockAuthService,
+        authService = authService,
         errorHandler = mockErrorHandler,
         sessionDataService = mockSessionDataService
       )(
