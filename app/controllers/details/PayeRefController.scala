@@ -43,7 +43,7 @@ class PayeRefController @Inject()(authorisedAction: AuthorisedAction,
                                   errorHandler: ErrorHandler,
                                   employmentSessionService: EmploymentSessionService,
                                   employmentService: EmploymentService)
-                                 (implicit appConfig: AppConfig)
+                                 (implicit val appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 

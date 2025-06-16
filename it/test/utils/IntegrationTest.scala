@@ -38,7 +38,7 @@ import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.OK
 import play.api.{Application, Environment, Mode}
-import services.AuthService
+import services.{AuthService, SessionDataService}
 import support.builders.models.UserBuilder.aUser
 import support.builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import support.services.RedirectServiceStub
@@ -185,6 +185,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   protected implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   protected lazy val defaultMessages: Messages = messagesApi.preferred(fakeRequest.withHeaders())
   protected lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+  lazy val sessionDataService: SessionDataService = app.injector.instanceOf[SessionDataService]
 
   protected def getMessages(isWelsh: Boolean): Messages = if (isWelsh) welshMessages else defaultMessages
 
@@ -201,12 +202,13 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
                  acceptedConfidenceLevel: Seq[ConfidenceLevel] = Seq.empty[ConfidenceLevel]
                 ): AuthorisedAction = new AuthorisedAction(
     appConfig,
+    errorHandler,
     authService(stubbedRetrieval, if (acceptedConfidenceLevel.nonEmpty) {
       acceptedConfidenceLevel
     } else {
       defaultAcceptedConfidenceLevels
     }),
-    errorHandler
+    sessionDataService
   )
 
   def successfulRetrieval: Future[Enrolments ~ Some[AffinityGroup] ~ ConfidenceLevel] = Future.successful(

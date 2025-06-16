@@ -41,7 +41,7 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     formsProvider: StudentLoansFormsProvider,
                                     inYearAction: InYearUtil,
                                     errorHandler: ErrorHandler)
-                                   (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                   (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>

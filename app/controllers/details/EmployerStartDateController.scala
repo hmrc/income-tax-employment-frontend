@@ -46,7 +46,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
                                             mcc: MessagesControllerComponents)
-                                           (implicit appConfig: AppConfig, ec: ExecutionContext)
+                                           (implicit val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>

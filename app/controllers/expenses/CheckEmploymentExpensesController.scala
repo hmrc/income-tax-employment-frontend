@@ -43,7 +43,7 @@ class CheckEmploymentExpensesController @Inject()(pageView: CheckEmploymentExpen
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
                                                   inYearAction: InYearUtil,
                                                   errorHandler: ErrorHandler
-                                                 )(implicit appConfig: AppConfig,
+                                                 )(implicit val appConfig: AppConfig,
                                                    authorisedAction: AuthorisedAction,
                                                    mcc: MessagesControllerComponents,
                                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {

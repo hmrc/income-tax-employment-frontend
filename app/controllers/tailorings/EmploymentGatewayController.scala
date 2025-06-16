@@ -38,7 +38,7 @@ class EmploymentGatewayController @Inject()(tailoringService: TailoringService,
                                             actionsProvider: ActionsProvider,
                                             view: EmploymentGatewayView,
                                             errorHandler: ErrorHandler)
-                                           (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper with FormUtils {
 
   private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"tailoring.empty.error.${if (isAgent) "agent" else "individual"}")

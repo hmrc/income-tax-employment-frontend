@@ -39,7 +39,7 @@ class EmploymentSummaryController @Inject()(pageView: EmploymentSummaryView,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
                                             actionsProvider: ActionsProvider)
-                                           (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+                                           (implicit mcc: MessagesControllerComponents, val appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext

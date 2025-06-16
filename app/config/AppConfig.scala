@@ -68,6 +68,7 @@ trait AppConfig {
   def offPayrollWorking: Boolean
   def inYearDisabled: Boolean
   def sectionCompletedQuestionEnabled: Boolean
+  def sessionCookieServiceEnabled: Boolean
 }
 
 @Singleton
@@ -160,4 +161,5 @@ class AppConfigImpl @Inject()(servicesConfig: ServicesConfig) extends AppConfig 
   lazy val offPayrollWorking: Boolean = servicesConfig.getBoolean("feature-switch.offPayrollWorking")
   lazy val inYearDisabled: Boolean = servicesConfig.getBoolean("feature-switch.inYearDisabled")
   lazy val sectionCompletedQuestionEnabled: Boolean = servicesConfig.getBoolean("feature-switch.sectionCompletedQuestionEnabled")
+  lazy val sessionCookieServiceEnabled: Boolean = servicesConfig.getBoolean("feature-switch.sessionCookieServiceEnabled")
 }

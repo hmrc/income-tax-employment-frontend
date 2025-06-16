@@ -24,7 +24,7 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.{RedirectUtils, SessionHelper}
 
-class LanguageSwitchController @Inject()(appConfig: AppConfig,
+class LanguageSwitchController @Inject()(val appConfig: AppConfig,
                                          override implicit val messagesApi: MessagesApi,
                                          val controllerComponents: MessagesControllerComponents
                                         ) extends FrontendBaseController with I18nSupport with SessionHelper {

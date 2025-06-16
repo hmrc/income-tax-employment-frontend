@@ -40,7 +40,7 @@ class TaxableLumpSumAmountController @Inject()( mcc: MessagesControllerComponent
                                                 inYearAction: InYearUtil,
                                                 otherEmploymentInfoService: OtherEmploymentInfoService,
                                                 errorHandler: ErrorHandler)
-                                              (implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                              (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String, index: Option[Int] = None): Action[AnyContent] = actionsProvider.endOfYearSessionData(

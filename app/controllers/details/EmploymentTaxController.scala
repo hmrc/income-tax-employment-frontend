@@ -42,7 +42,7 @@ class EmploymentTaxController @Inject()(mcc: MessagesControllerComponents,
                                         inYearAction: InYearUtil,
                                         formsProvider: EmploymentDetailsFormsProvider,
                                         errorHandler: ErrorHandler)
-                                       (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                       (implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext
 

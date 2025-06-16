@@ -25,7 +25,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.InYearUtil
+import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansQuestionView
 
 import javax.inject.Inject
@@ -37,7 +37,8 @@ class StudentLoansQuestionController @Inject()(mcc: MessagesControllerComponents
                                                authAction: AuthorisedAction,
                                                inYearAction: InYearUtil,
                                                errorHandler: ErrorHandler)
-                                              (implicit ec: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+                                              (implicit ec: ExecutionContext, val appConfig: AppConfig)
+  extends FrontendController(mcc) with SessionHelper with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {

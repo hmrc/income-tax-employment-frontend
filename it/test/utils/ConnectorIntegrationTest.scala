@@ -26,8 +26,7 @@ trait ConnectorIntegrationTest extends AnyWordSpec with Matchers
   with HttpClientSupport
   with WireMockHelper
   with WiremockStubHelpers
-  with BeforeAndAfterAll
-  with TaxYearHelper {
+  with BeforeAndAfterAll {
 
   override def beforeAll(): Unit = {
     super.beforeAll()

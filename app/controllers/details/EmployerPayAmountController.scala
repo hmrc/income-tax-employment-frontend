@@ -44,7 +44,7 @@ class EmployerPayAmountController @Inject()(authAction: AuthorisedAction,
                                             employmentService: EmploymentService,
                                             errorHandler: ErrorHandler,
                                             formsProvider: EmploymentDetailsFormsProvider)
-                                           (implicit cc: MessagesControllerComponents, appConfig: AppConfig)
+                                           (implicit cc: MessagesControllerComponents, val appConfig: AppConfig)
   extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   private implicit val executionContext: ExecutionContext = cc.executionContext

@@ -33,7 +33,7 @@ class EmployerOffPayrollWorkingWarningController @Inject()(actionsProvider: Acti
                                                            employmentService: EmploymentService,
                                                            view: EmployerOffPayrollWorkingWarningView,
                                                            errorHandler: ErrorHandler)
-                                                          (implicit mcc: MessagesControllerComponents, appConfig: AppConfig)
+                                                          (implicit mcc: MessagesControllerComponents, val appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(
