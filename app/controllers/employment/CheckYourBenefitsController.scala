@@ -30,9 +30,8 @@ import models.benefits.{Benefits, BenefitsViewModel}
 import models.employment.createUpdate.{CreateUpdateEmploymentRequest, JourneyNotFinished, NothingToUpdate}
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin, OptionalCyaAndPrior}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.employment.CheckYourBenefitsService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

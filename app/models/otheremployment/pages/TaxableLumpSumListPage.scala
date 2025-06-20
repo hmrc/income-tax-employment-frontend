@@ -18,7 +18,6 @@ package models.otheremployment.pages
 
 import controllers.lumpSum.routes
 import models.otheremployment.session.OtherEmploymentIncomeCYAModel
-import play.api.i18n.Messages
 import play.api.mvc.Call
 
 import java.text.NumberFormat
@@ -29,7 +28,7 @@ case class ListRows(amount: String, call: Call)
 case class TaxableLumpSumListPage(rows: Seq[ListRows], taxYear: Int, employmentId: String)
 
 object TaxableLumpSumListPage {
-  def apply(otherEmploymentIncomeCYAModel: OtherEmploymentIncomeCYAModel, taxYear: Int, employmentId: String)(implicit messages: Messages):
+  def apply(otherEmploymentIncomeCYAModel: OtherEmploymentIncomeCYAModel, taxYear: Int, employmentId: String):
   TaxableLumpSumListPage = {
     TaxableLumpSumListPage(otherEmploymentIncomeCYAModel.taxableLumpSums.zipWithIndex.map { item =>
       ListRows(
@@ -39,8 +38,6 @@ object TaxableLumpSumListPage {
     }, taxYear, employmentId
     )
   }
-
-  def displayedValueForOptionalAmount(valueOpt: Option[BigDecimal]): String = valueOpt.map(displayedValue).getOrElse("")
 
   def displayedValue(value: BigDecimal): String = formatNoZeros(value)
 

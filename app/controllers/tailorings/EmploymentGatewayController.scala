@@ -18,7 +18,7 @@ package controllers.tailorings
 
 import actions.{ActionsProvider, AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import forms.{FormUtils, YesNoForm}
+import forms.YesNoForm
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,7 +39,7 @@ class EmploymentGatewayController @Inject()(tailoringService: TailoringService,
                                             view: EmploymentGatewayView,
                                             errorHandler: ErrorHandler)
                                            (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
-  with I18nSupport with SessionHelper with FormUtils {
+  with I18nSupport with SessionHelper {
 
   private def form(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"tailoring.empty.error.${if (isAgent) "agent" else "individual"}")
 

@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.utilities.UtilitiesFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -45,7 +44,7 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
                                                       formsProvider: UtilitiesFormsProvider,
                                                       errorHandler: ErrorHandler)
                                                      (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -54,7 +53,9 @@ class OtherServicesBenefitsAmountController @Inject()(authAction: AuthorisedActi
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(redirectService.servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
-          val form = fillForm(formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.otherServicesBenefitsAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }

@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncurredCostsBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.income.IncomeFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -46,7 +45,7 @@ class IncomeTaxBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                                   errorHandler: ErrorHandler,
                                                   formsProvider: IncomeFormsProvider)
                                                  (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -56,7 +55,10 @@ class IncomeTaxBenefitsAmountController @Inject()(authAction: AuthorisedAction,
 
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector))
-          val form = fillForm(formsProvider.incomeTaxAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.incomeTaxAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.incomeTaxAmountForm(request.user.isAgent).fill(amount)
+          }
+
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }

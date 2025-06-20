@@ -85,5 +85,5 @@ case class EncryptedTaxableLumpSum(amount: EncryptedValue,
 object EncryptedTaxableLumpSum {
   implicit lazy val encryptedValueOFormat: OFormat[EncryptedValue] = Json.format[EncryptedValue]
   implicit val format: Format[EncryptedTaxableLumpSum] = Json.format[EncryptedTaxableLumpSum]
-  implicit val formatPayrollType: Format[EncryptedPayrollPaymentType] = Json.format[EncryptedPayrollPaymentType]
+  implicit lazy val formatPayrollType: Format[EncryptedPayrollPaymentType] = Json.format[EncryptedPayrollPaymentType]
 }

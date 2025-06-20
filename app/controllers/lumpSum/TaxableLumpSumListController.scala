@@ -28,14 +28,13 @@ import utils.{InYearUtil, SessionHelper}
 import views.html.taxableLumpSum.TaxableLumpSumListView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class TaxableLumpSumListController @Inject()(mcc: MessagesControllerComponents,
                                              actionsProvider: ActionsProvider,
                                              view: TaxableLumpSumListView,
                                              inYearAction: InYearUtil,
                                              errorHandler: ErrorHandler)
-                                            (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
+                                            (implicit val appConfig: AppConfig) extends FrontendController(mcc)
   with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = actionsProvider.endOfYearSessionData(

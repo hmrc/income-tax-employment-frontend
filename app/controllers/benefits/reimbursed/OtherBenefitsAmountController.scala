@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.reimbursed.ReimbursedFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -46,14 +45,16 @@ class OtherBenefitsAmountController @Inject()(authAction: AuthorisedAction,
                                               errorHandler: ErrorHandler,
                                               formsProvider: ReimbursedFormsProvider)
                                              (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems))
-          val form = fillForm(formsProvider.otherBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.otherBenefitsAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.otherBenefitsAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
