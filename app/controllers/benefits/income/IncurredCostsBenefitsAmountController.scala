@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.income.IncomeFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -46,7 +45,7 @@ class IncurredCostsBenefitsAmountController @Inject()(authAction: AuthorisedActi
                                                       errorHandler: ErrorHandler,
                                                       formsProvider: IncomeFormsProvider)
                                                      (implicit val appConfig: AppConfig, mcc: MessagesControllerComponents, ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -54,7 +53,9 @@ class IncurredCostsBenefitsAmountController @Inject()(authAction: AuthorisedActi
 
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf))
-          val form = fillForm(formsProvider.incurredCostsAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.incurredCostsAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.incurredCostsAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }

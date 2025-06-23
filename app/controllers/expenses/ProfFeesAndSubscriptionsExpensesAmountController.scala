@@ -19,7 +19,6 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.OtherEquipmentController
-import forms.FormUtils
 import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -44,7 +43,7 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
                                                                  errorHandler: ErrorHandler,
                                                                  formsProvider: ExpensesFormsProvider)
                                                                 (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -52,8 +51,9 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(authAction: Aut
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
           val cyaAmount = cyaData.expensesCya.expenses.professionalSubscriptions
-          val agent = request.user.isAgent
-          val form = fillForm(formsProvider.professionalFeesAndSubscriptionsAmountForm(agent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.professionalFeesAndSubscriptionsAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.professionalFeesAndSubscriptionsAmountForm(request.user.isAgent).fill(amount)
+          }
           Future(Ok(pageView(taxYear, form)))
         }
       })

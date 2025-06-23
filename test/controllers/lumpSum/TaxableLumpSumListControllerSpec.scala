@@ -47,7 +47,7 @@ class TaxableLumpSumListControllerSpec extends ControllerUnitTest
     view,
     new InYearUtil,
     mockErrorHandler
-  )(new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled), ec)
+  )(new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
   implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
   private val employmentId = "223AB12399"

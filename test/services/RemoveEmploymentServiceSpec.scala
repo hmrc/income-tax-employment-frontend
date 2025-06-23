@@ -80,14 +80,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
       Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
     )
 
-  private val dataWithExpenses: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(empSource),
-    hmrcExpenses = None,
-    customerEmploymentData = Seq(empSource.toEmploymentSource.copy(employmentId = "001")),
-    customerExpenses = Some(customerExpenses),
-    otherEmploymentIncome = None
-  )
-
   ".deleteOrIgnoreEmployment" should {
     "return a successful result" when {
       "there is hmrc data and no customer data" which {

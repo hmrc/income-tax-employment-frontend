@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.ReceiveOwnCarMileageBenefitController
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.fuel.FuelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -46,7 +45,7 @@ class CompanyVanFuelBenefitsAmountController @Inject()(authAction: AuthorisedAct
                                                        errorHandler: ErrorHandler,
                                                        formsProvider: FuelFormsProvider)
                                                       (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -54,8 +53,9 @@ class CompanyVanFuelBenefitsAmountController @Inject()(authAction: AuthorisedAct
 
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
-
-          val form = fillForm(formsProvider.companyVanFuelAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.companyVanFuelAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.companyVanFuelAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }

@@ -19,7 +19,6 @@ package controllers.expenses
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import forms.FormUtils
 import forms.expenses.ExpensesFormsProvider
 import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -45,14 +44,16 @@ class OtherEquipmentAmountController @Inject()(authAction: AuthorisedAction,
                                                errorHandler: ErrorHandler,
                                                formsProvider: ExpensesFormsProvider)
                                               (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, _) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
           val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
-          val form = fillForm(formsProvider.otherEquipmentAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.otherEquipmentAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.otherEquipmentAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form)))
         }
       })

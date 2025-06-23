@@ -18,7 +18,6 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import forms.FormUtils
 import forms.studentLoans.StudentLoansFormsProvider
 import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
@@ -42,7 +41,7 @@ class UglAmountController @Inject()(mcc: MessagesControllerComponents,
                                     inYearAction: InYearUtil,
                                     errorHandler: ErrorHandler)
                                    (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc)
-  with I18nSupport with SessionHelper with FormUtils {
+  with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if (appConfig.studentLoansEnabled && appConfig.employmentEOYEnabled && !inYearAction.inYear(taxYear)) {

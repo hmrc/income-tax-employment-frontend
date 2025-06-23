@@ -20,7 +20,6 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.FormUtils
 import forms.benefits.travel.TravelFormsProvider
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
@@ -47,7 +46,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
                                                         formsProvider: TravelFormsProvider,
                                                         errorHandler: ErrorHandler)
                                                        (implicit cc: MessagesControllerComponents, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+  extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
@@ -55,7 +54,9 @@ class IncidentalCostsBenefitsAmountController @Inject()(authAction: AuthorisedAc
 
         redirectService.redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
-          val form = fillForm(formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent), cyaAmount)
+          val form = cyaAmount.fold(formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent)) { amount =>
+            formsProvider.incidentalCostsBenefitsAmountForm(request.user.isAgent).fill(amount)
+          }
           Future.successful(Ok(pageView(taxYear, form, employmentId)))
         }
       }
