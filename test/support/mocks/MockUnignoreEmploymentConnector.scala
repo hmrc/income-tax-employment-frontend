@@ -21,11 +21,12 @@ import connectors.parsers.UnignoreEmploymentHttpParser.UnignoreEmploymentRespons
 import models.APIErrorModel
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockUnignoreEmploymentConnector extends MockFactory {
+trait MockUnignoreEmploymentConnector extends MockFactory { _: TestSuite =>
 
   val mockUnignoreEmploymentConnector: UnignoreEmploymentConnector = mock[UnignoreEmploymentConnector]
 

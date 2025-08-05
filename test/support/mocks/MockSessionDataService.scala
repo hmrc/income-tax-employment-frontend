@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockSessionDataService extends MockFactory { this: TestSuite =>
+trait MockSessionDataService extends MockFactory { _: TestSuite =>
 
   val mockSessionDataService: SessionDataService = mock[SessionDataService]
 

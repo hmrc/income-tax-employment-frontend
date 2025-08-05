@@ -20,12 +20,13 @@ import models.User
 import models.mongo.EmploymentUserData
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.employment.EmploymentService
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-trait MockEmploymentService extends MockFactory {
+trait MockEmploymentService extends MockFactory { _: TestSuite =>
 
   protected val mockEmploymentService: EmploymentService = mock[EmploymentService]
 

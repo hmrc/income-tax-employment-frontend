@@ -19,9 +19,10 @@ package support.mocks
 import config.ErrorHandler
 import models.AuthorisationRequest
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.mvc.{Request, Result}
 
-trait MockErrorHandler extends MockFactory {
+trait MockErrorHandler extends MockFactory { _: TestSuite =>
 
   protected val mockErrorHandler: ErrorHandler = mock[ErrorHandler]
 

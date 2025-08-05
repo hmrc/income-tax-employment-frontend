@@ -20,12 +20,13 @@ import models.mongo.EmploymentUserData
 import models.{AuthorisationRequest, User}
 import org.scalamock.handlers.CallHandler6
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.mvc.Result
 import services.studentLoans.StudentLoansCYAService
 
 import scala.concurrent.Future
 
-trait MockStudentLoansCYAService extends MockFactory {
+trait MockStudentLoansCYAService extends MockFactory { _: TestSuite =>
 
   val mockStudentLoansCYAService: StudentLoansCYAService = mock[StudentLoansCYAService]
 

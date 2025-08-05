@@ -21,6 +21,7 @@ import models.UserSessionDataRequest
 import models.employment.EmploymentType
 import models.mongo.EmploymentUserData
 import org.scalamock.handlers.{CallHandler3, CallHandler4}
+import org.scalatest.TestSuite
 import play.api.mvc._
 import support.builders.models.UserBuilder.aUser
 
@@ -28,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait MockActionsProvider extends MockAuthorisedAction
   with MockEmploymentSessionService
-  with MockErrorHandler {
+  with MockErrorHandler { _: TestSuite =>
 
 
   protected val mockActionsProvider: ActionsProvider = mock[ActionsProvider]
