@@ -20,12 +20,13 @@ import models.employment.AllEmploymentData
 import models.{APIErrorModel, User}
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.employment.RemoveEmploymentService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockRemoveEmploymentService extends MockFactory {
+trait MockRemoveEmploymentService extends MockFactory { _: TestSuite =>
 
   val mockRemoveEmploymentService: RemoveEmploymentService = mock[RemoveEmploymentService]
 

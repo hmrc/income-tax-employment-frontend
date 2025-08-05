@@ -21,12 +21,13 @@ import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockIncomeTaxUserDataConnector extends MockFactory {
+trait MockIncomeTaxUserDataConnector extends MockFactory { _: TestSuite =>
 
   val mockUserDataConnector: IncomeTaxUserDataConnector = mock[IncomeTaxUserDataConnector]
 

@@ -23,11 +23,12 @@ import connectors.parsers.PostExcludedJourneyHttpParser.PostExcludedJourneyRespo
 import models.tailoring.ExcludedJourneysResponseModel
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockTailoringConnector extends MockFactory {
+trait MockTailoringConnector extends MockFactory { _: TestSuite =>
 
   val mockTailoringDataConnector: TailoringDataConnector = mock[TailoringDataConnector]
 

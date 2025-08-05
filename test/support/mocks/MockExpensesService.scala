@@ -17,9 +17,10 @@
 package support.mocks
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.expenses.ExpensesService
 
-trait MockExpensesService extends MockFactory {
+trait MockExpensesService extends MockFactory { _: TestSuite =>
 
   val mockExpensesService: ExpensesService = mock[ExpensesService]
 }

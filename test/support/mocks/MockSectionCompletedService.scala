@@ -20,12 +20,13 @@ import models.mongo.JourneyAnswers
 import org.apache.pekko.Done
 import org.scalamock.handlers.{CallHandler2, CallHandler4}
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.SectionCompletedService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockSectionCompletedService extends MockFactory {
+trait MockSectionCompletedService extends MockFactory { _: TestSuite =>
 
   protected val mockSectionCompletedService: SectionCompletedService = mock[SectionCompletedService]
 

@@ -21,11 +21,12 @@ import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmplo
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockCreateUpdateEmploymentDataConnector extends MockFactory {
+trait MockCreateUpdateEmploymentDataConnector extends MockFactory { _: TestSuite =>
 
   val mockCreateUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector = mock[CreateUpdateEmploymentDataConnector]
 

@@ -20,10 +20,11 @@ import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
 import org.scalamock.handlers.{CallHandler3, CallHandler4}
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.mvc.{Call, Result}
 import services.RedirectService
 
-trait MockRedirectService extends MockFactory {
+trait MockRedirectService extends MockFactory { _: TestSuite =>
 
   protected val mockRedirectService: RedirectService = mock[RedirectService]
 

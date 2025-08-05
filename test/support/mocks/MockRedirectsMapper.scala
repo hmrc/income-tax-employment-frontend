@@ -20,9 +20,10 @@ import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import utils.RedirectsMapper
 
-trait MockRedirectsMapper extends MockFactory {
+trait MockRedirectsMapper extends MockFactory { _: TestSuite =>
 
   protected val mockRedirectsMapper: RedirectsMapper = mock[RedirectsMapper]
 

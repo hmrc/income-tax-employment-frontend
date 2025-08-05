@@ -20,11 +20,12 @@ import models.User
 import models.mongo.{DatabaseError, ExpensesUserData}
 import org.scalamock.handlers.{CallHandler1, CallHandler2}
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import repositories.ExpensesUserDataRepository
 
 import scala.concurrent.Future
 
-trait MockExpensesUserDataRepository extends MockFactory {
+trait MockExpensesUserDataRepository extends MockFactory { _: TestSuite =>
 
   val mockExpensesUserDataRepository: ExpensesUserDataRepository = mock[ExpensesUserDataRepository]
 
