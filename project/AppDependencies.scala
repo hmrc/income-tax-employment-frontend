@@ -18,8 +18,8 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapFrontendPlay30Version = "10.1.0"
-  private val mongoPlayVersion = "2.7.0"
+  private val bootstrapFrontendPlay30Version = "10.2.0"
+  private val mongoPlayVersion = "2.9.0"
 
   val jacksonAndPlayExclusions: Seq[InclusionRule] = Seq(
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
@@ -33,7 +33,7 @@ object AppDependencies {
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30" % bootstrapFrontendPlay30Version,
     "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30" % "12.8.0",
     "uk.gov.hmrc.mongo"             %% "hmrc-mongo-play-30"         % mongoPlayVersion,
-    "com.fasterxml.jackson.module"  %% "jackson-module-scala"       % "2.19.2",
+    "com.fasterxml.jackson.module"  %% "jackson-module-scala"       % "2.20.0",
     "com.beachape"                  %% "enumeratum"                 % "1.9.0",
     "com.beachape"                  %% "enumeratum-play-json"       % "1.9.0" excludeAll (jacksonAndPlayExclusions *)
   )
