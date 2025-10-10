@@ -20,11 +20,12 @@ import models.User
 import models.mongo.EmploymentUserData
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.benefits.AssetsService
 
 import scala.concurrent.Future
 
-trait MockAssetsService extends MockFactory {
+trait MockAssetsService extends MockFactory { _: TestSuite =>
 
   protected val mockAssetsService: AssetsService = mock[AssetsService]
 

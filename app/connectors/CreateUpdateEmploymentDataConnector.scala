@@ -19,18 +19,20 @@ package connectors
 import config.AppConfig
 import connectors.parsers.CreateUpdateEmploymentDataHttpParser._
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateUpdateEmploymentDataConnector @Inject()(val http: HttpClient,
+class CreateUpdateEmploymentDataConnector @Inject()(val http: HttpClientV2,
                                                     val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def createUpdateEmploymentData(nino: String, taxYear: Int, data: CreateUpdateEmploymentRequest)
                                 (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
 
     val url: String = config.incomeTaxEmploymentBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
-    http.POST[CreateUpdateEmploymentRequest, CreateUpdateEmploymentDataResponse](url, data)
+    http.post(url"$url").withBody(Json.toJson(data)).execute[CreateUpdateEmploymentDataResponse]
   }
 }

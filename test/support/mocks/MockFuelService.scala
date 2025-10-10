@@ -20,11 +20,12 @@ import models.User
 import models.mongo.EmploymentUserData
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.benefits.FuelService
 
 import scala.concurrent.Future
 
-trait MockFuelService extends MockFactory {
+trait MockFuelService extends MockFactory { _: TestSuite =>
 
   val mockFuelService: FuelService = mock[FuelService]
 

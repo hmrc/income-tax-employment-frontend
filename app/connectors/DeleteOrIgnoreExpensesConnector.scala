@@ -18,12 +18,13 @@ package connectors
 
 import config.AppConfig
 import connectors.parsers.DeleteOrIgnoreExpensesHttpParser.{DeleteOrIgnoreExpensesResponse, _}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeleteOrIgnoreExpensesConnector @Inject()(val http: HttpClient,
+class DeleteOrIgnoreExpensesConnector @Inject()(val http: HttpClientV2,
                                                 val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def deleteOrIgnoreExpenses(nino: String, taxYear: Int, toRemove: String)
@@ -31,7 +32,7 @@ class DeleteOrIgnoreExpensesConnector @Inject()(val http: HttpClient,
 
     val url: String = config.incomeTaxExpensesBEUrl + s"/income-tax/nino/$nino/sources/$toRemove?taxYear=$taxYear"
 
-    http.DELETE[DeleteOrIgnoreExpensesResponse](url)
+    http.delete(url"$url").execute[DeleteOrIgnoreExpensesResponse]
   }
 
 }

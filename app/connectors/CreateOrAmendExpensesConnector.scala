@@ -19,19 +19,21 @@ package connectors
 import config.AppConfig
 import connectors.parsers.CreateOrAmendExpensesHttpParser.{CreateOrAmendExpensesResponse, _}
 import models.requests.CreateUpdateExpensesRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateOrAmendExpensesConnector @Inject()(val http: HttpClient,
+class CreateOrAmendExpensesConnector @Inject()(val http: HttpClientV2,
                                                val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def createOrAmendExpenses(nino: String, taxYear: Int, createUpdateExpensesRequest: CreateUpdateExpensesRequest)
                            (implicit hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
     val url: String = config.incomeTaxExpensesBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
 
-    http.PUT[CreateUpdateExpensesRequest, CreateOrAmendExpensesResponse](url, createUpdateExpensesRequest)
+    http.put(url"$url").withBody(Json.toJson(createUpdateExpensesRequest)).execute[CreateOrAmendExpensesResponse]
   }
 
 }

@@ -42,7 +42,7 @@ class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new IncomeSourceConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new IncomeSourceConnector(httpClientV2, new MockAppConfig().config())
 
   "get" should {
     "continue successfully" when {

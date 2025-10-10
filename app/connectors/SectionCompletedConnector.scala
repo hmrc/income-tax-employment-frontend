@@ -20,6 +20,7 @@ package connectors
 import config.AppConfig
 import models.mongo.JourneyAnswers
 import org.apache.pekko.Done
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
 import play.api.http.Status.NO_CONTENT

@@ -25,6 +25,7 @@ import support.TaxYearUtils.taxYear
 import support.builders.models.expenses.ExpensesBuilder.anExpenses
 import support.mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
@@ -41,7 +42,7 @@ class CreateOrAmendExpensesConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private val underTest = new CreateOrAmendExpensesConnector(httpClient, new MockAppConfig().config())
+  private val underTest = new CreateOrAmendExpensesConnector(httpClientV2, new MockAppConfig().config())
 
   "CreateOrAmendExpensesConnector - createOrAmendExpenses" should {
     val requestBodyJson = Json.toJson(createExpensesRequestModel).toString()

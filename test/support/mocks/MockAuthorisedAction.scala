@@ -19,8 +19,9 @@ package support.mocks
 import actions.AuthorisedAction
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import org.scalamock.handlers.CallHandler4
+import org.scalatest.TestSuite
 import play.api.test.Helpers.stubMessagesControllerComponents
-import services.{AuthService}
+import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
@@ -30,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAuthorisedAction extends MockSessionDataService with MockErrorHandler {
+trait MockAuthorisedAction extends MockSessionDataService with MockErrorHandler {  _: TestSuite =>
 
   private val mockAppConfig = new MockAppConfig().config()
   val mockAuthConnector = mock[AuthConnector]

@@ -22,12 +22,13 @@ import models.requests.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockCreateOrAmendExpensesConnector extends MockFactory {
+trait MockCreateOrAmendExpensesConnector extends MockFactory { _: TestSuite =>
 
   val mockCreateOrAmendExpensesConnector: CreateOrAmendExpensesConnector = mock[CreateOrAmendExpensesConnector]
 

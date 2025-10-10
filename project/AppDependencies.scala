@@ -46,7 +46,7 @@ object AppDependencies {
     "org.mockito"             %% "mockito-scala"            % "2.0.0",
     "org.jsoup"               %  "jsoup"                    % "1.21.2",
     "com.github.tomakehurst"  %  "wiremock-jre8-standalone" % "3.0.1",
-    "org.scalamock"           %% "scalamock"                % "5.2.0",
+    "org.scalamock"           %% "scalamock"                % "7.5.0",
     "com.vladsch.flexmark"    %  "flexmark-all"             % "0.64.8",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"  % mongoPlayVersion
   ).map(_ % Test)

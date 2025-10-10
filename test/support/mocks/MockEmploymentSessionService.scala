@@ -24,13 +24,14 @@ import models.employment.{AllEmploymentData, OptionalCyaAndPrior}
 import models.mongo._
 import org.scalamock.handlers._
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.mvc.{Request, Result}
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockEmploymentSessionService extends MockFactory {
+trait MockEmploymentSessionService extends MockFactory { _: TestSuite =>
 
   val mockEmploymentSessionService: EmploymentSessionService = mock[EmploymentSessionService]
 

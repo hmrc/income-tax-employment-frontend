@@ -21,11 +21,12 @@ import models.mongo.EmploymentUserData
 import models.otheremployment.session.TaxableLumpSum
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.employment.OtherEmploymentInfoService
 
 import scala.concurrent.Future
 
-trait MockOtherEmploymentInfoService extends MockFactory {
+trait MockOtherEmploymentInfoService extends MockFactory { _: TestSuite =>
 
   val mockOtherEmploymentInfoService: OtherEmploymentInfoService = mock[OtherEmploymentInfoService]
 

@@ -37,7 +37,7 @@ class UnignoreEmploymentConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new UnignoreEmploymentConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new UnignoreEmploymentConnector(httpClientV2, new MockAppConfig().config())
 
   "UnignoreEmploymentConnector" should {
     "Return a success result" when {

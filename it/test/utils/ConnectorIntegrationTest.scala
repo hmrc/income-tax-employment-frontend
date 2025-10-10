@@ -20,10 +20,10 @@ import helpers.{WireMockHelper, WiremockStubHelpers}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import uk.gov.hmrc.http.test.HttpClientSupport
+import uk.gov.hmrc.http.test.HttpClientV2Support
 
 trait ConnectorIntegrationTest extends AnyWordSpec with Matchers
-  with HttpClientSupport
+  with HttpClientV2Support
   with WireMockHelper
   with WiremockStubHelpers
   with BeforeAndAfterAll {
