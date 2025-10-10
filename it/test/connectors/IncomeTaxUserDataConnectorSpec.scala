@@ -38,8 +38,8 @@ class IncomeTaxUserDataConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new IncomeTaxUserDataConnector(httpClient, new MockAppConfig().config())
-  private lazy val externalConnector = new IncomeTaxUserDataConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new IncomeTaxUserDataConnector(httpClientV2, new MockAppConfig().config())
+  private lazy val externalConnector = new IncomeTaxUserDataConnector(httpClientV2, new MockAppConfig().config())
 
   "IncomeTaxUserDataConnector" should {
     "Return a success result" when {

@@ -47,7 +47,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends ConnectorIntegrationTest {
     hmrcEmploymentIdToIgnore = None
   )
 
-  private val underTest = new CreateUpdateEmploymentDataConnector(httpClient, new MockAppConfig().config())
+  private val underTest = new CreateUpdateEmploymentDataConnector(httpClientV2, new MockAppConfig().config())
 
   "CreateUpdateEmploymentDataConnector" should {
     "Return a success result" when {

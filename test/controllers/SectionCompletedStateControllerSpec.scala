@@ -22,38 +22,35 @@ import config.ErrorHandler
 import forms.YesNoForm
 import models.mongo.JourneyAnswers
 import org.apache.pekko.Done
+import org.apache.pekko.dispatch.ExecutionContexts.global
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.mvc.Results.BadRequest
-import play.api.test.Helpers.{contentType, redirectLocation, status}
+import play.api.test.Helpers.{contentType, redirectLocation, status, stubMessagesControllerComponents}
 import services.SectionCompletedService
 import sttp.model.Method.POST
 import support.ControllerUnitTest
 import support.mocks.{MockAuthorisedAction, MockErrorHandler, MockSectionCompletedService}
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.http.HeaderCarrier
 import views.html.SectionCompletedStateView
 
 import java.util.Calendar
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class SectionCompletedStateControllerSpec extends ControllerUnitTest {
+class SectionCompletedStateControllerSpec extends ControllerUnitTest with
+  MockAuthorisedAction with
+  MockSectionCompletedService with
+  MockErrorHandler {
 
   implicit val view: SectionCompletedStateView = app.injector.instanceOf[SectionCompletedStateView]
-
-  trait Test extends MockAuthorisedAction with MockSectionCompletedService with MockErrorHandler {
-    val hc: HeaderCarrier = HeaderCarrier()
-
-    implicit val authorisedAction: AuthorisedAction = mockAuthorisedAction
-    implicit val errorHandler: ErrorHandler = mockErrorHandler
-    implicit val ec: Any = ec
-    implicit val sectionCompletedService: SectionCompletedService = mockSectionCompletedService
-
-    class TestController extends SectionCompletedStateController() {}
-
-    lazy val target = new TestController()
-  }
+  implicit val authorisedAction: AuthorisedAction = mockAuthorisedAction
+  implicit val errorHandler: ErrorHandler = mockErrorHandler
+  implicit val sectionCompletedService: SectionCompletedService = mockSectionCompletedService
+  override implicit val cc = stubMessagesControllerComponents()
+  private def testController = new SectionCompletedStateController()
+  
 
   val nino  = "AA123456A"
   val mtdId = "1234567890"
@@ -72,68 +69,67 @@ class SectionCompletedStateControllerSpec extends ControllerUnitTest {
 
   ".show" should {
     "display the SectionCompletedView" when {
-      "journey name is correct and status is 'Completed'" in new Test {
+      "journey name is correct and status is 'Completed'" in {
         mockAuth(Some(nino))
-        private val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "completed")
+        val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "completed")
         mockGet(mtdId, taxYear, journey, Some(journeyAnswers.copy(data = journeyData)))
-        private val sessionRequest = fakeIndividualRequest.withSession(
+        val sessionRequest = fakeIndividualRequest.withSession(
+          SessionValues.TAX_YEAR -> taxYear.toString,
+          SessionValues.VALID_TAX_YEARS -> taxYear.toString
+        )
+        val result: Future[Result] = testController.show(taxYear, journey).apply(sessionRequest)
+        status(result) shouldBe OK
+      }
+
+      "journey name is correct and status is 'inProgress'" in {
+        mockAuth(Some(nino))
+        val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "inProgress")
+        mockGet(mtdId, taxYear, journey, Some(journeyAnswers.copy(data = journeyData)))
+        val sessionRequest = fakeIndividualRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
           SessionValues.VALID_TAX_YEARS -> taxYear.toString
         )
 
-        private val result = target.show(taxYear, journey).apply(sessionRequest)
+        val result: Future[Result] = testController.show(taxYear, journey).apply(sessionRequest)
         status(result) shouldBe OK
       }
 
-      "journey name is correct and status is 'inProgress'" in new Test {
+      "journey name is correct and status is 'notStarted'" in {
         mockAuth(Some(nino))
-        private val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "inProgress")
+        val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "notStarted")
         mockGet(mtdId, taxYear, journey, Some(journeyAnswers.copy(data = journeyData)))
-        private val sessionRequest = fakeIndividualRequest.withSession(
+        val sessionRequest = fakeIndividualRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
           SessionValues.VALID_TAX_YEARS -> taxYear.toString
         )
 
-        private val result = target.show(taxYear, journey).apply(sessionRequest)
+        val result: Future[Result] = testController.show(taxYear, journey).apply(sessionRequest)
         status(result) shouldBe OK
       }
 
-      "journey name is correct and status is 'notStarted'" in new Test {
-        mockAuth(Some(nino))
-        private val journeyData = Json.obj("journey" -> "employment-summary", "status" -> "notStarted")
-        mockGet(mtdId, taxYear, journey, Some(journeyAnswers.copy(data = journeyData)))
-        private val sessionRequest = fakeIndividualRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.VALID_TAX_YEARS -> taxYear.toString
-        )
-
-        private val result = target.show(taxYear, journey).apply(sessionRequest)
-        status(result) shouldBe OK
-      }
-
-      "journey name is correct but Service.get returns no data" in new Test {
+      "journey name is correct but Service.get returns no data" in {
         mockAuth(Some(nino))
         mockGet(mtdId, taxYear, journey, None)
-        private val sessionRequest = fakeIndividualRequest.withSession(
+        val sessionRequest = fakeIndividualRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
           SessionValues.VALID_TAX_YEARS -> taxYear.toString
         )
 
-        private val result = target.show(taxYear, journey).apply(sessionRequest)
+        val result: Future[Result] = testController.show(taxYear, journey).apply(sessionRequest)
         status(result) shouldBe OK
       }
     }
     "return a 400 result" when {
-      "journey name is incorrect" in new Test {
+      "journey name is incorrect" in {
         mockAuth(Some(nino))
         mockHandleError(BAD_REQUEST, BadRequest)
-        private val journeyName = "incorrect-name"
-        private val sessionRequest = fakeIndividualRequest.withSession(
+        val journeyName = "incorrect-name"
+        val sessionRequest = fakeIndividualRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
           SessionValues.VALID_TAX_YEARS -> taxYear.toString
         )
 
-        private val result = target.show(taxYear, journeyName).apply(sessionRequest)
+        val result: Future[Result] = testController.show(taxYear, journeyName).apply(sessionRequest)
         status(result) shouldBe BAD_REQUEST
       }
     }
@@ -141,9 +137,9 @@ class SectionCompletedStateControllerSpec extends ControllerUnitTest {
 
   ".submit" should {
     "display the SectionCompletedView" when {
-      "form has errors" in new Test {
+      "form has errors" in {
         mockAuth(Some(nino))
-        private val sessionRequest = fakeIndividualRequest
+        val sessionRequest = fakeIndividualRequest
           .withMethod(POST.method)
           .withSession(
             SessionValues.TAX_YEAR -> taxYear.toString,
@@ -151,16 +147,16 @@ class SectionCompletedStateControllerSpec extends ControllerUnitTest {
           )
           .withFormUrlEncodedBody(YesNoForm.yesNo -> "")
 
-        private val result = target.submit(taxYear, journey).apply(sessionRequest)
+        val result: Future[Result] = testController.submit(taxYear, journey).apply(sessionRequest)
         status(result) shouldBe BAD_REQUEST
         contentType(result) shouldBe Some("text/html")
       }
     }
     "save and redirect to common task list" when {
-      "form is correct with correct journeyName" in new Test {
+      "form is correct with correct journeyName" in {
         mockAuth(Some(nino))
         mockSet(Done)
-        private val sessionRequest = fakeIndividualRequest
+        val sessionRequest = fakeIndividualRequest
           .withMethod(POST.method)
           .withSession(
             SessionValues.TAX_YEAR -> taxYear.toString,
@@ -168,17 +164,17 @@ class SectionCompletedStateControllerSpec extends ControllerUnitTest {
           )
           .withFormUrlEncodedBody(YesNoForm.yesNo -> YesNoForm.yes)
 
-        private val result = target.submit(taxYear, journey).apply(sessionRequest)
+        val result: Future[Result] = testController.submit(taxYear, journey).apply(sessionRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(s"/$taxYear/tasklist")
       }
     }
     "error handler called" when {
-      "journeyName is incorrect" in new Test {
+      "journeyName is incorrect" in {
         mockAuth(Some(nino))
         mockHandleError(BAD_REQUEST, BadRequest)
-        private val journeyName = "incorrect-name"
-        private val sessionRequest = fakeIndividualRequest
+        val journeyName = "incorrect-name"
+        val sessionRequest = fakeIndividualRequest
           .withMethod(POST.method)
           .withSession(
             SessionValues.TAX_YEAR -> taxYear.toString,
@@ -186,7 +182,7 @@ class SectionCompletedStateControllerSpec extends ControllerUnitTest {
           )
           .withFormUrlEncodedBody(YesNoForm.yesNo -> YesNoForm.yes)
 
-        private val result = target.submit(taxYear, journeyName).apply(sessionRequest)
+        val result: Future[Result] = testController.submit(taxYear, journeyName).apply(sessionRequest)
         status(result) shouldBe BAD_REQUEST
       }
     }

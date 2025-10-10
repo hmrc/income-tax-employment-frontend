@@ -37,7 +37,7 @@ class DeleteOrIgnoreEmploymentConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new DeleteOrIgnoreEmploymentConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new DeleteOrIgnoreEmploymentConnector(httpClientV2, new MockAppConfig().config())
 
   "DeleteOrIgnoreEmploymentConnector" should {
     "Return a success result" when {

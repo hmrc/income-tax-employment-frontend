@@ -17,9 +17,10 @@
 package support.mocks
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import services.employment.CheckYourBenefitsService
 
-trait MockCheckYourBenefitsService extends MockFactory {
+trait MockCheckYourBenefitsService extends MockFactory { _: TestSuite =>
 
   val mockCheckYourBenefitsService: CheckYourBenefitsService = mock[CheckYourBenefitsService]
 }

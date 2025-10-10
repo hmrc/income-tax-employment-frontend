@@ -40,7 +40,7 @@ class TailoringDataConnectorISpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new TailoringDataConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new TailoringDataConnector(httpClientV2, new MockAppConfig().config())
 
   ".clearExcludedJourney" should {
     "Return a success result" when {

@@ -38,7 +38,7 @@ class DeleteOrIgnoreExpensesConnectorSpec extends ConnectorIntegrationTest {
 
   implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  private lazy val underTest = new DeleteOrIgnoreExpensesConnector(httpClient, new MockAppConfig().config())
+  private lazy val underTest = new DeleteOrIgnoreExpensesConnector(httpClientV2, new MockAppConfig().config())
 
   "DeleteOrIgnoreExpensesConnector - deleteOrIgnoreExpenses" should {
     val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))

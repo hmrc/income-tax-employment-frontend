@@ -18,17 +18,18 @@ package connectors
 
 import config.AppConfig
 import connectors.parsers.UnignoreEmploymentHttpParser._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UnignoreEmploymentConnector @Inject()(val http: HttpClient,
+class UnignoreEmploymentConnector @Inject()(val http: HttpClientV2,
                                                   val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def unignoreEmployment(nino: String, taxYear: Int, employmentId: String)
                         (implicit hc: HeaderCarrier): Future[UnignoreEmploymentResponse] = {
     val deleteOrIgnoreUrl: String = config.incomeTaxEmploymentBEUrl + s"/income-tax/nino/$nino/sources/$employmentId/unignore?taxYear=$taxYear"
-    http.DELETE[UnignoreEmploymentResponse](deleteOrIgnoreUrl)
+    http.delete(url"$deleteOrIgnoreUrl").execute[UnignoreEmploymentResponse]
   }
 }

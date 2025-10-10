@@ -17,36 +17,38 @@
 package connectors
 
 import config.AppConfig
-import connectors.parsers.ClearExcludedJourneysHttpParser.{ClearExcludedJourneysHttpReads, ClearExcludedJourneysResponse}
+import connectors.parsers.ClearExcludedJourneysHttpParser.ClearExcludedJourneysResponse
 import connectors.parsers.GetExcludedJourneysHttpParser.{ExcludedJourneysResponse, GetExcludedJourneysHttpReads}
 import connectors.parsers.PostExcludedJourneyHttpParser.{PostExcludedJourneyHttpReads, PostExcludedJourneyResponse}
-import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TailoringDataConnector @Inject()(val http: HttpClient,
+class TailoringDataConnector @Inject()(val http: HttpClientV2,
                                        val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def getExcludedJourneys(taxYear: Int, nino: String)
                               (implicit hc: HeaderCarrier): Future[ExcludedJourneysResponse] = {
     val getExcludedJourneysUrl: String = config.incomeTaxSubmissionBEBaseUrl + s"/income-tax/nino/$nino/sources/excluded-journeys/$taxYear"
-    http.GET[ExcludedJourneysResponse](getExcludedJourneysUrl)
+    http.get(url"$getExcludedJourneysUrl").execute[ExcludedJourneysResponse]
   }
 
   def clearExcludedJourney(taxYear: Int, nino: String)
                            (implicit hc: HeaderCarrier): Future[ClearExcludedJourneysResponse] = {
     val clearExcludedJourneysUrl: String = config.incomeTaxSubmissionBEBaseUrl + s"/income-tax/nino/$nino/sources/clear-excluded-journeys/$taxYear"
-    http.POST[JsObject, ClearExcludedJourneysResponse](clearExcludedJourneysUrl, Json.obj("journeys" -> Seq("employment")))(
-      JsObject.writes, ClearExcludedJourneysHttpReads, hc, ec)
+    http
+      .post(url"$clearExcludedJourneysUrl")
+      .withBody(Json.obj("journeys" -> Seq("employment")))
+      .execute[ClearExcludedJourneysResponse]
   }
 
   def postExcludedJourney(taxYear: Int, nino: String)
                            (implicit hc: HeaderCarrier): Future[PostExcludedJourneyResponse] = {
     val postExcludedJourneyUrl: String = config.incomeTaxSubmissionBEBaseUrl + s"/income-tax/nino/$nino/sources/exclude-journey/$taxYear"
-    http.POST[JsObject, PostExcludedJourneyResponse](postExcludedJourneyUrl, Json.obj("journey" -> "employment"))(
-      JsObject.writes, PostExcludedJourneyHttpReads, hc, ec)
+    http.post(url"$postExcludedJourneyUrl").withBody(Json.obj("journey" -> "employment")).execute[PostExcludedJourneyResponse]
   }
 
 }
