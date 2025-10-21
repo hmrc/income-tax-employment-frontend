@@ -48,15 +48,6 @@
     if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-3" else "govuk-!-margin-bottom-5"
 }
 
-@bannerHtml(items: Seq[Html]) = {
-    <p class="govuk-notification-banner__heading">@messages("employment.employmentDetails.bannerHeading")</p>
-    <ul class="govuk-list govuk-list--bullet">
-        @for(item <- items){
-            <li>@item</li>
-        }
-    </ul>
-}
-
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)

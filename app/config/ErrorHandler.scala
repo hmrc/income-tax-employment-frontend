@@ -21,23 +21,18 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
 import play.api.mvc.{Request, RequestHeader, Result}
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.frontend.http.LegacyFrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject()(internalServerErrorTemplate: InternalServerErrorTemplate,
                              serviceUnavailableTemplate: ServiceUnavailableTemplate,
                              val messagesApi: MessagesApi,
-                             notFoundTemplate: NotFoundTemplate)(implicit appConfig: AppConfig)
-  extends LegacyFrontendErrorHandler with I18nSupport {
-
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
-    internalServerErrorTemplate()
-
-  override def notFoundTemplate(implicit request: Request[_]): Html = notFoundTemplate()
+                             notFoundTemplate: NotFoundTemplate)(implicit appConfig: AppConfig, executionContext: ExecutionContext)
+  extends FrontendErrorHandler with I18nSupport {
 
   def internalServerError()(implicit request: Request[_]): Result = {
     InternalServerError(internalServerErrorTemplate())
@@ -52,7 +47,13 @@ class ErrorHandler @Inject()(internalServerErrorTemplate: InternalServerErrorTem
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] =
     statusCode match {
-      case NOT_FOUND => Future.successful(NotFound(notFoundTemplate(request.withBody(""))))
+      case NOT_FOUND => Future.successful(NotFound(notFoundTemplate()(request, request2Messages(request), appConfig)))
       case _ => Future.successful(InternalServerError(internalServerErrorTemplate()(request.withBody(body = ""), request2Messages(request), appConfig)))
     }
+
+  override protected implicit val ec: ExecutionContext = executionContext
+
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] = Future.successful(internalServerErrorTemplate())
+
+  override def notFoundTemplate(implicit request: RequestHeader): Future[Html] = Future.successful(notFoundTemplate())
 }

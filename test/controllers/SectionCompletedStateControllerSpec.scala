@@ -22,7 +22,6 @@ import config.ErrorHandler
 import forms.YesNoForm
 import models.mongo.JourneyAnswers
 import org.apache.pekko.Done
-import org.apache.pekko.dispatch.ExecutionContexts.global
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.mvc.Result

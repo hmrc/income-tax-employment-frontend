@@ -51,7 +51,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with GuiceOneAppPerSuite
   private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
   private val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
+  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig, ec)
   private val newAmount = BigDecimal("950.11")
 
   private val underTest: CreateOrAmendExpensesService = new CreateOrAmendExpensesService(

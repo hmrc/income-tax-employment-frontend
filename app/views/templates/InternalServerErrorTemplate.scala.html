@@ -19,7 +19,7 @@
 
 @this(layout: Layout, heading: Heading, link: Link)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("internal-server-error-template.heading")) {
 
