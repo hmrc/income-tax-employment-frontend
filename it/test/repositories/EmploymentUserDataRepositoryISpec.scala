@@ -200,7 +200,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       count mustBe 1
 
       private val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890")))
-      res2.left.toOption.get.message must include("Command failed with error 11000 (DuplicateKey)")
+      res2.left.toOption.get.message must include("error 11000 (DuplicateKey)")
       count mustBe 1
     }
 
