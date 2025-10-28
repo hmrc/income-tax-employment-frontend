@@ -18,7 +18,6 @@ package services
 
 import audit.DeleteEmploymentAudit
 import models.employment._
-import models.expenses.Expenses
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import services.employment.RemoveEmploymentService
@@ -71,14 +70,6 @@ class RemoveEmploymentServiceSpec extends UnitTest
     customerExpenses = None,
     otherEmploymentIncome = None
   )
-
-  private val customerExpenses =
-    EmploymentExpenses(
-      None,
-      None,
-      Some(40.00),
-      Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
-    )
 
   ".deleteOrIgnoreEmployment" should {
     "return a successful result" when {

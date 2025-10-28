@@ -18,8 +18,9 @@ package config
 
 import org.scalamock.scalatest.MockFactory
 import support.{FakeRequestProvider, UnitTest}
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import java.net.URLEncoder
 
 class AppConfigSpec extends UnitTest with MockFactory with FakeRequestProvider {
 
@@ -45,7 +46,7 @@ class AppConfigSpec extends UnitTest with MockFactory with FakeRequestProvider {
 
   "AppConfig" should {
     "return correct feedbackUrl when the user is an individual" in {
-      val expectedBackUrl = SafeRedirectUrl(appUrl + fakeRequest.uri).encodedUrl
+      val expectedBackUrl = URLEncoder.encode(appUrl + fakeRequest.uri, "UTF-8")
       val expectedServiceIdentifier = "update-and-submit-income-tax-return"
 
       implicit val isAgent: Boolean = false
@@ -74,7 +75,7 @@ class AppConfigSpec extends UnitTest with MockFactory with FakeRequestProvider {
     }
 
     "return the correct feedback url when the user is an agent" in {
-      val expectedBackUrl = SafeRedirectUrl(appUrl + fakeRequest.uri).encodedUrl
+      val expectedBackUrl = URLEncoder.encode(appUrl + fakeRequest.uri, "UTF-8")
       val expectedServiceIdentifierAgent = "update-and-submit-income-tax-return-agent"
 
       implicit val isAgent: Boolean = true

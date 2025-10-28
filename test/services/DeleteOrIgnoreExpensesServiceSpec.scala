@@ -68,45 +68,6 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
     )
 
-  private val employmentSource1: HmrcEmploymentSource = HmrcEmploymentSource(
-    employmentId = "001",
-    employerName = "Mishima Zaibatsu",
-    employerRef = Some("223/AB12399"),
-    payrollId = Some("123456789999"),
-    startDate = Some("2019-04-21"),
-    cessationDate = Some(s"${taxYearEOY - 1}-03-11"),
-    dateIgnored = None,
-    submittedOn = Some(s"${taxYearEOY - 1}-01-04T05:01:01Z"),
-    hmrcEmploymentFinancialData = Some(EmploymentFinancialData(
-      employmentData = Some(EmploymentData(
-        submittedOn = s"${taxYearEOY - 1}-02-12",
-        employmentSequenceNumber = Some("123456789999"),
-        companyDirector = Some(true),
-        closeCompany = Some(false),
-        directorshipCeasedDate = Some(s"${taxYearEOY - 1}-02-12"),
-        disguisedRemuneration = Some(false),
-        offPayrollWorker = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some(s"${taxYearEOY - 1}-04-23"), Some(32), Some(2))),
-        Some(Deductions(
-          studentLoans = Some(StudentLoans(
-            uglDeductionAmount = Some(100.00),
-            pglDeductionAmount = Some(100.00)
-          ))
-        ))
-      )),
-      None
-    )),
-    None
-  )
-
-  private val priorData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(employmentSource1),
-    hmrcExpenses = None,
-    customerEmploymentData = Seq(),
-    customerExpenses = Some(customerExpenses),
-    otherEmploymentIncome = None
-  )
-
   def data(hmrcExpenses: Option[EmploymentExpenses], customerExpenses: Option[EmploymentExpenses]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),
     hmrcExpenses = hmrcExpenses,

@@ -19,7 +19,6 @@ package models.pages
 import controllers.lumpSum.routes
 import models.otheremployment.pages.TaxableLumpSumListPage
 import models.otheremployment.session.{OtherEmploymentIncomeCYAModel, TaxableLumpSum}
-import play.api.i18n.Messages
 import support.ViewUnitTest
 import support.builders.models.otheremployment.session.OtherEmploymentIncomeCYAModelBuilder.anOtherEmploymentIncomeCYAModel
 
@@ -29,7 +28,6 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
 
   "TaxableLumpSumListPage" should {
     "transform taxableLumpSumViewModel into the correct number of rows, with the correct content " in {
-      implicit val messages: Messages = getMessages(false)
 
       val table  = TaxableLumpSumListPage(anOtherEmploymentIncomeCYAModel, taxYearEOY, "employmentID")
       table.rows.length shouldBe 3
@@ -42,7 +40,6 @@ class TaxableLumpSumListPageSpec extends ViewUnitTest {
     }
 
     "show no table when user has no lump sums" in {
-      implicit val messages: Messages = getMessages(false)
 
       val table = TaxableLumpSumListPage(OtherEmploymentIncomeCYAModel(Seq.empty[TaxableLumpSum]), taxYearEOY, "employmentID")
       table.rows.length shouldBe 0

@@ -66,7 +66,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
   private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
   private val mockInYearUtil: InYearUtil = app.injector.instanceOf[InYearUtil]
 
-  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
+  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig, ec)
 
   private val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -310,7 +310,7 @@ class EmploymentSessionServiceSpec extends UnitTest with GuiceOneAppPerSuite
 
   "getCYAAndPriorForEndOfYear" should {
     "return a redirect when in year" in {
-      mockFind(taxYear, "employmentId", Right(None))
+      mockFind(taxYear, "employmentId", aUser, Right(None))
       mockFindNoContent(aUser.nino, taxYear)
       val response = underTest.getCYAAndPriorForEndOfYear(taxYear, "employmentId")
 

@@ -19,7 +19,6 @@ package controllers.lumpSum
 import common.SessionValues
 import models.employment.EmploymentDetailsType
 import play.api.http.Status.OK
-import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Result
 import play.api.test.Helpers.stubMessagesControllerComponents
 import support.ControllerUnitTest
@@ -49,7 +48,6 @@ class TaxableLumpSumListControllerSpec extends ControllerUnitTest
     mockErrorHandler
   )(new MockAppConfig().config(_mimicEmploymentAPICalls = mimic, isEmploymentEOYEnabled = isEmploymentEOYEnabled))
 
-  implicit private val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest.withHeaders())
   private val employmentId = "223AB12399"
 
   ".show" when {

@@ -43,7 +43,7 @@ class ErrorHandlerSpec extends UnitTest with GuiceOneAppPerSuite with ViewHelper
   val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
-  val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
+  val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig, ec)
 
   val h1Expected = "Page not found"
 
@@ -79,8 +79,8 @@ class ErrorHandlerSpec extends UnitTest with GuiceOneAppPerSuite with ViewHelper
 
     "return the notFoundTemplate when an incorrect web address when been entered" which {
 
-      lazy val view = errorHandler.notFoundTemplate
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+      lazy val view = await(errorHandler.notFoundTemplate)
+      lazy implicit val document: Document = Jsoup.parse(view.toString())
 
       titleCheck(h1Expected, isWelsh = false)
     }

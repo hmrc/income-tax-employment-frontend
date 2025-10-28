@@ -17,12 +17,10 @@
 package views.offPayrollWorking
 
 import controllers.offPayrollWorking.routes.EmployerOffPayrollWorkingController
-import forms.YesNoForm
 import forms.details.EmploymentDetailsFormsProvider
 import models.AuthorisationRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import support.ViewUnitTest
@@ -133,9 +131,7 @@ class EmployerOffPayrollWorkingViewSpec extends ViewUnitTest {
     UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
   )
 
-  private val formProvider = new EmploymentDetailsFormsProvider()
   private lazy val underTest = inject[EmployerOffPayrollWorkingView]
-  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(s"employment.employerOpw.error.${if (isAgent) "agent" else "individual"}")
 
   userScenarios.foreach { userScenario =>
     s"language is ${welshTest(userScenario.isWelsh)} and request is from an ${agentTest(userScenario.isAgent)}" should {
